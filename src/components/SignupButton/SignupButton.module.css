@@ -1,0 +1,15 @@
+.signupButton {
+  width: 45%;
+  height: auto;
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.signupButton:hover {
+  background-color: #0056b3;
+}

@@ -1,0 +1,40 @@
+.socialLogin {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+}
+
+.socialButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 20px;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #333;
+  border: none;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: box-shadow 0.3s ease;
+}
+
+.socialButton:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.socialIcon {
+  width: 24px;
+  height: 24px;
+}
+
+.googleButton {
+  color: #4285f4;
+}
+
+.facebookButton {
+  color: #1877f2;
+}
