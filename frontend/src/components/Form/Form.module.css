@@ -1,0 +1,86 @@
+.form {
+  flex: 1;
+  padding: 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-color: #f9f9f9;
+}
+
+.main {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.main p {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  font-size: 19px;
+}
+
+.main h2 {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.inputRow {
+  display: flex;
+  gap: 20px;
+}
+
+.inputGroup.halfWidth {
+  flex: 1;
+  margin-right: 10px;
+}
+
+.inputGroup {
+  margin-bottom: 15px;
+  text-align: left;
+}
+
+.halfWidth {
+  flex: 1;
+}
+
+.inputGroup label {
+  font-size: 1rem;
+  color: #555;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.inputGroup input {
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.inputGroup input:focus {
+  border-color: #0067ff;
+  box-shadow: 0 0 6px rgba(0, 103, 255, 0.5);
+}
+
+.signupButton {
+  width: 100%;
+  padding: 12px;
+  font-size: 1.2rem;
+  background-color: #0067ff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.signupButton:hover {
+  background-color: #0056d6;
+}
