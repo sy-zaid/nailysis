@@ -59,7 +59,7 @@ function Form() {
               placeholder="Confirm your password"
             />
           </div>
-          <SignupButton text="Sign Up" onClick={handleSignup} />
+          <SignupButton text="Sign Up" />
         </form>
         <p>or</p>
         <SocialLogin />
