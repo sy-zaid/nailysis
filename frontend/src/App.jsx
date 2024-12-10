@@ -1,34 +1,20 @@
 import React from "react";
-import Container from "./components/Container/Container";
-import Form from "./components/Form/Form";
-import LoginForm from "./components/pages/login"; // Ensure this path is correct
 import "./App.css";
+import { Routes, Route } from "react-router-dom";
+import Login from "./pages/Login/Login";
+import Dashboard from "./pages/Dashboard/Dashboard";
+import Signup from "./pages/Signup";
+import NotFound from "./components/NotFound";
 
-function App() {
-  const renderPage = () => {
-    // Get the current path
-    const path = window.location.pathname;
-
-    switch (path) {
-      case "/components/pages/login":
-        return <LoginForm />;
-      case "/signup":
-        return (
-          <Container>
-            <Form />
-          </Container>
-        );
-      case "/":
-      default:
-        return (
-          <Container>
-            <Form />
-          </Container>
-        );
-    }
-  };
-
-  return <div>{renderPage()}</div>;
-}
+const App = () => {
+  return (
+    <Routes>
+      <Route path="/" element={<Signup />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
+};
 
 export default App;

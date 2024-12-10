@@ -1,13 +1,10 @@
 import React from "react";
 import styles from "./Form.module.css";
 import SocialLogin from "../SocialLogin/SocialLogin";
-import SignupButton from "../SignupButton/SignupButton";
+import { useNavigate } from "react-router-dom";
 
 function Form() {
-  const handleSignup = () => {
-    // alert("Signup button clicked!");
-  };
-
+  const navigate = useNavigate();
   return (
     <div className={styles.form}>
       <section className={styles.main}>
@@ -20,6 +17,7 @@ function Form() {
                 type="text"
                 id="first-name"
                 placeholder="Enter your first name"
+                required
               />
             </div>
             <div className={`${styles.inputGroup} ${styles.halfWidth}`}>
@@ -28,12 +26,18 @@ function Form() {
                 type="text"
                 id="last-name"
                 placeholder="Enter your last name"
+                required
               />
             </div>
           </div>
           <div className={styles.inputGroup}>
             <label htmlFor="email">Email</label>
-            <input type="email" id="email" placeholder="Enter your email" />
+            <input
+              type="email"
+              id="email"
+              placeholder="Enter your email"
+              required
+            />
           </div>
           <div className={styles.inputGroup}>
             <label htmlFor="phone">Phone</label>
@@ -41,6 +45,7 @@ function Form() {
               type="tel"
               id="phone"
               placeholder="Enter your phone number"
+              required
             />
           </div>
           <div className={styles.inputGroup}>
@@ -49,6 +54,7 @@ function Form() {
               type="password"
               id="password"
               placeholder="Enter your password"
+              required
             />
           </div>
           <div className={styles.inputGroup}>
@@ -57,9 +63,16 @@ function Form() {
               type="password"
               id="confirm-password"
               placeholder="Confirm your password"
+              required
             />
           </div>
-          <SignupButton text="Sign Up" />
+          <button
+            onClick={() => navigate("login")}
+            type="submit"
+            className={styles.submitButton}
+          >
+            Sign Up
+          </button>
         </form>
         <p>or</p>
         <SocialLogin />
