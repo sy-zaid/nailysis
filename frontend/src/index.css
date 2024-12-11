@@ -8,9 +8,4 @@
 
 body {
   font-family: "DM Sans", sans-serif;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background-color: #f7f7f7;
 }

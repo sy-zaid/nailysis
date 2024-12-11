@@ -1,6 +1,10 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+.cards {
+  display: flex;
+  gap: 22px;
+  margin-left: 38px;
 }
 
+.main {
+  display: flex;
+  /* gap: 85px; */
+}
