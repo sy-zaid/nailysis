@@ -1,4 +1,3 @@
-// Importing React library to use React features such as JSX
 import React from "react";
 
 // Importing the Container component from the components directory
