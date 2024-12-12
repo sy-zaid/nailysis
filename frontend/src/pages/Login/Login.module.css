@@ -1,3 +1,11 @@
+.wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f7f7f7;
+}
+
 .container {
   display: flex;
   width: 90%;
@@ -9,12 +17,9 @@
 
 .picture {
   flex: 1;
-  /* background: linear-gradient(to right, #b0e0e6, #87cefa); */
   display: flex;
   justify-content: center;
   align-items: center;
-  /* border-top-left-radius: 20px;
-  border-bottom-left-radius: 20px; */
 }
 
 .picture img {
