@@ -1,0 +1,10 @@
+.cards {
+  display: flex;
+  gap: 22px;
+  margin-left: 38px;
+}
+
+.main {
+  display: flex;
+  /* gap: 85px; */
+}

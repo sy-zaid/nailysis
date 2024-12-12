@@ -1,0 +1,17 @@
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-left: 138px;
+  padding-top: 63px;
+}
+
+.header h1 {
+  font-size: 40px;
+  font-weight: bold;
+}
+
+.header p {
+  font-size: 20px;
+  color: #4e4e4e;
+}
