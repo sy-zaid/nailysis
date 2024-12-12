@@ -1,0 +1,141 @@
+.container {
+  display: flex;
+  width: 90%;
+  max-width: 1200px;
+  background-color: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.picture {
+  flex: 1;
+  /* background: linear-gradient(to right, #b0e0e6, #87cefa); */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px; */
+}
+
+.picture img {
+  max-width: 80%;
+  height: auto;
+}
+
+.form {
+  flex: 1;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.main {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.main p {
+  font-size: 19px;
+  padding-top: 5px;
+}
+
+.main h2 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #333;
+  text-align: center;
+}
+
+.main p {
+  text-align: center;
+  padding-top: 10px;
+}
+
+.inputGroup {
+  margin-bottom: 20px;
+}
+
+.inputGroup label {
+  font-size: 1rem;
+  margin-bottom: 8px;
+  display: block;
+  color: #666;
+}
+
+.inputGroup input {
+  width: 100%;
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  outline: none;
+  margin-top: 4px;
+}
+
+.inputGroup input:focus {
+  border-color: #0067ff;
+  box-shadow: 0 0 5px rgba(0, 103, 255, 0.5);
+}
+
+.forgotPassword {
+  margin: 10px 0;
+  font-size: 0.9rem;
+  color: #0067ff;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.loginButton {
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
+  background-color: #0067ff;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  margin-top: 10px;
+}
+
+.loginButton:hover {
+  background-color: #0056d6;
+}
+
+.socialLogin {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.socialButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #333;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.socialIcon {
+  width: 24px;
+  height: 24px;
+}
+
+.googleButton {
+  border-color: white;
+}
+
+.facebookButton {
+  border-color: white;
+}
