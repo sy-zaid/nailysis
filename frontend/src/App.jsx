@@ -4,7 +4,7 @@ import "./App.css";
 import { BrowserRouter, Routes, Route, Navigate} from "react-router-dom";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard/Dashboard";
-import Signup from "./pages/Signup";
+import Register from "./pages/Register";
 import NotFound from "./components/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -15,7 +15,7 @@ function Logout() {
 
 function RegisterAndLogout() {
   localStorage.clear()
-  return <Signup />
+  return <Register />
 }
 
 
@@ -33,7 +33,7 @@ function App() {
 
         <Route path="/Login" element={<Login />} />
         <Route path="/Logout" element={<Logout />} />
-        <Route path="/Signup" element={<RegisterAndLogout />} />
+        <Route path="/Register" element={<RegisterAndLogout />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
   )
@@ -43,7 +43,7 @@ function App() {
 // const App = () => {
 //   return (
 //     <Routes>
-//       <Route path="/" element={<Signup />} />
+//       <Route path="/" element={<Register />} />
 //       <Route path="/login" element={<Login />} />
 //       <Route path="/dashboard" element={<Dashboard />} />
 //       <Route path="*" element={<NotFound />} />

@@ -7,7 +7,7 @@ function Container() {
   return (
     <div className={styles.container}>
       <Picture />
-      <Form />
+      <Form route="/api/user/register/" method="register"/>
     </div>
   );
 }
