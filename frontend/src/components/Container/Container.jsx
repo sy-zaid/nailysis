@@ -3,13 +3,14 @@ import Picture from "../Picture/Picture";
 import Form from "../Form/Form";
 import styles from "./Container.module.css";
 
-function Container() {
+function Container({ registrationEndpoint = "/api/user/register/" }) {
   return (
     <div className={styles.container}>
       <Picture />
-      <Form route="/api/user/register/" method="register"/>
+      <Form route={registrationEndpoint} method="register"/>
     </div>
   );
 }
+
 
 export default Container;
