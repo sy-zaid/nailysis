@@ -108,16 +108,6 @@ function Form({ route, method }) {
               required
             />
           </div>
-          {/* <button
-            onClick={(e) => {
-              e.preventDefault(); // Prevent default form submission
-              navigate("Login");
-            }}
-            type="submit"
-            className={styles.submitButton}
-          >
-            Register
-          </button> */}
 
           <button type="submit" className={styles.submitButton}>
                 {name}

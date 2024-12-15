@@ -34,7 +34,7 @@ const Login = () => {
                 />
               </div>
               <h5 className={styles.forgotPassword}>Forgot Password?</h5>
-              {/* <button
+              <button
                 onClick={(e) => {
                   e.preventDefault();
                   navigate("/dashboard");
@@ -43,7 +43,7 @@ const Login = () => {
                 className={styles.loginButton}
               >
                 Login
-              </button> */}
+              </button>
             </form>
             <p>or</p>
             <div className={styles.socialLogin}>
