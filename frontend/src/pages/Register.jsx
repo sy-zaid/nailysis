@@ -2,12 +2,12 @@ import React from "react";
 import Container from "../components/Container/Container";
 import Form from "../components/Form/Form";
 
-const Signup = () => {
+const Register = () => {
   return (
     <Container>
-      <Form />
+      <Form/>
     </Container>
   );
 };
 
-export default Signup;
+export default Register;
