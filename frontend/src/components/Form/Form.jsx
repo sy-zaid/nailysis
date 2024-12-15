@@ -2,14 +2,43 @@ import React from "react";
 import styles from "./Form.module.css";
 import SocialLogin from "../SocialLogin/SocialLogin";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import api from "../../api";
+import { ACCESS_TOKEN, REFRESH_TOKEN } from "../../constants";
 
-function Form() {
+function Form({ route, method }) {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  const name = method === "login" ? "Login" : "Register";
+
+  const handleSubmit = async (e) => {
+      setLoading(true);
+      e.preventDefault();
+
+      try {
+          const res = await api.post(route, { username, password })
+          if (method === "login") {
+              localStorage.setItem(ACCESS_TOKEN, res.data.access);
+              localStorage.setItem(REFRESH_TOKEN, res.data.refresh);
+              navigate("/")
+          } else {
+              navigate("/login")
+          }
+      } catch (error) {
+          alert(error)
+      } finally {
+          setLoading(false)
+      }
+  };
+  
   return (
     <div className={styles.form}>
       <section className={styles.main}>
         <h2>Create Your Account</h2>
-        <form>
+        <form onSubmit={handleSubmit} className="form-container">
           <div className={styles.inputRow}>
             <div className={`${styles.inputGroup} ${styles.halfWidth}`}>
               <label htmlFor="first-name">First Name</label>
@@ -29,6 +58,17 @@ function Form() {
                 required
               />
             </div>
+          </div>
+          <div className={styles.inputGroup}>
+            <label htmlFor="email">Username</label>
+            <input
+              type="username"
+              id="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Enter your username"
+              required
+            />
           </div>
           <div className={styles.inputGroup}>
             <label htmlFor="email">Email</label>
@@ -53,6 +93,8 @@ function Form() {
             <input
               type="password"
               id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
               required
             />
@@ -66,12 +108,9 @@ function Form() {
               required
             />
           </div>
-          <button
-            onClick={() => navigate("login")}
-            type="submit"
-            className={styles.submitButton}
-          >
-            Sign Up
+
+          <button type="submit" className={styles.submitButton}>
+                {name}
           </button>
         </form>
         <p>or</p>

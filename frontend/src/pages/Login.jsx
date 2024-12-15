@@ -1,7 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import styles from "./Login.module.css";
+import Form from "../components/Form/Form";
 
-const login = () => {
+
+const Login = () => {
   const navigate = useNavigate();
   return (
     <div className={styles.wrapper}>
@@ -12,13 +14,13 @@ const login = () => {
         <div className={styles.form}>
           <section className={styles.main}>
             <h2>Welcome Back!</h2>
-            <form>
+            <form route="/api/token/" method="login">
               <div className={styles.inputGroup}>
-                <label htmlFor="email">Email</label>
+                <label htmlFor="username">Username</label>
                 <input
-                  type="email"
-                  id="email"
-                  placeholder="Enter your email"
+                  type="username"
+                  id="username"
+                  placeholder="Enter your username"
                   required
                 />
               </div>
@@ -33,10 +35,12 @@ const login = () => {
               </div>
               <h5 className={styles.forgotPassword}>Forgot Password?</h5>
               <button
-                onClick={() => navigate("/dashboard")}
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate("/dashboard");
+                }}
                 type="submit"
                 className={styles.loginButton}
-                required
               >
                 Login
               </button>
@@ -71,4 +75,4 @@ const login = () => {
   );
 };
 
-export default login;
+export default Login;
