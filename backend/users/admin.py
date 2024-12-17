@@ -10,7 +10,7 @@ class CustomUserAdmin(admin.ModelAdmin):
         (None, {'fields': ('email', 'password')}),
         ('Personal Info', {'fields': ('first_name', 'last_name', 'phone', 'role')}),
         ('Permissions', {'fields': ('is_staff', 'is_active', 'is_superuser', 'groups', 'user_permissions')}),
-        ('Important dates', {'fields': ('last_login', 'date_joined')}),
+    
     )
     add_fieldsets = (
         (None, {
@@ -18,7 +18,7 @@ class CustomUserAdmin(admin.ModelAdmin):
             'fields': ('email', 'first_name', 'last_name', 'role', 'password1', 'password2', 'is_staff', 'is_active')}
          ),
     )
-    search_fields = ('email',)
+    search_fields = ('email', 'first_name', 'last_name')
     ordering = ('email',)
 
 

@@ -55,7 +55,7 @@ class CustomUser(AbstractUser):
     objects = CustomUserManager()
 
     def __str__(self):
-        return self.username
+        return self.email
     
     def has_role(self,role_name):
         return self.role == role_name
