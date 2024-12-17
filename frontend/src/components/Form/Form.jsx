@@ -6,34 +6,37 @@ import { useState } from "react";
 import api from "../../api";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "../../constants";
 
-function Form({ route, method }) {
-  const [username, setUsername] = useState("");
+function RegisterForm({ route }) {
+  const [first_name, setFirst_name] = useState("");
+  const [last_name, setLast_name] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState("patient");
+
   const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
 
-  const name = method === "login" ? "Login" : "Register";
-
   const handleSubmit = async (e) => {
-      setLoading(true);
-      e.preventDefault();
+    e.preventDefault();
+    setLoading(true);
 
-      try {
-          const res = await api.post(route, { username, password })
-          if (method === "login") {
-              localStorage.setItem(ACCESS_TOKEN, res.data.access);
-              localStorage.setItem(REFRESH_TOKEN, res.data.refresh);
-              navigate("/")
-          } else {
-              navigate("/login")
-          }
-      } catch (error) {
-          alert(error)
-      } finally {
-          setLoading(false)
-      }
+    try {
+      const response = await api.post(route, {
+        first_name,
+        last_name,
+        email,
+        password,
+        role,
+      });
+      console.log(response.data);
+    } catch (error) {
+      alert("Registration failed successfully!");
+    } finally {
+      setLoading(false);
+    }
   };
-  
+
   return (
     <div className={styles.form}>
       <section className={styles.main}>
@@ -59,7 +62,7 @@ function Form({ route, method }) {
               />
             </div>
           </div>
-          
+
           <div className={styles.inputGroup}>
             <label htmlFor="email">Email</label>
             <input
@@ -100,7 +103,7 @@ function Form({ route, method }) {
           </div>
 
           <button type="submit" className={styles.submitButton}>
-                {name}
+            {name}
           </button>
         </form>
         <p>or</p>
