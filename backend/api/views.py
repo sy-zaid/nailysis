@@ -3,7 +3,7 @@ from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_simplejwt.views import TokenObtainPairView
 from users.models import CustomUser
-from .serializers import CustomUserSerializer,CustomTokenObtainViewSerializer
+from .serializers import CustomUserSerializer,CustomTokenObtainPairSerializer
 
 # Create your views here.
 class CreateUserView(generics.CreateAPIView):
@@ -12,6 +12,6 @@ class CreateUserView(generics.CreateAPIView):
     permission_classes = [AllowAny]  # Allow public access to this view
 
 class CustomerTokenObtainViewSerializer(TokenObtainPairView):
-    serializer_class = CustomTokenObtainViewSerializer
+    serializer_class = CustomTokenObtainPairSerializer
 
     

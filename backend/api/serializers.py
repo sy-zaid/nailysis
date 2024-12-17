@@ -1,18 +1,24 @@
 from django.contrib.auth.models import User
+from users.models import CustomUser
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
+        model = CustomUser
         fields = ["id", "email", "password", "first_name", "last_name","phone"]
         extra_kwargs = {"password": {"write_only": True}}
 
     def create(self, validated_data):
-        user = User.objects.create_user(**validated_data) # Passing as a dictionary
-        return user
+        # Create a new user with the validated data and hash the password
+        custom_user = CustomUser.objects.create_user(
+            email=validated_data['email'],
+            password=validated_data['password'],
+            role=validated_data.get('role', 'Regular User')  # Default role
+        )
+        return custom_user
 
-class CustomTokenObtainViewSerializer(TokenObtainPairSerializer):
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)

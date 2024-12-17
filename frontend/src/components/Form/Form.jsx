@@ -59,17 +59,7 @@ function Form({ route, method }) {
               />
             </div>
           </div>
-          <div className={styles.inputGroup}>
-            <label htmlFor="email">Username</label>
-            <input
-              type="username"
-              id="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Enter your username"
-              required
-            />
-          </div>
+          
           <div className={styles.inputGroup}>
             <label htmlFor="email">Email</label>
             <input
