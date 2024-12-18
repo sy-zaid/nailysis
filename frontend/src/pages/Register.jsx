@@ -1,11 +1,11 @@
 import React from "react";
 import Container from "../components/Container/Container";
-import Form from "../components/Form/Form";
+import RegisterForm from "../components/Form/RegisterForm";
 
 const Register = () => {
   return (
     <Container>
-      <Form/>
+      <RegisterForm/>
     </Container>
   );
 };

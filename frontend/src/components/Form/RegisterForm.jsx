@@ -7,10 +7,12 @@ import api from "../../api";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "../../constants";
 
 function RegisterForm({ route }) {
-  const [first_name, setFirst_name] = useState("");
-  const [last_name, setLast_name] = useState("");
+  const [first_name, setFirstname] = useState("");
+  const [last_name, setLastname] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [phone, setPhone] = useState("");
   const [role, setRole] = useState("patient");
 
   const [loading, setLoading] = useState(false);
@@ -21,17 +23,30 @@ function RegisterForm({ route }) {
     e.preventDefault();
     setLoading(true);
 
+    // Debugging: Log form data
+    console.log({ first_name, last_name, email, password, phone, role });
+    
+    // Basic password confirmation check
+    if (password !== confirmPassword) {
+      alert("Passwords do not match!");
+      setLoading(false);
+      return;
+    }
+
     try {
       const response = await api.post(route, {
         first_name,
         last_name,
         email,
         password,
+        confirmPassword,
+        phone,
         role,
       });
       console.log(response.data);
+      navigate("/login");
     } catch (error) {
-      alert("Registration failed successfully!");
+      alert("Registration failed!" + error.message);
     } finally {
       setLoading(false);
     }
@@ -44,19 +59,23 @@ function RegisterForm({ route }) {
         <form onSubmit={handleSubmit} className="form-container">
           <div className={styles.inputRow}>
             <div className={`${styles.inputGroup} ${styles.halfWidth}`}>
-              <label htmlFor="first-name">First Name</label>
+              <label htmlFor="first_name">First Name</label>
               <input
                 type="text"
                 id="first-name"
+                value={first_name}
+                onChange={(e) => setFirstname(e.target.value)}
                 placeholder="Enter your first name"
                 required
               />
             </div>
             <div className={`${styles.inputGroup} ${styles.halfWidth}`}>
-              <label htmlFor="last-name">Last Name</label>
+              <label htmlFor="last_name">Last Name</label>
               <input
                 type="text"
                 id="last-name"
+                value={last_name}
+                onChange={(e) => setLastname(e.target.value)}
                 placeholder="Enter your last name"
                 required
               />
@@ -68,6 +87,8 @@ function RegisterForm({ route }) {
             <input
               type="email"
               id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
               required
             />
@@ -77,6 +98,8 @@ function RegisterForm({ route }) {
             <input
               type="tel"
               id="phone"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
               placeholder="Enter your phone number"
               required
             />
@@ -97,13 +120,30 @@ function RegisterForm({ route }) {
             <input
               type="password"
               id="confirm-password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="Confirm your password"
               required
             />
           </div>
+          <div className={styles.inputGroup}>
+            <label htmlFor="user-role">User Role</label>
+            <select
+              id="user-role"
+              onChange={(e) => setRole(e.target.value)}
+              required
+            >
+              <option value="system_admin">System Admin</option>
+              <option value="clinic_admin">Clinic Admin</option>
+              <option value="doctor">Doctor</option>
+              <option value="patient">Patient</option>
+              <option value="lab_manager">Lab Manager</option>
+              <option value="lab_technician">Lab Technician</option>
+            </select>
+          </div>
 
           <button type="submit" className={styles.submitButton}>
-            {name}
+            Submit
           </button>
         </form>
         <p>or</p>
@@ -113,4 +153,4 @@ function RegisterForm({ route }) {
   );
 }
 
-export default Form;
+export default RegisterForm;
