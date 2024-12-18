@@ -25,7 +25,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
-
+        print("User role in token:", user.role)
         # Add custom claims
         token['role'] = user.role  # Add the role to the token
         return token

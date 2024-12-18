@@ -126,7 +126,7 @@ function RegisterForm({ route }) {
               required
             />
           </div>
-          <div className={styles.inputGroup}>
+          {/* <div className={styles.inputGroup}>
             <label htmlFor="user-role">User Role</label>
             <select
               id="user-role"
@@ -140,7 +140,7 @@ function RegisterForm({ route }) {
               <option value="lab_manager">Lab Manager</option>
               <option value="lab_technician">Lab Technician</option>
             </select>
-          </div>
+          </div> */}
 
           <button type="submit" className={styles.submitButton}>
             Submit
