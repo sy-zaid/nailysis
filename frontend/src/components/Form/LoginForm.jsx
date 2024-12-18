@@ -3,25 +3,24 @@ import styles from "./Form.module.css";
 import SocialLogin from "../SocialLogin/SocialLogin";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { jwtDecode } from 'jwt-decode';
+import { jwtDecode } from "jwt-decode";
 import api from "../../api";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "../../constants";
 
-function LoginForm({route}){
+function LoginForm({ route }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-
-  const handleSubmit = async(e) => {
+  const handleSubmit = async (e) => {
     setLoading(true);
     e.preventDefault();
 
-    try{
-      const response = await api.post( route, {email,password});
-      const {access, refresh} = response.data;
+    try {
+      const response = await api.post(route, { email, password });
+      const { access, refresh } = response.data;
 
       const decodedToken = jwtDecode(access);
       const curUserRole = decodedToken.role || decodedToken.user_role || null;
@@ -31,31 +30,48 @@ function LoginForm({route}){
       // Save tokens and role to localStorage
       localStorage.setItem(ACCESS_TOKEN, access);
       localStorage.setItem(REFRESH_TOKEN, refresh);
-      localStorage.setItem('role', curUserRole);
+      localStorage.setItem("role", curUserRole);
 
-      if (curUserRole == "Patient"){
-        navigate("/super-admin-dashboard");
-      }
-      else if (curUserRole == "Doctor"){
+      if (curUserRole == "system_admin") {
+        navigate("/system-admin-dashboard");
+      } else if (curUserRole == "clinic_admin") {
+        navigate("/clinic-admin-dashboard");
+      } else if (curUserRole == "doctor") {
         navigate("/doctor-dashboard");
+      } else if (curUserRole == "patient") {
+        navigate("/patient-dashboard");
+      } else if (curUserRole == "lab_admin") {
+        navigate("/lab-admin-dashboard");
+      } else if (curUserRole == "lab_technician") {
+        navigate("/lab-technician-dashboard");
+      } else {
+        navigate("/login");
       }
-      else {
-        navigate("/patient-dashboard")
-      }
-    } catch (error){
-        alert(error);
-    } finally{
+    } catch (error) {
+      alert(error);
+    } finally {
       setLoading(false);
-    };
+    }
   };
 
-  return <form onSubmit={handleSubmit} className="form-container">
-        <h1>Login</h1>
-        <input type="text" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Enter Email" />
-        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter Password" />
-        <button type="submit">Login</button>
+  return (
+    <form onSubmit={handleSubmit} className="form-container">
+      <h1>Login</h1>
+      <input
+        type="text"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="Enter Email"
+      />
+      <input
+        type="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        placeholder="Enter Password"
+      />
+      <button type="submit">Login</button>
     </form>
-
+  );
 }
 
 export default LoginForm;
