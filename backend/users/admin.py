@@ -21,5 +21,10 @@ class CustomUserAdmin(admin.ModelAdmin):
     search_fields = ('email', 'first_name', 'last_name')
     ordering = ('email',)
 
+    def save_model(self, request, obj, form, change):
+        if not obj.pk or 'password' in form.changed_data:  # If this is a new user
+            obj.set_password(obj.password)  # Hash the password
+        super().save_model(request, obj, form, change)
+
 
 admin.site.register(CustomUser, CustomUserAdmin)

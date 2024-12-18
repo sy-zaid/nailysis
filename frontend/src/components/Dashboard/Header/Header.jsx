@@ -1,11 +1,11 @@
 import React from "react";
 import styles from "./Header.module.css";
 
-const Header = () => {
+const Header = ({curUserRole}) => {
   return (
     <div className={styles.header}>
       <h1>Welcome, Dr.Jhon!</h1>
-      <p>Here is your patient dashboard</p>
+      <p>Here is your {curUserRole}</p>
     </div>
   );
 };

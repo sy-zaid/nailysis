@@ -3,11 +3,9 @@ import "./App.css";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useState } from "react";
 import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard/Dashboard";
 import Register from "./pages/Register";
 import NotFound from "./components/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
-
 import SystemAdminDashboard from "./pages/admin-system/system-admin-dashboard";
 import ClinicAdminDashboard from "./pages/admin-clinic/clinic-admin-dashboard";
 import DoctorDashboard from "./pages/doctor/doctor-dashboard";
