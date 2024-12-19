@@ -1,37 +1,32 @@
 from django.contrib.auth.models import User
+from users.models import CustomUser
 from rest_framework import serializers
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-
-# ORM - Object Relational Mapping
-# JSON - Javascript Object Notation (Standard format for communicating with web applications)
-# Serializer - Converts Python Objects into JSON Data
-# class CustomUserSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = CustomUser 
-#         fields = ['id', 'username', 'first_name', 'last_name', 'email', 'phone', 'password']
-#         extra_kwargs = {
-#             'password': {'write_only': True},  
-#             'email': {'required': True},       
-#         }
-
-#     def create(self, validated_data):
-#         user = CustomUser.objects.create_user(**validated_data) # Create the user securely (password is hashed)
-#         return user
-
-
-
-
-# Sample User Serializer
-
-
-class UserSerializer(serializers.ModelSerializer):
+class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
-        fields = ["id", "username", "password"]
+        model = CustomUser
+        fields = ["id", "email", "password", "first_name", "last_name","phone","role"]
         extra_kwargs = {"password": {"write_only": True}}
 
     def create(self, validated_data):
-        user = User.objects.create_user(**validated_data) # Passing as a dictionary
-        return user
+        # Create a new user with the validated data and hash the password
+        custom_user = CustomUser.objects.create_user(
+            email=validated_data['email'],
+            password=validated_data['password'],
+            role = validated_data.get('role', 'patient'),  # Default role
+            first_name = validated_data.get('first_name', ''),
+            last_name = validated_data.get('last_name', ''),
+            phone = validated_data.get('phone', None), 
+        )
+        return custom_user
 
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        print("User role in token:", user.role)
+        # Add custom claims
+        token['role'] = user.role  # Add the role to the token
+        return token
     

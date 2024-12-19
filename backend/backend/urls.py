@@ -18,12 +18,13 @@ from django.contrib import admin
 from django.urls import path, include
 from api.views import CreateUserView
 from django.shortcuts import redirect
+from api.views import CustomerTokenObtainViewSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("api/user/register/", CreateUserView.as_view(), name="register"),
-    path("api/token/", TokenObtainPairView.as_view(), name="get_token"),
+    path("api/token/", CustomerTokenObtainViewSerializer.as_view(), name="get_token"),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="refresh"), # View for Refreshing the Token
     path("api-auth/", include("rest_framework.urls")), # Pre-built urls from the rest framework
 ]

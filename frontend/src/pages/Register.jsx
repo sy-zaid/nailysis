@@ -1,12 +1,14 @@
 import React from "react";
-import Container from "../components/Container/Container";
-import Form from "../components/Form/Form";
 
-const Register = () => {
+import RegisterForm from "../components/Form/RegisterForm";
+import Picture from "../components/Picture/Picture";
+
+const Register = ({ registrationEndpoint = "/api/user/register/" }) => {
   return (
-    <Container>
-      <Form/>
-    </Container>
+    <div className={styles.container}>
+      <Picture />
+      <RegisterForm route={registrationEndpoint} />
+    </div>
   );
 };
 

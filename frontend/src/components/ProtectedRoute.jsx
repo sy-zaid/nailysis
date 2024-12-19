@@ -4,7 +4,7 @@ import api from "../api";
 import { REFRESH_TOKEN, ACCESS_TOKEN } from "../constants";
 import { useState, useEffect } from "react";
 
-function ProtectedRoute({ children }) {
+function ProtectedRoute({ children, requiredRole }) {
   const [isAuthorized, setIsAuthorized] = useState(null);
 
   useEffect(() => {
@@ -14,17 +14,33 @@ function ProtectedRoute({ children }) {
   const refreshToken = async () => {
     const refreshToken = localStorage.getItem(REFRESH_TOKEN);
     try {
-      const res = await api.post("/api/token/refresh/", { refresh: refreshToken });
+      const res = await api.post("/api/token/refresh/", {
+        refresh: refreshToken,
+      });
 
       if (res.status === 200) {
         localStorage.setItem(ACCESS_TOKEN, res.data.access);
-        setIsAuthorized(true);
+        setIsAuthorized(checkRole(res.data.access));
       } else {
         setIsAuthorized(false);
       }
     } catch (error) {
-      console.log(error);
+      console.error("Failed to refresh token:", error);
       setIsAuthorized(false);
+    }
+  };
+
+  const checkRole = (token) => {
+    try {
+      const decoded = jwtDecode(token);
+      const curUserRole = decoded.role || null; // Safely handle if role is missing
+      console.log("User role:", curUserRole);
+
+      // Check if the required role matches the user's role
+      return requiredRole === curUserRole;
+    } catch (error) {
+      console.error("Failed to decode token or check role:", error);
+      return false;
     }
   };
 
@@ -39,9 +55,9 @@ function ProtectedRoute({ children }) {
     const now = Date.now() / 1000;
 
     if (tokenExpiration < now) {
-      await refreshToken();  // Add the 'await' here to call the refreshToken function
+      await refreshToken(); // Add the 'await' here to call the refreshToken function
     } else {
-      setIsAuthorized(true);
+      setIsAuthorized(checkRole(token)); // Check role as part of the authorization
     }
   };
 
