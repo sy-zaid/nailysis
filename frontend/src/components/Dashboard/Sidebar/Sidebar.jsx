@@ -1,9 +1,19 @@
-import React from "react";
+// Sidebar.jsx
+import React, { useState } from "react";
 import styles from "./Sidebar.module.css";
 
 const Sidebar = () => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const toggleSidebar = () => {
+    setIsOpen(!isOpen);
+  };
+
   return (
-    <div className={styles.sidePanel}>
+    <div className={`${styles.sidePanel} ${isOpen ? styles.open : ""}`}>
+      <button className={styles.toggleButton} onClick={toggleSidebar}>
+        {isOpen ? "Close" : "Open"} Sidebar
+      </button>
       <button className={styles.sideButton1}>
         <img src="dashboard.png" alt="dashboard icon" />
       </button>

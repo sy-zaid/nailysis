@@ -51,6 +51,7 @@ SIMPLE_JWT = {
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -144,6 +145,9 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
@@ -155,3 +159,17 @@ CORS_ALLOWS_CREDENTIALS = True
 AUTH_USER_MODEL = "users.CustomUser"
 
 
+JAZZMIN_SETTINGS = {
+    "site_title": "Nailysis Admin",
+    "site_header": "Nailysis Admin Dashboard",
+    "site_brand": "Nailysis",
+    "welcome_sign": "Welcome to Nailysis Admin Panel",
+    "topmenu_links": [
+        {"name": "Home", "url": "admin:index", "permissions": ["auth.view_user"]},
+        # Add more links if needed
+    ],
+    # Add any other customizations as needed
+}
+
+
+JAZZMIN_DEFAULT_ADMIN_INTERFACE = True

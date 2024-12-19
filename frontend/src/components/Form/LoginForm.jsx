@@ -1,6 +1,4 @@
 import React from "react";
-import styles from "./Form.module.css";
-import SocialLogin from "../SocialLogin/SocialLogin";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { jwtDecode } from "jwt-decode";

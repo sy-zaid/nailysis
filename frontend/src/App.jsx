@@ -38,7 +38,6 @@ function App() {
   };
   return (
     <div className="App">
-      {/* <BrowserRouter> */}
       <Routes>
         <Route
           path="/system-admin-dashboard"
@@ -94,7 +93,6 @@ function App() {
         <Route path="/register" element={<RegisterAndLogout />} />
         <Route path="*" element={<NotFound />}></Route>
       </Routes>
-      {/* </BrowserRouter> */}
     </div>
   );
 }

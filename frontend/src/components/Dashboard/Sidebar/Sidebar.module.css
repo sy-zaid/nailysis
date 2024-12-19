@@ -24,3 +24,70 @@
   border: 1px solid white;
   background-color: #efefef;
 }
+
+/* Sidebar.module.css */
+
+.sidePanel {
+  position: fixed;
+  top: 0;
+  left: -250px; /* Initially off-screen */
+  width: 250px;
+  height: 100%;
+  background-color: #333;
+  color: white;
+  transition: left 0.3s ease;
+  padding: 20px;
+}
+
+.sidePanel.open {
+  left: 0; /* Sidebar visible when open */
+}
+
+.sideButton1,
+.sideButton2,
+.sideButton3,
+.sideButton4,
+.sideButton5,
+.sideButton6 {
+  background: none;
+  border: none;
+  padding: 10px;
+  margin: 10px 0;
+  cursor: pointer;
+}
+
+.sideButton1 img,
+.sideButton2 img,
+.sideButton3 img,
+.sideButton4 img,
+.sideButton5 img,
+.sideButton6 img {
+  width: 30px;
+  height: 30px;
+}
+
+.toggleButton {
+  position: absolute;
+  top: 20px;
+  left: -100px; /* Position the toggle button outside the sidebar */
+  background-color: #555;
+  color: white;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  z-index: 100;
+}
+
+@media (max-width: 768px) {
+  .sidePanel {
+    left: -100%; /* Sidebar off-screen for smaller screens */
+  }
+  
+  .sidePanel.open {
+    left: 0; /* Sidebar visible when open on smaller screens */
+  }
+  
+  .toggleButton {
+    left: 10px;
+  }
+}
