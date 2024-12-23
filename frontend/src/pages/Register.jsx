@@ -1,5 +1,5 @@
 import React from "react";
-
+import styles from "../components/Form/Form.module.css"
 import RegisterForm from "../components/Form/RegisterForm";
 import Picture from "../components/Picture/Picture";
 

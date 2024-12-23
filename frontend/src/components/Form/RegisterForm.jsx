@@ -25,7 +25,7 @@ function RegisterForm({ route }) {
 
     // Debugging: Log form data
     console.log({ first_name, last_name, email, password, phone, role });
-    
+
     // Basic password confirmation check
     if (password !== confirmPassword) {
       alert("Passwords do not match!");
@@ -126,22 +126,6 @@ function RegisterForm({ route }) {
               required
             />
           </div>
-          {/* <div className={styles.inputGroup}>
-            <label htmlFor="user-role">User Role</label>
-            <select
-              id="user-role"
-              onChange={(e) => setRole(e.target.value)}
-              required
-            >
-              <option value="system_admin">System Admin</option>
-              <option value="clinic_admin">Clinic Admin</option>
-              <option value="doctor">Doctor</option>
-              <option value="patient">Patient</option>
-              <option value="lab_manager">Lab Manager</option>
-              <option value="lab_technician">Lab Technician</option>
-            </select>
-          </div> */}
-
           <button type="submit" className={styles.submitButton}>
             Submit
           </button>

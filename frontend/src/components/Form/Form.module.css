@@ -1,17 +1,20 @@
 .form {
   flex: 1;
-  padding: 50px;
+  padding: 20px;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  background-color: #f9f9f9;
+  flex-direction: row;
+  justify-content: left;
+  align-items: center;
+  /* background-color: black; */
+  margin: 0;
 }
 
 .main {
   width: 100%;
   max-width: 400px;
-  margin: 0 auto;
+  margin: 0;
   text-align: center;
+  /* background-color: red; */
 }
 
 .main p {
@@ -82,4 +85,15 @@
 
 .submitButton:hover {
   background-color: #0056b3;
+}
+
+.container{
+  display: flex;
+  /* background-color: #333; */
+  height: 100vh;
+  justify-content: space-around;
+  padding: 0;
+  overflow: hidden;
+  flex-direction: row;
+  gap:5px;
 }
