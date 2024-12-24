@@ -7,16 +7,18 @@
   align-items: center;
   /* background-color: black; */
   margin: 0;
+  
 }
 
 .main {
   width: 100%;
-  max-width: 400px;
-  max-height: 80vh; /* Set the maximum height for the div */
+  max-width: 500px;
+  max-height: 300px; /* Set the maximum height for the div */
   overflow-y: auto;
   margin: 0;
   text-align: center;
-  background-color: red;
+  padding: 20px;
+  /* background-color: red; */
 }
 
 .main p {
@@ -121,10 +123,10 @@
 ::-webkit-scrollbar-thumb {
   -webkit-border-radius: 10px;
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.3);
+  background: #74b7ff;
   -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
 }
 
 ::-webkit-scrollbar-thumb:window-inactive {
-  background: rgba(255, 255, 255, 0.3);
+  background: #89c1fd;
 }
