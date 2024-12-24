@@ -54,7 +54,7 @@ function RegisterForm({ route }) {
 
   return (
     <div className={styles.form}>
-      <section className={styles.main}>
+      <section className={`${styles.main} ${styles.scrollablediv}`}>
         <h2>Create Your Account</h2>
         <form onSubmit={handleSubmit} className="form-container">
           <div className={styles.inputRow}>
