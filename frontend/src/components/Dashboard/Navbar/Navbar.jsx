@@ -4,7 +4,7 @@ import styles from "./Navbar.module.css";
 const Navbar = () => {
   return (
     <nav className={styles.container}>
-      <img src="menu.png" alt="menu button" />
+      
       <span className={styles.search}>
         <h5>Search...</h5>
         <img src="search.png" alt="search icon" />

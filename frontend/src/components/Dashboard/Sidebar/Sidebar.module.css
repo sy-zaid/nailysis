@@ -1,49 +1,53 @@
-/* .sidePanel {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-left: 35px;
-  background-color: red;
-} */
-
-.sideButton1 {
-  height: 62px;
-  width: 62px;
-  border-radius: 50%;
-  border: 1px solid white;
-  background-color: #0067ff;
-}
-
-.sideButton2,
-.sideButton3,
-.sideButton4,
-.sideButton5,
-.sideButton6 {
-  height: 62px;
-  width: 62px;
-  border-radius: 50%;
-  border: 1px solid white;
-  background-color: #efefef;
-}
-
-/* Sidebar.module.css */
-
+/* Sidebar */
 .sidePanel {
   position: fixed;
   top: 0;
   left: -250px; /* Initially off-screen */
   width: 250px;
   height: 100%;
-  background-color: #333;
+  background-color: #FFFFFF;
   color: white;
-  transition: left 0.3s ease;
   padding: 20px;
+  transition: left 0.3s ease;
+  z-index: 101;
 }
 
 .sidePanel.open {
-  left: 0; /* Sidebar visible when open */
+  left: 0; /* Sidebar visible */
 }
 
+/* Menu Button */
+.toggleButton {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: 101;
+}
+
+.toggleButton img {
+  width: 30px;
+  height: 30px;
+}
+
+/* Close Button Inside Sidebar */
+.closeButton {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.closeButton img {
+  width: 30px;
+  height: 30px;
+}
+
+/* Sidebar Buttons */
 .sideButton1,
 .sideButton2,
 .sideButton3,
@@ -67,28 +71,9 @@
   height: 30px;
 }
 
-.toggleButton {
-  position: absolute;
-  top: 20px;
-  left: 400px; /* Position the toggle button outside the sidebar */
-  background-color: blueviolet;
-  color: white;
-  padding: 10px;
-  border: none;
-  cursor: pointer;
-  z-index: 100;
-}
-
+/* Responsive Design */
 @media (max-width: 768px) {
   .sidePanel {
-    left: -100%; /* Sidebar off-screen for smaller screens */
-  }
-  
-  .sidePanel.open {
-    left: 0; /* Sidebar visible when open on smaller screens */
-  }
-  
-  .toggleButton {
-    left: 10px;
+    width: 200px;
   }
 }
