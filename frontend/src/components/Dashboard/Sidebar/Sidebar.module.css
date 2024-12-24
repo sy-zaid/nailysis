@@ -1,9 +1,10 @@
-.sidePanel {
+/* .sidePanel {
   display: flex;
   flex-direction: column;
   gap: 12px;
   margin-left: 35px;
-}
+  background-color: red;
+} */
 
 .sideButton1 {
   height: 62px;
@@ -69,8 +70,8 @@
 .toggleButton {
   position: absolute;
   top: 20px;
-  left: -100px; /* Position the toggle button outside the sidebar */
-  background-color: #555;
+  left: 400px; /* Position the toggle button outside the sidebar */
+  background-color: blueviolet;
   color: white;
   padding: 10px;
   border: none;

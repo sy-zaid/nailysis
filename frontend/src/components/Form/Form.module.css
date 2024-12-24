@@ -13,7 +13,7 @@
 .main {
   width: 100%;
   max-width: 500px;
-  max-height: 300px; /* Set the maximum height for the div */
+  max-height: 400px; /* Set the maximum height for the div */
   overflow-y: auto;
   margin: 0;
   text-align: center;
@@ -111,12 +111,12 @@
 /* scrollbar */
 ::-webkit-scrollbar {
   width: 5px;
-  height: 5px;
+  height: 2px;
 }
 
 ::-webkit-scrollbar-track {
   -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-  -webkit-border-radius: 10px;
+  -webkit-border-radius: 12px;
   border-radius: 10px;
 }
 
@@ -128,5 +128,5 @@
 }
 
 ::-webkit-scrollbar-thumb:window-inactive {
-  background: #89c1fd;
+  background: #74b7ff;
 }
