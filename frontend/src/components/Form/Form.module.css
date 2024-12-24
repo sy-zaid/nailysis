@@ -14,7 +14,7 @@
   max-width: 400px;
   margin: 0;
   text-align: center;
-  /* background-color: red; */
+  background-color: red;
 }
 
 .main p {
@@ -97,3 +97,4 @@
   flex-direction: row;
   gap:5px;
 }
+
