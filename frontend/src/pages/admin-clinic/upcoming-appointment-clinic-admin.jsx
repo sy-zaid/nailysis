@@ -1,10 +1,24 @@
 import React from "react";
+<<<<<<< HEAD:frontend/src/pages/admin-clinic/upcoming-appointment-clinic-admin.jsx
 import styles from "../../components/CSS Files/Appointment.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import Header from "../../components/Dashboard/Header/Header";
 import Sidebar from "../../components/Dashboard/Sidebar/Sidebar";
+=======
+import styles from "./Appointment.module.css";
+import Navbar from "../components/Dashboard/Navbar/Navbar";
+import Header from "../components/Dashboard/Header/Header";
+import Sidebar from "../components/Dashboard/Sidebar/Sidebar";
+import PropTypes from "prop-types";
+import { useNavigate } from "react-router-dom";
+>>>>>>> a49ecf3f789fc2dfd2d8260cfde8d942bd771ff0:frontend/src/pages/Appointment.jsx
 
 const Appointment = (props) => {
+  const navigate = useNavigate();
+  const handleAddAppointment = () => {
+    navigate("/add-appointment");
+  };  
+
   const data = [
     {
       id: 1,
@@ -17,7 +31,6 @@ const Appointment = (props) => {
       testType: "Blood Test",
       status: "Consulted",
     },
-
     {
       id: 9,
       appointmentId: "123456",
@@ -56,7 +69,9 @@ const Appointment = (props) => {
             <button className={styles.filterButton}>Consulted</button>
             <button className={styles.filterButton}>Cancelled</button>
             <p>50 completed, 4 upcoming</p>
-            <button className={styles.addButton}>Add New Appointment</button>
+            <button className={styles.addButton} onClick={handleAddAppointment}>
+              Add New Appointment
+            </button>
           </div>
           <div className={styles.tableContainer}>
             <div className={styles.controls}>

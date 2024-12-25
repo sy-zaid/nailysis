@@ -23,6 +23,10 @@ import {
   renderLabAdminContent,
   renderLabTechnicianContent,
 } from "./RenderContent";
+import AddAppointment from "./pages/AddAppointment";
+import UploadImage from "./pages/UploadImage";
+import ImageGuide from "./pages/ImageGuide";
+import Home from "./pages/Home";
 
 function Logout() {
   localStorage.clear();
@@ -119,9 +123,14 @@ function App() {
         />
 
         {/* Public Routes */}
+        <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/logout" element={<Navigate to="/login" />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/add-appointment" element={<AddAppointment />} />
+
+        <Route path="/upload-image" element={<UploadImage />} />
+        <Route path="/image-guide" element={<ImageGuide />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </div>
