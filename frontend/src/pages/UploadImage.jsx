@@ -9,7 +9,7 @@ const UploadImage = () => {
   const navigate = useNavigate();
 
   const handleUploadImage = () => {
-    navigate("/image-guide"); // Navigate to the image guide page
+    navigate("/image-guide"); 
   };
 
   return (

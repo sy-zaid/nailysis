@@ -16,6 +16,7 @@ import Appointment from "./pages/Appointment";
 import AddAppointment from "./pages/AddAppointment";
 import UploadImage from "./pages/UploadImage";
 import ImageGuide from "./pages/ImageGuide";
+import Home from "./pages/Home";
 
 function Logout() {
   localStorage.clear();
@@ -92,6 +93,7 @@ function App() {
           }
         />
 
+        <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/logout" element={<Logout />} />
         <Route path="/register" element={<RegisterAndLogout />} />
