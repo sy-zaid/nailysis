@@ -81,6 +81,7 @@ function App() {
               </div>
             </ProtectedRoute>
           }
+          
         />
 
         {/* Patient */}

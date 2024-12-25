@@ -9,7 +9,7 @@ const UploadImage = () => {
   const navigate = useNavigate();
 
   const handleUploadImage = () => {
-    navigate("/image-guide"); 
+    navigate("/image-guide");
   };
 
   return (
@@ -22,17 +22,39 @@ const UploadImage = () => {
         <Sidebar />
         <div className={styles.uploadSection}>
           <h4>HOW DOES IT WORK?</h4>
-          <p>
-            Lorem ipsum is simply dummy text of the printing and typesetting
-            industry. Lorem Ipsum has been the industry’s standard dummy text
-            ever since the 1500s, when an unknown printer took a galley of type
-            and scrambled it to make a type specimen book.
-          </p>
-        </div>
-        <div className={styles.uploadContainer}>
+          <ul>
+            <li>
+              Capture a Clear Image: Use your device's camera to capture a
+              clear, focused image of the fingernail(s). Ensure the nail is
+              well-lit, clean, and free of obstructions like nail polish or
+              accessories.
+            </li>
+            <li>
+              Upload the Image: Click the "Upload Image" button to select and
+              upload the image of the fingernail(s) from your device.
+            </li>
+            <li>
+              AI Analysis: Once the image is uploaded, our advanced AI-powered
+              system will analyze the fingernail(s) to detect potential health
+              conditions.
+            </li>
+            <li>
+              View Results: After processing, you'll receive an
+              easy-to-understand assessment and any detected health indicators.
+              The results will also be integrated into the patient's Electronic
+              Health Record (EHR) for future reference.
+            </li>
+            <li>
+              Next Steps: If any potential issues are identified, the system
+              will notify the clinician for further evaluation and
+              recommendations.
+            </li>
+          </ul>
+          <div className={styles.uploadContainer}>
           <img src="upload.png" alt="upload icon" />
           <h4>Upload Your Nails Images (Upto 5)</h4>
           <button onClick={handleUploadImage}>Start Diagnosis</button>
+        </div>
         </div>
       </div>
     </div>
