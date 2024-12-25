@@ -12,6 +12,7 @@ import DoctorDashboard from "./pages/doctor/doctor-dashboard";
 import PatientDashboard from "./pages/patient/patient-dashboard";
 import LabAdminDashboard from "./pages/admin-lab/lab-admin-dashboard";
 import LabTechnicianDashboard from "./pages/lab-technician/lab-technician-dashboard";
+import Appointment from "./pages/Appointment";
 
 function Logout() {
   localStorage.clear();
@@ -91,6 +92,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/logout" element={<Logout />} />
         <Route path="/register" element={<RegisterAndLogout />} />
+        <Route path="/appointment" element={<Appointment />} />
         <Route path="*" element={<NotFound />}></Route>
       </Routes>
     </div>

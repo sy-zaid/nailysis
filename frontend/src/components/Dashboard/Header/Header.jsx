@@ -4,8 +4,8 @@ import styles from "./Header.module.css";
 const Header = ({curUserRole}) => {
   return (
     <div className={styles.header}>
-      <h1>Welcome, Dr.Jhon!</h1>
-      <p>Here is your {curUserRole}</p>
+      <h1>{curUserRole}</h1>
+      <p>Here you can view and manage all the booked {curUserRole}</p>
     </div>
   );
 };
