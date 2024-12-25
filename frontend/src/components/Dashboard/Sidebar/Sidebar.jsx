@@ -137,6 +137,26 @@ const Sidebar = ({ userRole }) => {
             </div>
           ))}
         </div>
+
+        {/* Section 4 */}
+        <div className={styles.sectionFour}>
+          <div className={styles.profSection}>
+            <img src="profile-pic.jpg" alt="" />
+            <h2>
+              Mr. John Doe
+              <br />
+              <span
+                style={{
+                  fontSize: "14px",
+                  color: "#4e4e4e",
+                  fontWeight: "400",
+                }}
+              >
+                johndoe@gmail.com
+              </span>
+            </h2>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -31,7 +31,6 @@
 .toggleButton img {
   height: 24px;
   width: auto;
-  
 }
 
 /* Close Button Inside Sidebar */
@@ -58,10 +57,9 @@
   /* background-color: red; */
 }
 
-.sideButton img{
+.sideButton img {
   width: 28px;
   height: 28px;
-  
 }
 
 /* Responsive Design */
@@ -95,53 +93,52 @@
   font-weight: 700;
 }
 
-.sectionTwo{
+.sectionTwo {
   /* background-color: beige; */
   height: 18%;
   display: flex;
-  flex-direction: column; 
-  gap:6px;
+  flex-direction: column;
+  gap: 6px;
   margin-top: 12px;
   justify-content: start;
   align-items: start;
   border-bottom: 1px solid #cfcfcf;
 }
 
-.sectionTwo button{
+.sectionTwo button {
   display: flex;
   flex-direction: row;
   gap: 12px;
   align-items: center;
 }
 
-.textMedium{
+.textMedium {
   font-size: 16px;
   font-weight: 520;
-  color:#373737d5;
+  color: #373737d5;
   text-shadow: 0.5px 0.5px 0.5px #37373731;
 }
 
-.sectionThree{
-   /* background-color: beige; */
-   height: 60%;
-   display: flex;
-   flex-direction: column; 
-   gap:6px;
-   overflow: auto;
-   margin-top: 12px;
-   justify-content: center;
-   align-items: start;
-   justify-content: start;
-   border-bottom: 1px solid #cfcfcf;
+.sectionThree {
+  /* background-color: beige; */
+  height: 60%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow: auto;
+  margin-top: 12px;
+  justify-content: center;
+  align-items: start;
+  justify-content: start;
+  border-bottom: 1px solid #cfcfcf;
 }
 
-.sectionThree button{
+.sectionThree button {
   display: flex;
   flex-direction: row;
   gap: 12px;
   align-items: center;
 }
-
 
 /* Dropdown container */
 .dropdown {
@@ -174,4 +171,51 @@
   to {
     opacity: 1;
   }
+}
+
+/* Section 4 */
+.sectionFour {
+  /* background-color: red; */
+  height: 12%;
+  padding: 12px;
+  justify-content: left;
+  align-items: start;
+}
+
+.profSection {
+  position: relative;
+  width: 100%;
+  /* background-color: #181818; */
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  padding-left: 2%;
+  align-items: center;
+  border: 1px solid #cfcfcf;
+  border-radius: 32px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1); /* Subtle shadow effect */
+
+  transition: all 0.3s ease; /* Smooth transition effect */
+}
+
+.profSection:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0), 0 8px 16px rgba(0, 0, 0, 0.2); /* Darker shadow on hover */
+  transform: translateY(-5px); /* Lift effect on hover */
+}
+
+.profSection img {
+  height: 80%;
+  width: auto;
+  border-radius: 32px;
+}
+
+.profSection h2{
+  
+    font-size: 18px;
+    color: #4e4e4e;
+    font-weight: 700;
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
 }

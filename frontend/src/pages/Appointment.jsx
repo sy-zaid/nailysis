@@ -3,7 +3,7 @@ import styles from "./Appointment.module.css";
 import Navbar from "../components/Dashboard/Navbar/Navbar";
 import Header from "../components/Dashboard/Header/Header";
 import Sidebar from "../components/Dashboard/Sidebar/Sidebar";
-import PropTypes from "prop-types"
+
 
 const Appointment = (props) => {
   const data = [
