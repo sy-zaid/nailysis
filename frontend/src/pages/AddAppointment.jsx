@@ -13,7 +13,7 @@ const AddAppointment = () => {
       </div>
 
       <div className={styles.mainContent}>
-        <Sidebar />
+        {/* <Sidebar /> */}
 
         <div className={styles.content}>
           <div className={styles.formContainer}>
