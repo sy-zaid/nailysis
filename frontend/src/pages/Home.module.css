@@ -1,0 +1,38 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #e6e4e4;
+  color: white;
+}
+
+.container img {
+  width: 150px;
+  height: auto;
+  margin-bottom: 20px;
+}
+
+.button {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.button button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  background-color: #0067ff;
+  color: white;
+  font-weight: bold;
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+.button button:hover {
+  transform: scale(1.05);
+  background-color: #0056cc;
+}

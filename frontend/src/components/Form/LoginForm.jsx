@@ -35,7 +35,7 @@ function LoginForm({ route }) {
       if (curUserRole == "system_admin") {
         navigate("/system-admin-dashboard");
       } else if (curUserRole == "clinic_admin") {
-        navigate("/clinic-admin-dashboard");
+        navigate("/clinic-admin");
       } else if (curUserRole == "doctor") {
         navigate("/doctor-dashboard");
       } else if (curUserRole == "patient") {

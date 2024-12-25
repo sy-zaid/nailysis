@@ -49,16 +49,5 @@ api.interceptors.request.use(
     }
 );
 
-/**
- * Export the configured Axios instance.
- * 
- * Usage Example:
- * 
- * import api from "./api";
- * 
- * // Making a GET request to /users endpoint
- * api.get('/users')
- *     .then(response => console.log(response.data))
- *     .catch(error => console.error(error));
- */
+
 export default api;
