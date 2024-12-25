@@ -188,29 +188,37 @@ const Sidebar = ({ userRole, setView }) => {
         </div>
         {/* Section 2 */}
         <div className={styles.sectionTwo}>
-          <button className={styles.sideButton}>
+          <button
+            className={styles.sideButton}
+            onClick={() => setView("")}
+          >
             <img src="dashboard.jpg" alt="dashboard icon" />
             <h3 className={styles.textMedium}>Dashboard</h3>
           </button>
           <button
             className={styles.sideButton}
-            onClick={() => setView("appointments")}
+            onClick={() => setView("Analytics")}
           >
             <img src="analytics.jpg" alt="analytics icon" />
             <h3 className={styles.textMedium}>Reports & Analytics</h3>
           </button>
         </div>
 
-        
         {/* Section 3 */}
         <div className={styles.sectionThree}>
           {currentMenu.map((item, index) => (
             <div key={index}>
+              {/* Main Item */}
               <button
                 className={styles.sideButton}
                 onClick={() => {
-                  toggleDropdown(index); // Toggle the dropdown for this item
-                  setView(item.label); // Set the view dynamically
+                  if (item.subItems.length === 0) {
+                    // If no sub-items, set the view based on the main item label
+                    setView(item.label);
+                  } else {
+                    // If there are sub-items, toggle the dropdown visibility
+                    toggleDropdown(index);
+                  }
                 }}
               >
                 <img src={item.icon} alt={`${item.label} icon`} />
@@ -218,10 +226,17 @@ const Sidebar = ({ userRole, setView }) => {
               </button>
 
               {/* Dropdown items */}
-              {item.subItems && openDropdown === index && (
+              {item.subItems.length > 0 && openDropdown === index && (
                 <div className={styles.dropdown}>
                   {item.subItems.map((subItem, subIndex) => (
-                    <button key={subIndex} className={styles.subButton}>
+                    <button
+                      key={subIndex}
+                      className={styles.subButton}
+                      onClick={() => {
+                        // Set the view based on the sub-item label
+                        setView(`${subItem.label}`);
+                      }}
+                    >
                       <h3 className={styles.textMedium}>{subItem.label}</h3>
                     </button>
                   ))}

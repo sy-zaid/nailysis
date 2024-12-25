@@ -15,7 +15,14 @@ import LabTechnicianDashboard from "./pages/lab-technician/lab-technician-dashbo
 import AppointmentClinicAdmin from "./pages/admin-clinic/appointment-clinic-admin";
 
 import Sidebar from "./components/Dashboard/Sidebar/Sidebar";
-import { renderSystemAdminContent, renderClinicAdminContent,  } from "./RenderContent";
+import {
+  renderSystemAdminContent,
+  renderClinicAdminContent,
+  renderDoctorContent,
+  renderPatientContent,
+  renderLabAdminContent,
+  renderLabTechnicianContent,
+} from "./RenderContent";
 
 function Logout() {
   localStorage.clear();
@@ -27,26 +34,18 @@ function RegisterAndLogout() {
   return <Register />;
 }
 
+
 function App() {
   const [view, setView] = useState("home");
-  const renderAdminContent = () => {
-    switch (view) {
-      case "home":
-        return <SystemAdminDashboard />;
-      case "users":
-        return <div>Users Table Component</div>;
-      default:
-        return <SystemAdminDashboard />;
-    }
-  };
+
   return (
     <div className="App">
       <Routes>
-      <Route
+        <Route
           path="/system-admin-dashboard"
           element={
             <ProtectedRoute requiredRole="system_admin">
-              <div>{renderAdminContent()}</div>
+              <div>{renderSystemAdminContent(view)}</div>
             </ProtectedRoute>
           }
         />
@@ -56,16 +55,12 @@ function App() {
             <ProtectedRoute requiredRole="clinic_admin">
               <div
                 style={{
-                  // backgroundColor: "Blue",
-                  // display: "flex",
                   height: "100vh",
-                  width:"100%",
+                  width: "100%",
                   margin: "0px",
                 }}
               >
-                <div>
-                  <Sidebar userRole={"clinic_admin"} setView={setView} />
-                </div>
+                <Sidebar userRole={"clinic_admin"} setView={setView} />
                 <div>{renderClinicAdminContent(view)}</div>
               </div>
             </ProtectedRoute>
@@ -75,7 +70,7 @@ function App() {
           path="/doctor-dashboard"
           element={
             <ProtectedRoute requiredRole="doctor">
-              <DoctorDashboard />
+              <div>{renderDoctorContent(view)}</div>
             </ProtectedRoute>
           }
         />
@@ -83,7 +78,7 @@ function App() {
           path="/patient-dashboard"
           element={
             <ProtectedRoute requiredRole="patient">
-              <PatientDashboard />
+              <div>{renderPatientContent(view)}</div>
             </ProtectedRoute>
           }
         />
@@ -91,7 +86,7 @@ function App() {
           path="/lab-admin-dashboard"
           element={
             <ProtectedRoute requiredRole="lab_admin">
-              <LabAdminDashboard />
+              <div>{renderLabAdminContent(view)}</div>
             </ProtectedRoute>
           }
         />
@@ -99,16 +94,14 @@ function App() {
           path="/lab-technician-dashboard"
           element={
             <ProtectedRoute requiredRole="lab_technician">
-              <LabTechnicianDashboard />
+              <div>{renderLabTechnicianContent(view)}</div>
             </ProtectedRoute>
           }
         />
-
         <Route path="/login" element={<Login />} />
-        <Route path="/logout" element={<Logout />} />
-        <Route path="/register" element={<RegisterAndLogout />} />
-        {/* <Route path="/appointment" element={<Appointment />} /> */}
-        <Route path="*" element={<NotFound />}></Route>
+        <Route path="/logout" element={<Navigate to="/login" />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </div>
   );
