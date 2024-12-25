@@ -13,6 +13,9 @@ import PatientDashboard from "./pages/patient/patient-dashboard";
 import LabAdminDashboard from "./pages/admin-lab/lab-admin-dashboard";
 import LabTechnicianDashboard from "./pages/lab-technician/lab-technician-dashboard";
 import Appointment from "./pages/Appointment";
+import AddAppointment from "./pages/AddAppointment";
+import UploadImage from "./pages/UploadImage";
+import ImageGuide from "./pages/ImageGuide";
 
 function Logout() {
   localStorage.clear();
@@ -93,6 +96,10 @@ function App() {
         <Route path="/logout" element={<Logout />} />
         <Route path="/register" element={<RegisterAndLogout />} />
         <Route path="/appointment" element={<Appointment />} />
+        <Route path="/add-appointment" element={<AddAppointment />} />
+
+        <Route path="/upload-image" element={<UploadImage />} />
+        <Route path="/image-guide" element={<ImageGuide />} />
         <Route path="*" element={<NotFound />}></Route>
       </Routes>
     </div>

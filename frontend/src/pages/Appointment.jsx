@@ -3,9 +3,15 @@ import styles from "./Appointment.module.css";
 import Navbar from "../components/Dashboard/Navbar/Navbar";
 import Header from "../components/Dashboard/Header/Header";
 import Sidebar from "../components/Dashboard/Sidebar/Sidebar";
-import PropTypes from "prop-types"
+import PropTypes from "prop-types";
+import { useNavigate } from "react-router-dom";
 
 const Appointment = (props) => {
+  const navigate = useNavigate();
+  const handleAddAppointment = () => {
+    navigate("/add-appointment");
+  };  
+
   const data = [
     {
       id: 1,
@@ -18,7 +24,6 @@ const Appointment = (props) => {
       testType: "Blood Test",
       status: "Consulted",
     },
-
     {
       id: 9,
       appointmentId: "123456",
@@ -32,22 +37,22 @@ const Appointment = (props) => {
     },
   ];
 
-    const getStatusClass = (status) => {
-      switch (status) {
-        case 'Consulted':
-          return styles.consulted;
-        case 'Cancelled':
-          return styles.cancelled;
-        default:
-          return styles.scheduled;
-      }
-    };
+  const getStatusClass = (status) => {
+    switch (status) {
+      case "Consulted":
+        return styles.consulted;
+      case "Cancelled":
+        return styles.cancelled;
+      default:
+        return styles.scheduled;
+    }
+  };
 
   return (
     <div className={styles.pageContainer}>
       <div className={styles.pageTop}>
-      <Navbar />
-      <Header curUserRole="Appointments" />
+        <Navbar />
+        <Header curUserRole="Appointments" />
       </div>
       <div className={styles.mainContent}>
         <Sidebar />
@@ -58,7 +63,9 @@ const Appointment = (props) => {
             <button className={styles.filterButton}>Consulted</button>
             <button className={styles.filterButton}>Cancelled</button>
             <p>50 completed, 4 upcoming</p>
-            <button className={styles.addButton}>Add New Appointment</button>
+            <button className={styles.addButton} onClick={handleAddAppointment}>
+              Add New Appointment
+            </button>
           </div>
           <div className={styles.tableContainer}>
             <div className={styles.controls}>
