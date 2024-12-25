@@ -7,22 +7,21 @@ import styles from "../../components/Dashboard/Dashboard.module.css";
 import UpcomingTest from "../../components/Dashboard/UpcomingTest/UpcomingTest";
 
 function ClinicAdminDashboard() {
-    return (
-        <div>
-          <Navbar />
-          <Header curUserRole={'Clinic Admin'}/>
-          <div className={styles.main}>
-            <Sidebar />
-            <div className={styles.cards}>
-              <Cards heading="Patients" />
-              <Cards heading="Requests" />
-              <Cards heading="Payments" />
-              <Cards heading="Reports" />
-            </div>
-            <UpcomingTest />
-          </div>
+  return (
+    <div>
+      <Navbar />
+      <Header curUserRole={"Clinic Admin Dashboard"} genderPrefix={"Mr."} />
+      <div className={styles.main}>
+        <div className={styles.cards}>
+          <Cards heading="Patients" />
+          <Cards heading="Requests" />
+          <Cards heading="Payments" />
+          <Cards heading="Reports" />
         </div>
-      );
+        <UpcomingTest />
+      </div>
+    </div>
+  );
 }
 
 export default ClinicAdminDashboard;

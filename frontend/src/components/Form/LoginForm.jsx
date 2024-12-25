@@ -5,6 +5,8 @@ import { jwtDecode } from "jwt-decode";
 import api from "../../api";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "../../constants";
 
+import styles from "./Form.module.css";
+
 function LoginForm({ route }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -33,7 +35,7 @@ function LoginForm({ route }) {
       if (curUserRole == "system_admin") {
         navigate("/system-admin-dashboard");
       } else if (curUserRole == "clinic_admin") {
-        navigate("/clinic-admin-dashboard");
+        navigate("/clinic-admin");
       } else if (curUserRole == "doctor") {
         navigate("/doctor-dashboard");
       } else if (curUserRole == "patient") {
@@ -53,22 +55,34 @@ function LoginForm({ route }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="form-container">
-      <h1>Login</h1>
-      <input
-        type="text"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder="Enter Email"
-      />
-      <input
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        placeholder="Enter Password"
-      />
-      <button type="submit">Login</button>
-    </form>
+    <div className={styles.form}>
+      <section className={styles.main}>
+        <h2>Login to your account</h2>
+        <form onSubmit={handleSubmit} className="form-container">
+          <div className={styles.inputGroup}>
+            <label htmlFor="email">Email</label>
+            <input
+              type="text"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter Email"
+            />
+          </div>
+          <div className={styles.inputGroup}>
+            <label htmlFor="email">Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter Password"
+            />
+          </div>
+          <button type="submit" className={styles.submitButton}>
+            Login
+          </button>
+        </form>
+      </section>
+    </div>
   );
 }
 

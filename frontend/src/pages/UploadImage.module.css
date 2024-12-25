@@ -1,0 +1,63 @@
+.mainContent {
+  flex: 1;
+  margin: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center; /* Center child elements horizontally */
+}
+
+.uploadSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center the section horizontally */
+  gap: 20px; /* Add spacing between elements */
+  width: 100%;
+}
+
+.uploadContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #f2f2f2;
+  border: 2px dashed #d3d3d3;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 400px;
+  padding: 30px;
+  text-align: center;
+}
+
+.uploadContainer img {
+  width: 50px;
+  height: 50px;
+  margin-bottom: 15px;
+}
+
+.uploadContainer h4 {
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.uploadContainer button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  outline: none;
+}
+
+.uploadContainer button:hover {
+  background-color: #0056b3;
+}

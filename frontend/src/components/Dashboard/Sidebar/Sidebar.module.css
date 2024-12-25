@@ -1,93 +1,221 @@
-.sidePanel {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-left: 35px;
-}
-
-.sideButton1 {
-  height: 62px;
-  width: 62px;
-  border-radius: 50%;
-  border: 1px solid white;
-  background-color: #0067ff;
-}
-
-.sideButton2,
-.sideButton3,
-.sideButton4,
-.sideButton5,
-.sideButton6 {
-  height: 62px;
-  width: 62px;
-  border-radius: 50%;
-  border: 1px solid white;
-  background-color: #efefef;
-}
-
-/* Sidebar.module.css */
-
+/* Sidebar */
 .sidePanel {
   position: fixed;
   top: 0;
-  left: -250px; /* Initially off-screen */
-  width: 250px;
+  left: -350px; /* Initially off-screen */
+  width: 350px;
   height: 100%;
-  background-color: #333;
-  color: white;
+  background-color: #ffffff;
+  padding: 16px;
   transition: left 0.3s ease;
-  padding: 20px;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
 }
 
 .sidePanel.open {
-  left: 0; /* Sidebar visible when open */
+  left: 0; /* Sidebar visible */
 }
 
-.sideButton1,
-.sideButton2,
-.sideButton3,
-.sideButton4,
-.sideButton5,
-.sideButton6 {
+/* Menu Button */
+.toggleButton {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: 101;
+}
+
+.toggleButton img {
+  height: 24px;
+  width: auto;
+}
+
+/* Close Button Inside Sidebar */
+.closeButton {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.closeButton img {
+  width: 24px;
+  height: 24px;
+}
+
+/* Sidebar Button */
+.sideButton {
+  background: none;
+  border: none;
+  /* padding: 10px; */
+  cursor: pointer;
+  /* background-color: red; */
+}
+
+.sideButton img {
+  width: 28px;
+  height: 28px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .sidePanel {
+    width: 200px;
+  }
+}
+
+.sectionOne {
+  /* background-color: red; */
+  display: flex;
+  height: 14%;
+  flex-direction: row;
+  align-items: start;
+  border-bottom: 1px solid #cfcfcf;
+}
+.secOneImg {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.secOneImg img {
+  width: 100px !important;
+  height: 100px !important;
+}
+
+.secOneImg h2 {
+  font-size: 20px;
+  color: #181818;
+  font-weight: 700;
+}
+
+.sectionTwo {
+  /* background-color: beige; */
+  height: 18%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 12px;
+  justify-content: start;
+  align-items: start;
+  border-bottom: 1px solid #cfcfcf;
+}
+
+.sectionTwo button {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  align-items: center;
+}
+
+.textMedium {
+  font-size: 16px;
+  font-weight: 520;
+  color: #373737d5;
+  text-shadow: 0.5px 0.5px 0.5px #37373731;
+}
+
+.sectionThree {
+  /* background-color: beige; */
+  height: 60%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow: auto;
+  margin-top: 12px;
+  justify-content: center;
+  align-items: start;
+  justify-content: start;
+  border-bottom: 1px solid #cfcfcf;
+}
+
+.sectionThree button {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  align-items: center;
+}
+
+/* Dropdown container */
+.dropdown {
+  padding-left: 20px;
+  margin-top: 5px;
+  background-color: #f4f4f4;
+}
+
+/* Dropdown items */
+.subButton {
   background: none;
   border: none;
   padding: 10px;
-  margin: 10px 0;
   cursor: pointer;
 }
 
-.sideButton1 img,
-.sideButton2 img,
-.sideButton3 img,
-.sideButton4 img,
-.sideButton5 img,
-.sideButton6 img {
-  width: 30px;
-  height: 30px;
+.subButton:hover {
+  background-color: #ddd;
 }
 
-.toggleButton {
-  position: absolute;
-  top: 20px;
-  left: -100px; /* Position the toggle button outside the sidebar */
-  background-color: #555;
-  color: white;
-  padding: 10px;
-  border: none;
-  cursor: pointer;
-  z-index: 100;
+/* Optional: Add some animations for dropdown */
+.dropdown {
+  animation: fadeIn 0.3s ease-out;
 }
 
-@media (max-width: 768px) {
-  .sidePanel {
-    left: -100%; /* Sidebar off-screen for smaller screens */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
   }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Section 4 */
+.sectionFour {
+  /* background-color: red; */
+  height: 12%;
+  padding: 12px;
+  justify-content: left;
+  align-items: start;
+}
+
+.profSection {
+  position: relative;
+  width: 100%;
+  /* background-color: #181818; */
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  padding-left: 2%;
+  align-items: center;
+  border: 1px solid #cfcfcf;
+  border-radius: 32px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1); /* Subtle shadow effect */
+
+  transition: all 0.3s ease; /* Smooth transition effect */
+}
+
+.profSection:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0), 0 8px 16px rgba(0, 0, 0, 0.2); /* Darker shadow on hover */
+  transform: translateY(-5px); /* Lift effect on hover */
+}
+
+.profSection img {
+  height: 80%;
+  width: auto;
+  border-radius: 32px;
+}
+
+.profSection h2{
   
-  .sidePanel.open {
-    left: 0; /* Sidebar visible when open on smaller screens */
-  }
-  
-  .toggleButton {
-    left: 10px;
-  }
+    font-size: 18px;
+    color: #4e4e4e;
+    font-weight: 700;
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
 }
