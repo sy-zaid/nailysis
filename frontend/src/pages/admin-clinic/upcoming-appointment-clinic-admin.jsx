@@ -1,9 +1,8 @@
 import React from "react";
-import styles from "./Appointment.module.css";
+import styles from "../../components/CSS Files/Appointment.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import Header from "../../components/Dashboard/Header/Header";
 import Sidebar from "../../components/Dashboard/Sidebar/Sidebar";
-
 
 const Appointment = (props) => {
   const data = [
@@ -32,25 +31,24 @@ const Appointment = (props) => {
     },
   ];
 
-    const getStatusClass = (status) => {
-      switch (status) {
-        case 'Consulted':
-          return styles.consulted;
-        case 'Cancelled':
-          return styles.cancelled;
-        default:
-          return styles.scheduled;
-      }
-    };
+  const getStatusClass = (status) => {
+    switch (status) {
+      case "Consulted":
+        return styles.consulted;
+      case "Cancelled":
+        return styles.cancelled;
+      default:
+        return styles.scheduled;
+    }
+  };
 
   return (
     <div className={styles.pageContainer}>
       <div className={styles.pageTop}>
-      <Navbar />
-      <Header curUserRole="Appointments" />
+        <Navbar />
+        <Header curUserRole="Appointments" />
       </div>
       <div className={styles.mainContent}>
-        
         <div className={styles.appointmentsContainer}>
           <div className={styles.filters}>
             <button className={styles.filterButton}>All</button>

@@ -1,7 +1,7 @@
 import React from "react";
 import SystemAdminDashboard from "./pages/admin-system/system-admin-dashboard";
 import ClinicAdminDashboard from "./pages/admin-clinic/clinic-admin-dashboard";
-import UpcomingAppointments from "./pages/admin-clinic/appointment-clinic-admin";
+import UpcomingAppointments from "./pages/admin-clinic/upcoming-appointment-clinic-admin";
 import DoctorDashboard from "./pages/doctor/doctor-dashboard";
 import PatientDashboard from "./pages/patient/patient-dashboard";
 import LabAdminDashboard from "./pages/admin-lab/lab-admin-dashboard";
@@ -10,7 +10,18 @@ import PlaceholderComponent from "./components/PlaceholderComponent"; // Placeho
 
 // Render function for System Admin
 export const renderSystemAdminContent = (view) => {
-  return <SystemAdminDashboard />;
+  switch (view) {
+    case "Users":
+      return <PlaceholderComponent name="Users" />;
+    case "Analytics":
+      return <PlaceholderComponent name="Analytics" />;
+    case "Appointments":
+      return <PlaceholderComponent name="Appointments" />;
+    case "System Settings":
+      return <PlaceholderComponent name="System Settings" />;
+    default:
+      return <SystemAdminDashboard />;
+  }
 };
 
 // Render function for Clinic Admin
@@ -47,7 +58,7 @@ export const renderDoctorContent = (view) => {
     case "Diagnostic Results":
       return <PlaceholderComponent name="Diagnostic Results" />;
     case "Upcoming Appointments":
-      return <PlaceholderComponent name="Upcoming Appointments" />;
+      return <UpcomingAppointments/>;
     case "Appointment History":
       return <PlaceholderComponent name="Appointment History" />;
     case "Generate Invoice":
@@ -58,6 +69,8 @@ export const renderDoctorContent = (view) => {
       return <PlaceholderComponent name="Feedbacks" />;
     case "Test Requests":
       return <PlaceholderComponent name="Test Requests" />;
+    case "Appointments":
+      return <PlaceholderComponent name="Appointments" />;
     default:
       return <DoctorDashboard />;
   }
@@ -71,7 +84,7 @@ export const renderPatientContent = (view) => {
     case "Diagnostic Results":
       return <PlaceholderComponent name="Diagnostic Results" />;
     case "Upcoming Appointments":
-      return <PlaceholderComponent name="Upcoming Appointments" />;
+      return <UpcomingAppointments/>;
     case "Appointment History":
       return <PlaceholderComponent name="Appointment History" />;
     case "Generate Invoice":
@@ -82,6 +95,8 @@ export const renderPatientContent = (view) => {
       return <PlaceholderComponent name="Feedbacks" />;
     case "Test Requests":
       return <PlaceholderComponent name="Test Requests" />;
+    case "Appointments":
+      return <PlaceholderComponent name="Appointments" />;
     default:
       return <PatientDashboard />;
   }
@@ -95,7 +110,7 @@ export const renderLabAdminContent = (view) => {
     case "Diagnostic Results":
       return <PlaceholderComponent name="Diagnostic Results" />;
     case "Upcoming Appointments":
-      return <PlaceholderComponent name="Upcoming Appointments" />;
+      return <UpcomingAppointments/>;
     case "Appointment History":
       return <PlaceholderComponent name="Appointment History" />;
     case "Generate Invoice":
@@ -106,6 +121,8 @@ export const renderLabAdminContent = (view) => {
       return <PlaceholderComponent name="Feedbacks" />;
     case "Test Requests":
       return <PlaceholderComponent name="Test Requests" />;
+    case "Appointments":
+      return <PlaceholderComponent name="Appointments" />;
     default:
       return <LabAdminDashboard />;
   }
@@ -119,7 +136,7 @@ export const renderLabTechnicianContent = (view) => {
     case "Diagnostic Results":
       return <PlaceholderComponent name="Diagnostic Results" />;
     case "Upcoming Appointments":
-      return <PlaceholderComponent name="Upcoming Appointments" />;
+      return <UpcomingAppointments/>;
     case "Appointment History":
       return <PlaceholderComponent name="Appointment History" />;
     case "Generate Invoice":
@@ -130,6 +147,8 @@ export const renderLabTechnicianContent = (view) => {
       return <PlaceholderComponent name="Feedbacks" />;
     case "Test Requests":
       return <PlaceholderComponent name="Test Requests" />;
+    case "Appointments":
+      return <PlaceholderComponent name="Appointments" />;
     default:
       return <LabTechnicianDashboard />;
   }

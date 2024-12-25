@@ -188,10 +188,7 @@ const Sidebar = ({ userRole, setView }) => {
         </div>
         {/* Section 2 */}
         <div className={styles.sectionTwo}>
-          <button
-            className={styles.sideButton}
-            onClick={() => setView("")}
-          >
+          <button className={styles.sideButton} onClick={() => setView("")}>
             <img src="dashboard.jpg" alt="dashboard icon" />
             <h3 className={styles.textMedium}>Dashboard</h3>
           </button>

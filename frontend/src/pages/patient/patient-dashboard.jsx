@@ -12,7 +12,7 @@ function PatientDashboard() {
           <Navbar />
           <Header curUserRole={'Patient'}/>
           <div className={styles.main}>
-            <Sidebar />
+            {/* <Sidebar /> */}
             <div className={styles.cards}>
               <Cards heading="Patients" />
               <Cards heading="Requests" />
