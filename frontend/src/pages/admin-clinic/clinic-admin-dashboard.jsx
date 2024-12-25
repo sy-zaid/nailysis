@@ -9,16 +9,14 @@ import { REFRESH_TOKEN, ACCESS_TOKEN } from "../../constants";
 import { jwtDecode } from "jwt-decode";
 
 function ClinicAdminDashboard() {
-  const token = localStorage.getItem(ACCESS_TOKEN);
-  const decoded = jwtDecode(token);
-  const userRole = decoded.role || null;
+  
 
     return (
         <div>
           <Navbar />
           <Header curUserRole={"Clinic Admin Dashboard"} genderPrefix={"Mr."} />
           <div className={styles.main}>
-            <Sidebar userRole={userRole}/>
+            
             <div className={styles.cards}>
               <Cards heading="Patients" />
               <Cards heading="Requests" />

@@ -12,7 +12,10 @@ import DoctorDashboard from "./pages/doctor/doctor-dashboard";
 import PatientDashboard from "./pages/patient/patient-dashboard";
 import LabAdminDashboard from "./pages/admin-lab/lab-admin-dashboard";
 import LabTechnicianDashboard from "./pages/lab-technician/lab-technician-dashboard";
-import Appointment from "./pages/Appointment";
+import AppointmentClinicAdmin from "./pages/admin-clinic/appointment-clinic-admin";
+
+import Sidebar from "./components/Dashboard/Sidebar/Sidebar";
+import { renderSystemAdminContent, renderClinicAdminContent,  } from "./RenderContent";
 
 function Logout() {
   localStorage.clear();
@@ -26,7 +29,6 @@ function RegisterAndLogout() {
 
 function App() {
   const [view, setView] = useState("home");
-
   const renderAdminContent = () => {
     switch (view) {
       case "home":
@@ -40,7 +42,7 @@ function App() {
   return (
     <div className="App">
       <Routes>
-        <Route
+      <Route
           path="/system-admin-dashboard"
           element={
             <ProtectedRoute requiredRole="system_admin">
@@ -49,10 +51,23 @@ function App() {
           }
         />
         <Route
-          path="/clinic-admin-dashboard"
+          path="/clinic-admin"
           element={
             <ProtectedRoute requiredRole="clinic_admin">
-              <ClinicAdminDashboard />
+              <div
+                style={{
+                  // backgroundColor: "Blue",
+                  // display: "flex",
+                  height: "100vh",
+                  width:"100%",
+                  margin: "0px",
+                }}
+              >
+                <div>
+                  <Sidebar userRole={"clinic_admin"} setView={setView} />
+                </div>
+                <div>{renderClinicAdminContent(view)}</div>
+              </div>
             </ProtectedRoute>
           }
         />
@@ -92,7 +107,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/logout" element={<Logout />} />
         <Route path="/register" element={<RegisterAndLogout />} />
-        <Route path="/appointment" element={<Appointment />} />
+        {/* <Route path="/appointment" element={<Appointment />} /> */}
         <Route path="*" element={<NotFound />}></Route>
       </Routes>
     </div>

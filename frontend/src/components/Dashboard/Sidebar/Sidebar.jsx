@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styles from "./Sidebar.module.css";
 
-const Sidebar = ({ userRole }) => {
+const Sidebar = ({ userRole, setView }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null); // Track which dropdown is open
 
@@ -14,15 +14,6 @@ const Sidebar = ({ userRole }) => {
   };
 
   const menuItems = {
-    admin: [
-      { icon: "dashboard.jpg", label: "Dashboard", subItems: [] },
-      {
-        icon: "analytics.jpg",
-        label: "Reports & Analytics",
-        subItems: [{ label: "View Reports" }, { label: "Generate Report" }],
-      },
-      { icon: "users.jpg", label: "User Management", subItems: [] },
-    ],
     clinic_admin: [
       { icon: "test-results.jpg", label: "Test Results", subItems: [] },
       {
@@ -49,14 +40,109 @@ const Sidebar = ({ userRole }) => {
       { icon: "feedback.jpg", label: "Feedbacks", subItems: [] },
       { icon: "test-request.jpg", label: "Test Requests", subItems: [] },
     ],
-    labTechnician: [
-      { icon: "dashboard.jpg", label: "Dashboard", subItems: [] },
+    doctor: [
+      { icon: "test-results.jpg", label: "Test Results", subItems: [] },
       {
-        icon: "tests.jpg",
-        label: "Lab Tests",
-        subItems: [{ label: "Test History" }, { label: "Manage Tests" }],
+        icon: "diagnostic-results.jpg",
+        label: "Diagnostic Results",
+        subItems: [],
       },
-      // Other items...
+      {
+        icon: "appointments.jpg",
+        label: "Appointments",
+        subItems: [
+          { label: "Upcoming Appointments" },
+          { label: "Appointment History" },
+        ],
+      },
+      {
+        icon: "billing.jpg",
+        label: "Billing & Invoice",
+        subItems: [
+          { label: "Generate Invoice" },
+          { label: "View Payment History" },
+        ],
+      },
+      { icon: "feedback.jpg", label: "Feedbacks", subItems: [] },
+      { icon: "test-request.jpg", label: "Test Requests", subItems: [] },
+    ],
+    patient: [
+      { icon: "test-results.jpg", label: "Test Results", subItems: [] },
+      {
+        icon: "diagnostic-results.jpg",
+        label: "Diagnostic Results",
+        subItems: [],
+      },
+      {
+        icon: "appointments.jpg",
+        label: "Appointments",
+        subItems: [
+          { label: "Upcoming Appointments" },
+          { label: "Appointment History" },
+        ],
+      },
+      {
+        icon: "billing.jpg",
+        label: "Billing & Invoice",
+        subItems: [
+          { label: "Generate Invoice" },
+          { label: "View Payment History" },
+        ],
+      },
+      { icon: "feedback.jpg", label: "Feedbacks", subItems: [] },
+      { icon: "test-request.jpg", label: "Test Requests", subItems: [] },
+    ],
+    lab_admin: [
+      { icon: "test-results.jpg", label: "Test Results", subItems: [] },
+      {
+        icon: "diagnostic-results.jpg",
+        label: "Diagnostic Results",
+        subItems: [],
+      },
+      {
+        icon: "appointments.jpg",
+        label: "Appointments",
+        subItems: [
+          { label: "Upcoming Appointments" },
+          { label: "Appointment History" },
+        ],
+      },
+      {
+        icon: "billing.jpg",
+        label: "Billing & Invoice",
+        subItems: [
+          { label: "Generate Invoice" },
+          { label: "View Payment History" },
+        ],
+      },
+      { icon: "feedback.jpg", label: "Feedbacks", subItems: [] },
+      { icon: "test-request.jpg", label: "Test Requests", subItems: [] },
+    ],
+    lab_technician: [
+      { icon: "test-results.jpg", label: "Test Results", subItems: [] },
+      {
+        icon: "diagnostic-results.jpg",
+        label: "Diagnostic Results",
+        subItems: [],
+      },
+      {
+        icon: "appointments.jpg",
+        label: "Appointments",
+        subItems: [
+          { label: "Upcoming Appointments" },
+          { label: "Appointment History" },
+        ],
+      },
+      {
+        icon: "billing.jpg",
+        label: "Billing & Invoice",
+        subItems: [
+          { label: "Generate Invoice" },
+          { label: "View Payment History" },
+        ],
+      },
+      { icon: "feedback.jpg", label: "Feedbacks", subItems: [] },
+      { icon: "test-request.jpg", label: "Test Requests", subItems: [] },
     ],
   };
 
@@ -106,19 +192,26 @@ const Sidebar = ({ userRole }) => {
             <img src="dashboard.jpg" alt="dashboard icon" />
             <h3 className={styles.textMedium}>Dashboard</h3>
           </button>
-          <button className={styles.sideButton}>
+          <button
+            className={styles.sideButton}
+            onClick={() => setView("appointments")}
+          >
             <img src="analytics.jpg" alt="analytics icon" />
             <h3 className={styles.textMedium}>Reports & Analytics</h3>
           </button>
         </div>
 
+        
         {/* Section 3 */}
         <div className={styles.sectionThree}>
           {currentMenu.map((item, index) => (
             <div key={index}>
               <button
                 className={styles.sideButton}
-                onClick={() => toggleDropdown(index)} // Toggle the dropdown for this item
+                onClick={() => {
+                  toggleDropdown(index); // Toggle the dropdown for this item
+                  setView(item.label); // Set the view dynamically
+                }}
               >
                 <img src={item.icon} alt={`${item.label} icon`} />
                 <h3 className={styles.textMedium}>{item.label}</h3>
