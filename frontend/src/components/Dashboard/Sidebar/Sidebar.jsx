@@ -1,12 +1,66 @@
 import React, { useState } from "react";
 import styles from "./Sidebar.module.css";
 
-const Sidebar = () => {
+const Sidebar = ({ userRole }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState(null); // Track which dropdown is open
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
   };
+
+  const toggleDropdown = (index) => {
+    setOpenDropdown(openDropdown === index ? null : index); // Toggle dropdown visibility
+  };
+
+  const menuItems = {
+    admin: [
+      { icon: "dashboard.jpg", label: "Dashboard", subItems: [] },
+      {
+        icon: "analytics.jpg",
+        label: "Reports & Analytics",
+        subItems: [{ label: "View Reports" }, { label: "Generate Report" }],
+      },
+      { icon: "users.jpg", label: "User Management", subItems: [] },
+    ],
+    clinic_admin: [
+      { icon: "test-results.jpg", label: "Test Results", subItems: [] },
+      {
+        icon: "diagnostic-results.jpg",
+        label: "Diagnostic Results",
+        subItems: [],
+      },
+      {
+        icon: "appointments.jpg",
+        label: "Appointments",
+        subItems: [
+          { label: "Upcoming Appointments" },
+          { label: "Appointment History" },
+        ],
+      },
+      {
+        icon: "billing.jpg",
+        label: "Billing & Invoice",
+        subItems: [
+          { label: "Generate Invoice" },
+          { label: "View Payment History" },
+        ],
+      },
+      { icon: "feedback.jpg", label: "Feedbacks", subItems: [] },
+      { icon: "test-request.jpg", label: "Test Requests", subItems: [] },
+    ],
+    labTechnician: [
+      { icon: "dashboard.jpg", label: "Dashboard", subItems: [] },
+      {
+        icon: "tests.jpg",
+        label: "Lab Tests",
+        subItems: [{ label: "Test History" }, { label: "Manage Tests" }],
+      },
+      // Other items...
+    ],
+  };
+
+  const currentMenu = menuItems[userRole] || [];
 
   return (
     <div>
@@ -20,29 +74,69 @@ const Sidebar = () => {
 
       {/* Sidebar */}
       <div className={`${styles.sidePanel} ${isOpen ? styles.open : ""}`}>
-        {isOpen && (
-          <button className={styles.closeButton} onClick={toggleSidebar}>
-            <img src="close.png" alt="close button" />
+        {/* Section 1 */}
+        <div className={styles.sectionOne}>
+          <div>
+            {isOpen && (
+              <button className={styles.closeButton} onClick={toggleSidebar}>
+                <img src="close.jpg" alt="close button" />
+              </button>
+            )}
+          </div>
+          <div className={styles.secOneImg}>
+            <img src="nailysis-logo-small.png" alt="" />
+            <h2>
+              Nailysis
+              <br />
+              <span
+                style={{
+                  fontSize: "14px",
+                  color: "#4e4e4e",
+                  fontWeight: "600",
+                }}
+              >
+                Clinical Application
+              </span>
+            </h2>
+          </div>
+        </div>
+        {/* Section 2 */}
+        <div className={styles.sectionTwo}>
+          <button className={styles.sideButton}>
+            <img src="dashboard.jpg" alt="dashboard icon" />
+            <h3 className={styles.textMedium}>Dashboard</h3>
           </button>
-        )}
-        <button className={styles.sideButton1}>
-          <img src="dashboard.png" alt="dashboard icon" />
-        </button>
-        <button className={styles.sideButton2}>
-          <img src="board.png" alt="clipboard icon" />
-        </button>
-        <button className={styles.sideButton3}>
-          <img src="appoint.png" alt="ticks icon" />
-        </button>
-        <button className={styles.sideButton4}>
-          <img src="lab.png" alt="lab icon" />
-        </button>
-        <button className={styles.sideButton5}>
-          <img src="calendar.png" alt="calendar icon" />
-        </button>
-        <button className={styles.sideButton6}>
-          <img src="account.png" alt="account icon" />
-        </button>
+          <button className={styles.sideButton}>
+            <img src="analytics.jpg" alt="analytics icon" />
+            <h3 className={styles.textMedium}>Reports & Analytics</h3>
+          </button>
+        </div>
+
+        {/* Section 3 */}
+        <div className={styles.sectionThree}>
+          {currentMenu.map((item, index) => (
+            <div key={index}>
+              <button
+                className={styles.sideButton}
+                onClick={() => toggleDropdown(index)} // Toggle the dropdown for this item
+              >
+                <img src={item.icon} alt={`${item.label} icon`} />
+                <h3 className={styles.textMedium}>{item.label}</h3>
+              </button>
+
+              {/* Dropdown items */}
+              {item.subItems && openDropdown === index && (
+                <div className={styles.dropdown}>
+                  {item.subItems.map((subItem, subIndex) => (
+                    <button key={subIndex} className={styles.subButton}>
+                      <h3 className={styles.textMedium}>{subItem.label}</h3>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

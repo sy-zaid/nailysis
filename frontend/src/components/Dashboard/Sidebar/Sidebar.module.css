@@ -2,14 +2,15 @@
 .sidePanel {
   position: fixed;
   top: 0;
-  left: -250px; /* Initially off-screen */
-  width: 250px;
+  left: -350px; /* Initially off-screen */
+  width: 350px;
   height: 100%;
-  background-color: #FFFFFF;
-  color: white;
-  padding: 20px;
+  background-color: #ffffff;
+  padding: 16px;
   transition: left 0.3s ease;
   z-index: 101;
+  display: flex;
+  flex-direction: column;
 }
 
 .sidePanel.open {
@@ -28,8 +29,9 @@
 }
 
 .toggleButton img {
-  width: 30px;
-  height: 30px;
+  height: 24px;
+  width: auto;
+  
 }
 
 /* Close Button Inside Sidebar */
@@ -43,37 +45,133 @@
 }
 
 .closeButton img {
-  width: 30px;
-  height: 30px;
+  width: 24px;
+  height: 24px;
 }
 
-/* Sidebar Buttons */
-.sideButton1,
-.sideButton2,
-.sideButton3,
-.sideButton4,
-.sideButton5,
-.sideButton6 {
+/* Sidebar Button */
+.sideButton {
   background: none;
   border: none;
   padding: 10px;
-  margin: 10px 0;
   cursor: pointer;
+  /* background-color: red; */
 }
 
-.sideButton1 img,
-.sideButton2 img,
-.sideButton3 img,
-.sideButton4 img,
-.sideButton5 img,
-.sideButton6 img {
-  width: 30px;
-  height: 30px;
+.sideButton img{
+  width: 28px;
+  height: 28px;
+  
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
   .sidePanel {
     width: 200px;
+  }
+}
+
+.sectionOne {
+  /* background-color: red; */
+  display: flex;
+  height: 14%;
+  flex-direction: row;
+  align-items: start;
+  border-bottom: 1px solid #cfcfcf;
+}
+.secOneImg {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.secOneImg img {
+  width: 100px !important;
+  height: 100px !important;
+}
+
+.secOneImg h2 {
+  font-size: 20px;
+  color: #181818;
+  font-weight: 700;
+}
+
+.sectionTwo{
+  /* background-color: beige; */
+  height: 18%;
+  display: flex;
+  flex-direction: column; 
+  gap:6px;
+  margin-top: 12px;
+  justify-content: start;
+  align-items: start;
+  border-bottom: 1px solid #cfcfcf;
+}
+
+.sectionTwo button{
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  align-items: center;
+}
+
+.textMedium{
+  font-size: 16px;
+  font-weight: 520;
+  color:#373737d5;
+  text-shadow: 0.5px 0.5px 0.5px #37373731;
+}
+
+.sectionThree{
+   /* background-color: beige; */
+   height: 60%;
+   display: flex;
+   flex-direction: column; 
+   gap:6px;
+   overflow: auto;
+   margin-top: 12px;
+   justify-content: center;
+   align-items: start;
+   justify-content: start;
+   border-bottom: 1px solid #cfcfcf;
+}
+
+.sectionThree button{
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  align-items: center;
+}
+
+
+/* Dropdown container */
+.dropdown {
+  padding-left: 20px;
+  margin-top: 5px;
+  background-color: #f4f4f4;
+}
+
+/* Dropdown items */
+.subButton {
+  background: none;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.subButton:hover {
+  background-color: #ddd;
+}
+
+/* Optional: Add some animations for dropdown */
+.dropdown {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
