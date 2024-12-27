@@ -10,7 +10,8 @@ class CreateUserView(generics.CreateAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
     permission_classes = [AllowAny]  # Allow public access to this view
-
+    authentication_classes = []
+    
 class CustomerTokenObtainViewSerializer(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
 
