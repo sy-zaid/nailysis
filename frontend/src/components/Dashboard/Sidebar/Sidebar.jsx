@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import styles from "./Sidebar.module.css";
 
-const Sidebar = ({ userRole, setView }) => {
-  const [isOpen, setIsOpen] = useState(false);
+const Sidebar = ({ userRole, setView, isOpen, toggleSidebar}) => {
+  // const [isOpen, setIsOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null); // Track which dropdown is open
 
-  const toggleSidebar = () => {
-    setIsOpen(!isOpen);
-  };
+  // const toggleSidebar = () => {
+  //   setIsOpen(!isOpen);
+  // };
 
   const toggleDropdown = (index) => {
     setOpenDropdown(openDropdown === index ? null : index); // Toggle dropdown visibility

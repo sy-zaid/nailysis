@@ -7,7 +7,6 @@ import Register from "./pages/Register";
 import NotFound from "./components/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 
-
 import Sidebar from "./components/Dashboard/Sidebar/Sidebar";
 import {
   renderSystemAdminContent,
@@ -34,7 +33,10 @@ function RegisterAndLogout() {
 
 function App() {
   const [view, setView] = useState("home");
-
+  const [isOpen, setIsOpen] = useState(false);
+  const toggleSidebar = () => {
+    setIsOpen(!isOpen);
+  };
   return (
     <div className="App">
       <Routes>
@@ -43,9 +45,18 @@ function App() {
           path="/system-admin-dashboard"
           element={
             <ProtectedRoute requiredRole="system_admin">
-              <div style={{ height: "100vh", width: "100%", margin: "0px" }}>
-                <Sidebar userRole="system_admin" setView={setView} />
-                <div>{renderSystemAdminContent(view)}</div>
+              <Sidebar
+                userRole="system_admin"
+                setView={setView}
+                isOpen={isOpen}
+                toggleSidebar={toggleSidebar}
+              />
+              <div
+                className={`mainContent ${
+                  isOpen ? "sidebar-open" : "sidebar-closed"
+                }`}
+              >
+                {renderSystemAdminContent(view)}
               </div>
             </ProtectedRoute>
           }
@@ -56,9 +67,18 @@ function App() {
           path="/clinic-admin"
           element={
             <ProtectedRoute requiredRole="clinic_admin">
-              <div style={{ height: "100vh", width: "100%", margin: "0px" }}>
-                <Sidebar userRole="clinic_admin" setView={setView} />
-                <div>{renderClinicAdminContent(view)}</div>
+              <Sidebar
+                userRole="clinic_admin"
+                setView={setView}
+                isOpen={isOpen}
+                toggleSidebar={toggleSidebar}
+              />
+              <div
+                className={`mainContent ${
+                  isOpen ? "sidebar-open" : "sidebar-closed"
+                }`}
+              >
+                {renderClinicAdminContent(view)}
               </div>
             </ProtectedRoute>
           }
@@ -69,9 +89,18 @@ function App() {
           path="/doctor-dashboard"
           element={
             <ProtectedRoute requiredRole="doctor">
-              <div style={{ height: "100vh", width: "100%", margin: "0px" }}>
-                <Sidebar userRole="doctor" setView={setView} />
-                <div>{renderDoctorContent(view)}</div>
+              <Sidebar
+                userRole="doctor"
+                setView={setView}
+                isOpen={isOpen}
+                toggleSidebar={toggleSidebar}
+              />
+              <div
+                className={`mainContent ${
+                  isOpen ? "sidebar-open" : "sidebar-closed"
+                }`}
+              >
+                {renderDoctorContent(view)}
               </div>
             </ProtectedRoute>
           }
@@ -82,9 +111,18 @@ function App() {
           path="/patient-dashboard"
           element={
             <ProtectedRoute requiredRole="patient">
-              <div style={{ height: "100vh", width: "100%", margin: "0px" }}>
-                <Sidebar userRole="patient" setView={setView} />
-                <div>{renderPatientContent(view)}</div>
+              <Sidebar
+                userRole="patient"
+                setView={setView}
+                isOpen={isOpen}
+                toggleSidebar={toggleSidebar}
+              />
+              <div
+                className={`mainContent ${
+                  isOpen ? "sidebar-open" : "sidebar-closed"
+                }`}
+              >
+                {renderPatientContent(view)}
               </div>
             </ProtectedRoute>
           }
@@ -95,9 +133,18 @@ function App() {
           path="/lab-admin-dashboard"
           element={
             <ProtectedRoute requiredRole="lab_admin">
-              <div style={{ height: "100vh", width: "100%", margin: "0px" }}>
-                <Sidebar userRole="lab_admin" setView={setView} />
-                <div>{renderLabAdminContent(view)}</div>
+              <Sidebar
+                userRole="lab_admin"
+                setView={setView}
+                isOpen={isOpen}
+                toggleSidebar={toggleSidebar}
+              />
+              <div
+                className={`mainContent ${
+                  isOpen ? "sidebar-open" : "sidebar-closed"
+                }`}
+              >
+                {renderLabAdminContent(view)}
               </div>
             </ProtectedRoute>
           }
@@ -108,9 +155,18 @@ function App() {
           path="/lab-technician-dashboard"
           element={
             <ProtectedRoute requiredRole="lab_technician">
-              <div style={{ height: "100vh", width: "100%", margin: "0px" }}>
-                <Sidebar userRole="lab_technician" setView={setView} />
-                <div>{renderLabTechnicianContent(view)}</div>
+              <Sidebar
+                userRole="lab_technician"
+                setView={setView}
+                isOpen={isOpen}
+                toggleSidebar={toggleSidebar}
+              />
+              <div
+                className={`mainContent ${
+                  isOpen ? "sidebar-open" : "sidebar-closed"
+                }`}
+              >
+                {renderLabTechnicianContent(view)}
               </div>
             </ProtectedRoute>
           }
@@ -122,7 +178,6 @@ function App() {
         <Route path="/logout" element={<Navigate to="/login" />} />
         <Route path="/register" element={<Register />} />
         <Route path="/add-appointment" element={<AddAppointment />} />
-
         <Route path="/upload-image" element={<UploadImage />} />
         <Route path="/image-guide" element={<ImageGuide />} />
         <Route path="*" element={<NotFound />} />

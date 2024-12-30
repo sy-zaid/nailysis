@@ -13,3 +13,24 @@ body {
   font-family: "DM Sans", sans-serif; /* Uses DM Sans as the primary font */
 }
 
+.app {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+.mainContent {
+  flex-grow: 1;
+  background-color: #f4f4f9;
+  padding: 20px;
+  transition: margin-left 0.3s ease;
+}
+
+.sidebar-open {
+  margin-left: 350px; /* Width of the open sidebar */
+}
+
+.sidebar-closed {
+  margin-left: 0; /* No sidebar */
+}
