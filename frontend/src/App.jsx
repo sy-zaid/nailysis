@@ -6,13 +6,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import NotFound from "./components/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
-import SystemAdminDashboard from "./pages/admin-system/system-admin-dashboard";
-import ClinicAdminDashboard from "./pages/admin-clinic/clinic-admin-dashboard";
-import DoctorDashboard from "./pages/doctor/doctor-dashboard";
-import PatientDashboard from "./pages/patient/patient-dashboard";
-import LabAdminDashboard from "./pages/admin-lab/lab-admin-dashboard";
-import LabTechnicianDashboard from "./pages/lab-technician/lab-technician-dashboard";
-import AppointmentClinicAdmin from "./pages/admin-clinic/upcoming-appointment-clinic-admin";
+
 
 import Sidebar from "./components/Dashboard/Sidebar/Sidebar";
 import {
@@ -81,7 +75,6 @@ function App() {
               </div>
             </ProtectedRoute>
           }
-          
         />
 
         {/* Patient */}

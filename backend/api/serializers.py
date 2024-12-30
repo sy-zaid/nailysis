@@ -10,16 +10,14 @@ class CustomUserSerializer(serializers.ModelSerializer):
         extra_kwargs = {"password": {"write_only": True}}
 
     def create(self, validated_data):
-        # Create a new user with the validated data and hash the password
-        custom_user = CustomUser.objects.create_user(
+        return CustomUser.objects.create_user(
             email=validated_data['email'],
             password=validated_data['password'],
-            role = validated_data.get('role', 'patient'),  # Default role
-            first_name = validated_data.get('first_name', ''),
-            last_name = validated_data.get('last_name', ''),
-            phone = validated_data.get('phone', None), 
+            role=validated_data.get('role', 'patient'),  # Default role
+            first_name=validated_data.get('first_name', ''),
+            last_name=validated_data.get('last_name', ''),
+            phone=validated_data.get('phone', None),
         )
-        return custom_user
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
