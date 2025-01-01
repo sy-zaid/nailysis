@@ -2,6 +2,7 @@ import React from "react";
 import SystemAdminDashboard from "./pages/admin-system/system-admin-dashboard";
 import ClinicAdminDashboard from "./pages/admin-clinic/clinic-admin-dashboard";
 import UpcomingAppointments from "./pages/admin-clinic/upcoming-appointment-clinic-admin";
+import UpcomingAppointmentsPatients from "./pages/patient/upcoming-appointment-patient";
 import DoctorDashboard from "./pages/doctor/doctor-dashboard";
 import PatientDashboard from "./pages/patient/patient-dashboard";
 import LabAdminDashboard from "./pages/admin-lab/lab-admin-dashboard";
@@ -84,7 +85,7 @@ export const renderPatientContent = (view) => {
     case "Diagnostic Results":
       return <PlaceholderComponent name="Diagnostic Results" />;
     case "Upcoming Appointments":
-      return <UpcomingAppointments/>;
+      return <UpcomingAppointmentsPatients/>;
     case "Appointment History":
       return <PlaceholderComponent name="Appointment History" />;
     case "Generate Invoice":
