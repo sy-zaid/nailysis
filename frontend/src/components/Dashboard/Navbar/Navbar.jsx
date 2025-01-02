@@ -1,7 +1,17 @@
 import React from "react";
 import styles from "./Navbar.module.css";
+import { useNavigate } from "react-router-dom";
+
 
 const Navbar = () => {
+
+  const navigate = useNavigate();
+
+
+  const handleScanNailsClick = () => {
+    navigate("/upload-image"); 
+  };
+
   return (
     <nav className={styles.container}>
       
@@ -10,7 +20,7 @@ const Navbar = () => {
         <img src="search.png" alt="search icon" />
       </span>
       <div className={styles.navSide}>
-        <button>
+        <button onClick={handleScanNailsClick}>
           {/* <img src="nail.png" alt="nail icon" /> */}
           <h5>Scan Nails</h5>
         </button>

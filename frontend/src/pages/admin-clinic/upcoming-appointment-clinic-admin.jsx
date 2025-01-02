@@ -23,6 +23,83 @@ const Appointment = (props) => {
       status: "Consulted",
     },
     {
+      id: 2,
+      appointmentId: "123456",
+      patientName: "Doe",
+      gender: "Male",
+      email: "patient2@gmail.com",
+      phone: "+123 456 789",
+      dateTime: "10/10/2024 09:30 AM",
+      testType: "Blood Test",
+      status: "Cancelled",
+    },
+    {
+      id: 3,
+      appointmentId: "123456",
+      patientName: "Doe",
+      gender: "Male",
+      email: "patient2@gmail.com",
+      phone: "+123 456 789",
+      dateTime: "10/10/2024 09:30 AM",
+      testType: "Blood Test",
+      status: "11/11/2024",
+    },
+    {
+      id: 4,
+      appointmentId: "123456",
+      patientName: "Carl",
+      gender: "Female",
+      email: "patient4@gmail.com",
+      phone: "+123 456 789",
+      dateTime: "10/10/2024 09:30 AM",
+      testType: "Urinalysis",
+      status: "11/11/2024",
+    },
+    {
+      id: 5,
+      appointmentId: "123456",
+      patientName: "Carl",
+      gender: "Female",
+      email: "patient5@gmail.com",
+      phone: "+123 456 789",
+      dateTime: "10/10/2024 09:30 AM",
+      testType: "Urinalysis",
+      status: "Consulted",
+    },
+    {
+      id: 6,
+      appointmentId: "123456",
+      patientName: "Doe",
+      gender: "Female",
+      email: "patient6@gmail.com",
+      phone: "+123 456 789",
+      dateTime: "10/10/2024 09:30 AM",
+      testType: "Urinalysis",
+      status: "11/11/2024",
+    },
+    {
+      id: 7,
+      appointmentId: "123456",
+      patientName: "Carl",
+      gender: "Non Binary",
+      email: "patient7@gmail.com",
+      phone: "+123 456 789",
+      dateTime: "10/10/2024 09:30 AM",
+      testType: "COVID-19",
+      status: "Consulted",
+    },
+    {
+      id: 8,
+      appointmentId: "123456",
+      patientName: "Carl",
+      gender: "Female",
+      email: "patient8@gmail.com",
+      phone: "+123 456 789",
+      dateTime: "10/10/2024 09:30 AM",
+      testType: "COVID-19",
+      status: "11/11/2024",
+    },
+    {
       id: 9,
       appointmentId: "123456",
       patientName: "Carl",
@@ -50,16 +127,19 @@ const Appointment = (props) => {
     <div className={styles.pageContainer}>
       <div className={styles.pageTop}>
         <Navbar />
-        <Header curUserRole="Appointments" />
+        <h1>Appointments</h1>
+        <p>Here you can view and manage all the booked appointments</p>
       </div>
       <div className={styles.mainContent}>
         <div className={styles.appointmentsContainer}>
           <div className={styles.filters}>
-            <button className={styles.filterButton}>All</button>
-            <button className={styles.filterButton}>Upcoming</button>
-            <button className={styles.filterButton}>Consulted</button>
-            <button className={styles.filterButton}>Cancelled</button>
-            <p>50 completed, 4 upcoming</p>
+            <div className={styles.filterTabs}>
+              <button className={styles.filterButton}>All</button>
+              <button className={styles.filterButton}>Upcoming</button>
+              <button className={styles.filterButton}>Consulted</button>
+              <button className={styles.filterButton}>Cancelled</button>
+              <p className={styles.statusSummary}>50 completed, 4 upcoming</p>
+            </div>
             <button className={styles.addButton} onClick={handleAddAppointment}>
               Add New Appointment
             </button>
@@ -69,21 +149,21 @@ const Appointment = (props) => {
               <select className={styles.bulkAction}>
                 <option>Bulk Action: Delete</option>
               </select>
-              <select className={styles.sortBy}>
-                <option>Sort By: Ordered Today</option>
-              </select>
-              <input
-                className={styles.search}
-                type="text"
-                placeholder="Search By Patient Name"
-              />
+              <div className={styles.headingBox}>
+                <select className={styles.sortBy}>
+                  <option>Sort By: Ordered Today</option>
+                </select>
+                <input
+                  className={styles.search}
+                  type="text"
+                  placeholder="Search By Patient Name"
+                />
+              </div>
             </div>
-            <table className={styles.table}>
+            <table className={styles.table} style={{ borderCollapse: "collapse" }}>
               <thead>
                 <tr>
-                  <th>
-                    <input type="checkbox" />
-                  </th>
+                  <th></th>
                   <th>#</th>
                   <th>Appointment ID</th>
                   <th>Patient Name</th>
@@ -96,17 +176,23 @@ const Appointment = (props) => {
                 </tr>
               </thead>
               <tbody>
-                {data.map((row) => (
-                  <tr key={row.id}>
-                    <td>
-                      <input type="checkbox" />
-                    </td>
+                {data.map((row, index) => (
+                  <tr
+                    key={row.id}
+                    className={index === 0 ? styles.noHover : ""}
+                    style={{ borderBottom: "1px solid #ddd" }}
+                  >
+                    {index !== 0 && (
+                      <td>
+                        <input type="checkbox" />
+                      </td>
+                    )}
                     <td>{row.id}</td>
                     <td>{row.appointmentId}</td>
                     <td>{row.patientName}</td>
                     <td>{row.gender}</td>
                     <td>{row.email}</td>
-                    <td>{row.phone}</td>
+                    <td className={styles.phoneColumn}>{row.phone}</td>
                     <td>{row.dateTime}</td>
                     <td>{row.testType}</td>
                     <td className={getStatusClass(row.status)}>{row.status}</td>

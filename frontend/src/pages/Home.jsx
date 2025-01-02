@@ -19,7 +19,7 @@ const Home = () => {
         <img src="logo.png" alt="Logo" />
       </div>
       <div className={styles.button}>
-        <button onClick={handleLogin}>Proceed to login</button>
+        <button onClick={handleLogin}>Login</button>
         <button onClick={handleRegister}>Register</button>
       </div>
     </div>

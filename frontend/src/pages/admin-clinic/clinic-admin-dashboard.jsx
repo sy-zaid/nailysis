@@ -9,8 +9,17 @@ import UpcomingTest from "../../components/Dashboard/UpcomingTest/UpcomingTest";
 function ClinicAdminDashboard() {
   return (
     <div>
-      <Navbar />
-      <Header curUserRole={"Clinic Admin Dashboard"} genderPrefix={"Mr."} />
+    <Navbar />
+    <div className={styles.header}>
+      <div className={styles.headerContent}>
+        <Header curUserRole={"Clinic Admin Dashboard"} genderPrefix={"Mr."}/>
+        <select className={styles.dropdown}>
+          <option value="oneMonth">One Month</option>
+          <option value="threeMonths">Three Months</option>
+          <option value="sixMonths">Six Months</option>
+        </select>
+      </div>
+    </div>
       <div className={styles.main}>
         <div className={styles.cards}>
           <Cards heading="Patients" />
