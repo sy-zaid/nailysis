@@ -8,6 +8,18 @@
   padding-left: 0;
 }
 
+.pageTop h1 {
+  padding-top: 20px;
+  padding-left: 40px;
+  font-size: 50px;
+}
+
+.pageTop p {
+  font-size: 18px;
+  color: #555;
+  padding-left: 40px;
+}
+
 .mainContent {
   display: flex;
   flex: 1;
@@ -20,18 +32,6 @@
   background-color: #f9f9f9;
 }
 
-.title {
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 10px;
-}
-
-.subtitle {
-  font-size: 16px;
-  color: #555;
-  margin-bottom: 20px;
-}
-
 .filters {
   display: flex;
   align-items: center;
@@ -39,16 +39,33 @@
   margin-bottom: 20px;
 }
 
+.filterTabs {
+  display: flex;
+  gap: 10px;
+}
+
 .filterButton {
   padding: 8px 16px;
   border: none;
   background-color: #f0f0f0;
   cursor: pointer;
-  border-radius: 4px;
+  /* border-radius: 4px; */
+  color: #555
 }
 
 .filterButton:hover {
   background-color: #e0e0e0;
+}
+
+.statusSummary {
+  display: flex;
+  font-size: 14px;
+  color: #555;
+  padding-left: 10px;
+  align-items: center;
+
+  
+
 }
 
 .addButton {
@@ -56,7 +73,7 @@
   background-color: #007bff;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 15px;
   cursor: pointer;
 }
 
@@ -77,11 +94,30 @@
   margin-bottom: 10px;
 }
 
+.bulkAction{
+  display: flex;
+  justify-content: space-between;
+}
+
+.bulkAction{
+  width: 200px;
+}
+
+.headingBox {
+  display: flex;
+  gap: 15px;
+}
+
+.sortBy,
+.search {
+  width: 200px;
+}
+
 .bulkAction,
 .sortBy,
 .search {
   padding: 5px;
-  border: 1px solid #ccc;
+  border: none;
   border-radius: 4px;
 }
 
@@ -92,13 +128,12 @@
 
 .table th,
 .table td {
-  border: 1px solid #ddd;
-  padding: 8px;
+  padding: 15px;
   text-align: left;
 }
 
 .table th {
-  background-color: #f4f4f4;
+  /* background-color: #f4f4f4; */
 }
 
 .table tr:nth-child(even) {
@@ -108,6 +143,23 @@
 .table tr:hover {
   background-color: #f1f1f1;
 }
+
+.table tr:hover:not(.noHover) {
+  background-color: #f1f1f1;
+}
+
+/* Prevent hover effect for the first row */
+.noHover:hover {
+  background-color: transparent !important;
+}
+
+/* Increase space for the phone column */
+.phoneColumn {
+  width: 150px; /* Adjust this value as needed */
+  word-wrap: break-word;
+}
+
+
 
 .consulted {
   color: green;
