@@ -5,13 +5,31 @@
   background-color: #f5f5f5;
 }
 
+
+
+
 .pageTop {
   display: flex;
   flex-direction: column;
 }
 
+.pageTop h1 {
+  padding-left: 180px;
+  padding-top: 20px;
+  font-size: 40px;
+}
+
+.pageTop p {
+  padding-left: 180px;
+  padding-top: 2px;
+  font-size: 20px;
+  color: #555;
+}
+
 .mainContent {
   display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .sidebar {
@@ -56,46 +74,81 @@ h2 {
   font-weight: bold;
 }
 
-/* h3 {
+ h3 {
   margin-top: 20px;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
   font-size: 18px;
   font-weight: bold;
-} */
+} 
 
 .formSection {
   margin-bottom: 30px;
+  padding: 10px;
+}
+
+.formSection h3,
+.header h3 {
+  margin-top: 20px;
+  margin-bottom: 40px;
+  font-size: 18px;
+  font-weight: bold;
+  position: relative;
+  padding-left: 20px;  /* Make space for the bullet point */
+}
+
+.formSection h3::before,
+.header h3::before {
+  content: "•";
+  color: #0067FF;
+  position: absolute;
+  left: 0;
+  font-size: 24px;  /* Make the bullet point slightly larger */
+  line-height: 1;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .formGroup {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
+  gap: 30px;
 }
 
 label {
   font-weight: bold;
 }
 
+
+.commentLabel {
+  margin-top: 20px;
+  display: block; /* Ensure it's a block element if you need vertical spacing */
+}
+
+
 input,
 select,
 textarea {
   width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  background: #f9f9f9;
+  padding: 15px;
+  border:none;
+  /* border-radius: 5px; */
+  background: transparent;
+  border-bottom: 2px solid #0067FF;
 }
 
 textarea {
   resize: none;
   height: 80px;
+  border-bottom: 2px solid #0067FF;
 }
 
 .actions {
   display: flex;
-  justify-content: space-between;
+  /* justify-content: space-between; */
   margin-top: 20px;
+  align-items: center;
+  justify-content: center;
+  gap: 50px;
 }
 
 .cancelButton {

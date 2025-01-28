@@ -9,11 +9,13 @@ const AddAppointment = () => {
     <div className={styles.pageContainer}>
       <div className={styles.pageTop}>
         <Navbar />
-        <Header curUserRole="Add New Appointment" />
+        <h1>Add New Appointment</h1>
+        <p>Add a new patient and schedule his/her appointment</p>
+        <Sidebar/>
       </div>
 
       <div className={styles.mainContent}>
-        {/* <Sidebar /> */}
+    
 
         <div className={styles.content}>
           <div className={styles.formContainer}>
@@ -97,7 +99,7 @@ const AddAppointment = () => {
                 </div>
               </div>
               <div>
-                <label>Comments</label>
+                <label className={styles.commentLabel} >Comments</label>
                 <textarea placeholder="Payment of PKR 5000 received for Invoice ID 'INV-98765'"></textarea>
               </div>
             </div>

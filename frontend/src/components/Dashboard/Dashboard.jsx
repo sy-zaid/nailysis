@@ -9,8 +9,17 @@ import UpcomingTest from "./UpcomingTest/UpcomingTest";
 const Dashboard = () => {
   return (
     <div>
-      <Navbar />
-      <Header />
+    <Navbar />
+    <div className={styles.header}>
+      <div className={styles.headerContent}>
+        <Header />
+        <select className={styles.dropdown}>
+          <option value="oneMonth">One Month</option>
+          <option value="threeMonths">Three Months</option>
+          <option value="sixMonths">Six Months</option>
+        </select>
+      </div>
+    </div>
       <div className={styles.main}>
         <Sidebar />
         <div className={styles.cards}>

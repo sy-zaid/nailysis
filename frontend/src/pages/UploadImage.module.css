@@ -1,63 +1,109 @@
-.mainContent {
-  flex: 1;
-  margin: 20px;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  padding: 20px;
+.pageTop h1 {
+  padding-top: 60px;
+  padding-left: 70px;
+  font-size: 40px;
+}
 
+.pageTop p {
+  padding-top: 10px;
+  padding-left: 70px;
+  font-size: 20px;
+  font-weight: light;
+}
+
+.mainContent {
   display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center; /* Center child elements horizontally */
+  padding: 20px 70px;
+  gap: 20px;
 }
 
 .uploadSection {
   display: flex;
   flex-direction: column;
-  align-items: center; /* Center the section horizontally */
-  gap: 20px; /* Add spacing between elements */
-  width: 100%;
+  flex: 1;
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.uploadSection h4 {
+  font-size: 22px;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 15px;
+  text-transform: uppercase;
+}
+
+.lst ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.lst li {
+  font-size: 16px;
+  color: #34495e;
+  margin-bottom: 10px;
+  line-height: 1.5;
+  position: relative;
+  padding-left: 25px;
+}
+
+.lst li:before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: #3498db;
+  font-size: 20px;
+}
+
+.box {
+  display: flex;
+  justify-content: center;
 }
 
 .uploadContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background-color: #f2f2f2;
-  border: 2px dashed #d3d3d3;
+  margin-top: 30px;
+  padding: 20px;
+  border: 2px dashed #bdc3c7;
   border-radius: 10px;
-  width: 100%;
-  max-width: 400px;
-  padding: 30px;
   text-align: center;
+  width: 450px;
 }
 
 .uploadContainer img {
-  width: 50px;
-  height: 50px;
-  margin-bottom: 15px;
-}
-
-.uploadContainer h4 {
-  font-size: 16px;
-  color: #333;
+  width: 60px;
+  height: 60px;
   margin-bottom: 10px;
 }
 
+.uploadContainer h4 {
+  font-size: 18px;
+  color: #7f8c8d;
+  margin-bottom: 15px;
+}
+
 .uploadContainer button {
-  padding: 10px 20px;
+  padding: 10px 25px;
   font-size: 16px;
-  background-color: #007bff;
   color: #fff;
+  background-color: #0067ff;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.3s;
-  outline: none;
+  transition: background-color 0.3s ease;
 }
 
 .uploadContainer button:hover {
-  background-color: #0056b3;
+  background-color: #3686ff;
+}
+
+.pageContainer {
+  transition: filter 0.3s ease;
+}
+
+.blur {
+  filter: blur(5px);
 }
