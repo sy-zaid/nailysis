@@ -28,3 +28,8 @@ urlpatterns = [
     path("api/token/refresh/", TokenRefreshView.as_view(), name="refresh"), # View for Refreshing the Token
     path("api-auth/", include("rest_framework.urls")), # Pre-built urls from the rest framework
 ]
+
+from django.conf import settings
+from django.conf.urls.static import static
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
