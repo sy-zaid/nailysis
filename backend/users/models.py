@@ -42,16 +42,23 @@ class CustomUser(AbstractUser):
     ('lab_technician', 'Lab Technician'),
 ]
     
-    groups = models.ManyToManyField(Group, blank=True) 
-    email = models.EmailField(max_length=254,unique=True)
-    phone = models.CharField(max_length=20,blank=True, null=True)
+    groups = models.ManyToManyField(Group, blank=True)
     
-    role = models.CharField(max_length=20, choices=user_roles, default="patient")
-    date_joined = models.DateTimeField(auto_now_add=True)
-    profile_picture = models.ImageField(upload_to="profile_pics/",blank=True, null=True, validators=[FileExtensionValidator(allowed_extensions=["jpg","png"])])
-    
+    """Fields from the class diagram v1.1"""
     # Custom user ID field
     user_id = models.CharField(max_length=20, unique=True, blank=True, null=True)
+    #first_name = default from AbstractUser
+    #last_name = default from AbstractUser
+    email = models.EmailField(max_length=254,unique=True)
+    #password = default from AbstractUser
+    phone = models.CharField(max_length=20,blank=True, null=True)
+    role = models.CharField(max_length=20, choices=user_roles, default="patient")
+    date_joined = models.DateTimeField(auto_now_add=True)
+    #last_login = default from AbstractUser
+    #is_active = default from AbstractUser
+    #is_staff = default from AbstractUser
+    #is_superuser= default from AbstractUser
+    profile_picture = models.ImageField(upload_to="profile_pics/",blank=True, null=True, validators=[FileExtensionValidator(allowed_extensions=["jpg","png"])])   
     
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name','last_name','role']
