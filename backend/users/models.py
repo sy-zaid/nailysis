@@ -99,4 +99,115 @@ Below are the child classes for CustomUserClass targetting individual Users Type
 """
 
 class ClinicAdmin(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE,primary_key=True)    
+    def __str__(self):
+        return f"Clinic Admin - {self.user.email}"
+
+class Doctor(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE,primary_key=True)
+    license_number = models.CharField(max_length=50, unique=True)
+    specialization = models.CharField(max_length=255)
+    qualifications = models.TextField(blank=True,null=True)
+    medical_degree = models.CharField(max_length=255)
+    years_of_experience = models.PositiveIntegerField()
+    consultation_fee = models.DecimalField(max_digits=10, decimal_places=2)
+    emergency_contact = models.CharField(max_length=20)
+    
+    
+class Patient(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, primary_key=True)
+    date_of_birth = models.DateField()
+    
+    GENDER_CHOICES = [
+        ('M','Male'),
+        ('F','Female'),
+        ('O','Other'),
+        ('P','Prefer Not To Say'),
+    ]
+    gender = models.CharField(max_length=1,choices=GENDER_CHOICES,blank=True,null=True)
+    address = models.TextField(blank=True, null=True)
+    medical_history = models.JSONField(blank=True,null=True)
+    emergency_contact = models.CharField(max_length=20,null=True)
+    
+    def __str__(self):
+        return f"{self.user.first_name} {self.user.last_name}"
+    
+class LabAdmin(models.Model):
+    user = models.OneToOneField(CustomUser,on_delete=models.CASCADE,primary_key=True)
+    license_number = models.CharField(max_length=50,unique=True)
+    designation = models.CharField(max_length=100)
+    qualifications = models.TextField(blank=True,null=True)
+    years_of_experience = models.PositiveIntegerField()
+    specialization = models.CharField(max_length=255)
+    emergency_contact = models.CharField(max_length=20)
+    
+class LabTechnician(models.Model):
+    user = models.OneToOneField(CustomUser,on_delete=models.CASCADE,primary_key=True)
+    license_number = models.CharField(max_length=50,unique=True)
+    specialization = models.CharField(max_length=255)
+    years_of_experience = models.PositiveIntegerField()
+    lab_skills = models.TextField()
+    shift_timings = models.JSONField(default=dict)  
+    emergency_contact = models.CharField(max_length=20)
+    
+    
+"""
+Creating rest of the models for the system
+"""
+
+class EHR(models.Model):
+    patient = models.ForeignKey('Patient', on_delete=models.CASCADE)
+    record_id = models.AutoField(primary_key=True)
+    current_allergies = models.JSONField(blank=True, null=True)
+    current_medications = models.JSONField(blank=True, null=True)
+    immunization_records = models.JSONField(blank=True, null=True)
+    nail_image_analysis = models.JSONField(blank=True, null=True)
+    test_results = models.JSONField(blank=True, null=True)
+    diagnoses = models.JSONField(blank=True, null=True)
+    visits = models.JSONField(blank=True, null=True)
+    family_history = models.TextField(blank=True, null=True)
+    date_created = models.DateTimeField(auto_now_add=True)
+    last_updated = models.DateTimeField(auto_now=True)
+    comments = models.TextField(blank=True, null=True)
+
+    def create_record(self):
+        # Logic to create a new record
+        self.save()
+
+    def update_record(self, data):
+        # Logic to update the record with new data
+        for key, value in data.items():
+            setattr(self, key, value)
+        self.save()
+
+    def share_record(self):
+        # Logic to share the record (e.g., with another provider)
+        pass
+
+    def generate_report(self):
+        # Logic to generate a report based on the record
+        pass
+
+    def add_test_results(self, test_data):
+        self.test_results.append(test_data)
+        self.save()
+
+    def add_diagnosis(self, diagnosis_data):
+        self.diagnoses.append(diagnosis_data)
+        self.save()
+
+    def add_medication(self, medication_data):
+        self.current_medications.append(medication_data)
+        self.save()
+
+    def view_patient_history(self):
+        # Logic to view the entire history of a patient
+        return EHR.objects.filter(patient=self.patient)
+
+    def delete_record(self):
+        # Logic to delete the record
+        self.delete()
+
+    def __str__(self):
+        return f"EHR Record for {self.patient.first_name} {self.patient.last_name}"
+
