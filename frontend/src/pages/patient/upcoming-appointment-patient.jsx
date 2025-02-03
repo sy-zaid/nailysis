@@ -67,7 +67,7 @@ const Appointment = (props) => {
 
                   <h5 className={styles.subhead}>Choose your customized appointment timings and other details</h5>
 
-                  <hr />
+                  <hr /> 
 
                   <p className={styles.subHeading}>
                     <span className={styles.icons}><i className='bx bx-loader-alt'></i></span>
@@ -273,7 +273,7 @@ const Appointment = (props) => {
             <button className={styles.filterButton}>Cancelled</button>
             <p>50 completed, 4 upcoming</p>
             
-            <button onClick={() => setFirstPopup(true)} className="btn book-appointment">
+            <button onClick={() => setFirstPopup(true)} className="_button_1muar_189">
                 Book New Appointment
             </button>
 
