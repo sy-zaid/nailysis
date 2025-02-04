@@ -62,6 +62,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'users',
+    'appointments',
+    'ehr',
 ]
 
 MIDDLEWARE = [

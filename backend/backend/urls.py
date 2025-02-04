@@ -20,6 +20,11 @@ from api.views import CreateUserView
 from django.shortcuts import redirect
 from api.views import CustomerTokenObtainViewSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from appointments.views import AppointmentViewSet
+from rest_framework.routers import DefaultRouter
+
+router = DefaultRouter()
+router.register(r'appointments', AppointmentViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -27,6 +32,8 @@ urlpatterns = [
     path("api/token/", CustomerTokenObtainViewSerializer.as_view(), name="get_token"),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="refresh"), # View for Refreshing the Token
     path("api-auth/", include("rest_framework.urls")), # Pre-built urls from the rest framework
+    
+    path('api/', include(router.urls)),
 ]
 
 from django.conf import settings
