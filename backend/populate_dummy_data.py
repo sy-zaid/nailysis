@@ -1,57 +1,81 @@
-from appointments.models import Appointment
-from users.models import Patient
-import os
-import django
+import random
+from datetime import datetime, timedelta
+from faker import Faker
+from users.models import CustomUser, Patient, Doctor, LabTechnician
+from appointments.models import DoctorAppointment, TechnicianAppointment
+from django.utils import timezone
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings')  # Replace with actual settings path
-django.setup()
+fake = Faker()
 
-from appointments.models import Appointment  # Import models after setting up Django
+# Generate dummy patients
+def create_dummy_patients(num_patients):
+    patients = []
+    for _ in range(num_patients):
+        user = CustomUser.objects.create_user(
+            email=f"patient{fake.unique.random_number(digits=5)}@example.com",
+            first_name=fake.first_name(),
+            last_name=fake.last_name(),
+            password="password123",
+            role="patient",
+        )
+        patient = Patient.objects.create(
+            user=user,
+            date_of_birth=fake.date_of_birth(minimum_age=18, maximum_age=80),
+            gender=random.choice(['M', 'F']),
+            address=fake.address(),
+            medical_history={},
+            emergency_contact=fake.phone_number(),
+        )
+        patients.append(patient)
+    return patients
 
-from django.contrib.auth import get_user_model
-from users.models import Patient
+# Generate dummy doctors
+def create_dummy_doctors(num_doctors):
+    doctors = []
+    for _ in range(num_doctors):
+        user = CustomUser.objects.create_user(
+            email=f"doctor{fake.unique.random_number(digits=5)}@example.com",
+            first_name=fake.first_name(),
+            last_name=fake.last_name(),
+            password="password123",
+            role="doctor",
+        )
+        doctor = Doctor.objects.create(
+            user=user,
+            license_number=fake.unique.random_number(digits=6),
+            specialization=fake.word(),
+            qualifications=fake.text(),
+            medical_degree=fake.word(),
+            years_of_experience=random.randint(1, 30),
+            consultation_fee=random.uniform(50, 200),
+            emergency_contact=fake.phone_number(),
+        )
+        doctors.append(doctor)
+    return doctors
 
-User = get_user_model()
+# Generate dummy appointments
+def generate_dummy_appointments(num_appointments, patients, doctors):
+    for _ in range(num_appointments):
+        patient = random.choice(patients)
+        doctor = random.choice(doctors)
+        appointment_date = fake.date_between(start_date="today", end_date="+30d")
+        appointment_time = fake.time()
 
-# Create dummy users
-user1, created1 = User.objects.get_or_create(user_id=1, defaults={"email": "user1@example.com", "password": "test123"})
-user2, created2 = User.objects.get_or_create(user_id=2, defaults={"email": "user2@example.com", "password": "test123"})
+        doctor_appointment = DoctorAppointment.objects.create(
+            patient=patient,  # Assigning Patient instance
+            doctor=doctor,
+            appointment_date=appointment_date,
+            appointment_time=appointment_time,
+            appointment_type=random.choice(["Consultation", "Follow-up"]),
+            specialization=doctor.specialization,
+            consultation_fee=doctor.consultation_fee,
+        )
 
-# Create dummy patients
-patient1, created_patient1 = Patient.objects.get_or_create(user=user1)
-patient2, created_patient2 = Patient.objects.get_or_create(user=user2)
+# Create dummy data
+num_patients = 10
+num_doctors = 5
+num_appointments = 20
 
-print("Dummy patients created!")
-
-# First Appointment
-appointment1 = Appointment(
-    patient=patient1,
-    appointment_date="2025-02-04",
-    appointment_time="10:00:00",
-    status="Scheduled",
-    reminder_sent=False,
-    notes="Routine checkup"
-)
-appointment1.save()
-
-# Second Appointment
-appointment2 = Appointment(
-    patient=patient2,
-    appointment_date="2025-02-05",
-    appointment_time="11:30:00",
-    status="Completed",
-    reminder_sent=True,
-    notes="Follow-up after surgery"
-)
-appointment2.save()
-
-# Third Appointment
-appointment3 = Appointment(
-    patient=patient1,
-    appointment_date="2025-02-06",
-    appointment_time="14:00:00",
-    status="Cancelled",
-    reminder_sent=False,
-    notes="Patient canceled the appointment"
-)
-appointment3.save()
+patients = create_dummy_patients(num_patients)
+doctors = create_dummy_doctors(num_doctors)
+generate_dummy_appointments(num_appointments, patients, doctors)

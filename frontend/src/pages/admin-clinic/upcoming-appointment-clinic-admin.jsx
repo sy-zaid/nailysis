@@ -11,7 +11,7 @@ const Appointment = () => {
   const [appointments, setAppointments] = useState([]);
 
   // Retrieve token from localStorage
-  const token = localStorage.getItem("access")
+  const token = localStorage.getItem("access");
 
   useEffect(() => {
     if (!token) {
@@ -22,12 +22,16 @@ const Appointment = () => {
 
     const fetchAppointments = async () => {
       try {
-        const response = await api.get("http://127.0.0.1:8000/api/appointments/", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await api.get(
+          "http://127.0.0.1:8000/api/appointments/",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         setAppointments(response.data); // Store fetched data in state
+        console.log(response.data);
       } catch (error) {
         console.error("Error fetching appointments:", error);
       }
@@ -73,7 +77,10 @@ const Appointment = () => {
             </button>
           </div>
           <div className={styles.tableContainer}>
-            <table className={styles.table} style={{ borderCollapse: "collapse" }}>
+            <table
+              className={styles.table}
+              style={{ borderCollapse: "collapse" }}
+            >
               <thead>
                 <tr>
                   <th>#</th>
@@ -89,15 +96,22 @@ const Appointment = () => {
               </thead>
               <tbody>
                 {appointments.map((row, index) => (
-                  <tr key={row.id} className={index === 0 ? styles.noHover : ""} style={{ borderBottom: "1px solid #ddd" }}>
+                  <tr
+                    key={row.appointment_id}
+                    style={{ borderBottom: "1px solid #ddd" }}
+                  >
                     <td>{index + 1}</td>
                     <td>{row.appointment_id}</td>
-                    <td>{row.patient_name}</td>
-                    <td>{row.gender}</td>
-                    <td>{row.email}</td>
-                    <td className={styles.phoneColumn}>{row.phone}</td>
-                    <td>{row.date_time}</td>
-                    <td>{row.test_type}</td>
+                    <td>
+                      {row.patient.first_name} {row.patient.last_name}
+                    </td>
+                    <td>{row.patient.gender}</td>
+                    <td>{row.patient.email}</td>
+                    <td>{row.patient.phone}</td>
+                    <td>
+                      {row.appointment_date} {row.appointment_time}
+                    </td>
+                    <td>{row.test_type || "N/A"}</td>
                     <td className={getStatusClass(row.status)}>{row.status}</td>
                   </tr>
                 ))}
