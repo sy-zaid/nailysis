@@ -2,6 +2,10 @@ import React from "react";
 import SystemAdminDashboard from "./pages/admin-system/system-admin-dashboard";
 import ClinicAdminDashboard from "./pages/admin-clinic/clinic-admin-dashboard";
 import UpcomingAppointments from "./pages/admin-clinic/upcoming-appointment-clinic-admin";
+import UpcomingAppointmentsPatients from "./pages/patient/upcoming-appointment-patient";
+import PatientPaymentHistory from "./pages/patient/patient-payment-history";
+import PatientDiagnosticResults from "./pages/patient/patient-diagnostic-results";
+import PatientInvoiceManagement from "./pages/patient/patient-invoice-management";
 import DoctorDashboard from "./pages/doctor/doctor-dashboard";
 import PatientDashboard from "./pages/patient/patient-dashboard";
 import LabAdminDashboard from "./pages/admin-lab/lab-admin-dashboard";
@@ -82,15 +86,15 @@ export const renderPatientContent = (view) => {
     case "Test Results":
       return <PlaceholderComponent name="Test Results" />;
     case "Diagnostic Results":
-      return <PlaceholderComponent name="Diagnostic Results" />;
+      return <PatientDiagnosticResults/>;
     case "Upcoming Appointments":
-      return <UpcomingAppointments/>;
+      return <UpcomingAppointmentsPatients/>;
     case "Appointment History":
       return <PlaceholderComponent name="Appointment History" />;
     case "Generate Invoice":
-      return <PlaceholderComponent name="Generate Invoice" />;
+      return <PatientInvoiceManagement/>;
     case "View Payment History":
-      return <PlaceholderComponent name="Payment History" />;
+      return <PatientPaymentHistory/>;
     case "Feedbacks":
       return <PlaceholderComponent name="Feedbacks" />;
     case "Test Requests":
