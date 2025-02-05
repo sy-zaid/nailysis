@@ -1,35 +1,77 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styles from "../../components/CSS Files/Appointment.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import Header from "../../components/Dashboard/Header/Header";
-import Sidebar from "../../components/Dashboard/Sidebar/Sidebar";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import api from "../../api";
 
-const Appointment = (props) => {
-  const data = [
-    {
-      id: 1,
-      appointmentId: "123456",
-      patientName: "John",
-      gender: "Male",
-      email: "patient1@gmail.com",
-      phone: "+123 456 789",
-      dateTime: "10/10/2024 09:30 AM",
-      testType: "Blood Test",
-      status: "Consulted",
-    },
+const AppointmentPatients = () => {
+  const navigate = useNavigate();
+  const [appointments, setAppointments] = useState([]);
+  const [doctorId, setDoctorId] = useState('');
+  const [appointmentDate, setAppointmentDate] = useState('');
+  const [appointmentTime, setAppointmentTime] = useState('');
+  const [appointmentType, setAppointmentType] = useState('');
+  const [specialization, setSpecialization] = useState('');
+  const [consultationFee, setConsultationFee] = useState('');
 
-    {
-      id: 9,
-      appointmentId: "123456",
-      patientName: "Carl",
-      gender: "Female",
-      email: "patient9@gmail.com",
-      phone: "+123 456 789",
-      dateTime: "10/10/2024 09:30 AM",
-      testType: "COVID-19",
-      status: "Cancelled",
-    },
-  ];
+  const token = localStorage.getItem("access");
+
+  useEffect(() => {
+    if (!token) {
+      console.log("No token found, Redirecting to login");
+      navigate("/login");
+      return;
+    }
+
+    const fetchAppointments = async () => {
+      try {
+        const response = await api.get("http://127.0.0.1:8000/api/appointments/", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setAppointments(response.data);
+        console.log(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchAppointments();
+  }, [token, navigate]);
+
+  const handleAddAppointment = () => {
+    // Handle form submission to book a new appointment
+    const appointmentData = {
+      doctor_id: doctorId,
+      appointment_date: appointmentDate,
+      appointment_time: appointmentTime,
+      appointment_type: appointmentType,
+      specialization: specialization,
+      consultation_fee: consultationFee,
+    };
+
+    axios
+      .post(
+        "http://127.0.0.1:8000/api/appointments/book_appointment/",
+        appointmentData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      .then((response) => {
+        alert("Appointment booked successfully");
+        // Optionally, navigate to the appointment page or refresh the list
+        navigate("/appointments");
+      })
+      .catch((error) => {
+        console.error("Error booking appointment:", error);
+      });
+  };
 
   const getStatusClass = (status) => {
     switch (status) {
@@ -46,38 +88,72 @@ const Appointment = (props) => {
     <div className={styles.pageContainer}>
       <div className={styles.pageTop}>
         <Navbar />
-        <Header curUserRole="Appointments" />
+        <h1>Appointments</h1>
+        <p>Here you can view and manage all the booked appointments</p>
       </div>
       <div className={styles.mainContent}>
         <div className={styles.appointmentsContainer}>
           <div className={styles.filters}>
-            <button className={styles.filterButton}>All</button>
-            <button className={styles.filterButton}>Upcoming</button>
-            <button className={styles.filterButton}>Consulted</button>
-            <button className={styles.filterButton}>Cancelled</button>
-            <p>50 completed, 4 upcoming</p>
-            <button className={styles.addButton}>Add New Appointment</button>
-          </div>
-          <div className={styles.tableContainer}>
-            <div className={styles.controls}>
-              <select className={styles.bulkAction}>
-                <option>Bulk Action: Delete</option>
-              </select>
-              <select className={styles.sortBy}>
-                <option>Sort By: Ordered Today</option>
-              </select>
-              <input
-                className={styles.search}
-                type="text"
-                placeholder="Search By Patient Name"
-              />
+            <div className={styles.filterTabs}>
+              <button className={styles.filterButton}>All</button>
+              <button className={styles.filterButton}>Upcoming</button>
+              <button className={styles.filterButton}>Consulted</button>
+              <button className={styles.filterButton}>Cancelled</button>
+              <p className={styles.statusSummary}>50 completed, 4 upcoming</p>
             </div>
-            <table className={styles.table}>
+            <button className={styles.addButton} onClick={handleAddAppointment}>
+              Book New Appointment
+            </button>
+          </div>
+
+          {/* Form for Booking New Appointment */}
+          <div className={styles.formContainer}>
+            <h2>Book an Appointment</h2>
+            <form onSubmit={(e) => e.preventDefault()}>
+              <input
+                type="text"
+                placeholder="Doctor ID"
+                value={doctorId}
+                onChange={(e) => setDoctorId(e.target.value)}
+              />
+              <input
+                type="date"
+                value={appointmentDate}
+                onChange={(e) => setAppointmentDate(e.target.value)}
+              />
+              <input
+                type="time"
+                value={appointmentTime}
+                onChange={(e) => setAppointmentTime(e.target.value)}
+              />
+              <input
+                type="text"
+                placeholder="Appointment Type"
+                value={appointmentType}
+                onChange={(e) => setAppointmentType(e.target.value)}
+              />
+              <input
+                type="text"
+                placeholder="Specialization"
+                value={specialization}
+                onChange={(e) => setSpecialization(e.target.value)}
+              />
+              <input
+                type="number"
+                placeholder="Consultation Fee"
+                value={consultationFee}
+                onChange={(e) => setConsultationFee(e.target.value)}
+              />
+              <button type="submit" onClick={handleAddAppointment}>
+                Book Appointment
+              </button>
+            </form>
+          </div>
+
+          <div className={styles.tableContainer}>
+            <table className={styles.table} style={{ borderCollapse: "collapse" }}>
               <thead>
                 <tr>
-                  <th>
-                    <input type="checkbox" />
-                  </th>
                   <th>#</th>
                   <th>Appointment ID</th>
                   <th>Patient Name</th>
@@ -86,23 +162,23 @@ const Appointment = (props) => {
                   <th>Phone</th>
                   <th>Appointment Date & Time</th>
                   <th>Test Type</th>
-                  <th>Scheduled Appointment</th>
+                  <th>Status</th>
                 </tr>
               </thead>
               <tbody>
-                {data.map((row) => (
-                  <tr key={row.id}>
+                {appointments.map((row, index) => (
+                  <tr key={row.appointment_id} style={{ borderBottom: "1px solid #ddd" }}>
+                    <td>{index + 1}</td>
+                    <td>{row.appointment_id}</td>
                     <td>
-                      <input type="checkbox" />
+                      {row.patient?.user?.first_name || "No first name"}{" "}
+                      {row.patient?.user?.last_name || "No last name"}
                     </td>
-                    <td>{row.id}</td>
-                    <td>{row.appointmentId}</td>
-                    <td>{row.patientName}</td>
-                    <td>{row.gender}</td>
-                    <td>{row.email}</td>
-                    <td>{row.phone}</td>
-                    <td>{row.dateTime}</td>
-                    <td>{row.testType}</td>
+                    <td>{row.patient.gender}</td>
+                    <td>{row.patient?.user?.email || "No email"}</td>
+                    <td>{row.patient?.user?.phone || "No phone"}</td>
+                    <td>{row.appointment_date} {row.appointment_time}</td>
+                    <td>{row.test_type || "N/A"}</td>
                     <td className={getStatusClass(row.status)}>{row.status}</td>
                   </tr>
                 ))}
@@ -115,4 +191,4 @@ const Appointment = (props) => {
   );
 };
 
-export default Appointment;
+export default AppointmentPatients;

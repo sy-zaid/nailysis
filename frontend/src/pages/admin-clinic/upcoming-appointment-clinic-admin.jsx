@@ -102,12 +102,12 @@ const Appointment = () => {
                   >
                     <td>{index + 1}</td>
                     <td>{row.appointment_id}</td>
-                    <td>
-                      {row.patient.first_name} {row.patient.last_name}
-                    </td>
+                    <td>{row.patient?.user?.first_name || "No first name"} {row.patient?.user?.last_name || "No last name"}</td>
+                    
                     <td>{row.patient.gender}</td>
-                    <td>{row.patient.email}</td>
-                    <td>{row.patient.phone}</td>
+                    <td>{row.patient?.user?.email || "No email"}</td>
+                    <td>{row.patient?.user?.phone || "No phone"}</td>
+
                     <td>
                       {row.appointment_date} {row.appointment_time}
                     </td>

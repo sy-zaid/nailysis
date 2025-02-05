@@ -224,11 +224,11 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar}) => {
 
               {/* Dropdown items */}
               {item.subItems.length > 0 && openDropdown === index && (
-                <div className={styles.dropdown}>
+                <div className={styles.sbdropdown}>
                   {item.subItems.map((subItem, subIndex) => (
                     <button
                       key={subIndex}
-                      className={styles.subButton}
+                      className={styles.sbsubButton}
                       onClick={() => {
                         // Set the view based on the sub-item label
                         setView(`${subItem.label}`);
