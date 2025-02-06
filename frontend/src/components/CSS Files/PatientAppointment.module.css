@@ -1,0 +1,383 @@
+/* Existing Styles */
+
+.pageContainer {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.pageTop {
+    padding-left: 0;
+}
+
+.mainContent {
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding-top: 30px;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.appointmentsContainer {
+    flex: 1;
+    padding: 20px;
+    background-color: #f9f9f9;
+}
+
+.title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    font-size: 16px;
+    color: #555;
+    margin-bottom: 20px;
+}
+
+.filters {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.filterButton {
+    padding: 8px 16px;
+    border: none;
+    background-color: #c0c0c0;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.filterButton:hover {
+    background-color: #e0e0e0;
+}
+
+.addButton {
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.addButton:hover {
+    background-color: #0056b3;
+}
+
+.tableContainer {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.controls {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.bulkAction,
+.sortBy,
+.search {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th,
+.table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+    cursor: pointer;
+}
+
+.table th {
+    background-color: #f4f4f4;
+}
+
+.table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.table tr:hover {
+    background-color: #f1f1f1;
+}
+
+.consulted {
+    color: green;
+}
+
+.cancelled {
+    color: red;
+}
+
+.scheduled {
+    color: orange;
+}
+
+/* New Styles for Modal Popup */
+
+/* Modal Overlay (Background Blur Effect) */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(10px); /* Apply blur to the background */
+}
+
+/* Modal Content (The Popup Itself) */
+.modal-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    width: 75%; /* Modal takes up 75% of the page's width */
+    max-width: 800px; /* Set a max-width for large screens */
+    height: auto;
+    max-height: 80%; /* Prevent the modal from becoming too tall */
+    overflow-y: auto; /* Add scroll if content is too tall */
+    text-align: left;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add a shadow to make the modal pop */
+    position: relative; /* For positioning the close button */
+}
+
+/* Modal Heading */
+.modal-content h2 {
+    margin-top: 0;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/* Close Button (Positioned in the Top-Right Corner of the Modal) */
+.modal-content .close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #333;
+}
+
+.modal-content .close-btn:hover {
+    color: red; /* Change close button color on hover */
+}
+
+/* Add some basic styling for buttons */
+.btn {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+
+
+
+
+
+
+
+
+
+/* -------------------------------------------------------------------- */
+
+
+
+  .formContainer {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 1200px;
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: -10px;
+  }
+
+  .subhead {
+    font-size: 18px;
+    color: #4E4E4E;
+    font-weight: 300;
+    margin-bottom: 10px;
+  }
+
+  .heading {
+    font-size: 18px;
+    color: #4E4E4E;
+    font-weight: 600;
+  }
+
+  .subHeading {
+    margin: 10px 10px 20px auto;
+  }
+
+  .newSubHeading {
+    margin: 10px 10px 10px auto;
+  }
+
+  .icons, .statusIcon {
+    font-size: 18px;
+    margin-right: 10px;
+  }
+
+  .statusIcon {
+    margin-left: 23px;
+  }
+
+  .key, .statusValue, locationValue {
+    color: #4E4E4E;
+    font-size: 16px;
+    margin-right: 10px;
+  }
+
+  .statusValue {
+    color: #FFB031;
+  }
+  
+  .locationValue {
+    color: #000;
+    font-weight: 600;
+    margin-right: 35px;
+  }
+
+  .qrButton {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  h2 {
+    font-size: 24px;
+    font-weight: bold;
+  }
+  
+  /* h3 {
+    margin-top: 20px;
+    margin-bottom: 15px;
+    font-size: 18px;
+    font-weight: bold;
+  } */
+  
+  .formSection {
+    margin-bottom: 20px;
+  }
+  
+  .formGroup {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+
+  .newFormGroup {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    /* gap: 10px; */
+  }
+
+  .documentFormGroup {
+    display: flex;
+    justify-content: space-between;
+    /* gap: 10px; */
+  }
+  
+  label {
+    margin-top: 5px;
+    color: #4E4E4E;
+    font-size: 16px;
+  }
+  
+  input,
+  select {
+    width: 100%;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+    border-radius: 5px;
+    background: #f9f9f9;
+    outline: none;
+  }
+
+  
+  .actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+
+  .newActions {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .cancelButton {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  .confirmButton {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .regBtn {
+    text-decoration: none;
+  }
+  
+  .uploadDocBtn {
+    font-size: 14px;
+    border-radius: 25px;
+    padding-left: 25px;
+    padding-right: 25px;
+  }
+
+  i {
+    font-size: 24px;
+  }
+
+  i:hover {
+    background-color: #c9c9c9;
+    border: none;
+    border-radius: 50%;
+  }
