@@ -1,116 +1,48 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styles from "../../components/CSS Files/Appointment.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import Header from "../../components/Dashboard/Header/Header";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import api from "../../api";
 
-const Appointment = (props) => {
+const Appointment = () => {
   const navigate = useNavigate();
+  const [appointments, setAppointments] = useState([]);
+
+  // Retrieve token from localStorage
+  const token = localStorage.getItem("access");
+
+  useEffect(() => {
+    if (!token) {
+      console.log("No token found. Redirecting to login...");
+      navigate("/login"); // Redirect if no token
+      return;
+    }
+
+    const fetchAppointments = async () => {
+      try {
+        const response = await api.get(
+          "http://127.0.0.1:8000/api/appointments/",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setAppointments(response.data); // Store fetched data in state
+        console.log(response.data);
+      } catch (error) {
+        console.error("Error fetching appointments:", error);
+      }
+    };
+
+    fetchAppointments();
+  }, [token, navigate]); // Runs when `token` or `navigate` changes
+
   const handleAddAppointment = () => {
     navigate("/add-appointment");
   };
-
-  const data = [
-    {
-      id: 1,
-      appointmentId: "123456",
-      patientName: "John",
-      gender: "Male",
-      email: "patient1@gmail.com",
-      phone: "+123 456 789",
-      dateTime: "10/10/2024 09:30 AM",
-      testType: "Blood Test",
-      status: "Consulted",
-    },
-    {
-      id: 2,
-      appointmentId: "123456",
-      patientName: "Doe",
-      gender: "Male",
-      email: "patient2@gmail.com",
-      phone: "+123 456 789",
-      dateTime: "10/10/2024 09:30 AM",
-      testType: "Blood Test",
-      status: "Cancelled",
-    },
-    {
-      id: 3,
-      appointmentId: "123456",
-      patientName: "Doe",
-      gender: "Male",
-      email: "patient2@gmail.com",
-      phone: "+123 456 789",
-      dateTime: "10/10/2024 09:30 AM",
-      testType: "Blood Test",
-      status: "11/11/2024",
-    },
-    {
-      id: 4,
-      appointmentId: "123456",
-      patientName: "Carl",
-      gender: "Female",
-      email: "patient4@gmail.com",
-      phone: "+123 456 789",
-      dateTime: "10/10/2024 09:30 AM",
-      testType: "Urinalysis",
-      status: "11/11/2024",
-    },
-    {
-      id: 5,
-      appointmentId: "123456",
-      patientName: "Carl",
-      gender: "Female",
-      email: "patient5@gmail.com",
-      phone: "+123 456 789",
-      dateTime: "10/10/2024 09:30 AM",
-      testType: "Urinalysis",
-      status: "Consulted",
-    },
-    {
-      id: 6,
-      appointmentId: "123456",
-      patientName: "Doe",
-      gender: "Female",
-      email: "patient6@gmail.com",
-      phone: "+123 456 789",
-      dateTime: "10/10/2024 09:30 AM",
-      testType: "Urinalysis",
-      status: "11/11/2024",
-    },
-    {
-      id: 7,
-      appointmentId: "123456",
-      patientName: "Carl",
-      gender: "Non Binary",
-      email: "patient7@gmail.com",
-      phone: "+123 456 789",
-      dateTime: "10/10/2024 09:30 AM",
-      testType: "COVID-19",
-      status: "Consulted",
-    },
-    {
-      id: 8,
-      appointmentId: "123456",
-      patientName: "Carl",
-      gender: "Female",
-      email: "patient8@gmail.com",
-      phone: "+123 456 789",
-      dateTime: "10/10/2024 09:30 AM",
-      testType: "COVID-19",
-      status: "11/11/2024",
-    },
-    {
-      id: 9,
-      appointmentId: "123456",
-      patientName: "Carl",
-      gender: "Female",
-      email: "patient9@gmail.com",
-      phone: "+123 456 789",
-      dateTime: "10/10/2024 09:30 AM",
-      testType: "COVID-19",
-      status: "Cancelled",
-    },
-  ];
 
   const getStatusClass = (status) => {
     switch (status) {
@@ -145,25 +77,12 @@ const Appointment = (props) => {
             </button>
           </div>
           <div className={styles.tableContainer}>
-            <div className={styles.controls}>
-              <select className={styles.bulkAction}>
-                <option>Bulk Action: Delete</option>
-              </select>
-              <div className={styles.headingBox}>
-                <select className={styles.sortBy}>
-                  <option>Sort By: Ordered Today</option>
-                </select>
-                <input
-                  className={styles.search}
-                  type="text"
-                  placeholder="Search By Patient Name"
-                />
-              </div>
-            </div>
-            <table className={styles.table} style={{ borderCollapse: "collapse" }}>
+            <table
+              className={styles.table}
+              style={{ borderCollapse: "collapse" }}
+            >
               <thead>
                 <tr>
-                  <th></th>
                   <th>#</th>
                   <th>Appointment ID</th>
                   <th>Patient Name</th>
@@ -172,29 +91,27 @@ const Appointment = (props) => {
                   <th>Phone</th>
                   <th>Appointment Date & Time</th>
                   <th>Test Type</th>
-                  <th>Scheduled Appointment</th>
+                  <th>Status</th>
                 </tr>
               </thead>
               <tbody>
-                {data.map((row, index) => (
+                {appointments.map((row, index) => (
                   <tr
-                    key={row.id}
-                    className={index === 0 ? styles.noHover : ""}
+                    key={row.appointment_id}
                     style={{ borderBottom: "1px solid #ddd" }}
                   >
-                    {index !== 0 && (
-                      <td>
-                        <input type="checkbox" />
-                      </td>
-                    )}
-                    <td>{row.id}</td>
-                    <td>{row.appointmentId}</td>
-                    <td>{row.patientName}</td>
-                    <td>{row.gender}</td>
-                    <td>{row.email}</td>
-                    <td className={styles.phoneColumn}>{row.phone}</td>
-                    <td>{row.dateTime}</td>
-                    <td>{row.testType}</td>
+                    <td>{index + 1}</td>
+                    <td>{row.appointment_id}</td>
+                    <td>{row.patient?.user?.first_name || "No first name"} {row.patient?.user?.last_name || "No last name"}</td>
+                    
+                    <td>{row.patient.gender}</td>
+                    <td>{row.patient?.user?.email || "No email"}</td>
+                    <td>{row.patient?.user?.phone || "No phone"}</td>
+
+                    <td>
+                      {row.appointment_date} {row.appointment_time}
+                    </td>
+                    <td>{row.test_type || "N/A"}</td>
                     <td className={getStatusClass(row.status)}>{row.status}</td>
                   </tr>
                 ))}

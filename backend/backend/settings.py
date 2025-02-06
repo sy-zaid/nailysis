@@ -58,10 +58,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_extensions',
     'api',
     'rest_framework',
     'corsheaders',
     'users',
+    'appointments',
+    'ehr',
+    
 ]
 
 MIDDLEWARE = [
@@ -158,6 +162,9 @@ CORS_ALLOWS_CREDENTIALS = True
 
 AUTH_USER_MODEL = "users.CustomUser"
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'  # Or wherever you want to store media files
+
 
 JAZZMIN_SETTINGS = {
     "site_title": "Nailysis Admin",
@@ -173,3 +180,4 @@ JAZZMIN_SETTINGS = {
 
 
 JAZZMIN_DEFAULT_ADMIN_INTERFACE = True
+

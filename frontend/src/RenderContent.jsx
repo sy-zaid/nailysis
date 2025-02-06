@@ -1,8 +1,8 @@
 import React from "react";
 import SystemAdminDashboard from "./pages/admin-system/system-admin-dashboard";
 import ClinicAdminDashboard from "./pages/admin-clinic/clinic-admin-dashboard";
-import UpcomingAppointments from "./pages/admin-clinic/upcoming-appointment-clinic-admin";
-import UpcomingAppointmentsPatients from "./pages/patient/upcoming-appointment-patient";
+import UpcomingAppointmentsClinicAdmin from "./pages/admin-clinic/upcoming-appointment-clinic-admin";
+import UpcomingAppointmentsPatient from "./pages/patient/upcoming-appointment-patient"
 import PatientPaymentHistory from "./pages/patient/patient-payment-history";
 import PatientDiagnosticResults from "./pages/patient/patient-diagnostic-results";
 import PatientInvoiceManagement from "./pages/patient/patient-invoice-management";
@@ -38,7 +38,7 @@ export const renderClinicAdminContent = (view) => {
     case "Diagnostic Results":
       return <PlaceholderComponent name="Diagnostic Results" />;
     case "Upcoming Appointments":
-      return <UpcomingAppointments />;
+      return <UpcomingAppointmentsClinicAdmin />;
     case "Appointment History":
       return <PlaceholderComponent name="Appointment History" />;
     case "Generate Invoice":
@@ -62,7 +62,7 @@ export const renderDoctorContent = (view) => {
     case "Diagnostic Results":
       return <PlaceholderComponent name="Diagnostic Results" />;
     case "Upcoming Appointments":
-      return <UpcomingAppointments/>;
+      return <PlaceholderComponent name="Upcoming Appointment"/>;
     case "Appointment History":
       return <PlaceholderComponent name="Appointment History" />;
     case "Generate Invoice":
@@ -88,7 +88,7 @@ export const renderPatientContent = (view) => {
     case "Diagnostic Results":
       return <PatientDiagnosticResults/>;
     case "Upcoming Appointments":
-      return <UpcomingAppointmentsPatients/>;
+      return <UpcomingAppointmentsPatient/>;
     case "Appointment History":
       return <PlaceholderComponent name="Appointment History" />;
     case "Generate Invoice":
@@ -114,7 +114,7 @@ export const renderLabAdminContent = (view) => {
     case "Diagnostic Results":
       return <PlaceholderComponent name="Diagnostic Results" />;
     case "Upcoming Appointments":
-      return <UpcomingAppointments/>;
+      return <PlaceholderComponent name="Upcoming Appointment"/>;
     case "Appointment History":
       return <PlaceholderComponent name="Appointment History" />;
     case "Generate Invoice":
@@ -140,7 +140,7 @@ export const renderLabTechnicianContent = (view) => {
     case "Diagnostic Results":
       return <PlaceholderComponent name="Diagnostic Results" />;
     case "Upcoming Appointments":
-      return <UpcomingAppointments/>;
+      return <PlaceholderComponent name="Upcoming Appointment"/>;
     case "Appointment History":
       return <PlaceholderComponent name="Appointment History" />;
     case "Generate Invoice":
