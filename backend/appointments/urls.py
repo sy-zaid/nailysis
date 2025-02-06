@@ -8,9 +8,9 @@ from .views import AppointmentViewSet,DoctorAppointmentViewset,LabTechnicianAppo
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
-router.register(r'appointments', AppointmentViewSet)
-router.register(r'doctor_appointments', DoctorAppointmentViewset)
-router.register(r'technician_appointments', LabTechnicianAppointmentViewset)
+router.register(r'appointments', AppointmentViewSet, basename='appointments')
+router.register(r'doctor_appointments', DoctorAppointmentViewset, basename='doctor_appointments')
+router.register(r'technician_appointments', LabTechnicianAppointmentViewset, basename='technician_appointments')
 
 urlpatterns = [
     path('', include(router.urls)),  # Automatically includes all routes for the viewsets
