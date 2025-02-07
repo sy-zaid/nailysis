@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../components/CSS Files/PatientAppointment.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
-import Popup from "../../components/Popup/Popup";
 import PopupBookAppointment from "../../components/Popup/popup-book-appointment";
 import PopupAppointmentDetails from "../../components/Popup/popup-appointment-details";
-import Header from "../../components/Dashboard/Header/Header";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import api from "../../api";
@@ -103,12 +101,11 @@ const AppointmentPatients = () => {
     }
   };
 
-
   return (
     <div className={styles.pageContainer}>
       <PopupBookAppointment></PopupBookAppointment>
       <PopupAppointmentDetails></PopupAppointmentDetails>
-      
+
       <div className={styles.pageTop}>
         <Navbar />
         <h1>Appointments</h1>

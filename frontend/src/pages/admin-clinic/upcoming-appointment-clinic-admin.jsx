@@ -5,6 +5,8 @@ import Header from "../../components/Dashboard/Header/Header";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import api from "../../api";
+import PopupBookAppointment from "../../components/Popup/popup-book-appointment";
+import PopupAppointmentDetails from "../../components/Popup/popup-appointment-details";
 
 const Appointment = () => {
   const navigate = useNavigate();
@@ -56,7 +58,9 @@ const Appointment = () => {
   };
 
   return (
+    
     <div className={styles.pageContainer}>
+      
       <div className={styles.pageTop}>
         <Navbar />
         <h1>Appointments</h1>

@@ -1,15 +1,35 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./popup-book-appointment.module.css";
-import { useState } from "react";
 import Popup from "./Popup.jsx";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 
-const PopupBookAppointment = () => {
+const dummyUsers = [
+  {
+    id: 1,
+    name: "John Doe",
+    age: 25,
+    gender: "Male",
+    phone: "+92 12345678",
+    email: "johndoe@gmail.com",
+  },
+  {
+    id: 2,
+    name: "Jane Smith",
+    age: 30,
+    gender: "Female",
+    phone: "+92 87654321",
+    email: "janesmith@gmail.com",
+  },
+];
+
+const PopupBookAppointment = (userRole) => {
   const [popupTrigger, setPopupTrigger] = useState(true);
-
   const navigate = useNavigate();
   const [appointments, setAppointments] = useState([]);
+
+  // State for appointment details
   const [doctorId, setDoctorId] = useState("");
   const [appointmentDate, setAppointmentDate] = useState("");
   const [appointmentTime, setAppointmentTime] = useState("");
@@ -17,8 +37,18 @@ const PopupBookAppointment = () => {
   const [specialization, setSpecialization] = useState("");
   const [consultationFee, setConsultationFee] = useState("");
 
+  // State for current signed-in user
+  const [currentUser, setCurrentUser] = useState(dummyUsers[0]); // Assume first user is logged in
+
+  //Get the current userrole from localstorage
+  const curUserRole = localStorage.getItem("role");
+
+  // Autofill function (if user changes)
+  useEffect(() => {
+    setCurrentUser(dummyUsers[0]); // Assume user is John Doe for now
+  }, []);
+
   const handleAddAppointment = (e) => {
-    // validation
     e.preventDefault();
 
     const appointmentData = {
@@ -28,6 +58,11 @@ const PopupBookAppointment = () => {
       appointment_type: appointmentType,
       specialization: specialization,
       consultation_fee: consultationFee,
+      patient_name: currentUser.name,
+      patient_age: currentUser.age,
+      patient_gender: currentUser.gender,
+      patient_phone: currentUser.phone,
+      patient_email: currentUser.email,
     };
 
     axios
@@ -36,13 +71,12 @@ const PopupBookAppointment = () => {
       })
       .then((response) => {
         alert("Appointment Booked Successfully");
-        setAppointments([...appointments, response.data]);// Add the new appointment to the list
-        navigate("/")
-
+        setAppointments([...appointments, response.data]);
+        navigate("/");
       })
-      .catch((error) =>{
-        alert("Failed to book appointment")
-        console.log(error)
+      .catch((error) => {
+        alert("Failed to book appointment");
+        console.log(error);
       });
   };
 
@@ -58,53 +92,63 @@ const PopupBookAppointment = () => {
         </h5>
         <hr />
 
-        <p className={styles.subHeading}>
-          <span className={styles.icons}>
-            <i className="bx bx-loader-alt"></i>
-          </span>
-          <span className={styles.key}>Status: </span>
-          <span className={styles.statusValue}>Upcoming</span>
-          <span className={styles.icons}>
-            <i className="bx bx-map"></i>
-          </span>
-          <span className={styles.key}>Location: </span>
-          <span className={styles.locationValue}>
-            Lifeline Hospital, North Nazimabad
-          </span>
-        </p>
-
         <form onSubmit={handleAddAppointment}>
+          {/* Patient Information Autofilled */}
+
+          {/* CONDITION | Only editable profile section if the user is not a patient */}
+          {/* Patient Information - Always visible, but editable only for doctors */}
           <div className={styles.formSection}>
             <h3>Patient Information</h3>
             <div className={styles.formGroup}>
               <div>
                 <label>Name</label>
-                <input type="text" placeholder="John Doe" />
+                <input
+                  type="text"
+                  placeholder="John Doe"
+                  disabled={curUserRole === "patient"}
+                />
               </div>
               <div>
                 <label>Age</label>
-                <input type="number" placeholder="21" />
+                <input
+                  type="number"
+                  placeholder="21"
+                  disabled={curUserRole === "patient"}
+                />
               </div>
               <div>
                 <label>Gender</label>
-                <input type="text" placeholder="Male" />
+                <input
+                  type="text"
+                  placeholder="Male"
+                  disabled={curUserRole === "patient"}
+                />
               </div>
               <div>
                 <label>Phone Number</label>
-                <input type="tel" placeholder="+92 12345678" />
+                <input
+                  type="tel"
+                  placeholder="+92 12345678"
+                  disabled={curUserRole === "patient"}
+                />
               </div>
               <div>
                 <label>Email Address</label>
-                <input type="tel" placeholder="patient@gmail.com" />
+                <input
+                  type="email"
+                  placeholder="patient@gmail.com"
+                  disabled={curUserRole === "patient"}
+                />
               </div>
             </div>
           </div>
 
+          {/* Appointment Details */}
           <div className={styles.formSection}>
             <h3>Appointment Details</h3>
             <div className={styles.formGroup}>
               <div>
-                <label>Specification</label>
+                <label>Specialization</label>
                 <select
                   value={specialization}
                   onChange={(e) => setSpecialization(e.target.value)}
@@ -133,7 +177,6 @@ const PopupBookAppointment = () => {
                   }}
                 />
               </div>
-
               <div>
                 <label>Visit Purpose</label>
                 <select
@@ -146,6 +189,7 @@ const PopupBookAppointment = () => {
             </div>
           </div>
 
+          {/* Payment Details */}
           <div className={styles.formSection}>
             <h3>Payment Details</h3>
             <div className={styles.formGroup}>
