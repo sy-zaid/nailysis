@@ -1,118 +1,186 @@
 import React from "react";
+import styles from "./popup-book-appointment.module.css";
+import { useState } from "react";
+import Popup from "./Popup.jsx";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
-const PopupBookAppointments = () => {
+const PopupBookAppointment = () => {
+  const [popupTrigger, setPopupTrigger] = useState(true);
+
+  const navigate = useNavigate();
+  const [appointments, setAppointments] = useState([]);
+  const [doctorId, setDoctorId] = useState("");
+  const [appointmentDate, setAppointmentDate] = useState("");
+  const [appointmentTime, setAppointmentTime] = useState("");
+  const [appointmentType, setAppointmentType] = useState("");
+  const [specialization, setSpecialization] = useState("");
+  const [consultationFee, setConsultationFee] = useState("");
+
+  const handleAddAppointment = (e) => {
+    // validation
+    e.preventDefault();
+
+    const appointmentData = {
+      doctor_id: doctorId,
+      appointment_date: appointmentDate,
+      appointment_time: appointmentTime,
+      appointment_type: appointmentType,
+      specialization: specialization,
+      consultation_fee: consultationFee,
+    };
+
+    axios
+      .post("link", appointmentData, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((response) => {
+        alert("Appointment Booked Successfully");
+        setAppointments([...appointments, response.data]);// Add the new appointment to the list
+        navigate("/")
+
+      })
+      .catch((error) =>{
+        alert("Failed to book appointment")
+        console.log(error)
+      });
+  };
+
   return (
-    <div className={styles.formContainer}>
-      <div className={styles.header}>
-        <h2>Schedule Your Appointment</h2>
-      </div>
-
-      <h5 className={styles.subhead}>
-        Choose your customized appointment timings and other details
-      </h5>
-      <hr />
-
-      <p className={styles.subHeading}>
-        <span className={styles.icons}>
-          <i className="bx bx-loader-alt"></i>
-        </span>
-        <span className={styles.key}>Status: </span>
-        <span className={styles.statusValue}>Upcoming</span>
-        <span className={styles.icons}>
-          <i className="bx bx-map"></i>
-        </span>
-        <span className={styles.key}>Location: </span>
-        <span className={styles.locationValue}>
-          Lifeline Hospital, North Nazimabad
-        </span>
-      </p>
-
-      <div className={styles.formSection}>
-        <h3>Patient Information</h3>
-        <div className={styles.formGroup}>
-          <div>
-            <label>Name</label>
-            <input type="text" placeholder="John Doe" />
-          </div>
-          <div>
-            <label>Age</label>
-            <input type="number" placeholder="21" />
-          </div>
-          <div>
-            <label>Gender</label>
-            <input type="text" placeholder="Male" />
-          </div>
-          <div>
-            <label>Phone Number</label>
-            <input type="tel" placeholder="+92 12345678" />
-          </div>
-          <div>
-            <label>Email Address</label>
-            <input type="tel" placeholder="patient@gmail.com" />
-          </div>
+    <Popup trigger={popupTrigger} setTrigger={setPopupTrigger}>
+      <div className={styles.formContainer}>
+        <div className={styles.header}>
+          <h2>Schedule Your Appointment</h2>
         </div>
-      </div>
 
-      <div className={styles.formSection}>
-        <h3>Appointment Details</h3>
-        <div className={styles.formGroup}>
-          <div>
-            <label>Specification</label>
-            <select>
-              <option>Dermatologist</option>
-            </select>
-          </div>
-          <div>
-            <label>Doctor/Provider</label>
-            <select>
-              <option>Dr. Jane Doe</option>
-            </select>
-          </div>
-          <div>
-            <label>Date & Time (Available)</label>
-            <input type="datetime-local" />
+        <h5 className={styles.subhead}>
+          Choose your customized appointment timings and other details
+        </h5>
+        <hr />
+
+        <p className={styles.subHeading}>
+          <span className={styles.icons}>
+            <i className="bx bx-loader-alt"></i>
+          </span>
+          <span className={styles.key}>Status: </span>
+          <span className={styles.statusValue}>Upcoming</span>
+          <span className={styles.icons}>
+            <i className="bx bx-map"></i>
+          </span>
+          <span className={styles.key}>Location: </span>
+          <span className={styles.locationValue}>
+            Lifeline Hospital, North Nazimabad
+          </span>
+        </p>
+
+        <form onSubmit={handleAddAppointment}>
+          <div className={styles.formSection}>
+            <h3>Patient Information</h3>
+            <div className={styles.formGroup}>
+              <div>
+                <label>Name</label>
+                <input type="text" placeholder="John Doe" />
+              </div>
+              <div>
+                <label>Age</label>
+                <input type="number" placeholder="21" />
+              </div>
+              <div>
+                <label>Gender</label>
+                <input type="text" placeholder="Male" />
+              </div>
+              <div>
+                <label>Phone Number</label>
+                <input type="tel" placeholder="+92 12345678" />
+              </div>
+              <div>
+                <label>Email Address</label>
+                <input type="tel" placeholder="patient@gmail.com" />
+              </div>
+            </div>
           </div>
 
-          <div>
-            <label>Visit Purpose</label>
-            <select>
-              <option>Consultation</option>
-            </select>
-          </div>
-        </div>
-      </div>
+          <div className={styles.formSection}>
+            <h3>Appointment Details</h3>
+            <div className={styles.formGroup}>
+              <div>
+                <label>Specification</label>
+                <select
+                  value={specialization}
+                  onChange={(e) => setSpecialization(e.target.value)}
+                >
+                  <option>Dermatologist</option>
+                </select>
+              </div>
+              <div>
+                <label>Doctor/Provider</label>
+                <select
+                  value={doctorId}
+                  onChange={(e) => setDoctorId(e.target.value)}
+                >
+                  <option>Dr. Jane Doe</option>
+                </select>
+              </div>
+              <div>
+                <label>Date & Time (Available)</label>
+                <input
+                  type="datetime-local"
+                  value={`${appointmentDate}T${appointmentTime}`}
+                  onChange={(e) => {
+                    const [date, time] = e.target.value.split("T");
+                    setAppointmentDate(date);
+                    setAppointmentTime(time);
+                  }}
+                />
+              </div>
 
-      <div className={styles.formSection}>
-        <h3>Payment Details</h3>
-        <div className={styles.formGroup}>
-          <div>
-            <label>Discount Code</label>
-            <select>
-              <option>No Discount</option>
-            </select>
+              <div>
+                <label>Visit Purpose</label>
+                <select
+                  value={appointmentType}
+                  onChange={(e) => setAppointmentType(e.target.value)}
+                >
+                  <option>Consultation</option>
+                </select>
+              </div>
+            </div>
           </div>
-          <div>
-            <label>Service Fee</label>
-            <p className={styles.subHeading}>RS/- 5000</p>
-          </div>
-          <div>
-            <label>Sales Tax</label>
-            <p className={styles.subHeading}>RS/- 5.0</p>
-          </div>
-        </div>
-      </div>
 
-      <div className={styles.actions}>
-        <button
-          className={styles.cancelButton}
-          onClick={() => setFirstPopup(false)}
-        >
-          Cancel
-        </button>
-        <button className={styles.confirmButton}>Continue to Next Step</button>
+          <div className={styles.formSection}>
+            <h3>Payment Details</h3>
+            <div className={styles.formGroup}>
+              <div>
+                <label>Discount Code</label>
+                <select>
+                  <option>No Discount</option>
+                </select>
+              </div>
+              <div>
+                <label>Service Fee</label>
+                <p className={styles.subHeading}>RS/- {consultationFee}</p>
+              </div>
+              <div>
+                <label>Sales Tax</label>
+                <p className={styles.subHeading}>RS/- 5.0</p>
+              </div>
+            </div>
+          </div>
+
+          <div className={styles.actions}>
+            <button
+              className={styles.cancelButton}
+              onClick={() => setPopupTrigger(false)}
+            >
+              Cancel
+            </button>
+            <button className={styles.confirmButton} type="submit">
+              Continue to Next Step
+            </button>
+          </div>
+        </form>
       </div>
-    </div>
+    </Popup>
   );
 };
 
-export default PopupBookAppointments;
+export default PopupBookAppointment;
