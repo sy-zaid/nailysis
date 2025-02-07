@@ -101,8 +101,8 @@ const AppointmentPatients = () => {
     }
   };
 
-  const [firstPopup, setFirstPopup] = useState(false);
-  const [secondPopup, setSecondPopup] = useState(false);
+  const [firstPopup, setFirstPopup] = useState(true);
+  const [secondPopup, setSecondPopup] = useState(true);
 
   const handleTableEntryClick = () => {
     setSecondPopup(true);
