@@ -395,7 +395,7 @@ const AppointmentPatients = () => {
                 value={consultationFee}
                 onChange={(e) => setConsultationFee(e.target.value)}
               />
-              <button type="button" onClick={() => setFirstPopup(true)}>
+              <button type="button" onClick={handleAddAppointment}>
                 Book Appointment
               </button>
             </form>
