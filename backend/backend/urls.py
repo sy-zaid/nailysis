@@ -19,6 +19,8 @@ from api.views import CreateUserView, CustomerTokenObtainViewSerializer
 from rest_framework_simplejwt.views import TokenRefreshView
 from appointments.urls import urlpatterns as appointment_urls
 from appointments.urls import router
+from users.urls import router as user_router
+from users.urls import urlpatterns as users_urls
 
 # Define URL patterns
 urlpatterns = [
@@ -42,5 +44,8 @@ urlpatterns = [
 
     # Appointment API endpoints
     path("api/", include(router.urls)),  # Registers viewsets using Django REST Framework's router
-    *appointment_urls   # Additional appointment-related URLs (e.g., doctor-specific endpoints)
+    *appointment_urls,   # Additional appointment-related URLs (e.g., doctor-specific endpoints)
+
+    path('api/', include(user_router.urls)),
+    *users_urls,
 ]

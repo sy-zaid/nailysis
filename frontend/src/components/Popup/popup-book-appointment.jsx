@@ -24,6 +24,14 @@ const dummyUsers = [
   },
 ];
 
+const visitPurposes = [
+  "Consultation",
+  "Follow-up",
+  "Routine Checkup",
+  "Emergency Visit",
+  "Prescription Refill",
+];
+
 const PopupBookAppointment = (userRole) => {
   const [popupTrigger, setPopupTrigger] = useState(true);
   const navigate = useNavigate();
@@ -183,7 +191,11 @@ const PopupBookAppointment = (userRole) => {
                   value={appointmentType}
                   onChange={(e) => setAppointmentType(e.target.value)}
                 >
-                  <option>Consultation</option>
+                  {visitPurposes.map((purpose, index) => (
+                    <option key={index} value={purpose}>
+                      {purpose}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>

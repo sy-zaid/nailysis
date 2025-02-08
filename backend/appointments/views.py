@@ -4,7 +4,6 @@ from rest_framework.response import Response
 from .models import Appointment, DoctorAppointment, TechnicianAppointment
 from .serializers import AppointmentSerializer, DoctorAppointmentSerializer, TechnicianAppointmentSerializer
 from users.models import Patient, Doctor
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from django.shortcuts import get_object_or_404
 import logging
@@ -13,7 +12,7 @@ import logging
 class AppointmentViewSet(viewsets.ModelViewSet):
     queryset = Appointment.objects.all()
     serializer_class = AppointmentSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         user = self.request.user
@@ -41,7 +40,7 @@ class AppointmentViewSet(viewsets.ModelViewSet):
 class DoctorAppointmentViewset(viewsets.ModelViewSet):
     queryset = DoctorAppointment.objects.all()
     serializer_class = DoctorAppointmentSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     # Create a doctor appointment
     def perform_create(self, serializer):
@@ -88,7 +87,7 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
 class LabTechnicianAppointmentViewset(viewsets.ModelViewSet):
     queryset = TechnicianAppointment.objects.all()
     serializer_class = TechnicianAppointmentSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     # Create a lab technician appointment
     def perform_create(self, serializer):
