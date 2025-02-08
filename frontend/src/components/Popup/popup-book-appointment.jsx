@@ -12,127 +12,141 @@ const visitPurposes = [
   "Prescription Refill",
 ];
 
-const PopupBookAppointment = ({ userRole }) => {
+const PopupBookAppointment = () => {
   const [popupTrigger, setPopupTrigger] = useState(true);
   const navigate = useNavigate();
   const [appointments, setAppointments] = useState([]);
   const token = localStorage.getItem("access");
-  // State for appointment details
-  const [doctorId, setDoctorId] = useState("");
-  const [appointmentDate, setAppointmentDate] = useState("");
-  const [appointmentTime, setAppointmentTime] = useState("");
-  const [appointmentType, setAppointmentType] = useState("");
-  const [specialization, setSpecialization] = useState("");
-  const [fee, setFee] = useState([]);
-
-  // Get the current userrole from localstorage
   const curUserRole = localStorage.getItem("role");
 
-  // For holding specializations and doctors fetched from API
+  // State for appointment details
+  const [formData, setFormData] = useState({
+    doctorId: "",
+    appointmentDate: "",
+    appointmentTime: "",
+    appointmentType: "",
+    specialization: "",
+    fee: "0.00",
+  });
+
   const [specializations, setSpecializations] = useState([]);
-  const [curSpecialization, setCurSpecialization] = useState();
   const [doctors, setDoctors] = useState([]);
 
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleDateTimeChange = (e) => {
+    const [date, time] = e.target.value.split("T");
+    setFormData((prev) => ({
+      ...prev,
+      appointmentDate: date,
+      appointmentTime: time || "",
+    }));
+  };
+
+  // Fetch specializations on component mount
   useEffect(() => {
-    axios
-      .get("http://127.0.0.1:8000/api/doctors/", {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((response) => {
-        console.log("API Response:", response.data); // Check the response structure here
-        setSpecializations(response.data); // Set the specializations array directly
-      })
-      .catch((error) => {
-        console.error("Failed to fetch doctors and specializations", error);
-      });
-  }, []);
-
-  useEffect(() => {
-    if (specialization) {
-      axios
-        .get(
-          `http://127.0.0.1:8000/api/doctors/?specialization=${specialization}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        )
-        .then((response) => {
-          console.log("Doctors Response:", response.data);
-
-          // Extract required doctor details
-          const formattedDoctors = response.data.map((doc) => ({
-            id: doc.user.id, // Use user.id as the doctor ID
-            name: `${doc.user.first_name} ${doc.user.last_name}`, // Full name
-            // fee: doc.fee, // Fee details
-          }));
-
-          setDoctors(formattedDoctors); // Update doctors state
-        })
-        .catch((error) => {
-          console.error("Failed to fetch doctors", error);
-        });
-    }
-  }, [specialization]); // Run when specialization changes
-
-  // FEES UPDATE
-  useEffect(() => {
-    if (appointmentType) {
-      // Make sure appointmentType is selected
-      axios
-        .get(`http://127.0.0.1:8000/api/doctor_fees/get_fees`, {
+    const fetchSpecializations = async () => {
+      try {
+        const response = await axios.get("http://127.0.0.1:8000/api/doctors/", {
           headers: { Authorization: `Bearer ${token}` },
-        })
-        .then((response) => {
-          console.log("Fees Response:", response.data);
-
-          // Filter fees based on the appointment type
-          const filteredFee = response.data.find(
-            (item) => item.appointment_type === appointmentType
-          );
-
-          // If the fee exists, update the state; otherwise, leave fee as null
-          if (filteredFee) {
-            setFee(filteredFee.fee);
-          } else {
-            setFee(null); // In case the appointment type does not match
-          }
-        })
-        .catch((error) => {
-          console.error("Failed to fetch fees", error);
         });
-    }
-  }, [appointmentType]); // Run when appointment type changes
+        setSpecializations(response.data);
+      } catch (error) {
+        console.error("Failed to fetch specializations", error);
+      }
+    };
 
-  const handleAddAppointment = (e) => {
+    fetchSpecializations();
+  }, [token]);
+
+  // Fetch doctors based on selected specialization
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      if (formData.specialization) {
+        try {
+          const response = await axios.get(
+            `http://127.0.0.1:8000/api/doctors/?specialization=${formData.specialization}`,
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+          const formattedDoctors = response.data.map((doc) => ({
+            id: doc.user.id,
+            name: `${doc.user.first_name} ${doc.user.last_name}`,
+          }));
+          setDoctors(formattedDoctors);
+        } catch (error) {
+          console.error("Failed to fetch doctors", error);
+        }
+      }
+    };
+
+    fetchDoctors();
+  }, [formData.specialization, token]);
+
+  // Fetch fee based on appointment type
+  useEffect(() => {
+    const fetchFee = async () => {
+      if (formData.appointmentType) {
+        try {
+          const response = await axios.get(
+            `http://127.0.0.1:8000/api/doctor_fees/get_fees`,
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+          const filteredFee = response.data.find(
+            (item) => item.appointment_type === formData.appointmentType
+          );
+          setFormData((prev) => ({
+            ...prev,
+            fee: filteredFee ? filteredFee.fee : null,
+          }));
+        } catch (error) {
+          console.error("Failed to fetch fees", error);
+        }
+      }
+    };
+
+    fetchFee();
+  }, [formData.appointmentType, token]);
+
+  // const handleInputChange = (e) => {
+  //   const { name, value } = e.target;
+  //   setFormData((prev) => ({ ...prev, [name]: value }));
+  // };
+
+  const handleAddAppointment = async (e) => {
     e.preventDefault();
 
     const appointmentData = {
-      doctor_id: doctorId,
-      appointment_date: appointmentDate,
-      appointment_time: appointmentTime,
-      appointment_type: appointmentType,
-      specialization: specialization,
-      // fee: fee,
-      patient_name: currentUser.name,
-      patient_age: currentUser.age,
-      patient_gender: currentUser.gender,
-      patient_phone: currentUser.phone,
-      patient_email: currentUser.email,
+      doctor_id: formData.doctorId,
+      appointment_date: formData.appointmentDate,
+      appointment_time: formData.appointmentTime,
+      appointment_type: formData.appointmentType,
+      specialization: formData.specialization,
+      fee: formData.fee,
+      patient_name: curUserRole.name,
+      patient_age: curUserRole.age,
+      patient_gender: curUserRole.gender,
+      patient_phone: curUserRole.phone,
+      patient_email: curUserRole.email,
     };
 
-    axios
-      .post("link", appointmentData, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((response) => {
-        alert("Appointment Booked Successfully");
-        setAppointments([...appointments, response.data]);
-        navigate("/");
-      })
-      .catch((error) => {
-        alert("Failed to book appointment");
-        console.log(error);
-      });
+    try {
+      const response = await axios.post(
+        "http://127.0.0.1:8000/api/doctor_appointments/book_appointment/",
+        appointmentData,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      alert("Appointment Booked Successfully");
+      setAppointments([...appointments, response.data]);
+      navigate("/");
+    } catch (error) {
+      alert("Failed to book appointment");
+      console.error(error);
+    }
   };
 
   return (
@@ -147,11 +161,8 @@ const PopupBookAppointment = ({ userRole }) => {
         </h5>
         <hr />
 
-        <form onSubmit={handleAddAppointment}>
-          {/* Patient Information Autofilled */}
-
-          {/* CONDITION | Only editable profile section if the user is not a patient */}
-          {/* Patient Information - Always visible, but editable only for doctors */}
+        <form onSubmit={(e) => e.preventDefault()}>
+          {/* Patient Information */}
           <div className={styles.formSection}>
             <h3>Patient Information</h3>
             <div className={styles.formGroup}>
@@ -199,32 +210,28 @@ const PopupBookAppointment = ({ userRole }) => {
           </div>
 
           {/* Appointment Details */}
-          {/* Specialization Dropdown */}
           <div className={styles.formGroup}>
             <label>Specialization</label>
             <select
-              value={specialization}
-              onChange={(e) => setSpecialization(e.target.value)}
+              name="specialization"
+              value={formData.specialization}
+              onChange={handleInputChange}
             >
               <option value="">Select Specialization</option>
-              {specializations.length > 0 ? (
-                specializations.map((spec, index) => (
-                  <option key={index} value={spec}>
-                    {spec}
-                  </option>
-                ))
-              ) : (
-                <option disabled>Loading specializations...</option>
-              )}
+              {specializations.map((spec, index) => (
+                <option key={index} value={spec}>
+                  {spec}
+                </option>
+              ))}
             </select>
           </div>
 
-          {/* Doctor Dropdown */}
           <div className={styles.formGroup}>
             <label>Doctor</label>
             <select
-              value={doctorId}
-              onChange={(e) => setDoctorId(e.target.value)}
+              name="doctorId"
+              value={formData.doctorId}
+              onChange={handleInputChange}
             >
               <option value="">Select Doctor</option>
               {doctors.map((doctor) => (
@@ -235,26 +242,26 @@ const PopupBookAppointment = ({ userRole }) => {
             </select>
           </div>
 
-          {/* Appointment Date & Time */}
           <div className={styles.formGroup}>
             <label>Date & Time</label>
             <input
               type="datetime-local"
-              value={`${appointmentDate}T${appointmentTime}`}
-              onChange={(e) => {
-                const [date, time] = e.target.value.split("T");
-                setAppointmentDate(date);
-                setAppointmentTime(time);
-              }}
+              name="appointmentDateTime"
+              value={
+                formData.appointmentDate && formData.appointmentTime
+                  ? `${formData.appointmentDate}T${formData.appointmentTime}`
+                  : ""
+              }
+              onChange={handleDateTimeChange}
             />
           </div>
 
-          {/* Visit Purpose Dropdown */}
           <div className={styles.formGroup}>
             <label>Visit Purpose</label>
             <select
-              value={appointmentType}
-              onChange={(e) => setAppointmentType(e.target.value)}
+              name="appointmentType"
+              value={formData.appointmentType}
+              onChange={handleInputChange}
             >
               {visitPurposes.map((purpose, index) => (
                 <option key={index} value={purpose}>
@@ -264,10 +271,9 @@ const PopupBookAppointment = ({ userRole }) => {
             </select>
           </div>
 
-          {/*  Fee */}
           <div className={styles.formGroup}>
-            <label> Fee</label>
-            <p className={styles.subHeading}>{fee}</p>
+            <label>Fee</label>
+            <p className={styles.subHeading}>RS/- {formData.fee}</p>
           </div>
 
           {/* Payment Details */}
@@ -282,7 +288,7 @@ const PopupBookAppointment = ({ userRole }) => {
               </div>
               <div>
                 <label>Service Fee</label>
-                <p className={styles.subHeading}>RS/- {fee}</p>
+                <p className={styles.subHeading}>RS/- {formData.fee}</p>
               </div>
               <div>
                 <label>Sales Tax</label>
@@ -298,7 +304,11 @@ const PopupBookAppointment = ({ userRole }) => {
             >
               Cancel
             </button>
-            <button className={styles.confirmButton} type="submit">
+            <button
+              className={styles.confirmButton}
+              type="submit"
+              onClick={handleAddAppointment}
+            >
               Continue to Next Step
             </button>
           </div>
