@@ -43,7 +43,7 @@ def create_dummy_doctors(num_doctors):
         doctor = Doctor.objects.create(
             user=user,
             license_number=fake.unique.random_number(digits=6),
-            specialization=fake.word(),
+            specialization="spec2",
             qualifications=fake.text(),
             medical_degree=fake.word(),
             years_of_experience=random.randint(1, 30),
@@ -73,9 +73,9 @@ def generate_dummy_appointments(num_appointments, patients, doctors):
 
 # Create dummy data
 num_patients = 10
-num_doctors = 5
+num_doctors = 2
 num_appointments = 20
 
-patients = create_dummy_patients(num_patients)
+# patients = create_dummy_patients(num_patients)
 doctors = create_dummy_doctors(num_doctors)
-generate_dummy_appointments(num_appointments, patients, doctors)
+# generate_dummy_appointments(num_appointments, patients, doctors)

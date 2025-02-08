@@ -3,26 +3,6 @@ import styles from "./popup-book-appointment.module.css";
 import Popup from "./Popup.jsx";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { jwtDecode } from "jwt-decode";
-
-const dummyUsers = [
-  {
-    id: 1,
-    name: "John Doe",
-    age: 25,
-    gender: "Male",
-    phone: "+92 12345678",
-    email: "johndoe@gmail.com",
-  },
-  {
-    id: 2,
-    name: "Jane Smith",
-    age: 30,
-    gender: "Female",
-    phone: "+92 87654321",
-    email: "janesmith@gmail.com",
-  },
-];
 
 const visitPurposes = [
   "Consultation",
@@ -32,11 +12,11 @@ const visitPurposes = [
   "Prescription Refill",
 ];
 
-const PopupBookAppointment = (userRole) => {
+const PopupBookAppointment = ({ userRole }) => {
   const [popupTrigger, setPopupTrigger] = useState(true);
   const navigate = useNavigate();
   const [appointments, setAppointments] = useState([]);
-
+  const token = localStorage.getItem("access");
   // State for appointment details
   const [doctorId, setDoctorId] = useState("");
   const [appointmentDate, setAppointmentDate] = useState("");
@@ -45,16 +25,54 @@ const PopupBookAppointment = (userRole) => {
   const [specialization, setSpecialization] = useState("");
   const [consultationFee, setConsultationFee] = useState("");
 
-  // State for current signed-in user
-  const [currentUser, setCurrentUser] = useState(dummyUsers[0]); // Assume first user is logged in
-
-  //Get the current userrole from localstorage
+  // Get the current userrole from localstorage
   const curUserRole = localStorage.getItem("role");
 
-  // Autofill function (if user changes)
+  // For holding specializations and doctors fetched from API
+  const [specializations, setSpecializations] = useState([]);
+  const [curSpecialization, setCurSpecialization] = useState();
+  const [doctors, setDoctors] = useState([]);
+
   useEffect(() => {
-    setCurrentUser(dummyUsers[0]); // Assume user is John Doe for now
+    axios
+      .get("http://127.0.0.1:8000/api/doctors/", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((response) => {
+        console.log("API Response:", response.data); // Check the response structure here
+        setSpecializations(response.data); // Set the specializations array directly
+      })
+      .catch((error) => {
+        console.error("Failed to fetch doctors and specializations", error);
+      });
   }, []);
+
+  useEffect(() => {
+    if (specialization) {
+      axios
+        .get(
+          `http://127.0.0.1:8000/api/doctors/?specialization=${specialization}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        )
+        .then((response) => {
+          console.log("Doctors Response:", response.data);
+
+          // Extract required doctor details
+          const formattedDoctors = response.data.map((doc) => ({
+            id: doc.user.id, // Use user.id as the doctor ID
+            name: `${doc.user.first_name} ${doc.user.last_name}`, // Full name
+            fee: doc.consultation_fee, // Fee details
+          }));
+
+          setDoctors(formattedDoctors); // Update doctors state
+        })
+        .catch((error) => {
+          console.error("Failed to fetch doctors", error);
+        });
+    }
+  }, [specialization]); // Run when specialization changes
 
   const handleAddAppointment = (e) => {
     e.preventDefault();
@@ -152,53 +170,75 @@ const PopupBookAppointment = (userRole) => {
           </div>
 
           {/* Appointment Details */}
-          <div className={styles.formSection}>
-            <h3>Appointment Details</h3>
-            <div className={styles.formGroup}>
-              <div>
-                <label>Specialization</label>
-                <select
-                  value={specialization}
-                  onChange={(e) => setSpecialization(e.target.value)}
-                >
-                  <option>Dermatologist</option>
-                </select>
-              </div>
-              <div>
-                <label>Doctor/Provider</label>
-                <select
-                  value={doctorId}
-                  onChange={(e) => setDoctorId(e.target.value)}
-                >
-                  <option>Dr. Jane Doe</option>
-                </select>
-              </div>
-              <div>
-                <label>Date & Time (Available)</label>
-                <input
-                  type="datetime-local"
-                  value={`${appointmentDate}T${appointmentTime}`}
-                  onChange={(e) => {
-                    const [date, time] = e.target.value.split("T");
-                    setAppointmentDate(date);
-                    setAppointmentTime(time);
-                  }}
-                />
-              </div>
-              <div>
-                <label>Visit Purpose</label>
-                <select
-                  value={appointmentType}
-                  onChange={(e) => setAppointmentType(e.target.value)}
-                >
-                  {visitPurposes.map((purpose, index) => (
-                    <option key={index} value={purpose}>
-                      {purpose}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
+          {/* Specialization Dropdown */}
+          <div className={styles.formGroup}>
+            <label>Specialization</label>
+            <select
+              value={specialization}
+              onChange={(e) => setSpecialization(e.target.value)}
+            >
+              <option value="">Select Specialization</option>
+              {specializations.length > 0 ? (
+                specializations.map((spec, index) => (
+                  <option key={index} value={spec}>
+                    {spec}
+                  </option>
+                ))
+              ) : (
+                <option disabled>Loading specializations...</option>
+              )}
+            </select>
+          </div>
+
+          {/* Doctor Dropdown */}
+          <div className={styles.formGroup}>
+            <label>Doctor</label>
+            <select
+              value={doctorId}
+              onChange={(e) => setDoctorId(e.target.value)}
+            >
+              <option value="">Select Doctor</option>
+              {doctors.map((doctor) => (
+                <option key={doctor.id} value={doctor.id}>
+                  {doctor.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Appointment Date & Time */}
+          <div className={styles.formGroup}>
+            <label>Date & Time</label>
+            <input
+              type="datetime-local"
+              value={`${appointmentDate}T${appointmentTime}`}
+              onChange={(e) => {
+                const [date, time] = e.target.value.split("T");
+                setAppointmentDate(date);
+                setAppointmentTime(time);
+              }}
+            />
+          </div>
+
+          {/* Visit Purpose Dropdown */}
+          <div className={styles.formGroup}>
+            <label>Visit Purpose</label>
+            <select
+              value={appointmentType}
+              onChange={(e) => setAppointmentType(e.target.value)}
+            >
+              {visitPurposes.map((purpose, index) => (
+                <option key={index} value={purpose}>
+                  {purpose}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Consultation Fee */}
+          <div className={styles.formGroup}>
+            <label>Consultation Fee</label>
+            <p className={styles.subHeading}>RS/- {consultationFee}</p>
           </div>
 
           {/* Payment Details */}

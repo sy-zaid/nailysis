@@ -14,6 +14,10 @@ class DoctorAPIView(viewsets.ModelViewSet):
         specialization = request.query_params.get('specialization', None)
         if specialization:
             self.queryset = Doctor.objects.filter(specialization=specialization)
+        else:
+            # If no specialization is provided, return distinct specializations
+            specializations = Doctor.objects.values_list('specialization', flat=True).distinct()
+            return Response(specializations)
         return super().list(request, *args, **kwargs)
 
 
