@@ -4,7 +4,7 @@ import Popup from "./Popup";
 import { useState } from "react";
 
 const PopupAppointmentDetails = () => {
-  const [popupTrigger, setPopupTrigger] = useState(true);
+  const [popupTrigger, setPopupTrigger] = useState(false);
 
   return (
     <Popup trigger={popupTrigger} setTrigger={setPopupTrigger}>

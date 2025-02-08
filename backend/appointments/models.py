@@ -60,13 +60,51 @@ class Appointment(models.Model):
     def __str__(self):
         return f"Appointment {self.appointment_id} - {self.patient} on {self.appointment_date} at {self.appointment_time}"
 
+class DoctorAppointmentFee(models.Model):
+    APPOINTMENT_TYPES = [
+    ("Consultation", "Consultation"),
+    ("Follow-up", "Follow-up"),
+    ("Routine Checkup", "Routine Checkup"),
+    ("Emergency Visit", "Emergency Visit"),
+    ("Prescription Refill", "Prescription Refill"),
+]
 
+
+    appointment_type = models.CharField(max_length=50, choices=APPOINTMENT_TYPES, unique=True)
+    fee = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return f"{self.appointment_type} - {self.fee} PKR"
+
+    @classmethod
+    def get_fee(cls, appointment_type):
+        """Retrieve the fee for a given appointment type"""
+        try:
+            return cls.objects.get(appointment_type=appointment_type).fee
+        except cls.DoesNotExist:
+            return None  # Handle case where fee is not set
+
+    @classmethod
+    def update_fee(cls, appointment_type, new_fee):
+        """Update or create a fee for an appointment type"""
+        fee_obj, created = cls.objects.update_or_create(
+            appointment_type=appointment_type, defaults={"fee": new_fee}
+        )
+        return fee_obj
+    
+    
 class DoctorAppointment(Appointment):
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name="doctor_appointments")
     appointment_type = models.CharField(max_length=50)
     specialization = models.CharField(max_length=100)
     follow_up = models.BooleanField(default=False)
-    consultation_fee = models.FloatField()
+    fee = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        """Set the fee dynamically based on the appointment type when saving"""
+        if not self.fee:  # Only set the fee if it's not already assigned
+            self.fee = DoctorAppointmentFee.get_fee(self.appointment_type) or 0.00
+        super().save(*args, **kwargs)
 
     def view_ehr(self, patient):
         # Logic to retrieve and return the patient's EHR
@@ -95,6 +133,8 @@ class DoctorAppointment(Appointment):
         self.notes = notes
         self.save()
 
+class LabTechnicianAppointmentFee(models.Model):
+    pass
 
 class TechnicianAppointment(Appointment):
     lab_technician = models.ForeignKey(LabTechnician, on_delete=models.CASCADE, related_name="technician_appointments")

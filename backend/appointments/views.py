@@ -1,8 +1,8 @@
 from django.shortcuts import render
 from rest_framework import viewsets, permissions
 from rest_framework.response import Response
-from .models import Appointment, DoctorAppointment, TechnicianAppointment
-from .serializers import AppointmentSerializer, DoctorAppointmentSerializer, TechnicianAppointmentSerializer
+from .models import Appointment, DoctorAppointment, TechnicianAppointment, DoctorAppointmentFee,LabTechnicianAppointmentFee
+from .serializers import AppointmentSerializer, DoctorAppointmentSerializer, TechnicianAppointmentSerializer, DoctorFeeSerializer
 from users.models import Patient, Doctor
 from rest_framework.decorators import action
 from django.shortcuts import get_object_or_404
@@ -35,7 +35,20 @@ class AppointmentViewSet(viewsets.ModelViewSet):
 
         return Appointment.objects.none()  # Return an empty queryset if the role doesn't match
 
-
+# Doctor Fee ViewSet
+class DoctorFeeViewset(viewsets.ModelViewSet):
+    queryset = DoctorAppointmentFee.objects.all()
+    serializer_class = DoctorFeeSerializer
+    permission_classes = [permissions.AllowAny]
+    
+    @action(detail=False, methods=['get'], url_path='get_fees')
+    def get_fees(self, request):
+        """Retrieve all appointment fees for display."""
+        fees = DoctorAppointmentFee.objects.all()
+        serializer = self.get_serializer(fees, many=True)
+        return Response(serializer.data)
+    
+    
 # Doctor Appointment ViewSet
 class DoctorAppointmentViewset(viewsets.ModelViewSet):
     queryset = DoctorAppointment.objects.all()
@@ -57,10 +70,10 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
         appointment_time = request.data.get('appointment_time')
         appointment_type = request.data.get('appointment_type')
         specialization = request.data.get('specialization')
-        consultation_fee = request.data.get('consultation_fee')
+        fee = request.data.get('fee')
         
         print("DATA------------------------------------------------")
-        print(doctor_id,appointment_date,appointment_time,appointment_type,specialization,consultation_fee)
+        print(doctor_id,appointment_date,appointment_time,appointment_type,specialization,fee)
 
         # Get doctor by id or return 404 if not found
         doctor = get_object_or_404(Doctor, user__id=doctor_id)
@@ -74,7 +87,7 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
             appointment_time=appointment_time,
             appointment_type=appointment_type,
             specialization=specialization,
-            consultation_fee=consultation_fee
+            fee=fee
         )
 
         return Response({
@@ -122,3 +135,4 @@ class LabTechnicianAppointmentViewset(viewsets.ModelViewSet):
             "message": "Lab appointment booked successfully",
             "appointment_id": technician_appointment.appointment_id
         })
+

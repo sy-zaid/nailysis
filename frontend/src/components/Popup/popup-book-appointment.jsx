@@ -23,7 +23,7 @@ const PopupBookAppointment = ({ userRole }) => {
   const [appointmentTime, setAppointmentTime] = useState("");
   const [appointmentType, setAppointmentType] = useState("");
   const [specialization, setSpecialization] = useState("");
-  const [consultationFee, setConsultationFee] = useState("");
+  const [fee, setFee] = useState([]);
 
   // Get the current userrole from localstorage
   const curUserRole = localStorage.getItem("role");
@@ -63,7 +63,7 @@ const PopupBookAppointment = ({ userRole }) => {
           const formattedDoctors = response.data.map((doc) => ({
             id: doc.user.id, // Use user.id as the doctor ID
             name: `${doc.user.first_name} ${doc.user.last_name}`, // Full name
-            fee: doc.consultation_fee, // Fee details
+            // fee: doc.fee, // Fee details
           }));
 
           setDoctors(formattedDoctors); // Update doctors state
@@ -74,6 +74,35 @@ const PopupBookAppointment = ({ userRole }) => {
     }
   }, [specialization]); // Run when specialization changes
 
+  // FEES UPDATE
+  useEffect(() => {
+    if (appointmentType) {
+      // Make sure appointmentType is selected
+      axios
+        .get(`http://127.0.0.1:8000/api/doctor_fees/get_fees`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((response) => {
+          console.log("Fees Response:", response.data);
+
+          // Filter fees based on the appointment type
+          const filteredFee = response.data.find(
+            (item) => item.appointment_type === appointmentType
+          );
+
+          // If the fee exists, update the state; otherwise, leave fee as null
+          if (filteredFee) {
+            setFee(filteredFee.fee);
+          } else {
+            setFee(null); // In case the appointment type does not match
+          }
+        })
+        .catch((error) => {
+          console.error("Failed to fetch fees", error);
+        });
+    }
+  }, [appointmentType]); // Run when appointment type changes
+
   const handleAddAppointment = (e) => {
     e.preventDefault();
 
@@ -83,7 +112,7 @@ const PopupBookAppointment = ({ userRole }) => {
       appointment_time: appointmentTime,
       appointment_type: appointmentType,
       specialization: specialization,
-      consultation_fee: consultationFee,
+      // fee: fee,
       patient_name: currentUser.name,
       patient_age: currentUser.age,
       patient_gender: currentUser.gender,
@@ -235,10 +264,10 @@ const PopupBookAppointment = ({ userRole }) => {
             </select>
           </div>
 
-          {/* Consultation Fee */}
+          {/*  Fee */}
           <div className={styles.formGroup}>
-            <label>Consultation Fee</label>
-            <p className={styles.subHeading}>RS/- {consultationFee}</p>
+            <label> Fee</label>
+            <p className={styles.subHeading}>{fee}</p>
           </div>
 
           {/* Payment Details */}
@@ -253,7 +282,7 @@ const PopupBookAppointment = ({ userRole }) => {
               </div>
               <div>
                 <label>Service Fee</label>
-                <p className={styles.subHeading}>RS/- {consultationFee}</p>
+                <p className={styles.subHeading}>RS/- {fee}</p>
               </div>
               <div>
                 <label>Sales Tax</label>

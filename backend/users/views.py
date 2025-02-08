@@ -8,7 +8,7 @@ from .serializers import DoctorSerializer,PatientSerializer,LabTechnicianSeriali
 class DoctorAPIView(viewsets.ModelViewSet):
     queryset = Doctor.objects.all()
     serializer_class = DoctorSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
 
     def list(self, request, *args, **kwargs):
         specialization = request.query_params.get('specialization', None)

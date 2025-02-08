@@ -15,7 +15,7 @@ const AppointmentPatients = () => {
   const [appointmentTime, setAppointmentTime] = useState("");
   const [appointmentType, setAppointmentType] = useState("");
   const [specialization, setSpecialization] = useState("");
-  const [consultationFee, setConsultationFee] = useState("");
+  const [fee, setFee] = useState("");
 
   const token = localStorage.getItem("access");
 
@@ -56,7 +56,7 @@ const AppointmentPatients = () => {
       !appointmentTime ||
       !appointmentType ||
       !specialization ||
-      !consultationFee
+      !fee
     ) {
       alert("All fields are required.");
       return;
@@ -68,7 +68,7 @@ const AppointmentPatients = () => {
       appointment_time: appointmentTime,
       appointment_type: appointmentType,
       specialization: specialization,
-      consultation_fee: consultationFee,
+      consultation_fee: fee,
     };
 
     axios
@@ -161,8 +161,8 @@ const AppointmentPatients = () => {
               <input
                 type="number"
                 placeholder="Consultation Fee"
-                value={consultationFee}
-                onChange={(e) => setConsultationFee(e.target.value)}
+                value={fee}
+                onChange={(e) => setFee(e.target.value)}
               />
               <button type="button" onClick={handleAddAppointment}>
                 Book Appointment
