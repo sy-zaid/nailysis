@@ -4,6 +4,10 @@ import Popup from "./Popup.jsx";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
+// import { QueryClientProvider } from "@tanstack/react-query"; // Import React Query Client Provider
+// import { queryClient } from "./queryClient"; // Import the client
+import usePatientData from "../../usePatientData.jsx";
+
 const visitPurposes = [
   "Consultation",
   "Follow-up",
@@ -12,12 +16,16 @@ const visitPurposes = [
   "Prescription Refill",
 ];
 
-const PopupBookAppointment = () => {
+const PopupBookAppointment = ({ onClose }) => {
   const [popupTrigger, setPopupTrigger] = useState(true);
   const navigate = useNavigate();
   const [appointments, setAppointments] = useState([]);
   const token = localStorage.getItem("access");
   const curUserRole = localStorage.getItem("role");
+  const { data: curUser, isLoading, isError, error } = usePatientData(); // Fetch patient data
+  // const patient = curUser[0]; // Access the first patient in the array
+  // console.log(patient.user);
+
 
   // State for appointment details
   const [formData, setFormData] = useState({
@@ -125,11 +133,11 @@ const PopupBookAppointment = () => {
       appointment_type: formData.appointmentType,
       specialization: formData.specialization,
       fee: formData.fee,
-      patient_name: curUserRole.name,
-      patient_age: curUserRole.age,
-      patient_gender: curUserRole.gender,
-      patient_phone: curUserRole.phone,
-      patient_email: curUserRole.email,
+      patient_name: curUser[0].user.first_name,
+      patient_age: curUser[0].user.age,
+      patient_gender: curUser[0].user.gender,
+      patient_phone: curUser[0].user.phone,
+      patient_email: curUser[0].user.email,
     };
 
     try {
@@ -142,7 +150,8 @@ const PopupBookAppointment = () => {
       );
       alert("Appointment Booked Successfully");
       setAppointments([...appointments, response.data]);
-      navigate("/");
+      console.log(appointmentData);
+      navigate("");
     } catch (error) {
       alert("Failed to book appointment");
       console.error(error);
@@ -298,10 +307,7 @@ const PopupBookAppointment = () => {
           </div>
 
           <div className={styles.actions}>
-            <button
-              className={styles.cancelButton}
-              onClick={() => setPopupTrigger(false)}
-            >
+            <button className={styles.cancelButton} onClick={onClose}>
               Cancel
             </button>
             <button

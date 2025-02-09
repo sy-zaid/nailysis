@@ -46,49 +46,6 @@ const AppointmentPatients = () => {
     fetchAppointments();
   }, [token, navigate]);
 
-  const handleAddAppointment = (e) => {
-    e.preventDefault();
-
-    // Validation
-    if (
-      !doctorId ||
-      !appointmentDate ||
-      !appointmentTime ||
-      !appointmentType ||
-      !specialization ||
-      !fee
-    ) {
-      alert("All fields are required.");
-      return;
-    }
-
-    const appointmentData = {
-      doctor_id: doctorId,
-      appointment_date: appointmentDate,
-      appointment_time: appointmentTime,
-      appointment_type: appointmentType,
-      specialization: specialization,
-      consultation_fee: fee,
-    };
-
-    axios
-      .post(
-        "http://127.0.0.1:8000/api/doctor_appointments/book_appointment/",
-        appointmentData,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      )
-      .then((response) => {
-        alert("Appointment booked successfully");
-        setAppointments([...appointments, response.data]); // Add the new appointment to the list
-        navigate("/appointments");
-      })
-      .catch((error) => {
-        console.error("Error booking appointment:", error);
-        alert("Failed to book appointment. Please try again.");
-      });
-  };
 
   const getStatusClass = (status) => {
     switch (status) {
@@ -101,9 +58,17 @@ const AppointmentPatients = () => {
     }
   };
 
+  const [showPopup,setShowPopup] = useState(false);
+  const handleOpenPopup = () => {
+    setShowPopup(true); // Show the popup when button is clicked
+  };
+
+  const handleClosePopup = () => {
+    setShowPopup(false); // Hide the popup when closing
+  };
   return (
     <div className={styles.pageContainer}>
-      <PopupBookAppointment></PopupBookAppointment>
+      {showPopup && <PopupBookAppointment onClose={handleClosePopup} />}
       <PopupAppointmentDetails></PopupAppointmentDetails>
 
       <div className={styles.pageTop}>
@@ -121,54 +86,12 @@ const AppointmentPatients = () => {
               <button className={styles.filterButton}>Cancelled</button>
               <p className={styles.statusSummary}>50 completed, 4 upcoming</p>
             </div>
-            <button className={styles.addButton} onClick={handleAddAppointment}>
+            <button className={styles.addButton} onClick={handleOpenPopup}>
               Book New Appointment
             </button>
           </div>
 
-          {/* Form for Booking New Appointment */}
-          <div className={styles.formContainer}>
-            <h2>Book an Appointment</h2>
-            <form onSubmit={(e) => e.preventDefault()}>
-              <input
-                type="text"
-                placeholder="Doctor ID"
-                value={doctorId}
-                onChange={(e) => setDoctorId(e.target.value)}
-              />
-              <input
-                type="date"
-                value={appointmentDate}
-                onChange={(e) => setAppointmentDate(e.target.value)}
-              />
-              <input
-                type="time"
-                value={appointmentTime}
-                onChange={(e) => setAppointmentTime(e.target.value)}
-              />
-              <input
-                type="text"
-                placeholder="Appointment Type"
-                value={appointmentType}
-                onChange={(e) => setAppointmentType(e.target.value)}
-              />
-              <input
-                type="text"
-                placeholder="Specialization"
-                value={specialization}
-                onChange={(e) => setSpecialization(e.target.value)}
-              />
-              <input
-                type="number"
-                placeholder="Consultation Fee"
-                value={fee}
-                onChange={(e) => setFee(e.target.value)}
-              />
-              <button type="button" onClick={handleAddAppointment}>
-                Book Appointment
-              </button>
-            </form>
-          </div>
+          
           <div className={styles.tableContainer}>
             <table
               className={styles.table}

@@ -20,7 +20,19 @@ class DoctorAPIView(viewsets.ModelViewSet):
             return Response(specializations)
         return super().list(request, *args, **kwargs)
 
-
+class PatientAPIView(viewsets.ModelViewSet):
+    serializer_class = PatientSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    def get_queryset(self):
+        """
+        Override to return the queryset for the logged-in user.
+        """
+        # Filter patients by the currently authenticated user
+        return Patient.objects.filter(user=self.request.user)
+    
+    
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
 
 
 

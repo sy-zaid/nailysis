@@ -25,7 +25,11 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def get_token(cls, user):
         token = super().get_token(user)
         print("User role in token:", user.role)
-        # Add custom claims
+        print("User ID in token:", user.id)
+        
+        # Add custom claims to the JWT token
         token['role'] = user.role  # Add the role to the token
+        token['user_id'] = user.id  # Add the user ID to the token
+        
         return token
     

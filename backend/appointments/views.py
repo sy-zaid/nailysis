@@ -65,7 +65,7 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
         logging.info("book_appointment action was triggered")
 
         # Get data from request
-        doctor_id = 32
+        doctor_id = request.data.get('doctor_id')
         appointment_date = request.data.get('appointment_date')
         appointment_time = request.data.get('appointment_time')
         appointment_type = request.data.get('appointment_type')
@@ -79,6 +79,7 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
         doctor = get_object_or_404(Doctor, user__id=doctor_id)
 
         patient = get_object_or_404(Patient, user=request.user)
+        print(patient.first_name)
         # Create the DoctorAppointment
         doctor_appointment = DoctorAppointment.objects.create(
             patient=patient,
