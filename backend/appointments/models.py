@@ -124,7 +124,7 @@ class DoctorAppointment(Appointment):
             doctor=self.doctor,
             appointment_date=follow_up_date,
             appointment_time=follow_up_time,
-            appointment_type="Follow-up",
+            appointment_type=self.appointment_type,
             specialization=self.specialization,
             follow_up=True,
         )

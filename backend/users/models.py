@@ -110,7 +110,6 @@ class Doctor(models.Model):
     qualifications = models.TextField(blank=True,null=True)
     medical_degree = models.CharField(max_length=255)
     years_of_experience = models.PositiveIntegerField()
-    consultation_fee = models.DecimalField(max_digits=10, decimal_places=2)
     emergency_contact = models.CharField(max_length=20)
     
     

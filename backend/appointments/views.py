@@ -55,6 +55,26 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
     serializer_class = DoctorAppointmentSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    
+    def get_queryset(self):
+        user = self.request.user
+        if user.role == "patient":
+            try:
+                patient = Patient.objects.get(user=user)
+            except Patient.DoesNotExist:
+                return DoctorAppointment.objects.none()  # Return an empty queryset if no patient found
+            return DoctorAppointment.objects.filter(patient=patient)
+        
+        elif user.role == "clinic_admin":
+            return DoctorAppointment.objects.all()
+
+        # Doctors can only view their appointments
+        elif user.role == "doctor":
+            return DoctorAppointment.objects.filter(doctor=user)
+        
+        return DoctorAppointment.objects.none()  # Return an empty queryset if the role doesn't match
+        
+        
     # Create a doctor appointment
     def perform_create(self, serializer):
         # Assuming the patient is being retrieved via the logged-in user
@@ -79,7 +99,7 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
         doctor = get_object_or_404(Doctor, user__id=doctor_id)
 
         patient = get_object_or_404(Patient, user=request.user)
-        print(patient.first_name)
+        
         # Create the DoctorAppointment
         doctor_appointment = DoctorAppointment.objects.create(
             patient=patient,
@@ -95,6 +115,8 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
             "message": "Appointment booked successfully",
             "appointment_id": doctor_appointment.appointment_id
         })
+        
+        
 
 
 # Lab Technician Appointment ViewSet

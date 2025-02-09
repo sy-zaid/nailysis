@@ -30,6 +30,7 @@ def create_dummy_patients(num_patients):
     return patients
 
 # Generate dummy doctors
+# Generate dummy doctors
 def create_dummy_doctors(num_doctors):
     doctors = []
     for _ in range(num_doctors):
@@ -47,7 +48,6 @@ def create_dummy_doctors(num_doctors):
             qualifications=fake.text(),
             medical_degree=fake.word(),
             years_of_experience=random.randint(1, 30),
-            fee=random.uniform(50, 200),
             emergency_contact=fake.phone_number(),
         )
         doctors.append(doctor)
@@ -68,13 +68,13 @@ def generate_dummy_appointments(num_appointments, patients, doctors):
             appointment_time=appointment_time,
             appointment_type=random.choice(["Consultation", "Follow-up"]),
             specialization=doctor.specialization,
-            fee=doctor.fee,
+            fee=random.uniform(50, 200),  # Set fee for each appointment
         )
 
 # Create dummy data
-num_patients = 10
+num_patients = 5
 num_doctors = 2
-num_appointments = 20
+num_appointments = 10
 
 # patients = create_dummy_patients(num_patients)
 # doctors = create_dummy_doctors(num_doctors)
