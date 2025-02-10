@@ -6,6 +6,7 @@ import PopupAppointmentDetails from "../../components/Popup/popup-appointment-de
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import api from "../../api";
+import CancellationRequestForm from "./CancellationRequestForm";
 
 const AppointmentDoctor = () => {
   const navigate = useNavigate();
@@ -62,6 +63,7 @@ const AppointmentDoctor = () => {
     <div className={styles.pageContainer}>
       {showPopup && <PopupBookAppointment onClose={handleClosePopup} />}
       <PopupAppointmentDetails></PopupAppointmentDetails>
+      <CancellationRequestForm appointmentId={2} />
 
       <div className={styles.pageTop}>
         <Navbar />
@@ -79,7 +81,7 @@ const AppointmentDoctor = () => {
               <p className={styles.statusSummary}>50 completed, 4 upcoming</p>
             </div>
             <button className={styles.addButton} >
-              COMING SOON
+              Cancel Appointment
             </button>
           </div>
 
