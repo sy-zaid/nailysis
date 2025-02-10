@@ -70,7 +70,11 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
 
         # Doctors can only view their appointments
         elif user.role == "doctor":
-            return DoctorAppointment.objects.filter(doctor=user)
+            try:
+                doctor = Doctor.objects.get(user=user)
+            except Doctor.DoesNotExist:
+                return DoctorAppointment.objects.none()  # Return an empty queryset if no patient found
+            return DoctorAppointment.objects.filter(doctor=doctor)
         
         return DoctorAppointment.objects.none()  # Return an empty queryset if the role doesn't match
         

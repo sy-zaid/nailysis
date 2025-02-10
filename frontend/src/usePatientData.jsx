@@ -32,14 +32,15 @@ const fetchPatientData = async () => {
     const response = await axios.get("http://127.0.0.1:8000/api/patients/", {
       headers: { Authorization: `Bearer ${token}` },
     });
-    return response.data;
+    console.log(response.data)
+    return response.data || [];
   } catch (error) {
     if (error.response?.status === 401) {
       console.warn("Unauthorized! Redirecting to login...");
       localStorage.removeItem("access");
       window.location.href = "/login"; // Redirect to login
     }
-    throw error; // Rethrow to let React Query handle it
+    return []; // Return an empty array to prevent undefined errors
   }
 };
 

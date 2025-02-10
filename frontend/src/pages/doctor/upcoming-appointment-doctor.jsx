@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import api from "../../api";
 
-const AppointmentClinicAdmin = () => {
+const AppointmentDoctor = () => {
   const navigate = useNavigate();
   const [appointments, setAppointments] = useState([]);
   const token = localStorage.getItem("access");
@@ -78,8 +78,8 @@ const AppointmentClinicAdmin = () => {
               <button className={styles.filterButton}>Cancelled</button>
               <p className={styles.statusSummary}>50 completed, 4 upcoming</p>
             </div>
-            <button className={styles.addButton} onClick={handleOpenPopup}>
-              Book New Appointment
+            <button className={styles.addButton} >
+              COMING SOON
             </button>
           </div>
 
@@ -93,16 +93,14 @@ const AppointmentClinicAdmin = () => {
                   <th>#</th> {/* Serial Number */}
                   <th>Appointment ID</th>
                   <th>Patient Name</th>
-                  <th>Doctor Name</th>
-                  <th>Specialization</th>
+                  <th>Gender</th>
                   <th>Appointment Type</th>
                   <th>Date & Time</th>
                   <th>Status</th>
-                  <th>Fee</th>
-                  <th>Booking Date</th>
                   <th>Additional Notes</th>
                 </tr>
               </thead>
+
               <tbody>
                 {appointments.map((row, index) => (
                   <tr
@@ -115,27 +113,16 @@ const AppointmentClinicAdmin = () => {
                       {row.patient?.user?.first_name || "No first name"}{" "}
                       {row.patient?.user?.last_name || "No last name"}
                     </td>{" "}
-                    {/* Patient's Name */}
-                    <td>
-                      {row.doctor?.user?.first_name || "No first name"}{" "}
-                      {row.doctor?.user?.last_name || "No last name"}
-                    </td>{" "}
-                    {/* Doctor's Name */}
-                    <td>
-                      {row.doctor?.specialization || "No specialization"}
-                    </td>{" "}
-                    {/* Specialization */}
+                    {/* Patient Name */}
+                    <td>{row.patient?.gender || "N/A"}</td>{" "}
+                    {/* Patient Gender */}
                     <td>{row.appointment_type || "N/A"}</td>{" "}
                     {/* Appointment Type */}
                     <td>
                       {row.appointment_date} {row.appointment_time}
                     </td>{" "}
                     {/* Date & Time */}
-                    <td>{row.status}</td> {/* Status */}
-                    <td>{row.fee ? `PKR ${row.fee}` : "Not available"}</td>{" "}
-                    {/* Fee */}
-                    <td>{row.booking_date || "Not available"}</td>{" "}
-                    {/* Booking Date */}
+                    <td className={getStatusClass(row.status)}>{row.status}</td> {/* Status */}
                     <td>{row.notes || "No additional notes"}</td>{" "}
                     {/* Additional Notes */}
                   </tr>
@@ -149,4 +136,4 @@ const AppointmentClinicAdmin = () => {
   );
 };
 
-export default AppointmentClinicAdmin;
+export default AppointmentDoctor;

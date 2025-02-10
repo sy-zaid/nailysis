@@ -3,6 +3,7 @@ import SystemAdminDashboard from "./pages/admin-system/system-admin-dashboard";
 import ClinicAdminDashboard from "./pages/admin-clinic/clinic-admin-dashboard";
 import UpcomingAppointmentsClinicAdmin from "./pages/admin-clinic/upcoming-appointment-clinic-admin";
 import UpcomingAppointmentsPatient from "./pages/patient/upcoming-appointment-patient"
+import UpcomingAppointmentsDoctor from "./pages/doctor/upcoming-appointment-doctor"
 import PatientPaymentHistory from "./pages/patient/patient-payment-history";
 import PatientDiagnosticResults from "./pages/patient/patient-diagnostic-results";
 import PatientInvoiceManagement from "./pages/patient/patient-invoice-management";
@@ -62,7 +63,7 @@ export const renderDoctorContent = (view) => {
     case "Diagnostic Results":
       return <PlaceholderComponent name="Diagnostic Results" />;
     case "Upcoming Appointments":
-      return <PlaceholderComponent name="Upcoming Appointment"/>;
+      return <UpcomingAppointmentsDoctor name="Upcoming Appointment"/>;
     case "Appointment History":
       return <PlaceholderComponent name="Appointment History" />;
     case "Generate Invoice":

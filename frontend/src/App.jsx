@@ -34,6 +34,8 @@ function RegisterAndLogout() {
 }
 
 function App() {
+  console.log("QueryClientProvider is wrapping App");
+
   const [view, setView] = useState("home");
   const [isOpen, setIsOpen] = useState(false);
   const toggleSidebar = () => {

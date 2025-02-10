@@ -7,6 +7,7 @@ import axios from "axios";
 // import { QueryClientProvider } from "@tanstack/react-query"; // Import React Query Client Provider
 // import { queryClient } from "./queryClient"; // Import the client
 import usePatientData from "../../usePatientData.jsx";
+import {calculateAge} from "../../utils.js"
 
 const visitPurposes = [
   "Consultation",
@@ -23,9 +24,17 @@ const PopupBookAppointment = ({ onClose }) => {
   const token = localStorage.getItem("access");
   const curUserRole = localStorage.getItem("role");
   const { data: curUser, isLoading, isError, error } = usePatientData(); // Fetch patient data
-  // const patient = curUser[0]; // Access the first patient in the array
-  // console.log(patient.user);
+  console.log("CURRUSER", curUser);
+  const [patient, setPatient] = useState([]); // Initialize patient state
 
+  useEffect(() => {
+    if (curUser && curUser.length > 0) {
+      setPatient([curUser[0].user,curUser[0]]); // Set patient data if available
+      // console.log("Patient's Data: ",patient[0],patient[1]);
+    } else {
+      console.log("No patient data available");
+    }
+  }, [curUser]); // Triggered whenever `curUser` changes
 
   // State for appointment details
   const [formData, setFormData] = useState({
@@ -118,11 +127,6 @@ const PopupBookAppointment = ({ onClose }) => {
     fetchFee();
   }, [formData.appointmentType, token]);
 
-  // const handleInputChange = (e) => {
-  //   const { name, value } = e.target;
-  //   setFormData((prev) => ({ ...prev, [name]: value }));
-  // };
-
   const handleAddAppointment = async (e) => {
     e.preventDefault();
 
@@ -133,11 +137,11 @@ const PopupBookAppointment = ({ onClose }) => {
       appointment_type: formData.appointmentType,
       specialization: formData.specialization,
       fee: formData.fee,
-      patient_name: curUser[0].user.first_name,
-      patient_age: curUser[0].user.age,
-      patient_gender: curUser[0].user.gender,
-      patient_phone: curUser[0].user.phone,
-      patient_email: curUser[0].user.email,
+      patient_name: patient?.first_name || "",
+      patient_age: patient?.age || "",
+      patient_gender: patient?.gender || "",
+      patient_phone: patient?.phone || "",
+      patient_email: patient?.email || "",
     };
 
     try {
@@ -179,15 +183,29 @@ const PopupBookAppointment = ({ onClose }) => {
                 <label>Name</label>
                 <input
                   type="text"
-                  placeholder="John Doe"
+                  name="patientId"
+                  value={formData.patientId}
+                  onChange={handleInputChange}
+                  placeholder={
+                    curUserRole === "patient"
+                      ? patient[0]?.first_name + " " + patient[0]?.last_name || ""
+                      : "Enter Full"
+                  }
                   disabled={curUserRole === "patient"}
                 />
               </div>
               <div>
                 <label>Age</label>
                 <input
-                  type="number"
-                  placeholder="21"
+                  type="text"
+                  name="age"
+                  value={formData.age}
+                  onChange={handleInputChange}
+                  placeholder={
+                    curUserRole === "patient"
+                      ? calculateAge(patient[1]?.date_of_birth) || ""
+                      : "Enter Age"
+                  }
                   disabled={curUserRole === "patient"}
                 />
               </div>
@@ -195,7 +213,14 @@ const PopupBookAppointment = ({ onClose }) => {
                 <label>Gender</label>
                 <input
                   type="text"
-                  placeholder="Male"
+                  name="gender"
+                  value={formData.gender}
+                  onChange={handleInputChange}
+                  placeholder={
+                    curUserRole === "patient"
+                      ? patient[1]?.gender || ""
+                      : "Enter gender"
+                  }
                   disabled={curUserRole === "patient"}
                 />
               </div>
@@ -203,15 +228,29 @@ const PopupBookAppointment = ({ onClose }) => {
                 <label>Phone Number</label>
                 <input
                   type="tel"
-                  placeholder="+92 12345678"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleInputChange}
+                  placeholder={
+                    curUserRole === "patient"
+                      ? patient[0]?.phone || ""
+                      : "Enter phone number"
+                  }
                   disabled={curUserRole === "patient"}
                 />
               </div>
               <div>
                 <label>Email Address</label>
                 <input
-                  type="email"
-                  placeholder="patient@gmail.com"
+                  type="text"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  placeholder={
+                    curUserRole === "patient"
+                      ? patient[0]?.email || ""
+                      : "Enter email address"
+                  }
                   disabled={curUserRole === "patient"}
                 />
               </div>

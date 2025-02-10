@@ -10,13 +10,6 @@ import api from "../../api";
 const AppointmentPatients = () => {
   const navigate = useNavigate();
   const [appointments, setAppointments] = useState([]);
-  const [doctorId, setDoctorId] = useState("");
-  const [appointmentDate, setAppointmentDate] = useState("");
-  const [appointmentTime, setAppointmentTime] = useState("");
-  const [appointmentType, setAppointmentType] = useState("");
-  const [specialization, setSpecialization] = useState("");
-  const [fee, setFee] = useState("");
-
   const token = localStorage.getItem("access");
 
   useEffect(() => {
@@ -29,7 +22,7 @@ const AppointmentPatients = () => {
     const fetchAppointments = async () => {
       try {
         const response = await api.get(
-          "http://127.0.0.1:8000/api/appointments/",
+          `${import.meta.env.VITE_API_URL}/api/doctor_appointments/`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -37,7 +30,7 @@ const AppointmentPatients = () => {
           }
         );
         setAppointments(response.data);
-        console.log(response.data);
+        console.log("Response from doctor appointment", response.data);
       } catch (error) {
         console.log(error);
       }
@@ -45,7 +38,6 @@ const AppointmentPatients = () => {
 
     fetchAppointments();
   }, [token, navigate]);
-
 
   const getStatusClass = (status) => {
     switch (status) {
@@ -58,7 +50,7 @@ const AppointmentPatients = () => {
     }
   };
 
-  const [showPopup,setShowPopup] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
   const handleOpenPopup = () => {
     setShowPopup(true); // Show the popup when button is clicked
   };
@@ -91,7 +83,6 @@ const AppointmentPatients = () => {
             </button>
           </div>
 
-          
           <div className={styles.tableContainer}>
             <table
               className={styles.table}
@@ -99,37 +90,53 @@ const AppointmentPatients = () => {
             >
               <thead>
                 <tr>
-                  <th>#</th>
+                  <th>#</th> {/* Serial Number */}
                   <th>Appointment ID</th>
-                  <th>Patient Name</th>
-                  <th>Gender</th>
-                  <th>Email</th>
-                  <th>Phone</th>
+                  <th>Doctor Name</th>
+                  <th>Specialization</th>
                   <th>Appointment Date & Time</th>
-                  <th>Test Type</th>
+                  <th>Visit Purpose</th>
                   <th>Status</th>
+                  <th>Fee</th>
+                  <th>Doctor Experience</th>
+                  <th>Additional Notes</th>
                 </tr>
               </thead>
+
               <tbody>
                 {appointments.map((row, index) => (
                   <tr
                     key={row.appointment_id}
                     style={{ borderBottom: "1px solid #ddd" }}
                   >
-                    <td>{index + 1}</td>
-                    <td>{row.appointment_id}</td>
+                    <td>{index + 1}</td> {/* Serial Number */}
+                    <td>{row.appointment_id}</td> {/* Appointment ID */}
                     <td>
-                      {row.patient?.user?.first_name || "No first name"}{" "}
-                      {row.patient?.user?.last_name || "No last name"}
-                    </td>
-                    <td>{row.patient.gender}</td>
-                    <td>{row.patient?.user?.email || "No email"}</td>
-                    <td>{row.patient?.user?.phone || "No phone"}</td>
+                      {row.doctor?.user?.first_name || "No first name"}{" "}
+                      {row.doctor?.user?.last_name || "No last name"}
+                    </td>{" "}
+                    {/* Doctor's Name */}
+                    <td>
+                      {row.doctor?.specialization || "No specialization"}
+                    </td>{" "}
+                    {/* Specialization */}
                     <td>
                       {row.appointment_date} {row.appointment_time}
-                    </td>
-                    <td>{row.test_type || "N/A"}</td>
-                    <td className={getStatusClass(row.status)}>{row.status}</td>
+                    </td>{" "}
+                    {/* Date and Time */}
+                    <td>{row.appointment_type || "N/A"}</td>{" "}
+                    {/* Visit Purpose */}
+                    <td>{row.status}</td> {/* Status */}
+                    <td>
+                      {row.fee ? `PKR ${row.fee}` : "Not available"}
+                    </td>{" "}
+                    {/* Fee */}
+                    <td>
+                      {row.doctor?.years_of_experience || "N/A"} years
+                    </td>{" "}
+                    {/* Doctor Experience */}
+                    <td>{row.notes || "No additional notes"}</td>{" "}
+                    {/* Additional Notes */}
                   </tr>
                 ))}
               </tbody>
