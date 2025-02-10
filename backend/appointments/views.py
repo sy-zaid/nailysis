@@ -1,8 +1,8 @@
 from django.shortcuts import render
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets, permissions,status
 from rest_framework.response import Response
-from .models import Appointment, DoctorAppointment, TechnicianAppointment, DoctorAppointmentFee,LabTechnicianAppointmentFee
-from .serializers import AppointmentSerializer, DoctorAppointmentSerializer, TechnicianAppointmentSerializer, DoctorFeeSerializer
+from .models import Appointment, DoctorAppointment, TechnicianAppointment, DoctorAppointmentFee,LabTechnicianAppointmentFee, CancellationRequest
+from .serializers import AppointmentSerializer, DoctorAppointmentSerializer, TechnicianAppointmentSerializer, DoctorFeeSerializer,CancellationRequestSerializer
 from users.models import Patient, Doctor
 from rest_framework.decorators import action
 from django.shortcuts import get_object_or_404
@@ -120,7 +120,25 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
             "appointment_id": doctor_appointment.appointment_id
         })
         
+    @action(detail=False,methods=["post"],url_path='request_cancellation')
+    def request_cancellation(self,request):
+        pk = 2
+        user = self.request.user
+        if user.role != "doctor":
+            return Response({"error":"Only Doctors can generate a cancellation request"},status=status.HTTP_403_FORBIDDEN)
         
+        try:
+            doctor = Doctor.objects.get(user=user)
+            appointment = DoctorAppointment.objects.get(pk=pk,doctor=doctor)
+        except(Doctor.DoesNotExist,DoctorAppointment.DoesNotExist):
+            return Response({"error":"No Appointment Found"},status=status.HTTP_404_NOT_FOUND)
+        
+        reason = request.data.get('reason','').strip()
+        if not reason:
+            return Response({"error":"Cancellation reason is required"},status=status.HTTP_400_BAD_REQUEST)
+        cancellation_request = CancellationRequest.objects.create(doctor=doctor,appointment=appointment,reason = reason)
+        
+        return Response({"message":"Cancellation request sent successfully","request_id":cancellation_request.id},status=status.HTTP_201_CREATED)    
 
 
 # Lab Technician Appointment ViewSet
@@ -163,3 +181,39 @@ class LabTechnicianAppointmentViewset(viewsets.ModelViewSet):
             "appointment_id": technician_appointment.appointment_id
         })
 
+
+class DocAppointCancellationViewSet(viewsets.ModelViewSet):
+    queryset = CancellationRequest.objects.all()
+    serializer_class = CancellationRequestSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get_queryset(self):
+        user = self.request.user
+        if user.role == "clinic_admin":
+            return CancellationRequest.objects.all()
+        return CancellationRequest.objects.none()
+    
+    def review_request(self,request):
+        user = self.request.user
+        if user.role != "clinic_admin":
+            return Response({"error":"Requests can only be approved by admins"},status=status.HTTP_403_FORBIDDEN)
+        
+        try:
+            cancellation_request = CancellationRequest.objects.get(pk=pk,status="Pending")
+        except CancellationRequest.DoesNotExist:
+            return Response({"error":"No pending cancellation requests"},status=status.HTTP_404_NOT_FOUND)
+        
+        action = request.data.get("action","").lower()
+        if action not in ["approve","rejected"]:
+            return Response({"error":"Invalid action Use 'approve' or 'reject'."},status=status.HTTP_400_BAD_REQUEST)
+        
+        cancellation_request.status = "Approve" if action == "approve" else "Rejected"
+        cancellation_request.reviewed_by = self.request.user
+        
+        if action == "approve":
+            cancellation_request.appointment.status = "Cancelled"
+            cancellation_request.appointment.save()
+            
+        return Response({"message":f"Cancellation request {action}d successfully."})
+    
+    

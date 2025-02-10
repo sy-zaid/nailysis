@@ -9,7 +9,7 @@ This module defines serializers for handling appointment data, including:
 These serializers ensure proper data validation and transformation for API interactions.
 """
 
-from appointments.models import Appointment, DoctorAppointment, TechnicianAppointment, DoctorAppointmentFee, LabTechnicianAppointmentFee
+from appointments.models import Appointment, DoctorAppointment, TechnicianAppointment, DoctorAppointmentFee, LabTechnicianAppointmentFee,CancellationRequest
 from rest_framework import serializers
 from users.models import Doctor,LabTechnician
 from users.serializers import PatientSerializer, DoctorSerializer, LabTechnicianSerializer
@@ -99,3 +99,9 @@ class TechnicianAppointmentSerializer(serializers.ModelSerializer):
         return TechnicianAppointment.objects.create(
             patient = patient, lab_technician=lab_technician, **validated_data
         )
+        
+
+class CancellationRequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CancellationRequest
+        fields = "__all__" 

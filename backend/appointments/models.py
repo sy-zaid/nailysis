@@ -1,5 +1,5 @@
 from django.db import models
-from users.models import Patient, Doctor, LabTechnician  
+from users.models import Patient, Doctor, LabTechnician,ClinicAdmin
 
 
 class Appointment(models.Model):
@@ -169,3 +169,27 @@ class TechnicianAppointment(Appointment):
 
     def __str__(self):
         return f"Lab Test {self.lab_test_id} - {self.patient} ({self.test_type})"
+
+
+from django.db import models
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
+class CancellationRequest(models.Model):
+    STATUS_CHOICES = [
+        ('Pending', 'Pending'),
+        ('Approved', 'Approved'),
+        ('Rejected', 'Rejected'),
+    ]
+
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name="cancellation_requests")
+    appointment = models.ForeignKey(DoctorAppointment, on_delete=models.CASCADE, related_name="cancellation_requests")
+    reviewed_by = models.ForeignKey(ClinicAdmin, on_delete=models.SET_NULL, null=True, blank=True)
+    reason = models.TextField()
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='Pending')
+    requested_at = models.DateTimeField(auto_now_add=True)
+    
+
+    def __str__(self):
+        return f"Request by {self.doctor} for {self.appointment} - {self.status}"
