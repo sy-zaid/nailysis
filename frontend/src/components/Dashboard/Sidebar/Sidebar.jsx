@@ -1,13 +1,9 @@
 import React, { useState } from "react";
 import styles from "./Sidebar.module.css";
 
-const Sidebar = ({ userRole, setView, isOpen, toggleSidebar}) => {
+const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
   // const [isOpen, setIsOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null); // Track which dropdown is open
-
-  // const toggleSidebar = () => {
-  //   setIsOpen(!isOpen);
-  // };
 
   const toggleDropdown = (index) => {
     setOpenDropdown(openDropdown === index ? null : index); // Toggle dropdown visibility
@@ -15,14 +11,14 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar}) => {
 
   const menuItems = {
     clinic_admin: [
-      { icon: "test-results.jpg", label: "Test Results", subItems: [] },
+      { icon: "icon-test-results-black.jpg", label: "Test Results", subItems: [] },
       {
-        icon: "diagnostic-results.jpg",
+        icon: "icon-diagnostic-results-black.jpg",
         label: "Diagnostic Results",
         subItems: [],
       },
       {
-        icon: "appointments.jpg",
+        icon: "icon-appointments-black.jpg",
         label: "Appointments",
         subItems: [
           { label: "Upcoming Appointments" },
@@ -30,25 +26,25 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar}) => {
         ],
       },
       {
-        icon: "billing.jpg",
+        icon: "icon-billing-black.jpg",
         label: "Billing & Invoice",
         subItems: [
           { label: "Generate Invoice" },
           { label: "View Payment History" },
         ],
       },
-      { icon: "feedback.jpg", label: "Feedbacks", subItems: [] },
-      { icon: "test-request.jpg", label: "Test Requests", subItems: [] },
+      { icon: "icon-feedback-black.jpg", label: "Feedbacks", subItems: [] },
+      { icon: "icon-test-request-black.jpg", label: "Test Requests", subItems: [] },
     ],
     doctor: [
-      { icon: "test-results.jpg", label: "Test Results", subItems: [] },
+      { icon: "icon-test-results-black.jpg", label: "Test Results", subItems: [] },
       {
-        icon: "diagnostic-results.jpg",
+        icon: "icon-diagnostic-results-black.jpg",
         label: "Diagnostic Results",
         subItems: [],
       },
       {
-        icon: "appointments.jpg",
+        icon: "icon-appointments-black.jpg",
         label: "Appointments",
         subItems: [
           { label: "Upcoming Appointments" },
@@ -56,25 +52,25 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar}) => {
         ],
       },
       {
-        icon: "billing.jpg",
+        icon: "icon-billing-black.jpg",
         label: "Billing & Invoice",
         subItems: [
           { label: "Generate Invoice" },
           { label: "View Payment History" },
         ],
       },
-      { icon: "feedback.jpg", label: "Feedbacks", subItems: [] },
-      { icon: "test-request.jpg", label: "Test Requests", subItems: [] },
+      { icon: "icon-feedback-black.jpg", label: "Feedbacks", subItems: [] },
+      { icon: "icon-test-request-black.jpg", label: "Test Requests", subItems: [] },
     ],
     patient: [
-      { icon: "test-results.jpg", label: "Test Results", subItems: [] },
+      { icon: "icon-test-results-black.jpg", label: "Test Results", subItems: [] },
       {
-        icon: "diagnostic-results.jpg",
+        icon: "icon-diagnostic-results-black.jpg",
         label: "Diagnostic Results",
         subItems: [],
       },
       {
-        icon: "appointments.jpg",
+        icon: "icon-appointments-black.jpg",
         label: "Appointments",
         subItems: [
           { label: "Upcoming Appointments" },
@@ -82,25 +78,25 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar}) => {
         ],
       },
       {
-        icon: "billing.jpg",
+        icon: "icon-billing-black.jpg",
         label: "Billing & Invoice",
         subItems: [
           { label: "Generate Invoice" },
           { label: "View Payment History" },
         ],
       },
-      { icon: "feedback.jpg", label: "Feedbacks", subItems: [] },
-      { icon: "test-request.jpg", label: "Test Requests", subItems: [] },
+      { icon: "icon-feedback-black.jpg", label: "Feedbacks", subItems: [] },
+      { icon: "icon-test-request-black.jpg", label: "Test Requests", subItems: [] },
     ],
     lab_admin: [
-      { icon: "test-results.jpg", label: "Test Results", subItems: [] },
+      { icon: "icon-test-results-black.jpg", label: "Test Results", subItems: [] },
       {
-        icon: "diagnostic-results.jpg",
+        icon: "icon-diagnostic-results-black.jpg",
         label: "Diagnostic Results",
         subItems: [],
       },
       {
-        icon: "appointments.jpg",
+        icon: "icon-appointments-black.jpg",
         label: "Appointments",
         subItems: [
           { label: "Upcoming Appointments" },
@@ -108,25 +104,25 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar}) => {
         ],
       },
       {
-        icon: "billing.jpg",
+        icon: "icon-billing-black.jpg",
         label: "Billing & Invoice",
         subItems: [
           { label: "Generate Invoice" },
           { label: "View Payment History" },
         ],
       },
-      { icon: "feedback.jpg", label: "Feedbacks", subItems: [] },
-      { icon: "test-request.jpg", label: "Test Requests", subItems: [] },
+      { icon: "icon-feedback-black.jpg", label: "Feedbacks", subItems: [] },
+      { icon: "icon-test-request-black.jpg", label: "Test Requests", subItems: [] },
     ],
     lab_technician: [
-      { icon: "test-results.jpg", label: "Test Results", subItems: [] },
+      { icon: "icon-test-results-black.jpg", label: "Test Results", subItems: [] },
       {
-        icon: "diagnostic-results.jpg",
+        icon: "icon-diagnostic-results-black.jpg",
         label: "Diagnostic Results",
         subItems: [],
       },
       {
-        icon: "appointments.jpg",
+        icon: "icon-appointments-black.jpg",
         label: "Appointments",
         subItems: [
           { label: "Upcoming Appointments" },
@@ -134,15 +130,15 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar}) => {
         ],
       },
       {
-        icon: "billing.jpg",
+        icon: "icon-billing-black.jpg",
         label: "Billing & Invoice",
         subItems: [
           { label: "Generate Invoice" },
           { label: "View Payment History" },
         ],
       },
-      { icon: "feedback.jpg", label: "Feedbacks", subItems: [] },
-      { icon: "test-request.jpg", label: "Test Requests", subItems: [] },
+      { icon: "icon-feedback-black.jpg", label: "Feedbacks", subItems: [] },
+      { icon: "icon-test-request-black.jpg", label: "Test Requests", subItems: [] },
     ],
   };
 
@@ -150,13 +146,15 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar}) => {
 
   return (
     <div>
-      {/* Toggle Button */}
-      <button
-        className={`${styles.toggleButton} ${isOpen ? styles.open : ""}`}
-        onClick={toggleSidebar}
-      >
-        <img src={"menu.png"} alt={"menu button"} />
-      </button>
+      {/* Toggle Button (hide when sidebar is open) */}
+      {!isOpen && (
+        <>
+          <button className={`${styles.toggleButton}`} onClick={toggleSidebar}>
+            <img src={"icon-menu-black.png"} alt={"menu button"} />
+          </button>
+          <div className={styles.floatingButtons}><h1>Hey</h1></div>
+        </>
+      )}
 
       {/* Sidebar */}
       <div className={`${styles.sidePanel} ${isOpen ? styles.open : ""}`}>
@@ -165,7 +163,7 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar}) => {
           <div>
             {isOpen && (
               <button className={styles.closeButton} onClick={toggleSidebar}>
-                <img src="close.jpg" alt="close button" />
+                <img src="icon-close-black.jpg" alt="close button" />
               </button>
             )}
           </div>
@@ -189,14 +187,14 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar}) => {
         {/* Section 2 */}
         <div className={styles.sectionTwo}>
           <button className={styles.sideButton} onClick={() => setView("")}>
-            <img src="dashboard.jpg" alt="dashboard icon" />
+            <img src="icon-dashboard-black.jpg" alt="dashboard icon" />
             <h3 className={styles.textMedium}>Dashboard</h3>
           </button>
           <button
             className={styles.sideButton}
             onClick={() => setView("Analytics")}
           >
-            <img src="analytics.jpg" alt="analytics icon" />
+            <img src="icon-analytics-black.jpg" alt="analytics icon" />
             <h3 className={styles.textMedium}>Reports & Analytics</h3>
           </button>
         </div>
@@ -250,15 +248,7 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar}) => {
             <h2>
               Mr. John Doe
               <br />
-              <span
-                style={{
-                  fontSize: "14px",
-                  color: "#4e4e4e",
-                  fontWeight: "400",
-                }}
-              >
-                johndoe@gmail.com
-              </span>
+              <span>johndoe@gmail.com</span>
             </h2>
           </div>
         </div>

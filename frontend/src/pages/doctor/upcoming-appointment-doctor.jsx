@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../components/CSS Files/PatientAppointment.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
-import PopupBookAppointment from "../../components/Popup/popup-book-appointment";
 import PopupAppointmentDetails from "../../components/Popup/popup-appointment-details";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import api from "../../api";
-import CancellationRequestForm from "./CancellationRequestForm";
+import CancellationRequestForm from "./cancellation-request-form"; // Import CancellationRequestForm
 
 const AppointmentDoctor = () => {
   const navigate = useNavigate();
@@ -52,6 +50,8 @@ const AppointmentDoctor = () => {
   };
 
   const [showPopup, setShowPopup] = useState(false);
+  const [popupContent, setPopupContent] = useState(null); // State to track which popup to show
+
   const handleOpenPopup = () => {
     setShowPopup(true); // Show the popup when button is clicked
   };
@@ -59,12 +59,36 @@ const AppointmentDoctor = () => {
   const handleClosePopup = () => {
     setShowPopup(false); // Hide the popup when closing
   };
+
+  const [menuOpen, setMenuOpen] = useState(null);
+
+  // Function to toggle the menu for a specific appointment
+  const toggleMenu = (appointmentId) => {
+    setMenuOpen(menuOpen === appointmentId ? null : appointmentId);
+  };
+
+  // Handle the action when an item is clicked in the menu
+  const handleActionClick = (action, appointmentId) => {
+    console.log(`Action: ${action} on Appointment ID: ${appointmentId}`);
+    setMenuOpen(null); // Close the menu after action
+
+    if (action === "Cancel") {
+      setPopupContent(
+        <CancellationRequestForm
+          appointmentId={appointmentId}
+          onClose={handleClosePopup}
+        />
+      );
+      setShowPopup(true); // Show the Cancellation Request Form popup
+    }
+    // Add logic for other actions like 'Edit' and 'Reschedule' if needed
+  };
+
   return (
     <div className={styles.pageContainer}>
-      {showPopup && <PopupBookAppointment onClose={handleClosePopup} />}
-      <PopupAppointmentDetails></PopupAppointmentDetails>
-      <CancellationRequestForm appointmentId={2} />
-
+      {showPopup && popupContent}{" "}
+      {/* Render the correct popup based on the action */}
+      <PopupAppointmentDetails />
       <div className={styles.pageTop}>
         <Navbar />
         <h1>Appointments</h1>
@@ -80,9 +104,7 @@ const AppointmentDoctor = () => {
               <button className={styles.filterButton}>Cancelled</button>
               <p className={styles.statusSummary}>50 completed, 4 upcoming</p>
             </div>
-            <button className={styles.addButton} >
-              Cancel Appointment
-            </button>
+            <button className={styles.addButton}>Cancel Appointment</button>
           </div>
 
           <div className={styles.tableContainer}>
@@ -92,7 +114,7 @@ const AppointmentDoctor = () => {
             >
               <thead>
                 <tr>
-                  <th>#</th> {/* Serial Number */}
+                  <th>#</th>
                   <th>Appointment ID</th>
                   <th>Patient Name</th>
                   <th>Gender</th>
@@ -109,24 +131,61 @@ const AppointmentDoctor = () => {
                     key={row.appointment_id}
                     style={{ borderBottom: "1px solid #ddd" }}
                   >
-                    <td>{index + 1}</td> {/* Serial Number */}
-                    <td>{row.appointment_id}</td> {/* Appointment ID */}
+                    <td>{index + 1}</td>
+                    <td>{row.appointment_id}</td>
                     <td>
                       {row.patient?.user?.first_name || "No first name"}{" "}
                       {row.patient?.user?.last_name || "No last name"}
-                    </td>{" "}
-                    {/* Patient Name */}
-                    <td>{row.patient?.gender || "N/A"}</td>{" "}
-                    {/* Patient Gender */}
-                    <td>{row.appointment_type || "N/A"}</td>{" "}
-                    {/* Appointment Type */}
+                    </td>
+                    <td>{row.patient?.gender || "N/A"}</td>
+                    <td>{row.appointment_type || "N/A"}</td>
                     <td>
                       {row.appointment_date} {row.appointment_time}
-                    </td>{" "}
-                    {/* Date & Time */}
-                    <td className={getStatusClass(row.status)}>{row.status}</td> {/* Status */}
-                    <td>{row.notes || "No additional notes"}</td>{" "}
-                    {/* Additional Notes */}
+                    </td>
+                    <td className={getStatusClass(row.status)}>{row.status}</td>
+                    <td>{row.notes || "No additional notes"}</td>
+                    <td>
+                      <button
+                        onClick={() => toggleMenu(row.appointment_id)}
+                        className={styles.moreActionsBtn}
+                      >
+                        <img
+                          src="/icon-three-dots.png"
+                          alt="More Actions"
+                          className={styles.moreActionsIcon}
+                        />
+                      </button>
+                      {menuOpen === row.appointment_id && (
+                        <div className={styles.menu}>
+                          <ul>
+                            <li
+                              onClick={() =>
+                                handleActionClick("Edit", row.appointment_id)
+                              }
+                            >
+                              Edit
+                            </li>
+                            <li
+                              onClick={() => {
+                                handleActionClick("Cancel", row.appointment_id);
+                              }}
+                            >
+                              Request Cancellation
+                            </li>
+                            <li
+                              onClick={() =>
+                                handleActionClick(
+                                  "Reschedule",
+                                  row.appointment_id
+                                )
+                              }
+                            >
+                              Reschedule
+                            </li>
+                          </ul>
+                        </div>
+                      )}
+                    </td>
                   </tr>
                 ))}
               </tbody>

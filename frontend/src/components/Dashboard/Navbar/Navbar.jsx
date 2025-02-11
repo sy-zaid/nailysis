@@ -17,7 +17,7 @@ const Navbar = () => {
       
       <span className={styles.search}>
         <h5>Search...</h5>
-        <img src="search.png" alt="search icon" />
+        <img src="icon-search-black.png" alt="search icon" />
       </span>
       <div className={styles.navSide}>
         <button onClick={handleScanNailsClick}>
@@ -25,7 +25,7 @@ const Navbar = () => {
           <h5>Scan Nails</h5>
         </button>
         <div>
-          <img src="bell.png" alt="notification button" />
+          <img src="icon-bell-black.png" alt="notification button" />
         </div>
       </div>
     </nav>

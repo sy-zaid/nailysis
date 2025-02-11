@@ -5,11 +5,12 @@ import Header from "../../components/Dashboard/Header/Header";
 import Sidebar from "../../components/Dashboard/Sidebar/Sidebar";
 import styles from "../../components/Dashboard/Dashboard.module.css";
 import UpcomingTest from "../../components/Dashboard/UpcomingTest/UpcomingTest";
-
+import CancellationRequestsList from "./CancellationRequestsList";
 function ClinicAdminDashboard() {
   return (
     <div>
     <Navbar />
+    
     <div className={styles.header}>
       <div className={styles.headerContent}>
         <Header curUserRole={"Clinic Admin Dashboard"} genderPrefix={"Mr."}/>
@@ -17,6 +18,7 @@ function ClinicAdminDashboard() {
           <option value="oneMonth">One Month</option>
           <option value="threeMonths">Three Months</option>
           <option value="sixMonths">Six Months</option>
+          
         </select>
       </div>
     </div>
@@ -28,6 +30,7 @@ function ClinicAdminDashboard() {
           <Cards heading="Reports" />
         </div>
         <UpcomingTest />
+        <CancellationRequestsList></CancellationRequestsList>
       </div>
     </div>
   );

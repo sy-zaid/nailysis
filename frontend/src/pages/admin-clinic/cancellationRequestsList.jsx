@@ -8,9 +8,9 @@ const CancellationRequestsList = () => {
   useEffect(() => {
     const fetchRequests = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/cancellation-requests/`, {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/cancellation_requests/`, {
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}` // Assuming you're using token-based authentication
+            'Authorization': `Bearer ${localStorage.getItem('access')}` // Assuming you're using token-based authentication
           }
         });
         setRequests(response.data);
@@ -25,11 +25,11 @@ const CancellationRequestsList = () => {
   const handleReview = async (requestId, action) => {
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/cancellation-requests/${requestId}/review/`,
+        `${import.meta.env.VITE_API_URL}/api/cancellation_requests/${requestId}/review/`,
         { action },
         {
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
+            'Authorization': `Bearer ${localStorage.getItem('access')}`
           }
         }
       );
