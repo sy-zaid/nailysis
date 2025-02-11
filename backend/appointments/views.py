@@ -3,7 +3,7 @@ from rest_framework import viewsets, permissions,status
 from rest_framework.response import Response
 from .models import Appointment, DoctorAppointment, TechnicianAppointment, DoctorAppointmentFee,LabTechnicianAppointmentFee, CancellationRequest
 from .serializers import AppointmentSerializer, DoctorAppointmentSerializer, TechnicianAppointmentSerializer, DoctorFeeSerializer,CancellationRequestSerializer
-from users.models import Patient, Doctor
+from users.models import Patient, Doctor,ClinicAdmin
 from rest_framework.decorators import action
 from django.shortcuts import get_object_or_404
 import logging
@@ -120,9 +120,9 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
             "appointment_id": doctor_appointment.appointment_id
         })
         
-    @action(detail=False,methods=["post"],url_path='request_cancellation')
-    def request_cancellation(self,request):
-        pk = 2
+    @action(detail=True,methods=["post"],url_path='request_cancellation')
+    def request_cancellation(self,request,pk=None):
+        # pk = 2
         user = self.request.user
         if user.role != "doctor":
             return Response({"error":"Only Doctors can generate a cancellation request"},status=status.HTTP_403_FORBIDDEN)
@@ -193,13 +193,21 @@ class DocAppointCancellationViewSet(viewsets.ModelViewSet):
             return CancellationRequest.objects.all()
         return CancellationRequest.objects.none()
     
-    def review_request(self,request):
+    @action(detail=True, methods=['post'], url_path='review')
+    def review_request(self,request,pk):
         user = self.request.user
         if user.role != "clinic_admin":
             return Response({"error":"Requests can only be approved by admins"},status=status.HTTP_403_FORBIDDEN)
         
+        
+        try:
+            clinic_admin = ClinicAdmin.objects.get(user=user)  # Fetch existing instance
+        except ClinicAdmin.DoesNotExist:
+            return Response({"error": "You are not a clinic admin"}, status=status.HTTP_403_FORBIDDEN)
+        
         try:
             cancellation_request = CancellationRequest.objects.get(pk=pk,status="Pending")
+            
         except CancellationRequest.DoesNotExist:
             return Response({"error":"No pending cancellation requests"},status=status.HTTP_404_NOT_FOUND)
         
@@ -208,7 +216,8 @@ class DocAppointCancellationViewSet(viewsets.ModelViewSet):
             return Response({"error":"Invalid action Use 'approve' or 'reject'."},status=status.HTTP_400_BAD_REQUEST)
         
         cancellation_request.status = "Approve" if action == "approve" else "Rejected"
-        cancellation_request.reviewed_by = self.request.user
+        cancellation_request.reviewed_by = clinic_admin
+        cancellation_request.save()
         
         if action == "approve":
             cancellation_request.appointment.status = "Cancelled"
