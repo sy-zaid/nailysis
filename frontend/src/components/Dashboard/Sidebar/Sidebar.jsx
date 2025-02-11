@@ -11,7 +11,11 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
 
   const menuItems = {
     clinic_admin: [
-      { icon: "icon-test-results-black.jpg", label: "Test Results", subItems: [] },
+      {
+        icon: "icon-test-results-black.jpg",
+        label: "Test Results",
+        subItems: [],
+      },
       {
         icon: "icon-diagnostic-results-black.jpg",
         label: "Diagnostic Results",
@@ -34,10 +38,18 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
         ],
       },
       { icon: "icon-feedback-black.jpg", label: "Feedbacks", subItems: [] },
-      { icon: "icon-test-request-black.jpg", label: "Test Requests", subItems: [] },
+      {
+        icon: "icon-test-request-black.jpg",
+        label: "Test Requests",
+        subItems: [],
+      },
     ],
     doctor: [
-      { icon: "icon-test-results-black.jpg", label: "Test Results", subItems: [] },
+      {
+        icon: "icon-test-results-black.jpg",
+        label: "Test Results",
+        subItems: [],
+      },
       {
         icon: "icon-diagnostic-results-black.jpg",
         label: "Diagnostic Results",
@@ -60,10 +72,18 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
         ],
       },
       { icon: "icon-feedback-black.jpg", label: "Feedbacks", subItems: [] },
-      { icon: "icon-test-request-black.jpg", label: "Test Requests", subItems: [] },
+      {
+        icon: "icon-test-request-black.jpg",
+        label: "Test Requests",
+        subItems: [],
+      },
     ],
     patient: [
-      { icon: "icon-test-results-black.jpg", label: "Test Results", subItems: [] },
+      {
+        icon: "icon-test-results-black.jpg",
+        label: "Test Results",
+        subItems: [],
+      },
       {
         icon: "icon-diagnostic-results-black.jpg",
         label: "Diagnostic Results",
@@ -86,10 +106,18 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
         ],
       },
       { icon: "icon-feedback-black.jpg", label: "Feedbacks", subItems: [] },
-      { icon: "icon-test-request-black.jpg", label: "Test Requests", subItems: [] },
+      {
+        icon: "icon-test-request-black.jpg",
+        label: "Test Requests",
+        subItems: [],
+      },
     ],
     lab_admin: [
-      { icon: "icon-test-results-black.jpg", label: "Test Results", subItems: [] },
+      {
+        icon: "icon-test-results-black.jpg",
+        label: "Test Results",
+        subItems: [],
+      },
       {
         icon: "icon-diagnostic-results-black.jpg",
         label: "Diagnostic Results",
@@ -112,10 +140,18 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
         ],
       },
       { icon: "icon-feedback-black.jpg", label: "Feedbacks", subItems: [] },
-      { icon: "icon-test-request-black.jpg", label: "Test Requests", subItems: [] },
+      {
+        icon: "icon-test-request-black.jpg",
+        label: "Test Requests",
+        subItems: [],
+      },
     ],
     lab_technician: [
-      { icon: "icon-test-results-black.jpg", label: "Test Results", subItems: [] },
+      {
+        icon: "icon-test-results-black.jpg",
+        label: "Test Results",
+        subItems: [],
+      },
       {
         icon: "icon-diagnostic-results-black.jpg",
         label: "Diagnostic Results",
@@ -138,7 +174,11 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
         ],
       },
       { icon: "icon-feedback-black.jpg", label: "Feedbacks", subItems: [] },
-      { icon: "icon-test-request-black.jpg", label: "Test Requests", subItems: [] },
+      {
+        icon: "icon-test-request-black.jpg",
+        label: "Test Requests",
+        subItems: [],
+      },
     ],
   };
 
@@ -152,7 +192,24 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
           <button className={`${styles.toggleButton}`} onClick={toggleSidebar}>
             <img src={"icon-menu-black.png"} alt={"menu button"} />
           </button>
-          <div className={styles.floatingButtons}><h1>Hey</h1></div>
+          <div className={styles.floatingButtons}>
+            <div className={styles.floatingCircle}>
+              <img src="icon-dashboard-black.png" alt="" />
+            </div>
+            <div className={styles.floatingCircle}>
+              <img src="icon-test-results-black.png" alt="" />
+            </div>
+            <div className={styles.floatingCircle}>
+              <img src="icon-diagnostic-results-black.png" alt="" />
+            </div>
+            <div className={styles.floatingCircle}>
+              <img src="icon-appointments-black.png" alt="" />
+            </div><div className={styles.floatingCircle}>
+              <img src="icon-billing-black.png" alt="" />
+            </div><div className={styles.floatingCircle}>
+              <img src="icon-feedback-black.png" alt="" />
+            </div>
+          </div>
         </>
       )}
 
@@ -232,7 +289,7 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
                         setView(`${subItem.label}`);
                       }}
                     >
-                      <h3 className={styles.textMedium}>{subItem.label}</h3>
+                      <h3 className={styles.sbtextMedium}>{subItem.label}</h3>
                     </button>
                   ))}
                 </div>

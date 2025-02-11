@@ -1,12 +1,42 @@
 /* Floating buttons */
-.floatingButtons{
+.floatingButtons {
   position: fixed;
-  top:50%;
-  left: 1%;
-  transform: translate(0,-50%);
-  width:100%px;
+  top: 50%;
+  left: 2%;
+  transform: translate(0, -50%);
+  width: auto;
   height: 400px;
-  background-color: #181818;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  /* background-color: #181818; */
+}
+
+.floatingCircle {
+  border-radius: 100px;
+  /* background-color: red; */
+  background-color: #ffffff;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0%;
+  border: 3.5px solid #cfcfcf;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all ease 0.25s;
+}
+
+.floatingCircle > img {
+  width: 24px;
+  height: 24px;
+}
+
+.floatingCircle:hover {
+  scale: 1.15;
+  background-color: #0067ff;
 }
 
 /* Sidebar */
@@ -102,7 +132,7 @@
 
 .secOneImg h2 {
   font-size: 20px;
-  color: #181818;
+  /* color: #181818; */
   font-weight: 700;
 }
 
@@ -129,9 +159,18 @@
 }
 
 .textMedium {
-  font-size: .90rem;
+  font-size: 0.9rem;
   font-weight: 500;
   color: #373737d5;
+  /* padding: 0; */
+  margin: 10% 0%;
+  text-shadow: 0.5px 0.5px 0.5px #37373731;
+}
+
+.sbtextMedium {
+  font-size: 0.9rem;
+  font-weight: 500;
+  /* color: #373737d5; */
   /* padding: 0; */
   margin: 10% 0%;
   text-shadow: 0.5px 0.5px 0.5px #37373731;
@@ -170,14 +209,16 @@
 /* Dropdown items */
 .sbsubButton {
   background: none;
-  color: white;
+  color: #373737d5;
   border: none;
-  /* padding: 10px; */
+  padding: 0px 14px;
   cursor: pointer;
+  border-radius: 32px;
 }
 
-.subButton:hover {
-  background-color: #ddd;
+.sbsubButton:hover {
+  background-color: #0067ff;
+  color: white !important;
 }
 
 /* Optional: Add some animations for dropdown */
@@ -232,7 +273,7 @@
 }
 
 .profSection h2 {
-  font-size: .95rem;
+  font-size: 0.95rem;
   color: #4e4e4e;
   font-weight: 700;
   display: flex;
@@ -242,8 +283,7 @@
 }
 
 .profSection > h2 > span {
-  font-size: .8rem;
+  font-size: 0.8rem;
   color: #4e4e4e;
   font-weight: 400;
 }
-
