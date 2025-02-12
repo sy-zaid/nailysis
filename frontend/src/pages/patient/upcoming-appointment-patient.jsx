@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useRef, useEffect } from 'react';
 import styles from "../../components/CSS Files/PatientAppointment.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import PopupBookAppointment from "../../components/Popup/popup-book-appointment";
@@ -58,6 +58,37 @@ const AppointmentPatients = () => {
   const handleClosePopup = () => {
     setShowPopup(false); // Hide the popup when closing
   };
+
+  const handleFilterClick = (index) => {
+    setActiveButton(index); // Set the active button when clicked
+  };
+
+  const [popupVisible, setPopupVisible] = useState(false);
+  const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
+  const popupRef = useRef(null);
+
+  const togglePopup = (event) => {
+    const iconRect = event.target.getBoundingClientRect();
+    setPopupPosition({
+      top: iconRect.top + window.scrollY + iconRect.height + 5, // Adjust for scroll position
+      left: iconRect.left + window.scrollX - 70, // Adjust for horizontal scroll
+    });
+    setPopupVisible(!popupVisible);
+  };
+
+    useEffect(() => {
+      const handleClickOutside = (event) => {
+        if (popupRef.current && !popupRef.current.contains(event.target)) {
+          setPopupVisible(false);
+        }
+      };
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
+    }, []);
+
+
   return (
     <div className={styles.pageContainer}>
       {showPopup && <PopupBookAppointment onClose={handleClosePopup} />}
@@ -65,29 +96,73 @@ const AppointmentPatients = () => {
 
       <div className={styles.pageTop}>
         <Navbar />
-        <h1>Appointments</h1>
-        <p>Here you can view and manage all the booked appointments</p>
+        <Header 
+            mainHeading={'Appointments'}
+            subHeading={'Here you can view all the booked appointments for doctors and lab tests'}
+          />
       </div>
+      <br />
       <div className={styles.mainContent}>
         <div className={styles.appointmentsContainer}>
           <div className={styles.filters}>
-            <div className={styles.filterTabs}>
-              <button className={styles.filterButton}>All</button>
-              <button className={styles.filterButton}>Upcoming</button>
-              <button className={styles.filterButton}>Consulted</button>
-              <button className={styles.filterButton}>Cancelled</button>
-              <p className={styles.statusSummary}>50 completed, 4 upcoming</p>
-            </div>
-            <button className={styles.addButton} onClick={handleOpenPopup}>
-              Book New Appointment
+          <button
+              className={`${styles.filterButton} ${activeButton === 0 ? styles.active : ''}`}
+              onClick={() => handleFilterClick(0)}
+            >
+              All
             </button>
+            <button
+              className={`${styles.filterButton} ${activeButton === 1 ? styles.active : ''}`}
+              onClick={() => handleFilterClick(1)}
+            >
+              Pending
+            </button>
+            <button
+              className={`${styles.filterButton} ${activeButton === 2 ? styles.active : ''}`}
+              onClick={() => handleFilterClick(2)}
+            >
+              Completed
+            </button>
+            <button
+              className={`${styles.filterButton} ${activeButton === 3 ? styles.active : ''}`}
+              onClick={() => handleFilterClick(3)}
+            >
+              Cancelled
+            </button>
+            <p>50 completed, 4 upcoming</p>
+            
+            <div className={styles.appointmentButtons}>
+              <button className={styles.addButton}>
+                  Download Visit Summary
+              </button>
+
+              <button onClick={() => setFirstPopup(true)} className={styles.addButton}>
+                  Book New Appointment
+              </button>
+            </div>
+            
+
           </div>
 
           <div className={styles.tableContainer}>
-            <table
-              className={styles.table}
-              style={{ borderCollapse: "collapse" }}
-            >
+            <div className={styles.controls}>
+              <select className={styles.bulkAction}>
+                <option>Bulk Action: Delete</option>
+              </select>
+              <select className={styles.sortBy}>
+                <option>Sort By: Ordered Today</option>
+              </select>
+              <input
+                className={styles.search}
+                type="text"
+                placeholder="Search By Patient Name"
+              />
+            </div>
+
+            <hr />
+            <br />
+
+            <table className={styles.table}>
               <thead>
                 <tr>
                   <th>#</th> {/* Serial Number */}
@@ -144,7 +219,39 @@ const AppointmentPatients = () => {
           </div>
         </div>
       </div>
+
+{/* Popup */}
+{popupVisible && (
+        <div
+          ref={popupRef}
+          style={{
+            position: "absolute",
+            top: popupPosition.top,
+            left: popupPosition.left,
+            background: "white",
+            border: "1px solid #ccc",
+            boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+            padding: "10px",
+            borderRadius: "10px",
+            zIndex: 1000,
+          }}
+        >
+          <p style={{ margin: "10px 0", cursor: "pointer" }} onClick={handleTableEntryClick}>
+            👁️ View Details
+          </p>
+          <p style={{ margin: "10px 0", cursor: "pointer" }}>
+            ✏️ Reschedule Appointment
+          </p>
+          <p style={{ margin: "10px 0", cursor: "pointer" }}>
+            🗑️ Cancel Appointment
+          </p>
+          <p style={{ margin: "10px 0", cursor: "pointer" }}>
+            📄 Download as PDF
+          </p>
+        </div>
+      )}
     </div>
+    
   );
 };
 

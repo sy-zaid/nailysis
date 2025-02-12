@@ -102,7 +102,7 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
         label: "Billing & Invoice",
         subItems: [
           { label: "Generate Invoice" },
-          { label: "View Payment History" },
+          { label: "View Billing History" },
         ],
       },
       { icon: "icon-feedback-black.jpg", label: "Feedbacks", subItems: [] },

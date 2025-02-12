@@ -11,6 +11,8 @@ const DiagnosticResults = (props) => {
   const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
   const popupRef = useRef(null);
 
+  const [activeButton, setActiveButton] = useState(0); 
+
   const data = [
     {
         id: 1,
@@ -18,7 +20,7 @@ const DiagnosticResults = (props) => {
         testType: "CBC",
         technician: "Tech. Jane",
         testResult: "Abnormal",
-        comments: "Lorem Ipsum è un testo segnaposto utilizzato nel settore ...",
+        comments: "Lorem Ipsum è un testo ...",
         status: "Completed",
         shareReportBtn: "Share Report",
     },
@@ -29,11 +31,15 @@ const DiagnosticResults = (props) => {
         testType: "X-Ray",
         technician: "Tech. Jane",
         testResult: "Pending",
-        comments: "Lorem Ipsum è un testo segnaposto utilizzato nel settore ...",
+        comments: "segnaposto utilizzato nel settore ...",
         status: "Cancelled",
         shareReportBtn: "Share Report",
     },
   ];
+
+  const handleFilterClick = (index) => {
+    setActiveButton(index); // Set the active button when clicked
+  };
 
   const getStatusClass = (status) => {
     switch (status) {
@@ -82,23 +88,47 @@ const DiagnosticResults = (props) => {
 
       <div className={styles.pageTop}>
         <Navbar />
-        <Header curUserRole="Diagnostic results" />
+        <Header 
+            mainHeading={'Review Diagnostic Results'}
+            subHeading={'Here you can view and manage all the diagnostic results from prescribed tests'}
+          />
       </div>
       <div className={styles.mainContent}>
 
         <div className={styles.appointmentsContainer}>
           <div className={styles.filters}>
-            <button className={styles.filterButton}>All</button>
-            <button className={styles.filterButton}>Pending</button>
-            <button className={styles.filterButton}>Completed</button>
-            <button className={styles.filterButton}>Cancelled</button>
-            <p>50 paid, 4 pending</p>
+          <button
+              className={`${styles.filterButton} ${activeButton === 0 ? styles.active : ''}`}
+              onClick={() => handleFilterClick(0)}
+            >
+              All
+            </button>
+            <button
+              className={`${styles.filterButton} ${activeButton === 1 ? styles.active : ''}`}
+              onClick={() => handleFilterClick(1)}
+            >
+              Pending
+            </button>
+            <button
+              className={`${styles.filterButton} ${activeButton === 2 ? styles.active : ''}`}
+              onClick={() => handleFilterClick(2)}
+            >
+              Completed
+            </button>
+            <button
+              className={`${styles.filterButton} ${activeButton === 3 ? styles.active : ''}`}
+              onClick={() => handleFilterClick(3)}
+            >
+              Cancelled
+            </button>
+            <p>50 completed, 4 pending</p>
             
-            <button className="_button_1muar_189">
+            <button className={styles.addButton}>
                 Book New Test
             </button>
 
           </div>
+          
           <div className={styles.tableContainer}>
             <div className={styles.controls}>
               <select className={styles.bulkAction}>
@@ -110,9 +140,11 @@ const DiagnosticResults = (props) => {
               <input
                 className={styles.search}
                 type="text"
-                placeholder="Search By Patient Name"
-              />
+                placeholder="Search By Patient Name" 
+              /> 
             </div>
+            <hr />
+            <br />
             <table className={styles.table}>
               <thead>
                 <tr>
@@ -136,14 +168,14 @@ const DiagnosticResults = (props) => {
                     <td>
                       <input type="checkbox" />
                     </td>
-                    <td>{row.id}</td>
-                    <td>{row.testDate}</td>
-                    <td>{row.testType}</td>
-                    <td>{row.technician}</td>
-                    <td>{row.testResult}</td>
-                    <td>{row.comments}</td>
-                    <td className={getStatusClass(row.status)}>{row.status}</td>
-                    <td><button className="_button_1muar_189">{row.shareReportBtn}</button></td>
+                    <td data-label="#">{row.id}</td>
+                    <td data-label="Test Date">{row.testDate}</td>
+                    <td data-label="Test Type">{row.testType}</td>
+                    <td data-label="Technician">{row.technician}</td>
+                    <td data-label="Test Result">{row.testResult}</td>
+                    <td data-label="Comments">{row.comments}</td>
+                    <td data-label="Status" className={getStatusClass(row.status)}>{row.status}</td>
+                    <td data-label="Actions"><button className={styles.shareBtn}>{row.shareReportBtn}</button></td>
                     <td style={{ position: "relative" }}>
                       <i
                         className="bx bx-dots-vertical-rounded"
@@ -184,6 +216,7 @@ const DiagnosticResults = (props) => {
         </div>
       )}
     </div>
+    
   );
 };
 
