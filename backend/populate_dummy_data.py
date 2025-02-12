@@ -12,10 +12,10 @@ def create_dummy_patients(num_patients):
     patients = []
     for _ in range(num_patients):
         user = CustomUser.objects.create_user(
-            email=f"patient{fake.unique.random_number(digits=5)}@example.com",
+            email=f"patient{fake.unique.random_number(digits=1)}@example.com",
             first_name=fake.first_name(),
             last_name=fake.last_name(),
-            password="password123",
+            password="pat",
             role="patient",
         )
         patient = Patient.objects.create(
@@ -35,16 +35,16 @@ def create_dummy_doctors(num_doctors):
     doctors = []
     for _ in range(num_doctors):
         user = CustomUser.objects.create_user(
-            email=f"doctor{fake.unique.random_number(digits=5)}@example.com",
+            email=f"doctor{fake.unique.random_number(digits=1)}@example.com",
             first_name=fake.first_name(),
             last_name=fake.last_name(),
-            password="password123",
+            password="doc",
             role="doctor",
         )
         doctor = Doctor.objects.create(
             user=user,
             license_number=fake.unique.random_number(digits=6),
-            specialization="spec2",
+            specialization=fake.job(),
             qualifications=fake.text(),
             medical_degree=fake.word(),
             years_of_experience=random.randint(1, 30),
@@ -76,9 +76,9 @@ num_patients = 5
 num_doctors = 2
 num_appointments = 10
 
-# patients = create_dummy_patients(num_patients)
-# doctors = create_dummy_doctors(num_doctors)
-# generate_dummy_appointments(num_appointments, patients, doctors)
+patients = create_dummy_patients(num_patients)
+doctors = create_dummy_doctors(num_doctors)
+generate_dummy_appointments(num_appointments, patients, doctors)
 from appointments.models import DoctorAppointmentFee
 
 # List of appointment types with sample fees
