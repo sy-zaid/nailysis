@@ -11,7 +11,6 @@
     z-index: 9999;
     backdrop-filter: blur(10px); /* Apply blur to the content behind the popup */
     -webkit-backdrop-filter: blur(10px); /* For Safari */
-
 }
 
 .popup-inner {
@@ -30,9 +29,13 @@
 .closeBtn {
     position: absolute;
     top: 0;
-    right: 75px;
+    right: 100px;
     cursor: pointer;
     background: transparent;
     color: #4E4E4E;
+    font-size: 40px;
+}
+
+.closeBtn i {
     font-size: 40px;
 }

@@ -85,6 +85,8 @@ export const renderPatientContent = (view) => {
   switch (view) {
     case "Test Results":
       return <PlaceholderComponent name="Test Results" />;
+    case "Samples":
+      return <PlaceholderComponent name="Samples" />;
     case "Diagnostic Results":
       return <PatientDiagnosticResults/>;
     case "Upcoming Appointments":
@@ -93,7 +95,7 @@ export const renderPatientContent = (view) => {
       return <PlaceholderComponent name="Appointment History" />;
     case "Generate Invoice":
       return <PatientInvoiceManagement/>;
-    case "View Payment History":
+    case "View Billing History":
       return <PatientPaymentHistory/>;
     case "Feedbacks":
       return <PlaceholderComponent name="Feedbacks" />;

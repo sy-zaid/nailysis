@@ -1,5 +1,11 @@
 /* Existing Styles */
 
+::selection {
+  background-color: #0067FF; /* Change background color */
+  color: white; /* Change text color */
+}
+
+
 .pageContainer {
     display: flex;
     flex-direction: column;
@@ -24,7 +30,7 @@
 .appointmentsContainer {
     flex: 1;
     padding: 20px;
-    background-color: #f9f9f9;
+    background-color: #ffffff;
 }
 
 .title {
@@ -43,19 +49,44 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 20px;
+    margin: 0 10px 20px 10px;
+}
+
+.filters > :last-child {
+    margin-left: auto; /* Push the last element to the right */
+}
+
+.filters p {
+  color: #737070;
+  font-weight: 400;
+  margin-left: 16px;
 }
 
 .filterButton {
-    padding: 8px 16px;
+    padding: 8px 8px;
+    margin: 0 8px;
     border: none;
-    background-color: #c0c0c0;
+    background: none;
+    color: #737070;
     cursor: pointer;
-    border-radius: 4px;
+    border-radius: 0px;
+    position: relative;
 }
 
+.filterButton.active::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 3px;
+  background-color: #0067FF; /* Bottom border color */
+  position: absolute;
+  bottom: -2px; /* Position the border just below the button */
+  left: 0;
+}
+
+
 .filterButton:hover {
-    background-color: #e0e0e0;
+    background-color: #ffffff;
 }
 
 .addButton {
@@ -63,8 +94,10 @@
     background-color: #007bff;
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 15px; 
     cursor: pointer;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s;
 }
 
 .addButton:hover {
@@ -72,10 +105,11 @@
 }
 
 .tableContainer {
+    overflow-x: auto;
     background-color: white;
     padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 20px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
 }
 
 .controls {
@@ -85,29 +119,53 @@
 }
 
 .bulkAction,
-.sortBy,
-.search {
-    padding: 5px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+.sortBy {
+  appearance: none;
+  border: none;
+  outline: none;
+  padding: 8px 12px;
+  margin-right: 10px;
+  cursor: pointer;
+  background: white url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>') 
+  no-repeat right 12px center; 
 }
 
-.table {
+
+.bulkAction:focus,
+.sortBy:focus {
+  border-color: #004080;
+  box-shadow: 0 0 5px rgba(0, 91, 187, 0.5);
+}
+
+
+.search {
+    padding: 5px;
+    border: none;
+    border-bottom: 2px solid #1E68F8;
+    background: none;
+    border-radius: 0px;
+}
+
+
+table {
     width: 100%;
     border-collapse: collapse;
+    border: none;
 }
+
 
 .table th,
 .table td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
+    border: none;
+    padding: 10px;
     cursor: pointer;
+    text-align: center;
 }
 
 .table th {
     background-color: #f4f4f4;
 }
+
 
 .table tr:nth-child(even) {
     background-color: #f9f9f9;
@@ -128,6 +186,71 @@
 .scheduled {
     color: orange;
 }
+
+
+/* Responsive Styles for table*/
+@media (max-width: 850px) {
+  .controls {
+      flex-direction: column;
+      align-items: center;
+  }
+
+  .tableContainer {
+      padding: 10px;
+  }
+
+  .tableWrapper {
+      overflow-x: auto;
+      max-width: 100%;
+  }
+
+  .table th,
+  .table td {
+      padding: 8px;
+      font-size: 14px; /* Reduce font size on smaller screens */
+  }
+}
+
+/* Stack Table on Very Small Screens */
+/* @media (max-width: 768px) {
+  .table thead {
+    display: none;
+  }  
+
+  .table, .table tbody, .table tr, .table td {
+    display: block;
+    width: 100%;
+  } 
+
+  .table tr {
+    margin-bottom: 15px;
+  }
+
+  .table tbody tr td {
+    text-align: right;
+    padding-left: 50%;
+    position: relative;
+  }
+
+  input[type="checkbox"] {
+    width: 5%;
+    align-items: center;
+  }
+
+  .table td:before {
+    content: attr(data-label);
+    position: absolute;
+    left: 0;
+  }
+
+} */
+
+
+
+
+
+
+
 
 /* New Styles for Modal Popup */
 
@@ -202,9 +325,71 @@
 
 
 
+input[type="checkbox"] {
+  appearance: none; /* Removes default styling */
+  border: none;
+  background-color: #B0D5FF; 
+  border-radius: 5px;
+  cursor: pointer;
+  position: relative;
+}
+
+input[type="checkbox"]:checked {
+  background-color: #0067FF; /* Blue when checked */
+  border-color: #0067FF
+}
+
+input[type="checkbox"]::before {
+  content: "✔"; /* Checkmark */
+  font-size: 16px;
+  color: white;
+  display: none;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+input[type="checkbox"]:checked::before {
+  display: block; /* Show checkmark */
+}
+
+.shareBtn {
+  padding: 8px 12px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  font-weight: normal;
+  white-space: nowrap; /* Prevents text from wrapping */
+  display: inline-block; /* Ensures proper sizing */
+  text-align: center; /* Centers the text */
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+}
 
 
+.shareBtn:hover {
+  background-color: #0056b3;
+}
 
+.appointmentButtons {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-top: -50px;
+}
+
+.appointmentButtons button {
+  width: 100%;
+}
+
+hr {
+  color: #CFCFCF;
+  opacity: 0.6;
+}
 
 
 /* -------------------------------------------------------------------- */
@@ -216,7 +401,7 @@
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 1200px;
+    width: 1100px;
   }
   
   .header {
@@ -262,6 +447,10 @@
     margin-right: 10px;
   }
 
+  .secKey {
+    margin-left: 15%;
+  }
+
   .statusValue {
     color: #FFB031;
   }
@@ -305,7 +494,7 @@
 
   .newFormGroup {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     /* gap: 10px; */
   }
 
@@ -341,6 +530,7 @@
   .newActions {
     display: flex;
     justify-content: center;
+    gap: 20px;
   }
   
   .cancelButton {

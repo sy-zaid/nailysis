@@ -22,7 +22,7 @@ body {
 
 .mainContent {
   flex-grow: 1;
-  background-color: #f4f4f9;
+  background-color: #ffffff;
   padding: 20px;
   transition: margin-left 0.3s ease;
 }

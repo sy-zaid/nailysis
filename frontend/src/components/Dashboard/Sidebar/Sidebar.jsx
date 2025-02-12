@@ -68,6 +68,7 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar}) => {
     ],
     patient: [
       { icon: "test-results.jpg", label: "Test Results", subItems: [] },
+      { icon: "samples.jpg", label: "Samples", subItems: [] },
       {
         icon: "diagnostic-results.jpg",
         label: "Diagnostic Results",
@@ -86,7 +87,7 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar}) => {
         label: "Billing & Invoice",
         subItems: [
           { label: "Generate Invoice" },
-          { label: "View Payment History" },
+          { label: "View Billing History" },
         ],
       },
       { icon: "feedback.jpg", label: "Feedbacks", subItems: [] },

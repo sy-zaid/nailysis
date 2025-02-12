@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import styles from "../../components/CSS Files/PatientAppointment.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import Header from "../../components/Dashboard/Header/Header";
@@ -7,28 +7,26 @@ import Popup from "../../components/Popup/Popup.jsx";
 
 
 const Appointment = (props) => {
+  const [activeButton, setActiveButton] = useState(0); 
+
   const data = [
     {
       id: 1,
       appointmentId: "123456",
-      patientName: "John",
-      gender: "Male",
-      email: "patient1@gmail.com",
-      phone: "+123 456 789",
-      dateTime: "10/10/2024 09:30 AM",
-      testType: "Blood Test",
+      doctorOrTechnician: "Dr. John",
+      speciality: "Dermatologist",
+      appointmentDateTime: "10/10/2024 09:30 AM",
+      purpose: "Consultation",
       status: "Consulted",
     },
 
     {
       id: 9,
       appointmentId: "123456",
-      patientName: "Carl",
-      gender: "Female",
-      email: "patient9@gmail.com",
-      phone: "+123 456 789",
-      dateTime: "10/10/2024 09:30 AM",
-      testType: "COVID-19",
+      doctorOrTechnician: "Dr. Doe",
+      speciality: "Dermatologist",
+      appointmentDateTime: "10/10/2024 09:30 AM",
+      purpose: "Consultation",
       status: "Cancelled",
     },
   ];
@@ -51,13 +49,41 @@ const Appointment = (props) => {
     setSecondPopup(true);
   };
 
+  const handleFilterClick = (index) => {
+    setActiveButton(index); // Set the active button when clicked
+  };
+
+  const [popupVisible, setPopupVisible] = useState(false);
+  const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
+  const popupRef = useRef(null);
+
+  const togglePopup = (event) => {
+    const iconRect = event.target.getBoundingClientRect();
+    setPopupPosition({
+      top: iconRect.top + window.scrollY + iconRect.height + 5, // Adjust for scroll position
+      left: iconRect.left + window.scrollX - 70, // Adjust for horizontal scroll
+    });
+    setPopupVisible(!popupVisible);
+  };
+
+    useEffect(() => {
+      const handleClickOutside = (event) => {
+        if (popupRef.current && !popupRef.current.contains(event.target)) {
+          setPopupVisible(false);
+        }
+      };
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
+    }, []);
 
 
   return (
     
     <div className={styles.pageContainer}>
 
-      {/* First Popup */}
+      {/* Book New Appointment Popup */}
 
       <Popup trigger={firstPopup} setTrigger={setFirstPopup}>
                 <div className={styles.formContainer}>
@@ -163,7 +189,7 @@ const Appointment = (props) => {
       </Popup>
 
 
-      {/* Second Popup */}
+      {/* Appointment Details Popup */}
 
       <Popup trigger={secondPopup} setTrigger={setSecondPopup}>
         <div className={styles.formContainer}>
@@ -195,6 +221,7 @@ const Appointment = (props) => {
           </p>
 
             <div className={styles.formSection}>
+              <br />
                     <h3>Doctor/Technician Details</h3>
                     <div className={styles.newFormGroup}>
                       <div>
@@ -250,7 +277,7 @@ const Appointment = (props) => {
             </div>
 
           <div className={styles.newActions}>
-            <button className={styles.confirmButton}>
+            <button className={styles.addButton}>
               Download as PDF File
             </button>
           </div>
@@ -261,21 +288,52 @@ const Appointment = (props) => {
 
       <div className={styles.pageTop}>
         <Navbar />
-        <Header curUserRole="Appointments" />
+        <Header 
+            mainHeading={'Appointments'}
+            subHeading={'Here you can view all the booked appointments for doctors and lab tests'}
+          />
       </div>
+      <br />
       <div className={styles.mainContent}>
 
         <div className={styles.appointmentsContainer}>
           <div className={styles.filters}>
-            <button className={styles.filterButton}>All</button>
-            <button className={styles.filterButton}>Upcoming</button>
-            <button className={styles.filterButton}>Consulted</button>
-            <button className={styles.filterButton}>Cancelled</button>
+          <button
+              className={`${styles.filterButton} ${activeButton === 0 ? styles.active : ''}`}
+              onClick={() => handleFilterClick(0)}
+            >
+              All
+            </button>
+            <button
+              className={`${styles.filterButton} ${activeButton === 1 ? styles.active : ''}`}
+              onClick={() => handleFilterClick(1)}
+            >
+              Pending
+            </button>
+            <button
+              className={`${styles.filterButton} ${activeButton === 2 ? styles.active : ''}`}
+              onClick={() => handleFilterClick(2)}
+            >
+              Completed
+            </button>
+            <button
+              className={`${styles.filterButton} ${activeButton === 3 ? styles.active : ''}`}
+              onClick={() => handleFilterClick(3)}
+            >
+              Cancelled
+            </button>
             <p>50 completed, 4 upcoming</p>
             
-            <button onClick={() => setFirstPopup(true)} className="_button_1muar_189">
-                Book New Appointment
-            </button>
+            <div className={styles.appointmentButtons}>
+              <button className={styles.addButton}>
+                  Download Visit Summary
+              </button>
+
+              <button onClick={() => setFirstPopup(true)} className={styles.addButton}>
+                  Book New Appointment
+              </button>
+            </div>
+            
 
           </div>
           <div className={styles.tableContainer}>
@@ -292,6 +350,10 @@ const Appointment = (props) => {
                 placeholder="Search By Patient Name"
               />
             </div>
+
+            <hr />
+            <br />
+
             <table className={styles.table}>
               <thead>
                 <tr>
@@ -300,30 +362,34 @@ const Appointment = (props) => {
                   </th>
                   <th>#</th>
                   <th >Appointment ID</th>
-                  <th>Patient Name</th>
-                  <th>Gender</th>
-                  <th>Email</th>
-                  <th>Phone</th>
+                  <th>Doctor/Technician</th>
+                  <th>Speciality</th>
                   <th>Appointment Date & Time</th>
-                  <th>Test Type</th>
-                  <th>Scheduled Appointment</th>
+                  <th>Purpose</th>
+                  <th>Status</th>
+                  <th> </th>
                 </tr>
               </thead>
               <tbody>
                 {data.map((row) => (
-                  <tr key={row.id} onClick={handleTableEntryClick}>
+                  <tr key={row.id}>
                     <td>
                       <input type="checkbox" />
                     </td>
                     <td>{row.id}</td>
                     <td>{row.appointmentId}</td>
-                    <td>{row.patientName}</td>
-                    <td>{row.gender}</td>
-                    <td>{row.email}</td>
-                    <td>{row.phone}</td>
-                    <td>{row.dateTime}</td>
-                    <td>{row.testType}</td>
+                    <td>{row.doctorOrTechnician}</td>
+                    <td>{row.speciality}</td>
+                    <td>{row.appointmentDateTime}</td>
+                    <td>{row.purpose}</td>
                     <td className={getStatusClass(row.status)}>{row.status}</td>
+                    <td style={{ position: "relative" }}>
+                      <i
+                        className="bx bx-dots-vertical-rounded"
+                        style={{ cursor: "pointer" }}
+                        onClick={togglePopup}
+                      ></i>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -332,7 +398,38 @@ const Appointment = (props) => {
         </div>
       </div>
 
+{/* Popup */}
+{popupVisible && (
+        <div
+          ref={popupRef}
+          style={{
+            position: "absolute",
+            top: popupPosition.top,
+            left: popupPosition.left,
+            background: "white",
+            border: "1px solid #ccc",
+            boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+            padding: "10px",
+            borderRadius: "10px",
+            zIndex: 1000,
+          }}
+        >
+          <p style={{ margin: "10px 0", cursor: "pointer" }} onClick={handleTableEntryClick}>
+            👁️ View Details
+          </p>
+          <p style={{ margin: "10px 0", cursor: "pointer" }}>
+            ✏️ Reschedule Appointment
+          </p>
+          <p style={{ margin: "10px 0", cursor: "pointer" }}>
+            🗑️ Cancel Appointment
+          </p>
+          <p style={{ margin: "10px 0", cursor: "pointer" }}>
+            📄 Download as PDF
+          </p>
+        </div>
+      )}
     </div>
+    
   );
 };
 
