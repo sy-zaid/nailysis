@@ -72,9 +72,14 @@ class CustomUser(AbstractUser):
         return self.role == role_name
     
     def save(self,*args,**kwargs):
+        is_new = self._state.adding  # Check if it's a new user
         if not self.user_id:
             self.user_id = self.generate_custom_user_id()
         super().save(*args, **kwargs)
+
+            # Auto-create related role object if missing
+        if is_new and self.role == 'clinic_admin' and not hasattr(self, 'clinic_admin'):
+            ClinicAdmin.objects.create(user=self)
     
     def generate_custom_user_id(self):
         role_prefixes = {

@@ -122,7 +122,6 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
         
     @action(detail=True,methods=["post"],url_path='request_cancellation')
     def request_cancellation(self,request,pk=None):
-        # pk = 2
         user = self.request.user
         if user.role != "doctor":
             return Response({"error":"Only Doctors can generate a cancellation request"},status=status.HTTP_403_FORBIDDEN)
@@ -197,12 +196,15 @@ class DocAppointCancellationViewSet(viewsets.ModelViewSet):
     def review_request(self,request,pk):
         user = self.request.user
         if user.role != "clinic_admin":
+            print("Requests can only be approved by admins")
             return Response({"error":"Requests can only be approved by admins"},status=status.HTTP_403_FORBIDDEN)
         
         
         try:
             clinic_admin = ClinicAdmin.objects.get(user=user)  # Fetch existing instance
         except ClinicAdmin.DoesNotExist:
+            print(Exception)
+            print("You are not a clinic admin")
             return Response({"error": "You are not a clinic admin"}, status=status.HTTP_403_FORBIDDEN)
         
         try:
@@ -212,7 +214,7 @@ class DocAppointCancellationViewSet(viewsets.ModelViewSet):
             return Response({"error":"No pending cancellation requests"},status=status.HTTP_404_NOT_FOUND)
         
         action = request.data.get("action","").lower()
-        if action not in ["approve","rejected"]:
+        if action not in ["approve","reject"]:
             return Response({"error":"Invalid action Use 'approve' or 'reject'."},status=status.HTTP_400_BAD_REQUEST)
         
         cancellation_request.status = "Approve" if action == "approve" else "Rejected"

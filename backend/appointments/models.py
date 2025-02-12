@@ -190,6 +190,12 @@ class CancellationRequest(models.Model):
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='Pending')
     requested_at = models.DateTimeField(auto_now_add=True)
     
-
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['appointment'],
+                name='unique_cancellation_request_per_appointment'
+            )
+        ]
     def __str__(self):
         return f"Request by {self.doctor} for {self.appointment} - {self.status}"
