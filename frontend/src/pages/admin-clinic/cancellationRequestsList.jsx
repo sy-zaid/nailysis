@@ -13,6 +13,7 @@ const CancellationRequestsList = () => {
             'Authorization': `Bearer ${localStorage.getItem('access')}` // Assuming you're using token-based authentication
           }
         });
+        console.log("Response from",response.data)
         setRequests(response.data);
       } catch (err) {
         setError('Failed to fetch cancellation requests.');
@@ -24,6 +25,7 @@ const CancellationRequestsList = () => {
 
   const handleReview = async (requestId, action) => {
     try {
+      console.log(requestId)
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/cancellation_requests/${requestId}/review/`,
         { action },
