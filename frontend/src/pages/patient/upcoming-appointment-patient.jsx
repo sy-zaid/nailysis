@@ -1,6 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from "react";
 import styles from "../../components/CSS Files/PatientAppointment.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
+import Header from "../../components/Dashboard/Header/Header";
 import PopupBookAppointment from "../../components/Popup/popup-book-appointment";
 import PopupAppointmentDetails from "../../components/Popup/popup-appointment-details";
 import { useNavigate } from "react-router-dom";
@@ -11,6 +12,7 @@ const AppointmentPatients = () => {
   const navigate = useNavigate();
   const [appointments, setAppointments] = useState([]);
   const token = localStorage.getItem("access");
+  const [activeButton, setActiveButton] = useState(0);
 
   useEffect(() => {
     if (!token) {
@@ -76,18 +78,17 @@ const AppointmentPatients = () => {
     setPopupVisible(!popupVisible);
   };
 
-    useEffect(() => {
-      const handleClickOutside = (event) => {
-        if (popupRef.current && !popupRef.current.contains(event.target)) {
-          setPopupVisible(false);
-        }
-      };
-      document.addEventListener("mousedown", handleClickOutside);
-      return () => {
-        document.removeEventListener("mousedown", handleClickOutside);
-      };
-    }, []);
-
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (popupRef.current && !popupRef.current.contains(event.target)) {
+        setPopupVisible(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <div className={styles.pageContainer}>
@@ -96,52 +97,60 @@ const AppointmentPatients = () => {
 
       <div className={styles.pageTop}>
         <Navbar />
-        <Header 
-            mainHeading={'Appointments'}
-            subHeading={'Here you can view all the booked appointments for doctors and lab tests'}
-          />
+        <Header
+          mainHeading={"Appointments"}
+          subHeading={
+            "Here you can view all the booked appointments for doctors and lab tests"
+          }
+        />
       </div>
       <br />
       <div className={styles.mainContent}>
         <div className={styles.appointmentsContainer}>
           <div className={styles.filters}>
-          <button
-              className={`${styles.filterButton} ${activeButton === 0 ? styles.active : ''}`}
+            <button
+              className={`${styles.filterButton} ${
+                activeButton === 0 ? styles.active : ""
+              }`}
               onClick={() => handleFilterClick(0)}
             >
               All
             </button>
             <button
-              className={`${styles.filterButton} ${activeButton === 1 ? styles.active : ''}`}
+              className={`${styles.filterButton} ${
+                activeButton === 1 ? styles.active : ""
+              }`}
               onClick={() => handleFilterClick(1)}
             >
               Pending
             </button>
             <button
-              className={`${styles.filterButton} ${activeButton === 2 ? styles.active : ''}`}
+              className={`${styles.filterButton} ${
+                activeButton === 2 ? styles.active : ""
+              }`}
               onClick={() => handleFilterClick(2)}
             >
               Completed
             </button>
             <button
-              className={`${styles.filterButton} ${activeButton === 3 ? styles.active : ''}`}
+              className={`${styles.filterButton} ${
+                activeButton === 3 ? styles.active : ""
+              }`}
               onClick={() => handleFilterClick(3)}
             >
               Cancelled
             </button>
             <p>50 completed, 4 upcoming</p>
-            
+
             <div className={styles.appointmentButtons}>
               <button className={styles.addButton}>
-                  Download Visit Summary
+                Download Visit Summary
               </button>
 
-              <button onClick={() => setFirstPopup(true)} className={styles.addButton}>
-                  Book New Appointment
+              <button className={styles.addButton} onClick={handleOpenPopup}>
+                Book New Appointment
               </button>
             </div>
-            
-
           </div>
 
           <div className={styles.tableContainer}>
@@ -202,9 +211,7 @@ const AppointmentPatients = () => {
                     <td>{row.appointment_type || "N/A"}</td>{" "}
                     {/* Visit Purpose */}
                     <td>{row.status}</td> {/* Status */}
-                    <td>
-                      {row.fee ? `PKR ${row.fee}` : "Not available"}
-                    </td>{" "}
+                    <td>{row.fee ? `PKR ${row.fee}` : "Not available"}</td>{" "}
                     {/* Fee */}
                     <td>
                       {row.doctor?.years_of_experience || "N/A"} years
@@ -220,8 +227,8 @@ const AppointmentPatients = () => {
         </div>
       </div>
 
-{/* Popup */}
-{popupVisible && (
+      {/* Popup */}
+      {popupVisible && (
         <div
           ref={popupRef}
           style={{
@@ -236,7 +243,10 @@ const AppointmentPatients = () => {
             zIndex: 1000,
           }}
         >
-          <p style={{ margin: "10px 0", cursor: "pointer" }} onClick={handleTableEntryClick}>
+          <p
+            style={{ margin: "10px 0", cursor: "pointer" }}
+            onClick={handleTableEntryClick}
+          >
             👁️ View Details
           </p>
           <p style={{ margin: "10px 0", cursor: "pointer" }}>
@@ -251,7 +261,6 @@ const AppointmentPatients = () => {
         </div>
       )}
     </div>
-    
   );
 };
 
