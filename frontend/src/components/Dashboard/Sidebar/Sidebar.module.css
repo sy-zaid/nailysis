@@ -9,9 +9,18 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+  z-index: 200;
   align-items: center;
   justify-content: center;
   /* background-color: #181818; */
+  animation: fadeIn 0.95s ease-out;
+}
+.floatingButtonsOpen {
+  opacity: 1;
+}
+
+.floatingButtonsClosed {
+  opacity: 1;
 }
 
 .floatingCircle {
@@ -49,15 +58,17 @@
   /* background-color: #ca0c0c; */
   padding: 16px;
   transition: left 0.3s ease;
-  z-index: 200;
+  z-index: 300;
   display: flex;
   flex-direction: column;
   border-right: 0.5px solid rgba(0, 0, 0, 0.078);
   box-shadow: #181818;
+  animation: fadeIn 0.5s ease-out;
 }
 
 .sidePanel.open {
   left: 0; /* Sidebar visible */
+  animation: fadeIn 0.5s ease-out;
 }
 
 /* Menu Button */
@@ -172,7 +183,7 @@
   font-weight: 500;
   /* color: #373737d5; */
   /* padding: 0; */
-  margin: 10% 0%;
+  margin: 6% 0%;
   text-shadow: 0.5px 0.5px 0.5px #37373731;
 }
 
@@ -183,12 +194,19 @@
   flex-direction: column;
   gap: 6px;
   overflow: auto;
-  margin-top: 12px;
   margin-left: 12px;
   justify-content: center;
   align-items: start;
   justify-content: start;
   border-bottom: 1px solid #cfcfcf;
+}
+
+.sectionThreeSecondDiv {
+  margin: 20px 0px;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  /* background-color: red; */
 }
 
 .sectionThree button {
@@ -201,9 +219,20 @@
 /* Dropdown container */
 .sbdropdown {
   padding-left: 20px;
-  /* margin-top: 5px; */
-  /* background-color: #f4f4f4; */
   color: white;
+  max-height: 0;
+  opacity: 0;
+  /* overflow: hidden; */
+  transform: translateY(-10px);
+  transition: max-height 0.35s ease, opacity 0.3s ease-out,
+    transform 0.3s ease-out;
+}
+
+/* When dropdown opens */
+.sbdropdownopen {
+  max-height: 300px; /* Adjust based on content */
+  opacity: 1;
+  transform: translateY(0);
 }
 
 /* Dropdown items */
@@ -213,7 +242,9 @@
   border: none;
   padding: 0px 14px;
   cursor: pointer;
+  margin: 4% 0;
   border-radius: 32px;
+  transition: all ease 0.5s;
 }
 
 .sbsubButton:hover {
@@ -221,9 +252,33 @@
   color: white !important;
 }
 
-/* Optional: Add some animations for dropdown */
-.sbdropdown {
-  animation: fadeIn 0.3s ease-out;
+/* Apply to a specific div */
+.secThreeCustomScrollBar {
+  overflow-y: auto; /* Enable scrolling */
+}
+
+/* sec-three-custom scrollbar styles */
+.secThreeCustomScrollBar::-webkit-scrollbar {
+  width: 4px; /* Adjust scrollbar width */
+  height: 40%;
+}
+
+/* Track (background) */
+.secThreeCustomScrollBar::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Light gray */
+  border-radius: 10px;
+}
+
+/* Handle (the draggable part) */
+.secThreeCustomScrollBar::-webkit-scrollbar-thumb {
+  background: #0067ff; /* Blue */
+  border-radius: 12px;
+  /* transition: background 0.3s; */
+}
+
+/* Handle on hover */
+.secThreeCustomScrollBar::-webkit-scrollbar-thumb:hover {
+  background: #004bbd; /* Darker blue */
 }
 
 @keyframes fadeIn {

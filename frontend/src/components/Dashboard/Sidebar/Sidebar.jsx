@@ -204,9 +204,11 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
             </div>
             <div className={styles.floatingCircle}>
               <img src="icon-appointments-black.png" alt="" />
-            </div><div className={styles.floatingCircle}>
+            </div>
+            <div className={styles.floatingCircle}>
               <img src="icon-billing-black.png" alt="" />
-            </div><div className={styles.floatingCircle}>
+            </div>
+            <div className={styles.floatingCircle}>
               <img src="icon-feedback-black.png" alt="" />
             </div>
           </div>
@@ -257,45 +259,52 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
         </div>
 
         {/* Section 3 */}
-        <div className={styles.sectionThree}>
-          {currentMenu.map((item, index) => (
-            <div key={index}>
-              {/* Main Item */}
-              <button
-                className={styles.sideButton}
-                onClick={() => {
-                  if (item.subItems.length === 0) {
-                    // If no sub-items, set the view based on the main item label
-                    setView(item.label);
-                  } else {
-                    // If there are sub-items, toggle the dropdown visibility
-                    toggleDropdown(index);
-                  }
-                }}
-              >
-                <img src={item.icon} alt={`${item.label} icon`} />
-                <h3 className={styles.textMedium}>{item.label}</h3>
-              </button>
+        <div className={`${styles.sectionThree} `}>
+          <div
+            className={`${styles.sectionThreeSecondDiv} ${styles.secThreeCustomScrollBar}`}
+          >
+            {currentMenu.map((item, index) => (
+              <div key={index}>
+                {/* Main Item */}
+                <button
+                  className={styles.sideButton}
+                  onClick={() => {
+                    if (item.subItems.length === 0) {
+                      // If no sub-items, set the view based on the main item label
+                      setView(item.label);
+                    } else {
+                      // If there are sub-items, toggle the dropdown visibility
+                      toggleDropdown(index);
+                    }
+                  }}
+                >
+                  <img src={item.icon} alt={`${item.label} icon`} />
+                  <h3 className={styles.textMedium}>{item.label}</h3>
+                </button>
 
-              {/* Dropdown items */}
-              {item.subItems.length > 0 && openDropdown === index && (
-                <div className={styles.sbdropdown}>
-                  {item.subItems.map((subItem, subIndex) => (
-                    <button
-                      key={subIndex}
-                      className={styles.sbsubButton}
-                      onClick={() => {
-                        // Set the view based on the sub-item label
-                        setView(`${subItem.label}`);
-                      }}
-                    >
-                      <h3 className={styles.sbtextMedium}>{subItem.label}</h3>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
+                {/* Dropdown items */}
+                {item.subItems.length > 0 && (
+                  <div
+                    className={`${styles.sbdropdown} ${
+                      openDropdown === index ? styles.sbdropdownopen : ""
+                    }`}
+                  >
+                    {item.subItems.map((subItem, subIndex) => (
+                      <button
+                        key={subIndex}
+                        className={styles.sbsubButton}
+                        onClick={() => {
+                          setView(`${subItem.label}`);
+                        }}
+                      >
+                        <h3 className={styles.sbtextMedium}>{subItem.label}</h3>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Section 4 */}
