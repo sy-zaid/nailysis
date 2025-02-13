@@ -10,7 +10,8 @@ const AppointmentDoctor = () => {
   const navigate = useNavigate();
   const [appointments, setAppointments] = useState([]);
   const token = localStorage.getItem("access");
-
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupContent, setPopupContent] = useState(null); // State to track which popup to show
   useEffect(() => {
     if (!token) {
       console.log("No token found, Redirecting to login");
@@ -28,6 +29,7 @@ const AppointmentDoctor = () => {
             },
           }
         );
+        
         setAppointments(response.data);
         console.log("Response from doctor appointment", response.data);
       } catch (error) {
@@ -49,8 +51,7 @@ const AppointmentDoctor = () => {
     }
   };
 
-  const [showPopup, setShowPopup] = useState(false);
-  const [popupContent, setPopupContent] = useState(null); // State to track which popup to show
+  
 
   const handleOpenPopup = () => {
     setShowPopup(true); // Show the popup when button is clicked

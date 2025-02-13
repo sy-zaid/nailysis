@@ -150,7 +150,7 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
         new_appointment_type = request.data.get("appointment_type")
         new_date = request.data.get("appointment_date")
         new_time = request.data.get("appointment_time")
-        print(new_doctor,new_specialization,new_appointment_type,new_date,new_time)
+        
         try:
             appointment.reschedule_appointment(new_date=new_date,
                                                new_time=new_time,
@@ -177,8 +177,9 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
         reason = request.data.get('reason','').strip()
         if not reason:
             return Response({"error":"Cancellation reason is required"},status=status.HTTP_400_BAD_REQUEST)
-        cancellation_request = CancellationRequest.objects.create(doctor=doctor,appointment=appointment,reason = reason)
-        
+        cancellation_request = CancellationRequest.objects.create(doctor=doctor,appointment=appointment,reason = reason,status="Pending")
+        appointment.status = "Pending"
+        appointment.save()
         return Response({"message":"Cancellation request sent successfully","request_id":cancellation_request.id},status=status.HTTP_201_CREATED)    
 
 

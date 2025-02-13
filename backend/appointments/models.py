@@ -42,7 +42,6 @@ class Appointment(models.Model):
         self.save()
 
     def reschedule_appointment(self, new_date, new_time,new_specialization,new_doctor,new_appointment_type):
-        
         try:
             """Reschedules the appointment to a new date and time."""
             self.appointment_date = new_date
