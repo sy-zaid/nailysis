@@ -42,22 +42,27 @@ class Appointment(models.Model):
         self.save()
 
     def reschedule_appointment(self, new_date, new_time,new_specialization,new_doctor,new_appointment_type):
-        from datetime import date, time
+        
         try:
             """Reschedules the appointment to a new date and time."""
-            self.appointment_date = date.today() 
-            self.appointment_time = time(14, 30, 0)
+            self.appointment_date = new_date
+            self.appointment_time = new_time
             if isinstance(self, DoctorAppointment):  # Check if it's a DoctorAppointment
                 print("YES ITS A DOCTOR APPOINTMENT INSTANCE")
-                # if new_specialization:
-                #     self.specialization = new_specialization
-                # if new_doctor:
-                #     self.doctor = new_doctor
-                # if new_appointment_type:
-                #     self.appointment_type = new_appointment_type
+                if new_specialization:
+                    self.specialization = new_specialization
+                if new_doctor:
+                   # Fetch the Doctor instance using the ID
+                    try:
+                        doctor_instance = Doctor.objects.get(pk=new_doctor)
+                        self.doctor = doctor_instance
+                    except Doctor.DoesNotExist as e:
+                        raise ValueError(f"Doctor with ID {new_doctor} does not exist") from e
+                if new_appointment_type:
+                    self.appointment_type = new_appointment_type
             self.status = "Rescheduled"
             self.save()
-            
+
         except Exception as e:
             print(f"Error while rescheduling: {e}")
 

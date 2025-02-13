@@ -154,13 +154,12 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
         try:
             appointment.reschedule_appointment(new_date=new_date,
                                                new_time=new_time,
-                                            #    new_specialization=new_specialization,
-                                            #    new_doctor=new_doctor,
-                                            #    new_appointment_type=new_appointment_type)
-            )
+                                               new_specialization=new_specialization,
+                                               new_doctor=new_doctor,
+                                               new_appointment_type=new_appointment_type)
             return Response({"message":"Appointment rescheduled successfully"})
         except Exception as e:
-            return Response({"error": str(e)},status=status.HTTP_400_BAD_REQUEST)    
+            return Response({"error": e},status=status.HTTP_400_BAD_REQUEST)    
         
     
     @action(detail=True,methods=["post"],url_path='request_cancellation')
