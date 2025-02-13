@@ -1,0 +1,91 @@
+.container {
+  max-width: 900px;
+  margin: auto;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  background-color: #191919;
+  color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  gap: 70px;
+}
+
+.doctorImage {
+  width: 200px;
+  height: 250px;
+  border-radius: 20%;
+  object-fit: cover;
+}
+
+.headerInfo h1 {
+  margin: 0;
+}
+
+.buttons {
+  margin-top: 10px;
+}
+
+.contactBtn,
+.appointmentBtn {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.about,
+.section,
+.socialMedia,
+.photoGallery,
+.links,
+.contactInfo {
+  margin-top: 20px;
+  padding: 20px;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+}
+
+.icons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.icons img {
+  width: 40px;
+  margin-right: 10px;
+}
+
+.gallery {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.gallery img {
+  width: 200px;
+  margin-right: 10px;
+  border-radius: 5px;
+}
+
+.contactItems {
+  display: flex;
+  justify-content: center;
+  gap: 40%;
+}
+.contactInfo h4 {
+  color: #666;
+  font-size: 14px;
+  margin: 0 0 8px;
+}
+
+.contactInfo p {
+  margin: 0;
+  font-weight: 500;
+}

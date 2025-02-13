@@ -1,15 +1,15 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styles from "../../components/CSS Files/Appointment.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
-import Header from "../../components/Dashboard/Header/Header";
-import { useNavigate } from "react-router-dom";
 
-const Appointment = (props) => {
+const Appointment = () => {
   const navigate = useNavigate();
   const [dropdownId, setDropdownId] = useState(null);
 
   const handleAddAppointment = () => {
-    navigate("/add-appointment");
+    navigate("/patients");
+    navigate("/patient-profile");
   };
 
   const toggleDropdown = (id) => {
@@ -17,10 +17,13 @@ const Appointment = (props) => {
   };
 
   const handleDropdownAction = (action, id) => {
-    // Replace this with your desired actions
-    console.log(`${action} clicked for appointment ID: ${id}`);
+    if (action === "View Profile") {
+      navigate("/clinic-admin/patient-profile");
+    } else {
+      console.log(`${action} clicked for appointment ID: ${id}`);
+    }
+    setDropdownId(null);
   };
-
   const data = [
     {
       id: 1,
@@ -138,46 +141,18 @@ const Appointment = (props) => {
     <div className={styles.pageContainer}>
       <div className={styles.pageTop}>
         <Navbar />
-        <h1>Appointments</h1>
-        <p>Here you can view and manage all the booked appointments</p>
+        <h1>Your Patients</h1>
+        <p>Here you can view and manage your patients</p>
       </div>
       <div className={styles.mainContent}>
         <div className={styles.appointmentsContainer}>
-          <div className={styles.filters}>
-            <div className={styles.filterTabs}>
-              <button className={styles.filterButton}>All</button>
-              <button className={styles.filterButton}>Upcoming</button>
-              <button className={styles.filterButton}>Consulted</button>
-              <button className={styles.filterButton}>Cancelled</button>
-              <p className={styles.statusSummary}>50 completed, 4 upcoming</p>
-            </div>
-            <button className={styles.addButton} onClick={handleAddAppointment}>
-              Add New Appointment
-            </button>
-          </div>
           <div className={styles.tableContainer}>
-            <div className={styles.controls}>
-              <select className={styles.bulkAction}>
-                <option>Bulk Action: Delete</option>
-              </select>
-              <div className={styles.headingBox}>
-                <select className={styles.sortBy}>
-                  <option>Sort By: Ordered Today</option>
-                </select>
-                <input
-                  className={styles.search}
-                  type="text"
-                  placeholder="Search By Patient Name"
-                />
-              </div>
-            </div>
             <table
               className={styles.table}
               style={{ borderCollapse: "collapse" }}
             >
               <thead>
                 <tr>
-                  <th></th>
                   <th>#</th>
                   <th>Appointment ID</th>
                   <th>Patient Name</th>
@@ -197,10 +172,6 @@ const Appointment = (props) => {
                     className={index === 0 ? styles.noHover : ""}
                     style={{ borderBottom: "1px solid #ddd" }}
                   >
-                    {/* Add a checkbox for the first row as well */}
-                    <td>
-                      <input type="checkbox" />
-                    </td>
                     <td>{row.id}</td>
                     <td>{row.appointmentId}</td>
                     <td>{row.patientName}</td>
@@ -222,22 +193,9 @@ const Appointment = (props) => {
                         style={{ cursor: "pointer" }}
                       />
                       {dropdownId === row.id && (
-                        <div
-                          style={{
-                            position: "absolute",
-                            top: "100%",
-                            right: "0",
-                            background: "white",
-                            border: "1px solid #ddd",
-                            borderRadius: "8px",
-                            boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)",
-                            padding: "5px 0",
-                            zIndex: 1000,
-                            color: "black", // Ensure text is visible
-                            fontSize: "14px", // Adjust font size if needed
-                          }}
-                        >
+                        <div className={styles.dropdown}>
                           {[
+                            "View Profile",
                             "Edit Details",
                             "Delete",
                             "Download as PDF",
@@ -245,17 +203,7 @@ const Appointment = (props) => {
                           ].map((item, i) => (
                             <button
                               key={i}
-                              style={{
-                                display: "block",
-                                width: "100%",
-                                background: "none",
-                                border: "none",
-                                padding: "10px",
-                                textAlign: "left",
-                                cursor: "pointer",
-                                outline: "none",
-                                color: "grey",
-                              }}
+                              className={styles.dropdownButton}
                               onClick={() => handleDropdownAction(item, row.id)}
                             >
                               {item}

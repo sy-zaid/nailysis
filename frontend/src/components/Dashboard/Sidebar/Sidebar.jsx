@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styles from "./Sidebar.module.css";
 
-const Sidebar = ({ userRole, setView, isOpen, toggleSidebar}) => {
+const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
   // const [isOpen, setIsOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null); // Track which dropdown is open
 
@@ -37,6 +37,18 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar}) => {
           { label: "View Payment History" },
         ],
       },
+      {
+        icon: "billing.jpg",
+        label: "View Patients",
+        subItems: [],
+      },
+
+      {
+        icon: "billing.jpg",
+        label: "View Doctor Profile",
+        subItems: [],
+      },
+
       { icon: "feedback.jpg", label: "Feedbacks", subItems: [] },
       { icon: "test-request.jpg", label: "Test Requests", subItems: [] },
     ],
