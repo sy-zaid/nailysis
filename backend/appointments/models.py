@@ -1,8 +1,19 @@
 from django.db import models
-from users.models import Patient, Doctor, LabTechnician,ClinicAdmin
-
+from users.models import Patient, Doctor, LabTechnician, ClinicAdmin
 
 class Appointment(models.Model):
+    """
+    Represents a general appointment in the system.
+    
+    Attributes:
+        appointment_id (int): Unique identifier for the appointment.
+        patient (ForeignKey): Reference to the patient associated with the appointment.
+        appointment_date (date): Date of the appointment.
+        appointment_time (time): Time of the appointment.
+        status (str): Current status of the appointment (Scheduled, Completed, Cancelled, Rescheduled).
+        reminder_sent (bool): Indicates if a reminder has been sent.
+        notes (str, optional): Additional notes related to the appointment.
+    """
     STATUS_CHOICES = [
         ("Scheduled", "Scheduled"),
         ("Completed", "Completed"),
@@ -19,30 +30,44 @@ class Appointment(models.Model):
     notes = models.TextField(blank=True, null=True)
 
     def schedule_appointment(self, date, time):
+        """Schedules an appointment with the given date and time."""
         self.appointment_date = date
         self.appointment_time = time
         self.status = "Scheduled"
         self.save()
 
     def cancel_appointment(self):
+        """Cancels the appointment."""
         self.status = "Cancelled"
         self.save()
 
-    def reschedule_appointment(self, new_date, new_time):
-        self.appointment_date = new_date
-        self.appointment_time = new_time
-        self.status = "Rescheduled"
-        self.save()
-
-    def send_notification(self):
-        # Implement notification logic
-        pass
+    def reschedule_appointment(self, new_date, new_time,new_specialization,new_doctor,new_appointment_type):
+        from datetime import date, time
+        try:
+            """Reschedules the appointment to a new date and time."""
+            self.appointment_date = date.today() 
+            self.appointment_time = time(14, 30, 0)
+            if isinstance(self, DoctorAppointment):  # Check if it's a DoctorAppointment
+                print("YES ITS A DOCTOR APPOINTMENT INSTANCE")
+                # if new_specialization:
+                #     self.specialization = new_specialization
+                # if new_doctor:
+                #     self.doctor = new_doctor
+                # if new_appointment_type:
+                #     self.appointment_type = new_appointment_type
+            self.status = "Rescheduled"
+            self.save()
+            
+        except Exception as e:
+            print(f"Error while rescheduling: {e}")
 
     def confirm_attendance(self):
+        """Marks the appointment as completed."""
         self.status = "Completed"
         self.save()
 
     def view_appointment_details(self):
+        """Returns a dictionary containing appointment details."""
         return {
             "Appointment ID": self.appointment_id,
             "Patient": self.patient,
@@ -53,6 +78,7 @@ class Appointment(models.Model):
         }
 
     def update_status(self, new_status):
+        """Updates the appointment status if the new status is valid."""
         if new_status in dict(self.STATUS_CHOICES):
             self.status = new_status
             self.save()
@@ -61,39 +87,51 @@ class Appointment(models.Model):
         return f"Appointment {self.appointment_id} - {self.patient} on {self.appointment_date} at {self.appointment_time}"
 
 class DoctorAppointmentFee(models.Model):
+    """
+    Stores fees for different types of doctor appointments.
+    
+    Attributes:
+        appointment_type (str): Type of appointment.
+        fee (decimal): Fee amount for the appointment type.
+    """
     APPOINTMENT_TYPES = [
-    ("Consultation", "Consultation"),
-    ("Follow-up", "Follow-up"),
-    ("Routine Checkup", "Routine Checkup"),
-    ("Emergency Visit", "Emergency Visit"),
-    ("Prescription Refill", "Prescription Refill"),
-]
-
+        ("Consultation", "Consultation"),
+        ("Follow-up", "Follow-up"),
+        ("Routine Checkup", "Routine Checkup"),
+        ("Emergency Visit", "Emergency Visit"),
+        ("Prescription Refill", "Prescription Refill"),
+    ]
 
     appointment_type = models.CharField(max_length=50, choices=APPOINTMENT_TYPES, unique=True)
     fee = models.DecimalField(max_digits=10, decimal_places=2)
 
-    def __str__(self):
-        return f"{self.appointment_type} - {self.fee} PKR"
-
     @classmethod
     def get_fee(cls, appointment_type):
-        """Retrieve the fee for a given appointment type"""
+        """Retrieves the fee for a given appointment type."""
         try:
             return cls.objects.get(appointment_type=appointment_type).fee
         except cls.DoesNotExist:
-            return None  # Handle case where fee is not set
+            return None
 
     @classmethod
     def update_fee(cls, appointment_type, new_fee):
-        """Update or create a fee for an appointment type"""
+        """Updates or creates a fee for an appointment type."""
         fee_obj, created = cls.objects.update_or_create(
             appointment_type=appointment_type, defaults={"fee": new_fee}
         )
         return fee_obj
-    
-    
+
 class DoctorAppointment(Appointment):
+    """
+    Represents an appointment with a doctor.
+    
+    Attributes:
+        doctor (ForeignKey): Reference to the assigned doctor.
+        appointment_type (str): Type of appointment.
+        specialization (str): Doctor's specialization.
+        follow_up (bool): Indicates if the appointment is a follow-up.
+        fee (decimal, optional): Fee for the appointment.
+    """
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name="doctor_appointments")
     appointment_type = models.CharField(max_length=50)
     specialization = models.CharField(max_length=100)
@@ -101,42 +139,22 @@ class DoctorAppointment(Appointment):
     fee = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 
     def save(self, *args, **kwargs):
-        """Set the fee dynamically based on the appointment type when saving"""
-        if not self.fee:  # Only set the fee if it's not already assigned
+        """Sets the fee dynamically based on the appointment type."""
+        if not self.fee:
             self.fee = DoctorAppointmentFee.get_fee(self.appointment_type) or 0.00
         super().save(*args, **kwargs)
 
-    def view_ehr(self, patient):
-        # Logic to retrieve and return the patient's EHR
-        pass
-
-    def generate_prescription(self):
-        # Logic to generate a prescription
-        pass
-
-    def add_visit_notes(self, notes):
-        self.notes = notes
-        self.save()
-
-    def schedule_follow_up(self, follow_up_date, follow_up_time):
-        return DoctorAppointment.objects.create(
-            patient=self.patient,
-            doctor=self.doctor,
-            appointment_date=follow_up_date,
-            appointment_time=follow_up_time,
-            appointment_type=self.appointment_type,
-            specialization=self.specialization,
-            follow_up=True,
-        )
-
-    def add_notes(self, notes):
-        self.notes = notes
-        self.save()
-
-class LabTechnicianAppointmentFee(models.Model):
-    pass
-
 class TechnicianAppointment(Appointment):
+    """
+    Represents an appointment for a laboratory technician.
+    
+    Attributes:
+        lab_technician (ForeignKey): Reference to the assigned technician.
+        lab_test_id (int): Identifier for the lab test.
+        test_type (str): Type of lab test.
+        test_status (str): Status of the test.
+        results_available (bool): Indicates if results are available.
+    """
     lab_technician = models.ForeignKey(LabTechnician, on_delete=models.CASCADE, related_name="technician_appointments")
     lab_test_id = models.IntegerField()
     test_type = models.CharField(max_length=100)
@@ -144,32 +162,22 @@ class TechnicianAppointment(Appointment):
     results_available = models.BooleanField(default=False)
 
     def collect_sample(self):
-        # Logic for sample collection
+        """Updates test status when a sample is collected."""
         self.test_status = "Sample Collected"
         self.save()
 
     def upload_test_results(self, results):
-        # Logic to upload test results
+        """Marks test results as uploaded."""
         self.test_status = "Results Uploaded"
         self.results_available = True
-        self.save()
-
-    def update_test_results(self, new_results):
-        # Logic to update test results
-        self.test_status = "Updated Results"
-        self.results_available = True
-        self.save()
-
-    def view_test_status(self):
-        return self.test_status
-
-    def assign_technician(self, technician):
-        self.lab_technician = technician
         self.save()
 
     def __str__(self):
         return f"Lab Test {self.lab_test_id} - {self.patient} ({self.test_type})"
 
+
+class LabTechnicianAppointmentFee(models.Model):
+    pass
 
 from django.db import models
 from django.contrib.auth import get_user_model

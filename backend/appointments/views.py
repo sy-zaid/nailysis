@@ -119,7 +119,50 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
             "message": "Appointment booked successfully",
             "appointment_id": doctor_appointment.appointment_id
         })
+    
+    @action(detail=True, methods=["post"], url_path="cancel_appointment")
+    def cancel_appointment(self, request, pk=None):
+        """Handles appointment cancellations by patients and clinic admins"""
+        user = request.user
+
+        if user.role not in ["patient", "clinic_admin"]:
+            return Response({"error":"User is not authorized to cancel appointments."})
+
+        # Get appointment or return 404
+        appointment = get_object_or_404(DoctorAppointment, pk=pk)
+
+        try:
+            appointment.cancel_appointment()  # Call model method
+            return Response({"message": "Appointment cancelled successfully."}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         
+        
+    @action(detail=True,methods=["put"],url_path="reschedule_appointment")
+    def reschedule_appointment(self,request,pk):
+        user = self.request.user
+        if user.role not in ["patient","clinic_admin"]:
+            return Response({"error":"User not authorized for rescheduling appointment"})
+        
+        appointment = get_object_or_404(DoctorAppointment,pk=pk)
+        new_specialization = "specialization"
+        new_doctor = request.data.get("doctor_id")
+        new_appointment_type = request.data.get("appointment_type")
+        new_date = request.data.get("appointment_date")
+        new_time = request.data.get("appointment_time")
+        print(new_doctor,new_specialization,new_appointment_type,new_date,new_time)
+        try:
+            appointment.reschedule_appointment(new_date=new_date,
+                                               new_time=new_time,
+                                            #    new_specialization=new_specialization,
+                                            #    new_doctor=new_doctor,
+                                            #    new_appointment_type=new_appointment_type)
+            )
+            return Response({"message":"Appointment rescheduled successfully"})
+        except Exception as e:
+            return Response({"error": str(e)},status=status.HTTP_400_BAD_REQUEST)    
+        
+    
     @action(detail=True,methods=["post"],url_path='request_cancellation')
     def request_cancellation(self,request,pk=None):
         user = self.request.user
@@ -222,8 +265,7 @@ class DocAppointCancellationViewSet(viewsets.ModelViewSet):
         cancellation_request.save()
         
         if action == "approve":
-            cancellation_request.appointment.status = "Cancelled"
-            cancellation_request.appointment.save()
+            cancellation_request.appointment.cancel_appointment()
             
         return Response({"message":f"Cancellation request {action}d successfully."})
     

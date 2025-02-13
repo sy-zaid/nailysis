@@ -13,7 +13,7 @@ const CancellationRequestsList = () => {
             'Authorization': `Bearer ${localStorage.getItem('access')}` // Assuming you're using token-based authentication
           }
         });
-        console.log("Response from",response.data)
+        console.log("Response",response.data)
         setRequests(response.data);
       } catch (err) {
         setError('Failed to fetch cancellation requests.');
