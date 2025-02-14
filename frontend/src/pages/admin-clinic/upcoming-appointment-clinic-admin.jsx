@@ -4,6 +4,7 @@ import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import PopupBookAppointment from "../../components/Popup/popup-book-appointment";
 import PopupAppointmentDetails from "../../components/Popup/popup-appointment-details";
 import PopupRescheduleAppointment from "../../components/Popup/popup-appointment-reschedule";
+import PopupDeleteAppointment from "../../components/Popup/popup-delete-appointment";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import api from "../../api";
@@ -108,6 +109,14 @@ const AppointmentClinicAdmin = () => {
       setShowPopup(true);
     } else if (action === "book_new_appointment") {
       setPopupContent(<PopupBookAppointment onClose={handleClosePopup} />);
+      setShowPopup(true);
+    } else if (action === "delete") {
+      setPopupContent(
+        <PopupDeleteAppointment
+          onClose={handleClosePopup}
+          appointmentDetails={appointmentId}
+        />
+      );
       setShowPopup(true);
     }
 
@@ -232,13 +241,15 @@ const AppointmentClinicAdmin = () => {
                             </li>
                             <li
                               onClick={() =>
-                                handleActionClick(
-                                  "Reschedule",
-                                  row
-                                )
+                                handleActionClick("Reschedule", row)
                               }
                             >
                               Reschedule
+                            </li>
+                            <li
+                              onClick={() => handleActionClick("delete", row)}
+                            >
+                              Delete
                             </li>
                           </ul>
                         </div>

@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from rest_framework import viewsets, permissions,status
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 from .models import Appointment, DoctorAppointment, TechnicianAppointment, DoctorAppointmentFee,LabTechnicianAppointmentFee, CancellationRequest
 from .serializers import AppointmentSerializer, DoctorAppointmentSerializer, TechnicianAppointmentSerializer, DoctorFeeSerializer,CancellationRequestSerializer
@@ -84,6 +85,15 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
         # Assuming the patient is being retrieved via the logged-in user
         serializer.save(patient=self.request.user)
 
+    def perform_destroy(self, instance):
+        user = self.request.user
+        # Ensure only clinic admins can delete
+        if user.role == "clinic_admin":
+            # Perform the deletion
+            instance.delete()
+        else:
+            raise PermissionDenied("You are not authorized to delete this appointment.")
+        
     @action(detail=False, methods=['post'], url_path='book_appointment')
     def book_appointment(self, request):
         logging.info("book_appointment action was triggered")
