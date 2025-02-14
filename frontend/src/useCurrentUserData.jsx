@@ -24,32 +24,33 @@ const getToken = () => {
   }
 };
 
-const fetchPatientData = async () => {
-  const token = getToken(); // Use validated token
+const fetchCurrentUserData = async () => {
+  const token = getToken();
   if (!token) throw new Error("No valid token found");
 
   try {
-    const response = await axios.get("http://127.0.0.1:8000/api/patients/", {
+    const response = await axios.get("http://127.0.0.1:8000/api/current_users/", {
       headers: { Authorization: `Bearer ${token}` },
     });
-    console.log(response.data)
-    return response.data || [];
+    console.log(response.data);
+    return Array.isArray(response.data) ? response.data : []; // Ensure an array is returned
   } catch (error) {
     if (error.response?.status === 401) {
       console.warn("Unauthorized! Redirecting to login...");
       localStorage.removeItem("access");
       window.location.href = "/login"; // Redirect to login
     }
-    return []; // Return an empty array to prevent undefined errors
+    return []; // Prevent `undefined` return
   }
 };
 
-const usePatientData = () => {
+
+const useCurrentUserData = () => {
   const token = getToken();
 
   return useQuery({
-    queryKey: ["patientData"],
-    queryFn: fetchPatientData,
+    queryKey: ["CurrentUserData"],
+    queryFn: fetchCurrentUserData,
     enabled: !!token, // Prevent API call if token is expired
     retry: false,
     staleTime: 0,
@@ -57,4 +58,4 @@ const usePatientData = () => {
   });
 };
 
-export default usePatientData;
+export default useCurrentUserData;

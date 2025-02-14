@@ -165,9 +165,8 @@ CORS_ALLOWED_ORIGINS = [
 ]
 AUTH_USER_MODEL = "users.CustomUser"
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'  # Or wherever you want to store media files
-
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 JAZZMIN_SETTINGS = {
     "site_title": "Nailysis Admin",

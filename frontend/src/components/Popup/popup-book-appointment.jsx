@@ -6,7 +6,7 @@ import axios from "axios";
 
 // import { QueryClientProvider } from "@tanstack/react-query"; // Import React Query Client Provider
 // import { queryClient } from "./queryClient"; // Import the client
-import usePatientData from "../../usePatientData.jsx";
+import usePatientData from "../../useCurrentUserData.jsx";
 import {calculateAge} from "../../utils.js"
 
 const visitPurposes = [
@@ -29,7 +29,7 @@ const PopupBookAppointment = ({ onClose }) => {
 
   useEffect(() => {
     if (curUser && curUser.length > 0) {
-      setPatient([curUser[0].user,curUser[0]]); // Set patient data if available
+      setPatient([curUser[0].patient.user,curUser[0].patient]); // Set patient data if available
       // console.log("Patient's Data: ",patient[0],patient[1]);
     } else {
       console.log("No patient data available");

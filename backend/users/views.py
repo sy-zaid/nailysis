@@ -2,8 +2,8 @@ from django.shortcuts import render
 from rest_framework import generics,viewsets,permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .models import Doctor,Patient,LabTechnician
-from .serializers import DoctorSerializer,PatientSerializer,LabTechnicianSerializer
+from .models import Doctor,Patient,LabTechnician,ClinicAdmin,CustomUser
+from .serializers import DoctorSerializer,PatientSerializer,LabTechnicianSerializer,CustomUserSerializer
 
 class DoctorAPIView(viewsets.ModelViewSet):
     queryset = Doctor.objects.all()
@@ -34,5 +34,11 @@ class PatientAPIView(viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
 
-
+class UserSerializerView(viewsets.ModelViewSet):
+    serializer_class = CustomUserSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get_queryset(self):
+        user = self.request.user
+        return CustomUser.objects.filter(id=user.id)  # Fetch only the logged-in user's data
 

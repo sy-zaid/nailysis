@@ -3,7 +3,7 @@ import styles from "./popup-book-appointment.module.css";
 import Popup from "./Popup.jsx";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import usePatientData from "../../usePatientData.jsx";
+import usePatientData from "../../useCurrentUserData.jsx";
 import { calculateAge } from "../../utils.js";
 
 const visitPurposes = [
