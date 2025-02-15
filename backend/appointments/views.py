@@ -116,7 +116,7 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
         print(doctor_id,appointment_date,appointment_time,appointment_type,specialization,fee)
 
         # Get doctor by id or return 404 if not found
-        doctor = get_object_or_404(Doctor, user__id=doctor_id)
+        doctor = get_object_or_404(Doctor, user_id=doctor_id)
         user = self.request.user
         if user.role == "clinic_admin":
             patient = CustomUser.create_walkin_account(first_name=patient_first_name,last_name=patient_last_name,

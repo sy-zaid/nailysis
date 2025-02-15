@@ -40,5 +40,5 @@ class UserSerializerView(viewsets.ModelViewSet):
     
     def get_queryset(self):
         user = self.request.user
-        return CustomUser.objects.filter(id=user.id)  # Fetch only the logged-in user's data
+        return CustomUser.objects.filter(user_id=user.user_id)  # Fetch only the logged-in user's data
 

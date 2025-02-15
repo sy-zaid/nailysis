@@ -7,7 +7,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ["id", "email", "password", "first_name", "last_name","phone","role"]
+        fields = ["user_id", "email", "password", "first_name", "last_name","phone","role"]
         extra_kwargs = {"password": {"write_only": True}}
 
     def create(self, validated_data):
@@ -25,11 +25,11 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def get_token(cls, user):
         token = super().get_token(user)
         print("User role in token:", user.role)
-        print("User ID in token:", user.id)
+        print("User ID in token:", user.user_id)
         
         # Add custom claims to the JWT token
         token['role'] = user.role  # Add the role to the token
-        token['user_id'] = user.id  # Add the user ID to the token
+        token['user_id'] = user.user_id  # Add the user ID to the token
         
         return token
     

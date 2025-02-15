@@ -47,7 +47,7 @@ class CustomUser(AbstractUser):
     
     """Fields from the class diagram v1.1"""
     # Custom user ID field
-    user_id = models.CharField(max_length=20, unique=True, blank=True, null=True)
+    user_id = models.CharField(max_length=20, unique=True, blank=True, null=False, primary_key=True)
     #first_name = default from AbstractUser
     #last_name = default from AbstractUser
     email = models.EmailField(max_length=254,unique=True)
@@ -114,12 +114,12 @@ Below are the child classes for CustomUserClass targetting individual Users Type
 """
 
 class ClinicAdmin(models.Model):
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE,primary_key=True,related_name="clinic_admin")    
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE,primary_key=True, to_field="user_id",related_name="clinic_admin")    
     def __str__(self):
         return f"Clinic Admin - {self.user.email}"
 
 class Doctor(models.Model):
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE,primary_key=True)
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE,primary_key=True, to_field="user_id")
     license_number = models.CharField(max_length=50, unique=True)
     specialization = models.CharField(max_length=255)
     qualifications = models.TextField(blank=True,null=True)
@@ -131,7 +131,7 @@ class Doctor(models.Model):
         return f"{self.user.first_name} {self.user.last_name}"
     
 class Patient(models.Model):
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE,primary_key=True)
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE,primary_key=True, to_field="user_id")
     date_of_birth = models.DateField()
     
     GENDER_CHOICES = [
@@ -153,7 +153,7 @@ class Patient(models.Model):
         
     
 class LabAdmin(models.Model):
-    user = models.OneToOneField(CustomUser,on_delete=models.CASCADE,primary_key=True)
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, primary_key=True, to_field="user_id", related_name="lab_admin")
     license_number = models.CharField(max_length=50,unique=True)
     designation = models.CharField(max_length=100)
     qualifications = models.TextField(blank=True,null=True)
@@ -162,7 +162,7 @@ class LabAdmin(models.Model):
     emergency_contact = models.CharField(max_length=20)
     
 class LabTechnician(models.Model):
-    user = models.OneToOneField(CustomUser,on_delete=models.CASCADE,primary_key=True)
+    user = models.OneToOneField(CustomUser,on_delete=models.CASCADE,primary_key=True, to_field="user_id")
     license_number = models.CharField(max_length=50,unique=True)
     specialization = models.CharField(max_length=255)
     years_of_experience = models.PositiveIntegerField()
