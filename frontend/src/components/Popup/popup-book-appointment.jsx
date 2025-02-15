@@ -97,7 +97,7 @@ const PopupBookAppointment = ({ onClose }) => {
             { headers: { Authorization: `Bearer ${token}` } }
           );
           const formattedDoctors = response.data.map((doc) => ({
-            id: doc.user.id,
+            id: doc.user.user_id,
             name: `${doc.user.first_name} ${doc.user.last_name}`,
           }));
           setDoctors(formattedDoctors);
