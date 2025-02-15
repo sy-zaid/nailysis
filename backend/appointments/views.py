@@ -105,15 +105,21 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
         appointment_type = request.data.get('appointment_type')
         specialization = request.data.get('specialization')
         fee = request.data.get('fee')
-        
+        patient_name = request.data.get("")
+        patient_age = request.data.get("")
+        patient_gender = request.data.get("")
+        patient_phone = request.data.get("")
+        patient_email = request.data.get("")
         print("DATA------------------------------------------------")
         print(doctor_id,appointment_date,appointment_time,appointment_type,specialization,fee)
 
         # Get doctor by id or return 404 if not found
         doctor = get_object_or_404(Doctor, user__id=doctor_id)
-
-        patient = get_object_or_404(Patient, user=request.user)
-        
+        user = self.request.user
+        if user.role == "patient":
+            patient = get_object_or_404(Patient, user=request.user)
+        elif user.role == "clinic_admin":
+            patient = Patient.objects.create()
         # Create the DoctorAppointment
         doctor_appointment = DoctorAppointment.objects.create(
             patient=patient,

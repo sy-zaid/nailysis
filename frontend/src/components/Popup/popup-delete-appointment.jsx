@@ -24,7 +24,9 @@ const PopupDeleteAppointment = ({ onClose, appointmentDetails }) => {
   const handleDeleteAppointment = async () => {
     try {
       await axios.delete(
-        `http://127.0.0.1:8000/api/doctor_appointments/${appointmentDetails.appointment_id}/`,
+        `${import.meta.env.VITE_API_URL}/api/doctor_appointments/${
+          appointmentDetails.appointment_id
+        }/`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -44,7 +46,9 @@ const PopupDeleteAppointment = ({ onClose, appointmentDetails }) => {
           <h2>Delete Appointment</h2>
         </div>
 
-        <h5 className={styles.subhead}>Are you sure you want to delete this appointment?</h5>
+        <h5 className={styles.subhead}>
+          Are you sure you want to delete this appointment?
+        </h5>
         <hr />
 
         {/* Display minimal patient and appointment details */}
@@ -55,7 +59,7 @@ const PopupDeleteAppointment = ({ onClose, appointmentDetails }) => {
               <label>Patient Name</label>
               <input
                 type="text"
-                value={patient[0]?.first_name + " " + patient[0]?.last_name || ""}
+                value={`${appointmentDetails.patient.user.first_name} ${appointmentDetails.patient.user.last_name}`}
                 disabled
               />
             </div>
@@ -71,7 +75,7 @@ const PopupDeleteAppointment = ({ onClose, appointmentDetails }) => {
               <label>Appointment Date</label>
               <input
                 type="text"
-                value={appointmentDetails.appointmentDate || ""}
+                value={`${appointmentDetails.appointment_date || ""} | ${appointmentDetails.appointment_time || ""}`}
                 disabled
               />
             </div>

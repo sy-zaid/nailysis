@@ -1,7 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, Group, BaseUserManager
 from django.core.validators import FileExtensionValidator
-# Create your models here.
+
+import datetime
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -80,7 +81,7 @@ class CustomUser(AbstractUser):
             # Auto-create related role object if missing
         if is_new and self.role == 'clinic_admin' and not hasattr(self, 'clinic_admin'):
             ClinicAdmin.objects.create(user=self)
-    
+
     def generate_custom_user_id(self):
         role_prefixes = {
             'patient': 'PAT',
@@ -99,6 +100,17 @@ class CustomUser(AbstractUser):
         
         return f"{prefix}{str(count).zfill(3)}"
     
+
+    def create_walkin_account(self,first_name,last_name,email,phone,date_of_birth,gender,role,):
+        if email is not None:
+            walkin_user = self.objects.create(first_name = first_name,last_name=last_name,email=email,phone=phone,role=role)
+            print("Email is provided, registering patient in database")
+        else:
+            email = f"walkin_{int(datetime.timestamp(datetime.now()))}@example.com"
+
+        Patient.objects.create(user=walkin_user,date_of_birth=date_of_birth,gender=gender)
+        return "walking patient created successfully with temporary email"
+
 """ 
 Below are the child classes for CustomUserClass targetting individual Users Types for additional fields specific to its role.
 """
@@ -121,7 +133,7 @@ class Doctor(models.Model):
         return f"{self.user.first_name} {self.user.last_name}"
     
 class Patient(models.Model):
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, primary_key=True)
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE,primary_key=True)
     date_of_birth = models.DateField()
     
     GENDER_CHOICES = [
@@ -137,6 +149,8 @@ class Patient(models.Model):
     
     def __str__(self):
         return f"{self.user.first_name} {self.user.last_name}"
+        
+        
     
 class LabAdmin(models.Model):
     user = models.OneToOneField(CustomUser,on_delete=models.CASCADE,primary_key=True)

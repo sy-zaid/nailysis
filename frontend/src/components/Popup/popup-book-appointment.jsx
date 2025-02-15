@@ -7,7 +7,7 @@ import axios from "axios";
 // import { QueryClientProvider } from "@tanstack/react-query"; // Import React Query Client Provider
 // import { queryClient } from "./queryClient"; // Import the client
 import usePatientData from "../../useCurrentUserData.jsx";
-import {calculateAge} from "../../utils.js"
+import { calculateAge } from "../../utils.js";
 
 const visitPurposes = [
   "Consultation",
@@ -28,9 +28,11 @@ const PopupBookAppointment = ({ onClose }) => {
   const [patient, setPatient] = useState([]); // Initialize patient state
 
   useEffect(() => {
-    if (curUser && curUser.length > 0) {
-      setPatient([curUser[0].patient.user,curUser[0].patient]); // Set patient data if available
+    if (curUserRole == "patient" && curUser && curUser.length > 0) {
+      setPatient([curUser[0].patient.user, curUser[0].patient]); // Set patient data if available
       // console.log("Patient's Data: ",patient[0],patient[1]);
+    } else if (curUserRole == "clinic_admin") {
+      setPatient([]);
     } else {
       console.log("No patient data available");
     }
@@ -44,6 +46,11 @@ const PopupBookAppointment = ({ onClose }) => {
     appointmentType: "",
     specialization: "",
     fee: "0.00",
+    patientName: "",
+    age: "",
+    gender: "",
+    phone: "",
+    email: "",
   });
 
   const [specializations, setSpecializations] = useState([]);
@@ -137,11 +144,11 @@ const PopupBookAppointment = ({ onClose }) => {
       appointment_type: formData.appointmentType,
       specialization: formData.specialization,
       fee: formData.fee,
-      patient_name: patient?.first_name || "",
-      patient_age: patient?.age || "",
-      patient_gender: patient?.gender || "",
-      patient_phone: patient?.phone || "",
-      patient_email: patient?.email || "",
+      patient_name: patient?.first_name || formData.patientName||"",
+      patient_age: patient?.age || formData.age||"",
+      patient_gender: patient?.gender || formData.gender||"",
+      patient_phone: patient?.phone || formData.phone||"",
+      patient_email: patient?.email || formData.email||"",
     };
 
     try {
@@ -154,10 +161,11 @@ const PopupBookAppointment = ({ onClose }) => {
       );
       alert("Appointment Booked Successfully");
       setAppointments([...appointments, response.data]);
-      console.log(appointmentData);
+      console.log("Sending this to book:", appointmentData);
       navigate("");
     } catch (error) {
       alert("Failed to book appointment");
+      console.log("Sending this to book:", appointmentData);
       console.error(error);
     }
   };
@@ -183,12 +191,13 @@ const PopupBookAppointment = ({ onClose }) => {
                 <label>Name</label>
                 <input
                   type="text"
-                  name="patientId"
+                  name="patientName"
                   value={formData.patientId}
                   onChange={handleInputChange}
                   placeholder={
                     curUserRole === "patient"
-                      ? patient[0]?.first_name + " " + patient[0]?.last_name || ""
+                      ? patient[0]?.first_name + " " + patient[0]?.last_name ||
+                        ""
                       : "Enter Full"
                   }
                   disabled={curUserRole === "patient"}
