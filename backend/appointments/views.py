@@ -4,7 +4,7 @@ from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 from .models import Appointment, DoctorAppointment, TechnicianAppointment, DoctorAppointmentFee,LabTechnicianAppointmentFee, CancellationRequest
 from .serializers import AppointmentSerializer, DoctorAppointmentSerializer, TechnicianAppointmentSerializer, DoctorFeeSerializer,CancellationRequestSerializer
-from users.models import Patient, Doctor,ClinicAdmin
+from users.models import Patient, Doctor,ClinicAdmin,CustomUser
 from rest_framework.decorators import action
 from django.shortcuts import get_object_or_404
 import logging
@@ -105,21 +105,27 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
         appointment_type = request.data.get('appointment_type')
         specialization = request.data.get('specialization')
         fee = request.data.get('fee')
-        patient_name = request.data.get("")
-        patient_age = request.data.get("")
-        patient_gender = request.data.get("")
-        patient_phone = request.data.get("")
-        patient_email = request.data.get("")
+        patient_first_name = request.data.get("patient_first_name")
+        patient_last_name = request.data.get("patient_last_name")
+        import datetime
+        patient_date_of_birth = datetime.date(1990, 5, 15)
+        patient_gender = request.data.get("patient_gender")
+        patient_phone = request.data.get("patient_phone")
+        patient_email = request.data.get("patient_email")
         print("DATA------------------------------------------------")
         print(doctor_id,appointment_date,appointment_time,appointment_type,specialization,fee)
 
         # Get doctor by id or return 404 if not found
         doctor = get_object_or_404(Doctor, user__id=doctor_id)
         user = self.request.user
-        if user.role == "patient":
+        if user.role == "clinic_admin":
+            patient = CustomUser.create_walkin_account(first_name=patient_first_name,last_name=patient_last_name,
+                                                       date_of_birth=patient_date_of_birth,
+                                                       gender=patient_gender,
+                                                       phone=patient_phone,
+                                                       email=patient_email)
+        elif user.role == "patient":
             patient = get_object_or_404(Patient, user=request.user)
-        elif user.role == "clinic_admin":
-            patient = Patient.objects.create()
         # Create the DoctorAppointment
         doctor_appointment = DoctorAppointment.objects.create(
             patient=patient,

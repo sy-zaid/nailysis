@@ -46,8 +46,9 @@ const PopupBookAppointment = ({ onClose }) => {
     appointmentType: "",
     specialization: "",
     fee: "0.00",
-    patientName: "",
-    age: "",
+    patientFirstName: "",
+    patientLastName: "",
+    date_of_birth: "",
     gender: "",
     phone: "",
     email: "",
@@ -144,11 +145,13 @@ const PopupBookAppointment = ({ onClose }) => {
       appointment_type: formData.appointmentType,
       specialization: formData.specialization,
       fee: formData.fee,
-      patient_name: patient?.first_name || formData.patientName||"",
-      patient_age: patient?.age || formData.age||"",
-      patient_gender: patient?.gender || formData.gender||"",
-      patient_phone: patient?.phone || formData.phone||"",
-      patient_email: patient?.email || formData.email||"",
+      patient_first_name:
+        patient?.first_name || formData.patientFirstName || "",
+      patient_last_name: patient?.last_name || formData.patientLast || "",
+      patient_age: patient?.age || formData.date_of_birth || "",
+      patient_gender: patient?.gender || formData.gender || "",
+      patient_phone: patient?.phone || formData.phone || "",
+      patient_email: patient?.email || formData.email || "",
     };
 
     try {
@@ -188,17 +191,31 @@ const PopupBookAppointment = ({ onClose }) => {
             <h3>Patient Information</h3>
             <div className={styles.formGroup}>
               <div>
-                <label>Name</label>
+                <label>First Name</label>
                 <input
                   type="text"
-                  name="patientName"
-                  value={formData.patientId}
+                  name="patientFirstName"
+                  value={formData.patientFirstName}
                   onChange={handleInputChange}
                   placeholder={
                     curUserRole === "patient"
-                      ? patient[0]?.first_name + " " + patient[0]?.last_name ||
-                        ""
-                      : "Enter Full"
+                      ? patient[0]?.first_name || ""
+                      : "Enter First"
+                  }
+                  disabled={curUserRole === "patient"}
+                />
+              </div>
+              <div>
+                <label>Last Name</label>
+                <input
+                  type="text"
+                  name="patientLastName"
+                  value={formData.patientLastName}
+                  onChange={handleInputChange}
+                  placeholder={
+                    curUserRole === "patient"
+                      ? patient[0]?.last_name || ""
+                      : "Enter Last"
                   }
                   disabled={curUserRole === "patient"}
                 />

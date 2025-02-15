@@ -100,16 +100,14 @@ class CustomUser(AbstractUser):
         
         return f"{prefix}{str(count).zfill(3)}"
     
-
-    def create_walkin_account(self,first_name,last_name,email,phone,date_of_birth,gender,role,):
-        if email is not None:
-            walkin_user = self.objects.create(first_name = first_name,last_name=last_name,email=email,phone=phone,role=role)
-            print("Email is provided, registering patient in database")
-        else:
-            email = f"walkin_{int(datetime.timestamp(datetime.now()))}@example.com"
-
-        Patient.objects.create(user=walkin_user,date_of_birth=date_of_birth,gender=gender)
-        return "walking patient created successfully with temporary email"
+    @classmethod
+    def create_walkin_account(cls,first_name,last_name,email,phone,date_of_birth,gender):
+        if not email:
+            email = f"walkin_{int(datetime.datetime.now().timestamp())}@example.com"
+            
+        walkin_user = cls.objects.create(first_name = first_name,last_name=last_name,email=email,phone=phone,role="patient")
+        patient = Patient.objects.create(user=walkin_user,date_of_birth=date_of_birth,gender=gender)
+        return patient
 
 """ 
 Below are the child classes for CustomUserClass targetting individual Users Types for additional fields specific to its role.
@@ -149,6 +147,8 @@ class Patient(models.Model):
     
     def __str__(self):
         return f"{self.user.first_name} {self.user.last_name}"
+    
+    # def create_walkin_account(self):
         
         
     
