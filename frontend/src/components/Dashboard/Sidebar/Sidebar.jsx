@@ -27,7 +27,7 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
         icon: "icon-appointments-black.jpg",
         label: "Appointments",
         subItems: [
-          { label: "Upcoming Appointments" },
+          { label: "View Appointments" },
           { label: "Appointment History" },
         ],
       },
@@ -61,7 +61,7 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
         icon: "icon-appointments-black.jpg",
         label: "Appointments",
         subItems: [
-          { label: "Upcoming Appointments" },
+          { label: "View Appointments" },
           { label: "Appointment History" },
         ],
       },
@@ -95,7 +95,7 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
         icon: "icon-appointments-black.jpg",
         label: "Appointments",
         subItems: [
-          { label: "Upcoming Appointments" },
+          { label: "View Appointments" },
           { label: "Appointment History" },
         ],
       },
@@ -129,7 +129,7 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
         icon: "icon-appointments-black.jpg",
         label: "Appointments",
         subItems: [
-          { label: "Upcoming Appointments" },
+          { label: "View Appointments" },
           { label: "Appointment History" },
         ],
       },
@@ -163,7 +163,7 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
         icon: "icon-appointments-black.jpg",
         label: "Appointments",
         subItems: [
-          { label: "Upcoming Appointments" },
+          { label: "View Appointments" },
           { label: "Appointment History" },
         ],
       },

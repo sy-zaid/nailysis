@@ -1,10 +1,10 @@
 import React, { act, useEffect, useState } from "react";
 import styles from "../../components/CSS Files/PatientAppointment.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
-import PopupBookAppointment from "../../components/Popup/popup-book-appointment";
+import PopupAppointmentBook from "../../components/Popup/popup-appointment-book";
 import PopupAppointmentDetails from "../../components/Popup/popup-appointment-details";
 import PopupRescheduleAppointment from "../../components/Popup/popup-appointment-reschedule";
-import PopupDeleteAppointment from "../../components/Popup/popup-delete-appointment";
+import PopupDeleteAppointment from "../../components/Popup/popup-appointment-delete";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import api from "../../api";
@@ -99,7 +99,7 @@ const AppointmentClinicAdmin = () => {
         }
       };
       handleCancellation(appointmentId, action);
-    } else if (action === "Reschedule") {
+    }else if (action === "Reschedule") {
       setPopupContent(
         <PopupRescheduleAppointment
           appointmentDetails={appointmentId}
@@ -108,9 +108,9 @@ const AppointmentClinicAdmin = () => {
       );
       setShowPopup(true);
     } else if (action === "book_new_appointment") {
-      setPopupContent(<PopupBookAppointment onClose={handleClosePopup} />);
+      setPopupContent(<PopupAppointmentBook onClose={handleClosePopup} />);
       setShowPopup(true);
-    } else if (action === "delete") {
+    } else if (action === "Delete") {
       setPopupContent(
         <PopupDeleteAppointment
           onClose={handleClosePopup}
@@ -126,7 +126,7 @@ const AppointmentClinicAdmin = () => {
   return (
     <div className={styles.pageContainer}>
       {showPopup && popupContent}
-      {/* {showPopup && <PopupBookAppointment onClose={handleClosePopup} />} */}
+      {/* {showPopup && <PopupAppointmentBook onClose={handleClosePopup} />} */}
       {/* {showPopup && <PopupRescheduleAppointment onClose={handleClosePopup} />} */}
       <PopupAppointmentDetails></PopupAppointmentDetails>
 
@@ -226,30 +226,23 @@ const AppointmentClinicAdmin = () => {
                         <div className={styles.menu}>
                           <ul>
                             <li
-                              onClick={() =>
-                                handleActionClick("Edit", row.appointment_id)
-                              }
-                            >
-                              Edit
-                            </li>
-                            <li
                               onClick={() => {
                                 handleActionClick("Cancel", row.appointment_id);
                               }}
                             >
-                              Cancel
+                              Cancel Appointment
                             </li>
                             <li
                               onClick={() =>
                                 handleActionClick("Reschedule", row)
                               }
                             >
-                              Reschedule
+                              Edit / Reschedule Appointment
                             </li>
                             <li
-                              onClick={() => handleActionClick("delete", row)}
+                              onClick={() => handleActionClick("Delete", row)}
                             >
-                              Delete
+                              Delete Appointment
                             </li>
                           </ul>
                         </div>

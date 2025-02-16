@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import styles from "./popup-book-appointment.module.css";
+import styles from "./popup-appointment-book.module.css";
 import Popup from "./Popup.jsx";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";

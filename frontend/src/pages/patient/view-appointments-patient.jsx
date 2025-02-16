@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import styles from "../../components/CSS Files/PatientAppointment.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import Header from "../../components/Dashboard/Header/Header";
-import PopupBookAppointment from "../../components/Popup/popup-book-appointment";
+import PopupAppointmentBook from "../../components/Popup/popup-appointment-book";
 import PopupAppointmentDetails from "../../components/Popup/popup-appointment-details";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -92,7 +92,7 @@ const AppointmentPatients = () => {
 
   return (
     <div className={styles.pageContainer}>
-      {showPopup && <PopupBookAppointment onClose={handleClosePopup} />}
+      {showPopup && <PopupAppointmentBook onClose={handleClosePopup} />}
       <PopupAppointmentDetails></PopupAppointmentDetails>
 
       <div className={styles.pageTop}>

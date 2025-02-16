@@ -159,13 +159,7 @@ const AppointmentDoctor = () => {
                       {menuOpen === row.appointment_id && (
                         <div className={styles.menu}>
                           <ul>
-                            <li
-                              onClick={() =>
-                                handleActionClick("Edit", row.appointment_id)
-                              }
-                            >
-                              Edit
-                            </li>
+                            
                             <li
                               onClick={() => {
                                 handleActionClick("Cancel", row.appointment_id);
