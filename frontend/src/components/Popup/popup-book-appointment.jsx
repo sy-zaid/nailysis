@@ -101,6 +101,7 @@ const PopupBookAppointment = ({ onClose }) => {
             name: `${doc.user.first_name} ${doc.user.last_name}`,
           }));
           setDoctors(formattedDoctors);
+          console.log("Formatted Docs", doctors);
         } catch (error) {
           console.error("Failed to fetch doctors", error);
         }
@@ -308,11 +309,15 @@ const PopupBookAppointment = ({ onClose }) => {
               onChange={handleInputChange}
             >
               <option value="">Select Doctor</option>
-              {doctors.map((doctor) => (
-                <option key={doctor.id} value={doctor.id}>
-                  {doctor.name}
-                </option>
-              ))}
+              {doctors.length > 0 ? (
+                doctors.map((doctor) => (
+                  <option key={doctor.id} value={doctor.id}>
+                    {doctor.name}
+                  </option>
+                ))
+              ) : (
+                <option disabled>Loading doctors...</option>
+              )}
             </select>
           </div>
 

@@ -109,7 +109,7 @@ class CustomUser(AbstractUser):
         patient = Patient.objects.create(user=walkin_user,date_of_birth=date_of_birth,gender=gender)
         return patient
 
-""" 
+"""
 Below are the child classes for CustomUserClass targetting individual Users Types for additional fields specific to its role.
 """
 

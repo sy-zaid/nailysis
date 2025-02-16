@@ -113,19 +113,25 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
         patient_phone = request.data.get("patient_phone")
         patient_email = request.data.get("patient_email")
         print("DATA------------------------------------------------")
-        print(doctor_id,appointment_date,appointment_time,appointment_type,specialization,fee)
+        print(doctor_id,appointment_date,appointment_time,appointment_type,specialization,fee,patient_email)
 
         # Get doctor by id or return 404 if not found
         doctor = get_object_or_404(Doctor, user_id=doctor_id)
         user = self.request.user
         if user.role == "clinic_admin":
-            patient = CustomUser.create_walkin_account(first_name=patient_first_name,last_name=patient_last_name,
+            if not patient_email:
+                print("CREATING A NEW EMAIL")
+                patient = CustomUser.create_walkin_account(first_name=patient_first_name,last_name=patient_last_name,
                                                        date_of_birth=patient_date_of_birth,
                                                        gender=patient_gender,
                                                        phone=patient_phone,
                                                        email=patient_email)
+            else:
+                print("EMAIL ALREADY EXISTS")
+                patient = get_object_or_404(Patient, user__email=patient_email)
         elif user.role == "patient":
             patient = get_object_or_404(Patient, user=request.user)
+        
         # Create the DoctorAppointment
         doctor_appointment = DoctorAppointment.objects.create(
             patient=patient,
