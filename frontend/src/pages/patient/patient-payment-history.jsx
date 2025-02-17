@@ -7,6 +7,8 @@ import Sidebar from "../../components/Dashboard/Sidebar/Sidebar";
 
 
 const PaymentHistory = (props) => {
+  const [activeButton, setActiveButton] = useState(0); 
+
   const data = [
     {
         id: 1,
@@ -33,6 +35,10 @@ const PaymentHistory = (props) => {
       },
   ];
 
+  const handleFilterClick = (index) => {
+    setActiveButton(index); // Set the active button when clicked
+  };
+
   const getStatusClass = (status) => {
     switch (status) {
       case "Paid":
@@ -50,19 +56,42 @@ const PaymentHistory = (props) => {
 
       <div className={styles.pageTop}>
         <Navbar />
-        <Header curUserRole="Payment History" />
+        <Header 
+            mainHeading={'Billing History'}
+            subHeading={'Here you can view all the billing details'}
+          />
       </div>
       <div className={styles.mainContent}>
 
         <div className={styles.appointmentsContainer}>
           <div className={styles.filters}>
-            <button className={styles.filterButton}>All</button>
-            <button className={styles.filterButton}>Paid</button>
-            <button className={styles.filterButton}>Pending</button>
-            <button className={styles.filterButton}>Overdue</button>
+          <button
+              className={`${styles.filterButton} ${activeButton === 0 ? styles.active : ''}`}
+              onClick={() => handleFilterClick(0)}
+            >
+              All
+            </button>
+            <button
+              className={`${styles.filterButton} ${activeButton === 1 ? styles.active : ''}`}
+              onClick={() => handleFilterClick(1)}
+            >
+              Pending
+            </button>
+            <button
+              className={`${styles.filterButton} ${activeButton === 2 ? styles.active : ''}`}
+              onClick={() => handleFilterClick(2)}
+            >
+              Completed
+            </button>
+            <button
+              className={`${styles.filterButton} ${activeButton === 3 ? styles.active : ''}`}
+              onClick={() => handleFilterClick(3)}
+            >
+              Cancelled
+            </button>
             <p>50 paid, 4 pending</p>
             
-            <button className="_button_1muar_189">
+            <button className={styles.addButton}>
                 Book New Appointment
             </button>
 
@@ -81,6 +110,10 @@ const PaymentHistory = (props) => {
                 placeholder="Search By Doctor Name"
               />
             </div>
+
+            <hr />
+            <br />
+
             <table className={styles.table}>
               <thead>
                 <tr>

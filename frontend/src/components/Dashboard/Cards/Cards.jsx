@@ -21,7 +21,7 @@ const Cards = (props) => {
     <div className={styles.contain} style={cardStyle}>
       <div className={styles.head}>
         <div className={styles.imgDiv}>
-          <img src="stocks.png" alt="stocks icon" />
+          <img src="icon-stocks-black.png" alt="stocks icon" />
         </div>
         <h2 className={styles.title}>{props.heading}</h2>
       </div>

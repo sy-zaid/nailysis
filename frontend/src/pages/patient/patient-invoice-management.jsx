@@ -4,12 +4,21 @@ import styles from "../../components/CSS Files/PatientAppointment.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import Header from "../../components/Dashboard/Header/Header";
 import Sidebar from "../../components/Dashboard/Sidebar/Sidebar";
+import Popup from "../../components/Popup/Popup.jsx";
 
 
 const InvoiceManagement = (props) => {
   const [popupVisible, setPopupVisible] = useState(false);
   const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
   const popupRef = useRef(null);
+
+  const [activeButton, setActiveButton] = useState(0); 
+
+  const [invoiceDetailsPopup, setinvoiceDetailsPopup] = useState(false);
+  
+  const handleTableEntryClick = () => {
+      setinvoiceDetailsPopup(true);
+  };
 
   const data = [
     {
@@ -47,6 +56,10 @@ const InvoiceManagement = (props) => {
         return styles.scheduled;
     }
   }
+
+  const handleFilterClick = (index) => {
+    setActiveButton(index); // Set the active button when clicked
+  };
   
   const togglePopup = (event) => {
     const iconRect = event.target.getBoundingClientRect();
@@ -79,21 +92,140 @@ const InvoiceManagement = (props) => {
     
     <div className={styles.pageContainer}>
 
+
+    {/* Invoice Details Popup */}
+    <Popup trigger={invoiceDetailsPopup} setTrigger={setinvoiceDetailsPopup}>
+        <div className={styles.formContainer}>
+          <div className={styles.header}>
+            <h2>Invoice Details For Patient: John Doe (Invoice ID: 12345)</h2>
+          </div>
+
+          <h5 className={styles.subhead}>
+            Detailed view for the invoice number #123456.
+          </h5>
+          <hr />
+
+          <p className={styles.newSubHeading}>
+            <span className={styles.key}> Viewed By: </span>
+            <span className={styles.locationValue}>Clinic Admin</span>
+            <span className={styles.secKey}> Status: </span>
+            <span className={getStatusClass("Paid")}>Paid</span>
+          </p>
+
+          <p className={styles.newSubHeading}>
+            <span className={styles.key}> Issuance Date & Time: </span>
+            <span className={styles.locationValue}>10/10/2024 09:30 AM</span>
+          </p>
+
+            <div className={styles.formSection}>
+              <br />
+                    <h3>Invoice Details</h3>
+                    <div className={styles.newFormGroup}>
+                      <div>
+                        <label>Invoice Number</label>
+                        <p className={styles.subHeading}>123456</p>
+                      </div>
+                      <div>
+                        <label>Doctor Name</label>
+                        <p className={styles.subHeading}>John Doe</p>
+                      </div>
+                      <div>
+                        <label>Service Type</label>
+                        <p className={styles.subHeading}>Consultation</p>
+                      </div>
+                      <div>
+                        <label>Date & Time of Service</label>
+                        <p className={styles.subHeading}>12/9/2024 05:30 PM</p>
+                      </div>
+                      <div>
+                        <label>Paid Amount</label>
+                        <p className={styles.subHeading}>RS/- 4000</p>
+                      </div>
+
+                      <div>
+                        <label>Pending Amount</label>
+                        <p className={styles.subHeading}>RS/- 1000</p>
+                      </div>
+
+                      <div>
+                        <label>Service Fee</label>
+                        <p className={styles.subHeading}>RS/- 5000</p>
+                      </div>
+                    </div>
+            </div>
+
+            <div className={styles.formSection}>
+                    <h3>Change Summary</h3>
+                    <div className={styles.documentFormGroup}>
+                      <div>
+                        <p className={styles.subHeading}>Payment of PKR 5000 received for Invoice ID "INV-98765"</p>
+                      </div>
+                    
+                    </div>
+            </div>
+
+
+            <div className={styles.formSection}>
+                    <h3>Comments/Reason</h3>
+                    <div className={styles.documentFormGroup}>
+                      <div>
+                        <p className={styles.subHeading}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Neque provident commodi, sapiente, totam veritatis odio ad sequi eius quod inventore dicta saepe. Nisi, accusamus.</p>
+                      </div>
+                    
+                    </div>
+            </div>
+
+          <div className={styles.newActions}>
+            <button className={styles.addButton}>
+              Download as PDF File
+            </button>
+            <button className={styles.addButton}>
+              Send to Printer
+            </button>
+          </div>
+        </div>
+    </Popup>
+
+
+
       <div className={styles.pageTop}>
         <Navbar />
-        <Header curUserRole="Invoices" />
+        <Header 
+            mainHeading={'Invoice Management'}
+            subHeading={'Here you can view & manage all the invoices of the patients'}
+          />
       </div>
       <div className={styles.mainContent}>
 
         <div className={styles.appointmentsContainer}>
           <div className={styles.filters}>
-            <button className={styles.filterButton}>All</button>
-            <button className={styles.filterButton}>Paid</button>
-            <button className={styles.filterButton}>Pending</button>
-            <button className={styles.filterButton}>Overdue</button>
+          <button
+              className={`${styles.filterButton} ${activeButton === 0 ? styles.active : ''}`}
+              onClick={() => handleFilterClick(0)}
+            >
+              All
+            </button>
+            <button
+              className={`${styles.filterButton} ${activeButton === 1 ? styles.active : ''}`}
+              onClick={() => handleFilterClick(1)}
+            >
+              Pending
+            </button>
+            <button
+              className={`${styles.filterButton} ${activeButton === 2 ? styles.active : ''}`}
+              onClick={() => handleFilterClick(2)}
+            >
+              Completed
+            </button>
+            <button
+              className={`${styles.filterButton} ${activeButton === 3 ? styles.active : ''}`}
+              onClick={() => handleFilterClick(3)}
+            >
+              Cancelled
+            </button>
             <p>50 paid, 4 pending</p>
             
-            <button className="_button_1muar_189">
+            <button className={styles.addButton}>
                 Add New Invoice
             </button>
 
@@ -112,6 +244,10 @@ const InvoiceManagement = (props) => {
                 placeholder="Search By Doctor Name"
               />
             </div>
+
+            <hr />
+            <br />
+
             <table className={styles.table}>
               <thead>
               <tr>
@@ -176,7 +312,7 @@ const InvoiceManagement = (props) => {
             zIndex: 1000,
           }}
         >
-          <p style={{ margin: "5px 0", cursor: "pointer" }}>
+          <p style={{ margin: "5px 0", cursor: "pointer" }} onClick={handleTableEntryClick}>
             👁️ View Details
           </p>
           <p style={{ margin: "5px 0", cursor: "pointer" }}>

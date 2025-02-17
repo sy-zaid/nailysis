@@ -9,7 +9,10 @@ function PatientDashboard() {
     return (
         <div>
           <Navbar />
-          <Header curUserRole={'Patient'}/>
+          <Header 
+            mainHeading={'Welcome, John Doe'}
+            subHeading={'Here is Your Patient'}
+          />
           <div className={styles.main}>
             
             <div className={styles.cards}>

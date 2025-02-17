@@ -1,3 +1,11 @@
+/* Existing Styles */
+
+::selection {
+  background-color: #0067FF; /* Change background color */
+  color: white; /* Change text color */
+}
+
+
 .pageContainer {
   display: flex;
   flex-direction: column;
@@ -27,16 +35,26 @@
 }
 
 .appointmentsContainer {
-  flex: 1;
-  padding: 20px;
-  background-color: #f9f9f9;
+    flex: 1;
+    padding: 20px;
+    background-color: #ffffff;
 }
 
 .filters {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0 10px 20px 10px;
+}
+
+.filters > :last-child {
+    margin-left: auto; /* Push the last element to the right */
+}
+
+.filters p {
+  color: #737070;
+  font-weight: 400;
+  margin-left: 16px;
 }
 
 .filterTabs {
@@ -45,16 +63,30 @@
 }
 
 .filterButton {
-  padding: 8px 16px;
-  border: none;
-  background-color: #f0f0f0;
-  cursor: pointer;
-  /* border-radius: 4px; */
-  color: #555
+    padding: 8px 8px;
+    margin: 0 8px;
+    border: none;
+    background: none;
+    color: #737070;
+    cursor: pointer;
+    border-radius: 0px;
+    position: relative;
 }
 
+.filterButton.active::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 3px;
+  background-color: #0067FF; /* Bottom border color */
+  position: absolute;
+  bottom: -2px; /* Position the border just below the button */
+  left: 0;
+}
+
+
 .filterButton:hover {
-  background-color: #e0e0e0;
+    background-color: #ffffff;
 }
 
 .statusSummary {
@@ -69,12 +101,14 @@
 }
 
 .addButton {
-  padding: 8px 16px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 15px;
-  cursor: pointer;
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 15px; 
+    cursor: pointer;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s;
 }
 
 .addButton:hover {
@@ -82,10 +116,11 @@
 }
 
 .tableContainer {
-  background-color: white;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
+    background-color: white;
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
 }
 
 .controls {
@@ -94,47 +129,54 @@
   margin-bottom: 10px;
 }
 
-.bulkAction{
-  display: flex;
-  justify-content: space-between;
-}
-
-.bulkAction{
-  width: 200px;
-}
-
-.headingBox {
-  display: flex;
-  gap: 15px;
-}
-
-.sortBy,
-.search {
-  width: 200px;
-}
-
 .bulkAction,
-.sortBy,
-.search {
-  padding: 5px;
+.sortBy {
+  appearance: none;
   border: none;
-  border-radius: 4px;
+  outline: none;
+  padding: 8px 12px;
+  margin-right: 10px;
+  cursor: pointer;
+  background: white url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>') 
+  no-repeat right 12px center; 
 }
 
-.table {
-  width: 100%;
-  border-collapse: collapse;
+
+.bulkAction:focus,
+.sortBy:focus {
+  border-color: #004080;
+  box-shadow: 0 0 5px rgba(0, 91, 187, 0.5);
 }
+
+
+.search {
+    padding: 5px;
+    border: none;
+    border-bottom: 2px solid #1E68F8;
+    background: none;
+    border-radius: 0px;
+}
+
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    border: none;
+}
+
 
 .table th,
 .table td {
-  padding: 15px;
-  text-align: left;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    text-align: center;
 }
 
 .table th {
   /* background-color: #f4f4f4; */
 }
+
 
 .table tr:nth-child(even) {
   background-color: #f9f9f9;
@@ -174,21 +216,228 @@
 }
 
 
-/* Popup classes */
-.formContainer {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  width: 1200px;
+/* Responsive Styles for table*/
+@media (max-width: 850px) {
+  .controls {
+      flex-direction: column;
+      align-items: center;
+  }
+
+  .tableContainer {
+      padding: 10px;
+  }
+
+  .tableWrapper {
+      overflow-x: auto;
+      max-width: 100%;
+  }
+
+  .table th,
+  .table td {
+      padding: 8px;
+      font-size: 14px; /* Reduce font size on smaller screens */
+  }
 }
 
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: -10px;
+/* Stack Table on Very Small Screens */
+/* @media (max-width: 768px) {
+  .table thead {
+    display: none;
+  }  
+
+  .table, .table tbody, .table tr, .table td {
+    display: block;
+    width: 100%;
+  } 
+
+  .table tr {
+    margin-bottom: 15px;
+  }
+
+  .table tbody tr td {
+    text-align: right;
+    padding-left: 50%;
+    position: relative;
+  }
+
+  input[type="checkbox"] {
+    width: 5%;
+    align-items: center;
+  }
+
+  .table td:before {
+    content: attr(data-label);
+    position: absolute;
+    left: 0;
+  }
+
+} */
+
+
+
+
+
+
+
+
+/* New Styles for Modal Popup */
+
+/* Modal Overlay (Background Blur Effect) */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(10px); /* Apply blur to the background */
 }
+
+/* Modal Content (The Popup Itself) */
+.modal-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    width: 75%; /* Modal takes up 75% of the page's width */
+    max-width: 800px; /* Set a max-width for large screens */
+    height: auto;
+    max-height: 80%; /* Prevent the modal from becoming too tall */
+    overflow-y: auto; /* Add scroll if content is too tall */
+    text-align: left;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add a shadow to make the modal pop */
+    position: relative; /* For positioning the close button */
+}
+
+/* Modal Heading */
+.modal-content h2 {
+    margin-top: 0;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/* Close Button (Positioned in the Top-Right Corner of the Modal) */
+.modal-content .close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #333;
+}
+
+.modal-content .close-btn:hover {
+    color: red; /* Change close button color on hover */
+}
+
+/* Add some basic styling for buttons */
+.btn {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+
+
+
+
+input[type="checkbox"] {
+  appearance: none; /* Removes default styling */
+  border: none;
+  background-color: #B0D5FF; 
+  border-radius: 5px;
+  cursor: pointer;
+  position: relative;
+}
+
+input[type="checkbox"]:checked {
+  background-color: #0067FF; /* Blue when checked */
+  border-color: #0067FF
+}
+
+input[type="checkbox"]::before {
+  content: "✔"; /* Checkmark */
+  font-size: 16px;
+  color: white;
+  display: none;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+input[type="checkbox"]:checked::before {
+  display: block; /* Show checkmark */
+}
+
+.shareBtn {
+  padding: 8px 12px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  font-weight: normal;
+  white-space: nowrap; /* Prevents text from wrapping */
+  display: inline-block; /* Ensures proper sizing */
+  text-align: center; /* Centers the text */
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+
+.shareBtn:hover {
+  background-color: #0056b3;
+}
+
+.appointmentButtons {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-top: -50px;
+}
+
+.appointmentButtons button {
+  width: 100%;
+}
+
+hr {
+  color: #CFCFCF;
+  opacity: 0.6;
+}
+
+
+/* -------------------------------------------------------------------- */
+
+
+
+  .formContainer {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 1100px;
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: -10px;
+  }
 
 .subhead {
   font-size: 18px;
@@ -210,11 +459,19 @@
   margin-right: 10px;
 }
 
-.key {
-  color: #4E4E4E;
-  font-size: 16px;
-  margin-right: 10px;
-}
+  .statusIcon {
+    margin-left: 23px;
+  }
+
+  .key, .statusValue, locationValue {
+    color: #4E4E4E;
+    font-size: 16px;
+    margin-right: 10px;
+  }
+
+  .secKey {
+    margin-left: 15%;
+  }
 
 .statusValue {
   color: #FFB031;
@@ -236,10 +493,11 @@
   gap: 20px;
 }
 
-.newFormGroup {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-}
+  .newFormGroup {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    /* gap: 10px; */
+  }
 
 .documentFormGroup {
   display: flex;
@@ -259,29 +517,68 @@
   margin-top: 20px;
 }
 
-.newActions {
-  display: flex;
-  justify-content: center;
-}
-
-.cancelButton {
-  background-color: #dc3545;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.confirmButton {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 6px;
-  cursor: pointer;
-}
+  .newActions {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+  }
+  
+  .cancelButton {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  .confirmButton {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
 
 .statusIcon {
   margin-left: 23px;
+}
+
+
+/* Table More Options */
+.moreActionsBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.moreActionsIcon {
+  width: 20px;
+  height: 20px;
+}
+
+.menu {
+  position: absolute;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  top: 100%; /* Adjust the positioning as needed */
+  right: 0;
+}
+
+.menu ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 10px;
+}
+
+.menu ul li {
+  padding: 8px;
+  cursor: pointer;
+}
+
+.menu ul li:hover {
+  background-color: #f0f0f0;
 }
