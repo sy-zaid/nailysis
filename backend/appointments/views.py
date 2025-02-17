@@ -175,6 +175,26 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
         appointment = get_object_or_404(DoctorAppointment, pk=pk)
         appointment.cancel_appointment()
         return Response({"message": "Appointment cancelled successfully."}, status=status.HTTP_200_OK)
+    
+    @action(detail=True,methods=["post"],url_path='request_cancellation')
+    def request_cancellation(self,request,pk=None):
+        user = self.request.user
+        if user.role != "doctor":
+            return Response({"error":"Only Doctors can generate a cancellation request"},status=status.HTTP_403_FORBIDDEN)
+        
+        try:
+            doctor = Doctor.objects.get(user=user)
+            appointment = DoctorAppointment.objects.get(pk=pk,doctor=doctor)
+        except(Doctor.DoesNotExist,DoctorAppointment.DoesNotExist):
+            return Response({"error":"No Appointment Found"},status=status.HTTP_404_NOT_FOUND)
+        
+        reason = request.data.get('reason','').strip()
+        if not reason:
+            return Response({"error":"Cancellation reason is required"},status=status.HTTP_400_BAD_REQUEST)
+        cancellation_request = CancellationRequest.objects.create(doctor=doctor,appointment=appointment,reason = reason,status="Pending")
+        appointment.status = "Pending"
+        appointment.save()
+        return Response({"message":"Cancellation request sent successfully","request_id":cancellation_request.id},status=status.HTTP_201_CREATED)
 
 
 class LabTechnicianAppointmentViewset(viewsets.ModelViewSet):
