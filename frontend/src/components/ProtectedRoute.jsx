@@ -47,6 +47,7 @@ function ProtectedRoute({ children, requiredRole }) {
   const auth = async () => {
     const token = localStorage.getItem(ACCESS_TOKEN);
     if (!token) {
+      console.log("No token found")
       setIsAuthorized(false);
       return;
     }

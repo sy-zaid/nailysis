@@ -22,15 +22,15 @@ body {
 
 .mainContent {
   flex-grow: 1;
-  background-color: #f4f4f9;
+  background-color: #ffffff;
   padding: 20px;
   transition: margin-left 0.3s ease;
 }
 
 .sidebar-open {
-  margin-left: 350px; /* Width of the open sidebar */
+  margin-left: 22%; /* Width of the open sidebar */
 }
 
 .sidebar-closed {
-  margin-left: 0; /* No sidebar */
+  margin-left: 4%; /* No sidebar */
 }

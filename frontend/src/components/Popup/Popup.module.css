@@ -1,0 +1,42 @@
+/* Popup.module.css */
+.popup {
+    position: fixed;
+    /* background-color: red; */
+    top: 5%;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+    backdrop-filter: blur(10px); /* Apply blur to the content behind the popup */
+    -webkit-backdrop-filter: blur(10px); /* For Safari */
+}
+
+.popup-inner {
+    position: relative;
+    padding: 45px;
+    width: 60%;
+    max-width: 640px;
+    max-height: 80vh; /* Prevent the popup from growing too large */
+    background-color: #d74141;
+    overflow-y: auto; /* Enable vertical scrolling inside the popup */
+    z-index: 10000; /* Ensure popup content is above the blurred background */
+    box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.2); /* Subtle drop shadow */
+    border-radius: 70px;
+}
+
+.closeBtn {
+    position: absolute;
+    top: 0;
+    right: 100px;
+    cursor: pointer;
+    background: transparent;
+    color: #4E4E4E;
+    font-size: 40px;
+}
+
+.closeBtn i {
+    font-size: 40px;
+}

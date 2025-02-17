@@ -1,20 +1,74 @@
+/* Floating buttons */
+.floatingButtons {
+  position: fixed;
+  top: 50%;
+  left: 2%;
+  transform: translate(0, -50%);
+  width: auto;
+  height: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  /* background-color: #181818; */
+  animation: fadeIn 0.95s ease-out;
+}
+.floatingButtonsOpen {
+  opacity: 1;
+}
+
+.floatingButtonsClosed {
+  opacity: 1;
+}
+
+.floatingCircle {
+  border-radius: 100px;
+  /* background-color: red; */
+  background-color: #ffffff;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0%;
+  border: 3.5px solid #cfcfcf;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all ease 0.25s;
+}
+
+.floatingCircle > img {
+  width: 24px;
+  height: 24px;
+}
+
+.floatingCircle:hover {
+  scale: 1.15;
+  background-color: #0067ff;
+}
+
 /* Sidebar */
 .sidePanel {
   position: fixed;
   top: 0;
-  left: -350px; /* Initially off-screen */
-  width: 350px;
+  left: -22%; /* Initially off-screen */
+  width: 22%;
   height: 100%;
-  background-color: #ffffff;
+  /* background-color: #ca0c0c; */
   padding: 16px;
   transition: left 0.3s ease;
-  z-index: 200;
+  z-index: 300;
   display: flex;
   flex-direction: column;
+  border-right: 0.5px solid rgba(0, 0, 0, 0.078);
+  box-shadow: #181818;
+  animation: fadeIn 0.5s ease-out;
 }
 
 .sidePanel.open {
   left: 0; /* Sidebar visible */
+  animation: fadeIn 0.5s ease-out;
 }
 
 /* Menu Button */
@@ -29,7 +83,7 @@
 }
 
 .toggleButton img {
-  height: 24px;
+  height: 1.5rem;
   width: auto;
 }
 
@@ -44,8 +98,8 @@
 }
 
 .closeButton img {
-  width: 24px;
-  height: 24px;
+  width: 50%;
+  height: 50%;
 }
 
 /* Sidebar Button */
@@ -58,8 +112,8 @@
 }
 
 .sideButton img {
-  width: 28px;
-  height: 28px;
+  width: 1.5rem;
+  height: 1.5rem;
 }
 
 /* Responsive Design */
@@ -83,23 +137,25 @@
   align-items: center;
 }
 .secOneImg img {
-  width: 100px !important;
-  height: 100px !important;
+  width: 25% !important;
+  height: 25% !important;
 }
 
 .secOneImg h2 {
   font-size: 20px;
-  color: #181818;
+  /* color: #181818; */
   font-weight: 700;
 }
 
 .sectionTwo {
   /* background-color: beige; */
-  height: 18%;
+  height: 22%;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  margin-top: 12px;
+  gap: 0;
+  margin: 0%;
+  margin-left: 12px;
+  padding: 2% 0%;
   justify-content: start;
   align-items: start;
   border-bottom: 1px solid #cfcfcf;
@@ -107,15 +163,27 @@
 
 .sectionTwo button {
   display: flex;
+  /* background-color: #181818; */
   flex-direction: row;
   gap: 12px;
   align-items: center;
 }
 
 .textMedium {
-  font-size: 16px;
-  font-weight: 520;
+  font-size: 0.9rem;
+  font-weight: 500;
   color: #373737d5;
+  /* padding: 0; */
+  margin: 10% 0%;
+  text-shadow: 0.5px 0.5px 0.5px #37373731;
+}
+
+.sbtextMedium {
+  font-size: 0.9rem;
+  font-weight: 500;
+  /* color: #373737d5; */
+  /* padding: 0; */
+  margin: 6% 0%;
   text-shadow: 0.5px 0.5px 0.5px #37373731;
 }
 
@@ -126,11 +194,19 @@
   flex-direction: column;
   gap: 6px;
   overflow: auto;
-  margin-top: 12px;
+  margin-left: 12px;
   justify-content: center;
   align-items: start;
   justify-content: start;
   border-bottom: 1px solid #cfcfcf;
+}
+
+.sectionThreeSecondDiv {
+  margin: 20px 0px;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  /* background-color: red; */
 }
 
 .sectionThree button {
@@ -141,27 +217,68 @@
 }
 
 /* Dropdown container */
-.dropdown {
+.sbdropdown {
   padding-left: 20px;
-  margin-top: 5px;
-  background-color: #f4f4f4;
+  color: white;
+  max-height: 0;
+  opacity: 0;
+  /* overflow: hidden; */
+  transform: translateY(-10px);
+  transition: max-height 0.35s ease, opacity 0.3s ease-out,
+    transform 0.3s ease-out;
+}
+
+/* When dropdown opens */
+.sbdropdownopen {
+  max-height: 300px; /* Adjust based on content */
+  opacity: 1;
+  transform: translateY(0);
 }
 
 /* Dropdown items */
-.subButton {
+.sbsubButton {
   background: none;
+  color: #373737d5;
   border: none;
-  padding: 10px;
+  padding: 0px 14px;
   cursor: pointer;
+  margin: 4% 0;
+  border-radius: 32px;
+  transition: all ease 0.5s;
 }
 
-.subButton:hover {
-  background-color: #ddd;
+.sbsubButton:hover {
+  background-color: #0067ff;
+  color: white !important;
 }
 
-/* Optional: Add some animations for dropdown */
-.dropdown {
-  animation: fadeIn 0.3s ease-out;
+/* Apply to a specific div */
+.secThreeCustomScrollBar {
+  overflow-y: auto; /* Enable scrolling */
+}
+
+/* sec-three-custom scrollbar styles */
+.secThreeCustomScrollBar::-webkit-scrollbar {
+  width: 4px; /* Adjust scrollbar width */
+  height: 40%;
+}
+
+/* Track (background) */
+.secThreeCustomScrollBar::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Light gray */
+  border-radius: 10px;
+}
+
+/* Handle (the draggable part) */
+.secThreeCustomScrollBar::-webkit-scrollbar-thumb {
+  background: #0067ff; /* Blue */
+  border-radius: 12px;
+  /* transition: background 0.3s; */
+}
+
+/* Handle on hover */
+.secThreeCustomScrollBar::-webkit-scrollbar-thumb:hover {
+  background: #004bbd; /* Darker blue */
 }
 
 @keyframes fadeIn {
@@ -177,9 +294,9 @@
 .sectionFour {
   /* background-color: red; */
   height: 12%;
-  padding: 12px;
+  padding: 3% 0% 0% 0%;
   justify-content: left;
-  align-items: start;
+  align-items: end;
 }
 
 .profSection {
@@ -205,17 +322,23 @@
 }
 
 .profSection img {
-  height: 80%;
-  width: auto;
+  height: 40px;
+  width: 40px;
   border-radius: 32px;
 }
 
-.profSection h2{
-  
-    font-size: 18px;
-    color: #4e4e4e;
-    font-weight: 700;
-    display: flex;
-    flex-direction: column;
-    gap: 0px;
+.profSection h2 {
+  font-size: 0.95rem;
+  color: #4e4e4e;
+  font-weight: 700;
+  display: flex;
+  margin: 0;
+  flex-direction: column;
+  gap: 0px;
+}
+
+.profSection > h2 > span {
+  font-size: 0.8rem;
+  color: #4e4e4e;
+  font-weight: 400;
 }
