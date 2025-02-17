@@ -3,18 +3,29 @@ from django.db import models
 class EHR(models.Model):
     patient = models.ForeignKey('users.Patient', on_delete=models.CASCADE)
     record_id = models.AutoField(primary_key=True)
-    current_allergies = models.JSONField(blank=True, null=True)
+    medical_conditions = models.JSONField(blank=True, null=True)
     current_medications = models.JSONField(blank=True, null=True)
     immunization_records = models.JSONField(blank=True, null=True)
     nail_image_analysis = models.JSONField(blank=True, null=True)
     test_results = models.JSONField(blank=True, null=True)
     diagnoses = models.JSONField(blank=True, null=True)
-    visits = models.JSONField(blank=True, null=True)
+    
+    # Appointment and Visit Details
+    visit_date = models.DateField()  # Date of the visit
+    category = models.CharField(max_length=50, choices=[
+        ("Chronic", "Chronic"),
+        ("Emergency", "Emergency"),
+        ("Preventive", "Preventive"),
+        ("General", "General"),
+    ], default="General")  # Category of patient
+    comments = models.TextField(blank=True, null=True)
+    
     family_history = models.TextField(blank=True, null=True)
     date_created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
-    comments = models.TextField(blank=True, null=True)
-
+    consulted_by = models.CharField(max_length=255, blank=True)  # Name of the doctor or healthcare provider
+    
+    
     def create_record(self):
         # Logic to create a new record
         self.save()

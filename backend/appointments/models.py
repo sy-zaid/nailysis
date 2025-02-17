@@ -1,6 +1,6 @@
 from django.db import models
 from users.models import Patient, Doctor, LabTechnician, ClinicAdmin
-
+from ehr.models import EHR
 class Appointment(models.Model):
     """
     Represents a general appointment in the system.
@@ -108,7 +108,7 @@ class DoctorAppointmentFee(models.Model):
 
     appointment_type = models.CharField(max_length=50, choices=APPOINTMENT_TYPES, unique=True)
     fee = models.DecimalField(max_digits=10, decimal_places=2)
-
+    
     @classmethod
     def get_fee(cls, appointment_type):
         """Retrieves the fee for a given appointment type."""
@@ -135,13 +135,17 @@ class DoctorAppointment(Appointment):
         specialization (str): Doctor's specialization.
         follow_up (bool): Indicates if the appointment is a follow-up.
         fee (decimal, optional): Fee for the appointment.
+        ehr(OneToOneField): Links every appointment with a new EHR record.
     """
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name="doctor_appointments")
     appointment_type = models.CharField(max_length=50)
     specialization = models.CharField(max_length=100)
-    follow_up = models.BooleanField(default=False)
+    follow_up = models.BooleanField(default=False) 
     fee = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-
+     
+    # Field for linking every appointment with EHR record
+    ehr = models.OneToOneField(EHR,on_delete=models.SET_NULL,blank=True, null=True,related_name="doc_appointment_ehr")
+    
     def save(self, *args, **kwargs):
         """Sets the fee dynamically based on the appointment type."""
         if not self.fee:
@@ -158,12 +162,16 @@ class TechnicianAppointment(Appointment):
         test_type (str): Type of lab test.
         test_status (str): Status of the test.
         results_available (bool): Indicates if results are available.
+        ehr(OneToOneField): Links every appointment with a new EHR record.
     """
     lab_technician = models.ForeignKey(LabTechnician, on_delete=models.CASCADE, related_name="technician_appointments")
     lab_test_id = models.IntegerField()
     test_type = models.CharField(max_length=100)
     test_status = models.CharField(max_length=50, default="Pending")
     results_available = models.BooleanField(default=False)
+    
+    # Field for linking every appointment with EHR record
+    ehr = models.OneToOneField(EHR,on_delete=models.SET_NULL,blank=True, null=True,related_name="tech_appointment_ehr")
 
     def collect_sample(self):
         """Updates test status when a sample is collected."""

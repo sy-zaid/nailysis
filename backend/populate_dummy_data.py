@@ -3,7 +3,9 @@ from datetime import datetime, timedelta
 from faker import Faker
 from users.models import CustomUser, Patient, Doctor, LabTechnician
 from appointments.models import DoctorAppointment, TechnicianAppointment
+from ehr.models import EHR
 from django.utils import timezone
+from appointments.models import DoctorAppointmentFee
 
 fake = Faker()
 
@@ -29,7 +31,6 @@ def create_dummy_patients(num_patients):
         patients.append(patient)
     return patients
 
-# Generate dummy doctors
 # Generate dummy doctors
 def create_dummy_doctors(num_doctors):
     doctors = []
@@ -71,15 +72,8 @@ def generate_dummy_appointments(num_appointments, patients, doctors):
             fee=random.uniform(50, 200),  # Set fee for each appointment
         )
 
-# Create dummy data
-num_patients = 5
-num_doctors = 2
-num_appointments = 10
 
-patients = create_dummy_patients(num_patients)
-doctors = create_dummy_doctors(num_doctors)
-generate_dummy_appointments(num_appointments, patients, doctors)
-from appointments.models import DoctorAppointmentFee
+
 
 # List of appointment types with sample fees
 APPOINTMENT_FEES = {
@@ -101,5 +95,40 @@ def populate_doctor_appointment_fees():
         else:
             print(f"Updated: {appointment_type} with new fee {fee} PKR")
 
+
+# Generate dummy EHR records separately
+def generate_dummy_ehr_records(num_records, patients, doctors):
+    for _ in range(num_records):
+        patient = random.choice(patients)
+        doctor = random.choice(doctors)
+        visit_date = fake.date_between(start_date="-30d", end_date="today")
+
+        ehr_record = EHR.objects.create(
+            patient=patient,
+            medical_conditions={"conditions": [fake.word(), fake.word()]},
+            current_medications={"medications": [fake.word(), fake.word()]},
+            immunization_records={"vaccines": [fake.word(), fake.word()]},
+            nail_image_analysis={"analysis": "Normal"},
+            test_results={"tests": [fake.word(), fake.word()]},
+            diagnoses={"diagnoses": [fake.word(), fake.word()]},
+            visit_date=visit_date,
+            category=random.choice(["Chronic", "Emergency", "Preventive", "General"]),
+            comments=fake.text(),
+            family_history=fake.text(),
+            consulted_by=f"{doctor.user.first_name} {doctor.user.last_name}",
+        )
+
+        print(f"EHR record created for {patient.user.first_name}, consulted by Dr. {doctor.user.first_name}")
+
+# Create dummy data
+num_patients = 5
+num_doctors = 2
+num_appointments = 5
+num_ehr_records = 7  # Independent number of EHR records
+
+patients = create_dummy_patients(num_patients)
+doctors = create_dummy_doctors(num_doctors)
+generate_dummy_appointments(num_appointments, patients, doctors)
+generate_dummy_ehr_records(num_ehr_records, patients, doctors)
 # Run the function
 populate_doctor_appointment_fees()

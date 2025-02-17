@@ -22,6 +22,8 @@ from appointments.urls import router
 from users.urls import router as user_router
 from users.urls import urlpatterns as users_urls
 
+from ehr.urls import urlpatterns as ehr_urls
+from ehr.urls import router as ehr_router
 # Define URL patterns
 urlpatterns = [
     path("admin/", admin.site.urls),  # Django admin panel for managing users, models, etc.
@@ -48,6 +50,10 @@ urlpatterns = [
 
     path('api/', include(user_router.urls)),
     *users_urls,
+    
+    # EHR API endpoints
+    path("api/", include(ehr_router.urls)),  # Registers viewsets using Django REST Framework's router
+    *ehr_urls,   # Additional ehr-related URLs
 ]
 from django.conf import settings
 from django.conf.urls.static import static
