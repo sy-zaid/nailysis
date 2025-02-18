@@ -3,8 +3,8 @@ import SystemAdminDashboard from "./pages/admin-system/system-admin-dashboard";
 
 // Clinic Admin Imports
 import ClinicAdminDashboard from "./pages/admin-clinic/clinic-admin-dashboard";
-import PatientRecords from "./components/PlaceholderComponent"; 
-import PatientMedicalHistory from "./components/PlaceholderComponent"; 
+import PatientRecords from "./pages/admin-clinic/EHR";
+import PatientMedicalHistory from "./pages/admin-clinic/patient-health-history";
 import ViewAppointmentsClinicAdmin from "./pages/admin-clinic/view-appointments-clinic-admin";
 
 import ViewAppointmentsPatient from "./pages/patient/view-appointments-patient";
