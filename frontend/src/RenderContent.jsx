@@ -3,9 +3,10 @@ import SystemAdminDashboard from "./pages/admin-system/system-admin-dashboard";
 
 // Clinic Admin Imports
 import ClinicAdminDashboard from "./pages/admin-clinic/clinic-admin-dashboard";
-import PatientRecords from "./components/PlaceholderComponent";
-
+import PatientRecords from "./pages/admin-clinic/EHR";
+import PatientMedicalHistory from "./pages/admin-clinic/patient-health-history";
 import ViewAppointmentsClinicAdmin from "./pages/admin-clinic/view-appointments-clinic-admin";
+
 import ViewAppointmentsPatient from "./pages/patient/view-appointments-patient";
 import ViewAppointmentsDoctor from "./pages/doctor/view-appointments-doctor";
 import PatientPaymentHistory from "./pages/patient/patient-payment-history";
@@ -39,7 +40,7 @@ export const renderClinicAdminContent = (view) => {
     case "Patient Records":
       return <PatientRecords name="Patient Records" />;
     case "Medical History & Notes":
-      return <PlaceholderComponent name="Medical History & Notes" />;
+      return <PatientMedicalHistory name="Medical History & Notes" />;
     case "Analytics":
       return <PlaceholderComponent name="Reports & Analytics" />;
     case "Diagnostic Results":
