@@ -1,56 +1,64 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./EHR.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
-
+import axios from "axios";
 const EHR = () => {
   const [menuOpen, setMenuOpen] = useState(null);
+  const [records, setRecords] = useState([]);
+  const [apiResponse, setApiResponse] = useState();
+  const token = localStorage.getItem("access");
+  useEffect(() => {
+    // Simulate fetching data from an API
+    const fetchData = async () => {
+      try {
+        const apiResponse = await axios.get(
+          `${import.meta.env.VITE_API_URL}/api/ehr_records`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        // console.log("SUCCESSFULLY FETCHED EHR RECORDS");
+        setApiResponse(apiResponse);
+        console.log(apiResponse);
+
+        // Transform the API response to match the dummyRecords structure
+        const transformedRecords = apiResponse.data.map((record) => ({
+          id: record.record_id,
+          recordId: record.record_id,
+          patientName: `${record.patient.user.first_name} ${record.patient.user.last_name}`,
+          category: record.category,
+          notes: record.comments,
+          lastUpdated: record.last_updated.split("T")[0],
+          consultedBy: record.consulted_by,
+          medicalConditions: record.medical_conditions.conditions.join(", "),
+          medications: record.current_medications.medications.join(", "),
+          lastVisit: record.visit_date,
+          immunization: record.immunization_records.vaccines.join(", "),
+          diagnostics: record.nail_image_analysis.analysis,
+        }));
+
+        setRecords(transformedRecords);
+        console.log("TRANSFORMED RECORDS:", records);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchData();
+  }, [token]);
 
   const toggleMenu = (recordId) => {
     setMenuOpen(menuOpen === recordId ? null : recordId);
   };
 
-  const dummyRecords = [
-    {
-      id: 1,
-      recordId: "REC001",
-      patientName: "John Doe",
-      category: "General",
-      notes: "Routine check-up",
-      lastUpdated: "2025-02-18",
-      consultedBy: "Dr. Smith",
-      medicalConditions: "None",
-      medications: "Paracetamol",
-      lastVisit: "2025-02-10",
-      immunization: "Up to date",
-      diagnostics: "Normal",
-    },
-    {
-      id: 2,
-      recordId: "REC002",
-      patientName: "Jane Doe",
-      category: "Cardiology",
-      notes: "Heart check-up",
-      lastUpdated: "2025-02-15",
-      consultedBy: "Dr. Adams",
-      medicalConditions: "Hypertension",
-      medications: "Aspirin",
-      lastVisit: "2025-02-12",
-      immunization: "Up to date",
-      diagnostics: "Mild issues",
-    },
-  ];
-
   return (
     <div className={styles.pageContainer}>
       <Navbar />
       <div className={styles.header}>
-  <div>
-    <h1>Electronic Health Records</h1>
-    <p>View and manage patient health records</p>
-  </div>
-  <button className={styles.addButton}>+ Add New Record</button>
-</div>
-
+        <div>
+          <h1>Electronic Health Records</h1>
+          <p>View and manage patient health records</p>
+        </div>
+        <button className={styles.addButton}>+ Add New Record</button>
+      </div>
 
       <div className={styles.statusContainer}>
         <span className={styles.status}>All</span>
@@ -81,7 +89,7 @@ const EHR = () => {
               </tr>
             </thead>
             <tbody>
-              {dummyRecords.map((record) => (
+              {records.map((record) => (
                 <tr key={record.id}>
                   <td>{record.id}</td>
                   <td>{record.recordId}</td>

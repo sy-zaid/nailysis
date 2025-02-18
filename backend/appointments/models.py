@@ -101,7 +101,7 @@ class Appointment(models.Model):
                 patient=self.patient,  # Assuming patient is available through the Appointment model
                 visit_date=self.appointment_date,  # Make sure this exists in Appointment model
                 category=ehr_data['category'],  # Access category as a dictionary key
-                consulted_by=f"{self.doctor.first_name} {self.doctor.last_name}",
+                consulted_by=f"{self.doctor.user.first_name} {self.doctor.user.last_name}",
                 
                 # Initialize fields with default empty values or placeholders
                 medical_conditions=ehr_data['medical_conditions'],  # Access as dictionary

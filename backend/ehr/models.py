@@ -9,7 +9,7 @@ class EHR(models.Model):
     immunization_records = models.JSONField(blank=True, null=True)
     nail_image_analysis = models.JSONField(blank=True, null=True)
     test_results = models.JSONField(blank=True, null=True)
-    diagnoses = models.JSONField(blank=True, null=True)
+    diagnoses = models.JSONField(blank=True, null=True,default={"diagnoses": ["art", "necessary"]})
     
     # Appointment and Visit Details
     visit_date = models.DateField()  # Date of the visit
