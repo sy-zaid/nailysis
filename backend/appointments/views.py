@@ -119,7 +119,7 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
         Expected request data:
         - doctor_id
         - appointment_date
-        - appointment_time
+        - appointment_start_time
         - appointment_type
         - specialization
         - fee
@@ -128,7 +128,7 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
         
         doctor_id = request.data.get('doctor_id')
         appointment_date = request.data.get('appointment_date')
-        appointment_time = request.data.get('appointment_time')
+        appointment_start_time = request.data.get('appointment_start_time')
         appointment_type = request.data.get('appointment_type')
         specialization = request.data.get('specialization')
         fee = request.data.get('fee')
@@ -150,7 +150,7 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
             patient=patient,
             doctor=doctor,
             appointment_date=appointment_date,
-            appointment_time=appointment_time,
+            start_time=appointment_start_time,
             appointment_type=appointment_type,
             specialization=specialization,
             fee=fee
@@ -196,7 +196,21 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
         appointment.save()
         return Response({"message":"Cancellation request sent successfully","request_id":cancellation_request.id},status=status.HTTP_201_CREATED)
 
-
+    @action(detail=True,methods=['post'],url_path="save_and_complete")
+    def save_and_complete(self,request,pk=None):
+        user = self.request.user
+        if user.role != "doctor":
+            return Response({"error":"Only doctor can mark appointment as complete on this screen"})
+        ehr_data = request.data
+        print(ehr_data)
+        try:
+            appointment = DoctorAppointment.objects.get(pk=pk)
+            appointment.complete_appointment(ehr_data=ehr_data)
+            return Response({"message":"Successfully added ehr" })
+        except(Doctor.DoesNotExist,DoctorAppointment.DoesNotExist):
+            return Response({"error":"No Appointment Found"},status=status.HTTP_404_NOT_FOUND)
+            
+        
 class LabTechnicianAppointmentViewset(viewsets.ModelViewSet):
     """
     API endpoint for managing lab technician appointments.
@@ -219,7 +233,7 @@ class LabTechnicianAppointmentViewset(viewsets.ModelViewSet):
 
         technician_id = request.data.get('technician_id')
         appointment_date = request.data.get('appointment_date')
-        appointment_time = request.data.get('appointment_time')
+        appointment_start_time = request.data.get('appointment_start_time')
         service_type = request.data.get('service_type')
         lab_fee = request.data.get('lab_fee')
 
@@ -229,7 +243,7 @@ class LabTechnicianAppointmentViewset(viewsets.ModelViewSet):
             patient=request.user,
             technician=technician,
             appointment_date=appointment_date,
-            appointment_time=appointment_time,
+            appointment_start_time=appointment_start_time,
             service_type=service_type,
             lab_fee=lab_fee
         )

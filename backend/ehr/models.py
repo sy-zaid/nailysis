@@ -1,7 +1,8 @@
 from django.db import models
+from users.models import Patient
 
 class EHR(models.Model):
-    patient = models.ForeignKey('users.Patient', on_delete=models.CASCADE)
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
     record_id = models.AutoField(primary_key=True)
     medical_conditions = models.JSONField(blank=True, null=True)
     current_medications = models.JSONField(blank=True, null=True)

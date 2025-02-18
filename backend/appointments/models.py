@@ -1,6 +1,8 @@
 from django.db import models
 from users.models import Patient, Doctor, LabTechnician, ClinicAdmin
 from ehr.models import EHR
+from django.utils.timezone import now
+
 class Appointment(models.Model):
     """
     Represents a general appointment in the system.
@@ -9,7 +11,8 @@ class Appointment(models.Model):
         appointment_id (int): Unique identifier for the appointment.
         patient (ForeignKey): Reference to the patient associated with the appointment.
         appointment_date (date): Date of the appointment.
-        appointment_time (time): Time of the appointment.
+        start_time (time): Start Time of the appointment.
+        end_time (time): End Time of the appointment.
         status (str): Current status of the appointment (Scheduled, Completed, Cancelled, Rescheduled).
         reminder_sent (bool): Indicates if a reminder has been sent.
         notes (str, optional): Additional notes related to the appointment.
@@ -19,23 +22,44 @@ class Appointment(models.Model):
         ("Completed", "Completed"),
         ("Cancelled", "Cancelled"),
         ("Rescheduled", "Rescheduled"),
+        ("Checked-In", "Checked-In"),
+        ("No-Show", "No-Show"),
     ]
 
     appointment_id = models.AutoField(primary_key=True)
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name="appointments")
     appointment_date = models.DateField()
-    appointment_time = models.TimeField()
+    start_time = models.TimeField()
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="Scheduled")
+    check_in_time = models.DateTimeField(null=True, blank=True)  # Stores when the patient arrives
+    completion_time = models.DateTimeField(null=True, blank=True)  # Stores when the appointment ends
     reminder_sent = models.BooleanField(default=False)
     notes = models.TextField(blank=True, null=True)
 
     def schedule_appointment(self, date, time):
         """Schedules an appointment with the given date and time."""
         self.appointment_date = date
-        self.appointment_time = time
+        self.start_time = time
         self.status = "Scheduled"
         self.save()
 
+    def mark_no_show(self):
+        """Mark appointment as No-show if patient doesn’t arrive"""
+        self.status = "No-Show"
+        self.save()
+        
+    def mark_checked_in(self):
+        """Mark appointment as Checked-in when patient arrives"""
+        self.status = "Checked-In"
+        self.check_in_time = now()
+        self.save()
+    
+    def mark_completed(self):
+        """Mark appointment as Completed when the consultation is done"""
+        self.status = "Completed"
+        self.completion_time = now()
+        self.save()   
+        
     def cancel_appointment(self):
         """Cancels the appointment."""
         self.status = "Cancelled"
@@ -45,7 +69,7 @@ class Appointment(models.Model):
         try:
             """Reschedules the appointment to a new date and time."""
             self.appointment_date = new_date
-            self.appointment_time = new_time
+            self.start_time = new_time
             if isinstance(self, DoctorAppointment):  # Check if it's a DoctorAppointment
                 print("YES ITS A DOCTOR APPOINTMENT INSTANCE")
                 if new_specialization:
@@ -65,10 +89,37 @@ class Appointment(models.Model):
         except Exception as e:
             print(f"Error while rescheduling: {e}")
 
-    def confirm_attendance(self):
-        """Marks the appointment as completed."""
-        self.status = "Completed"
-        self.save()
+    
+    def complete_appointment(self,ehr_data):
+        print("EHR DATA",ehr_data)
+        """Handle the creation of EHR when appointment is Completed."""
+        if self.status != 'Completed':  # Ensure appointment is not already completed
+            self.mark_completed()
+
+            # Create EHR for the patient
+            ehr_record = EHR.objects.create(
+                patient=self.patient,  # Assuming patient is available through the Appointment model
+                visit_date=self.appointment_date,  # Make sure this exists in Appointment model
+                category=ehr_data['category'],  # Access category as a dictionary key
+                consulted_by=f"{self.doctor.first_name} {self.doctor.last_name}",
+                
+                # Initialize fields with default empty values or placeholders
+                medical_conditions=ehr_data['medical_conditions'],  # Access as dictionary
+                current_medications=ehr_data['current_medications'],  # Access as dictionary
+                immunization_records=ehr_data['immunization_records'],  # Access as dictionary
+                nail_image_analysis=ehr_data['nail_image_analysis'],  # Access as dictionary
+                test_results=ehr_data['test_results'],  # Access as dictionary
+                diagnoses=ehr_data['diagnoses'],  # Access as dictionary
+                comments=ehr_data['comments'],  # Access as dictionary
+                family_history=ehr_data['family_history']  # Access as dictionary
+            )
+
+            # Link the EHR record to the appointment
+            self.ehr = ehr_record
+            self.save()
+
+            return True
+        return False
 
     def view_appointment_details(self):
         """Returns a dictionary containing appointment details."""
@@ -76,7 +127,7 @@ class Appointment(models.Model):
             "Appointment ID": self.appointment_id,
             "Patient": self.patient,
             "Date": self.appointment_date,
-            "Time": self.appointment_time,
+            "Time": self.start_time,
             "Status": self.status,
             "Notes": self.notes,
         }
@@ -88,7 +139,7 @@ class Appointment(models.Model):
             self.save()
 
     def __str__(self):
-        return f"Appointment {self.appointment_id} - {self.patient} on {self.appointment_date} at {self.appointment_time}"
+        return f"Appointment {self.appointment_id} - {self.patient} on {self.appointment_date} at {self.start_time}"
 
 class DoctorAppointmentFee(models.Model):
     """
@@ -151,7 +202,7 @@ class DoctorAppointment(Appointment):
         if not self.fee:
             self.fee = DoctorAppointmentFee.get_fee(self.appointment_type) or 0.00
         super().save(*args, **kwargs)
-
+    
 class TechnicianAppointment(Appointment):
     """
     Represents an appointment for a laboratory technician.

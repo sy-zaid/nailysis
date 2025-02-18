@@ -26,3 +26,11 @@ class EHRView(viewsets.ModelViewSet):
     
     def get_queryset(self):
         return EHR.objects.all()
+    
+    def create(self, request, *args, **kwargs):
+        """Debugging method to check data being sent"""
+        print(request.data)
+        
+        return super().create(request, *args, **kwargs)
+        
+    

@@ -198,7 +198,7 @@ const AppointmentClinicAdmin = () => {
                     <td>{row.appointment_type || "N/A"}</td>{" "}
                     {/* Appointment Type */}
                     <td>
-                      {row.appointment_date} {row.appointment_time}
+                      {row.appointment_date} {row.appointment_start_time}
                     </td>{" "}
                     {/* Date & Time */}
                     <td className={getStatusClass(row.status)}>
