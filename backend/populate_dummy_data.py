@@ -1,7 +1,7 @@
 import random
 from datetime import datetime, timedelta
 from faker import Faker
-from users.models import CustomUser, Patient, Doctor, LabTechnician
+from users.models import CustomUser, Patient, Doctor, LabTechnician,ClinicAdmin,LabAdmin
 from appointments.models import DoctorAppointment, TechnicianAppointment
 from ehr.models import EHR
 from django.utils import timezone
@@ -53,6 +53,23 @@ def create_dummy_doctors(num_doctors):
         )
         doctors.append(doctor)
     return doctors
+
+# Generate dummy clinic_admin
+def create_dummy_clinic_admin(num_clinic_admin):
+    clinic_admin = []
+    for _ in range(num_clinic_admin):
+        user = CustomUser.objects.create_user(
+            email=f"clinic_admin{fake.unique.random_number(digits=1)}@example.com",
+            first_name=fake.first_name(),
+            last_name=fake.last_name(),
+            password="cli",
+            role="clinic_admin",
+        )
+        clinic_admin = ClinicAdmin.objects.create(
+            user=user,
+        )
+        clinic_admin.append(clinic_admin)
+    return clinic_admin
 
 # Generate dummy appointments
 def generate_dummy_appointments(num_appointments, patients, doctors):
@@ -132,3 +149,27 @@ generate_dummy_appointments(num_appointments, patients, doctors)
 generate_dummy_ehr_records(num_ehr_records, patients, doctors)
 # Run the function
 populate_doctor_appointment_fees()
+
+# Generate dummy clinic_admin
+def create_dummy_clinic_admin():
+    email = f"clinic_admin{fake.unique.random_int(min=1000, max=9999)}@example.com"
+        
+    # Check if a CustomUser with this email already exists
+    user, created = CustomUser.objects.get_or_create(
+        email=email,
+        defaults={
+            "first_name": fake.first_name(),
+            "last_name": fake.last_name(),
+            "password": "cli",
+            "role": "clinic_admin",
+        }
+    )
+    
+    clinic_admin, created = ClinicAdmin.objects.get_or_create(
+        user=user,
+    )
+    
+    
+    return clinic_admin 
+
+create_dummy_clinic_admin()
