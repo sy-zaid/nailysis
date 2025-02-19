@@ -26,7 +26,7 @@ const PopupStartAppointment = ({ onClose, appointmentDetails }) => {
   const token = localStorage.getItem("access");
   const { data: curUser } = useCurrentUserData();
   const [timer, setTimer] = useState(0);
-  const [ehrData, setEhrData] = useState({
+  const [electronic_health_recordData, setelectronic_health_recordData] = useState({
     medical_conditions: [],
     current_medications: [],
     immunization_records: [],
@@ -46,7 +46,7 @@ const PopupStartAppointment = ({ onClose, appointmentDetails }) => {
   }, []);
 
   const handleSelectChange = (name, selectedOptions) => {
-    setEhrData((prevData) => ({
+    setelectronic_health_recordData((prevData) => ({
       ...prevData,
       [name]: selectedOptions ? selectedOptions.map((opt) => opt.value) : [],
     }));
@@ -54,18 +54,18 @@ const PopupStartAppointment = ({ onClose, appointmentDetails }) => {
 
   const handleFileChange = (e) => {
     const { name, files } = e.target;
-    setEhrData((prevData) => ({ ...prevData, [name]: files[0] }));
+    setelectronic_health_recordData((prevData) => ({ ...prevData, [name]: files[0] }));
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setEhrData((prevData) => ({ ...prevData, [name]: value }));
+    setelectronic_health_recordData((prevData) => ({ ...prevData, [name]: value }));
   };
 
   const handleStartAppointment = async () => {
     try {
       const formData = new FormData();
-      Object.entries(ehrData).forEach(([key, value]) => {
+      Object.entries(electronic_health_recordData).forEach(([key, value]) => {
         if (Array.isArray(value)) {
           formData.append(key, JSON.stringify(value)); // ✅ Keep JSON format for arrays
         } else {
@@ -84,7 +84,7 @@ const PopupStartAppointment = ({ onClose, appointmentDetails }) => {
           },
         }
       );
-      alert("Appointment Started and EHR Created Successfully");
+      alert("Appointment Started and electronic_health_record Created Successfully");
     } catch (error) {
       alert("Failed to start the appointment");
       console.error(error);
@@ -95,7 +95,7 @@ const PopupStartAppointment = ({ onClose, appointmentDetails }) => {
     <Popup trigger={popupTrigger} setTrigger={setPopupTrigger}>
       <div className={styles.formContainer}>
         <h2>Start Appointment</h2>
-        <h5 className={styles.subhead}>Patient Details & EHR Record</h5>
+        <h5 className={styles.subhead}>Patient Details & electronic_health_record Record</h5>
         <hr />
 
         {/* Medical Conditions */}
@@ -151,7 +151,7 @@ const PopupStartAppointment = ({ onClose, appointmentDetails }) => {
             options={categoryOptions}
             defaultValue={categoryOptions[3]}
             onChange={(selected) =>
-              setEhrData({ ...ehrData, category: selected.value })
+              setelectronic_health_recordData({ ...electronic_health_recordData, category: selected.value })
             }
           />
         </div>
@@ -162,7 +162,7 @@ const PopupStartAppointment = ({ onClose, appointmentDetails }) => {
           <textarea
             name="comments"
             placeholder="Add any additional comments"
-            value={ehrData.comments}
+            value={electronic_health_recordData.comments}
             onChange={handleInputChange}
           />
         </div>
@@ -173,7 +173,7 @@ const PopupStartAppointment = ({ onClose, appointmentDetails }) => {
           <textarea
             name="family_history"
             placeholder="Enter relevant family medical history"
-            value={ehrData.family_history}
+            value={electronic_health_recordData.family_history}
             onChange={handleInputChange}
           />
         </div>

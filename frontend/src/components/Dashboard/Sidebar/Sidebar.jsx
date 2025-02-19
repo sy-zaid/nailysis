@@ -50,7 +50,7 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
       },
       {
         icon: "icon-test-request-black.jpg",
-        label: "EHR",
+        label: "electronic-health-records",
         subItems: [],
       },
       {

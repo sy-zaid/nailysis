@@ -10,7 +10,7 @@ class EHR(models.Model):
     nail_image_analysis = models.JSONField(blank=True, null=True)
     test_results = models.JSONField(blank=True, null=True)
     diagnoses = models.JSONField(blank=True, null=True,default={"diagnoses": ["art", "necessary"]})
-    
+    recommended_lab_test = models.JSONField(blank=True,null=True,default=list)
     # Appointment and Visit Details
     visit_date = models.DateField()  # Date of the visit
     category = models.CharField(max_length=50, choices=[

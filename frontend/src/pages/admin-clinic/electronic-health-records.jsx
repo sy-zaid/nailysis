@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import styles from "./EHR.module.css";
+import styles from "./electronic-health-records.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import axios from "axios";
 const EHR = () => {
