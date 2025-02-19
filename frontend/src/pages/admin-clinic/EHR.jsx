@@ -23,16 +23,29 @@ const EHR = () => {
         const transformedRecords = apiResponse.data.map((record) => ({
           id: record.record_id,
           recordId: record.record_id,
-          patientName: `${record.patient.user.first_name} ${record.patient.user.last_name}`,
-          category: record.category,
-          notes: record.comments,
-          lastUpdated: record.last_updated.split("T")[0],
-          consultedBy: record.consulted_by,
-          medicalConditions: record.medical_conditions.conditions.join(", "),
-          medications: record.current_medications.medications.join(", "),
-          lastVisit: record.visit_date,
-          immunization: record.immunization_records.vaccines.join(", "),
-          diagnostics: record.nail_image_analysis.analysis,
+          patientName: `${record.patient?.user?.first_name || ""} ${
+            record.patient?.user?.last_name || ""
+          }`,
+          category: record.category || "N/A",
+          notes: record.comments || "No comments",
+          lastUpdated: record.last_updated
+            ? new Date(record.last_updated).toLocaleDateString() +
+              " | " +
+              new Date(record.last_updated).toLocaleTimeString()
+            : "N/A",
+          consultedBy: record.consulted_by || "Unknown",
+          medicalConditions: Array.isArray(record.medical_conditions)
+            ? record.medical_conditions.join(", ")
+            : "No records",
+          medications: Array.isArray(record.current_medications)
+            ? record.current_medications.join(", ")
+            : "No records",
+          immunization: Array.isArray(record.immunization_records)
+            ? record.immunization_records.join(", ")
+            : "No records",
+          diagnostics: Array.isArray(record.diagnoses)
+            ? record.diagnoses.join(", ")
+            : "No recordsss",
         }));
 
         setRecords(transformedRecords);
@@ -76,15 +89,14 @@ const EHR = () => {
                 <th>#</th>
                 <th>Record ID</th>
                 <th>Patient Name</th>
-                <th>Category</th>
-                <th>Consultation Notes</th>
-                <th>Last Updated</th>
                 <th>Consulted By</th>
+                <th>Category</th>
                 <th>Medical Conditions</th>
                 <th>Medications</th>
-                <th>Last Visit</th>
                 <th>Immunization</th>
+                <th>Consultation Notes</th>
                 <th>Diagnostics</th>
+                <th>Last Updated</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -94,15 +106,14 @@ const EHR = () => {
                   <td>{record.id}</td>
                   <td>{record.recordId}</td>
                   <td>{record.patientName}</td>
-                  <td>{record.category}</td>
-                  <td>{record.notes}</td>
-                  <td>{record.lastUpdated}</td>
                   <td>{record.consultedBy}</td>
+                  <td>{record.category}</td>
                   <td>{record.medicalConditions}</td>
                   <td>{record.medications}</td>
-                  <td>{record.lastVisit}</td>
                   <td>{record.immunization}</td>
+                  <td>{record.notes}</td>
                   <td>{record.diagnostics}</td>
+                  <td>{record.lastUpdated}</td>
                   <td>
                     <button onClick={() => toggleMenu(record.id)}>⋮</button>
                     {menuOpen === record.id && (

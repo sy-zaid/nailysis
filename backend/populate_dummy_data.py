@@ -60,13 +60,13 @@ def generate_dummy_appointments(num_appointments, patients, doctors):
         patient = random.choice(patients)
         doctor = random.choice(doctors)
         appointment_date = fake.date_between(start_date="today", end_date="+30d")
-        appointment_start_time = fake.time()
+        start_time = fake.time()
 
         doctor_appointment = DoctorAppointment.objects.create(
             patient=patient,  # Assigning Patient instance
             doctor=doctor,
             appointment_date=appointment_date,
-            appointment_start_time=appointment_start_time,
+            start_time=start_time,
             appointment_type=random.choice(["Consultation", "Follow-up"]),
             specialization=doctor.specialization,
             fee=random.uniform(50, 200),  # Set fee for each appointment

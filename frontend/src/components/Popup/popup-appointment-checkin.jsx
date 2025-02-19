@@ -67,18 +67,24 @@ const PopupStartAppointment = ({ onClose, appointmentDetails }) => {
       const formData = new FormData();
       Object.entries(ehrData).forEach(([key, value]) => {
         if (Array.isArray(value)) {
-          formData.append(key, JSON.stringify(value));
+          formData.append(key, JSON.stringify(value)); // ✅ Keep JSON format for arrays
         } else {
           formData.append(key, value);
         }
       });
       await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/doctor_appointments/${appointmentDetails.appointment_id}/save_and_complete/`,
+        `${import.meta.env.VITE_API_URL}/api/doctor_appointments/${
+          appointmentDetails.appointment_id
+        }/save_and_complete/`,
         formData,
-        { headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" } }
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/form-data",
+          },
+        }
       );
       alert("Appointment Started and EHR Created Successfully");
-      navigate("/appointments");
     } catch (error) {
       alert("Failed to start the appointment");
       console.error(error);
@@ -91,33 +97,97 @@ const PopupStartAppointment = ({ onClose, appointmentDetails }) => {
         <h2>Start Appointment</h2>
         <h5 className={styles.subhead}>Patient Details & EHR Record</h5>
         <hr />
+
+        {/* Medical Conditions */}
         <div className={styles.formGroup}>
           <label>Medical Conditions</label>
-          <Select isMulti options={medicalConditionsOptions} onChange={(selected) => handleSelectChange("medical_conditions", selected)} />
+          <Select
+            isMulti
+            options={medicalConditionsOptions}
+            onChange={(selected) =>
+              handleSelectChange("medical_conditions", selected)
+            }
+          />
         </div>
+
+        {/* Current Medications */}
+        <div className={styles.formGroup}>
+          <label>Current Medications</label>
+          <Select
+            isMulti
+            options={[
+              { value: "Metformin", label: "Metformin" },
+              { value: "Aspirin", label: "Aspirin" },
+              { value: "Lisinopril", label: "Lisinopril" },
+              { value: "Atorvastatin", label: "Atorvastatin" },
+            ]}
+            placeholder="Select or add medications"
+            onChange={(selected) =>
+              handleSelectChange("current_medications", selected)
+            }
+          />
+        </div>
+
+        {/* Diagnoses */}
+        <div className={styles.formGroup}>
+          <label>Diagnoses</label>
+          <Select
+            isMulti
+            options={[
+              { value: "Anemia", label: "Anemia" },
+              { value: "Diabetes", label: "Diabetes" },
+              { value: "Hypertension", label: "Hypertension" },
+              { value: "Fungal Infection", label: "Fungal Infection" },
+            ]}
+            placeholder="Select diagnoses"
+            onChange={(selected) => handleSelectChange("diagnoses", selected)}
+          />
+        </div>
+
+        {/* Category */}
         <div className={styles.formGroup}>
           <label>Category</label>
-          <Select options={categoryOptions} defaultValue={categoryOptions[3]} onChange={(selected) => setEhrData({ ...ehrData, category: selected.value })} />
+          <Select
+            options={categoryOptions}
+            defaultValue={categoryOptions[3]}
+            onChange={(selected) =>
+              setEhrData({ ...ehrData, category: selected.value })
+            }
+          />
         </div>
-        {/* <div className={styles.formGroup}>
-          <label>Nail Image Analysis</label>
-          <input type="file" name="nail_image_analysis" accept="image/*" onChange={handleFileChange} />
-        </div> */}
-        {/* <div className={styles.formGroup}>
-          <label>Test Results</label>
-          <input type="file" name="test_results" accept="application/pdf, image/*" onChange={handleFileChange} />
-        </div> */}
+
+        {/* Comments */}
         <div className={styles.formGroup}>
           <label>Comments</label>
-          <textarea name="comments" value={ehrData.comments} onChange={handleInputChange}></textarea>
+          <textarea
+            name="comments"
+            placeholder="Add any additional comments"
+            value={ehrData.comments}
+            onChange={handleInputChange}
+          />
         </div>
+
+        {/* Family History */}
         <div className={styles.formGroup}>
           <label>Family History</label>
-          <textarea name="family_history" value={ehrData.family_history} onChange={handleInputChange}></textarea>
+          <textarea
+            name="family_history"
+            placeholder="Enter relevant family medical history"
+            value={ehrData.family_history}
+            onChange={handleInputChange}
+          />
         </div>
+
         <div className={styles.actions}>
-          <button className={styles.cancelButton} onClick={onClose}>Cancel</button>
-          <button className={styles.confirmButton} onClick={handleStartAppointment}>Save & Complete Appointment</button>
+          <button className={styles.cancelButton} onClick={onClose}>
+            Cancel
+          </button>
+          <button
+            className={styles.confirmButton}
+            onClick={handleStartAppointment}
+          >
+            Save & Complete Appointment
+          </button>
         </div>
       </div>
     </Popup>

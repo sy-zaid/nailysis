@@ -100,18 +100,18 @@ class Appointment(models.Model):
             ehr_record = EHR.objects.create(
                 patient=self.patient,  # Assuming patient is available through the Appointment model
                 visit_date=self.appointment_date,  # Make sure this exists in Appointment model
-                category=ehr_data['category'],  # Access category as a dictionary key
+                category=ehr_data[0],  # Access category as a dictionary key
                 consulted_by=f"{self.doctor.user.first_name} {self.doctor.user.last_name}",
                 
                 # Initialize fields with default empty values or placeholders
-                medical_conditions=ehr_data['medical_conditions'],  # Access as dictionary
-                current_medications=ehr_data['current_medications'],  # Access as dictionary
-                immunization_records=ehr_data['immunization_records'],  # Access as dictionary
-                nail_image_analysis=ehr_data['nail_image_analysis'],  # Access as dictionary
-                test_results=ehr_data['test_results'],  # Access as dictionary
-                diagnoses=ehr_data['diagnoses'],  # Access as dictionary
-                comments=ehr_data['comments'],  # Access as dictionary
-                family_history=ehr_data['family_history']  # Access as dictionary
+                medical_conditions=ehr_data[1],  # Access as dictionary
+                current_medications=ehr_data[2],  # Access as dictionary
+                immunization_records=ehr_data[3],  # Access as dictionary
+                # nail_image_analysis=ehr_data.nail_image_analysis,  # Access as dictionary
+                # test_results=ehr_data.test_results,  # Access as dictionary
+                diagnoses=ehr_data[4],  # Access as dictionary
+                comments=ehr_data[5],  # Access as dictionary
+                family_history=ehr_data[6]  # Access as dictionary
             )
 
             # Link the EHR record to the appointment
