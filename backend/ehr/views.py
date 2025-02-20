@@ -40,5 +40,7 @@ class EHRView(viewsets.ModelViewSet):
         
     #     record = get_object_or_404(EHR,)
         
-        
+    def update(self, request, *args, **kwargs):
+        print("PATCH Request Data:", request.data)
+        return super().update(request, *args, **kwargs)
     
