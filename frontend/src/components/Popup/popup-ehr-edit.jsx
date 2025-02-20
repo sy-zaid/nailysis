@@ -12,8 +12,8 @@ const medicalConditionsOptions = [
   { value: "Hypertension", label: "Hypertension" },
   { value: "Heart Disease", label: "Heart Disease" },
   { value: "Asthma", label: "Asthma" },
-];
-
+]; 
+ 
 /**
  * Predefined category options for react-select.
  */
@@ -42,7 +42,8 @@ const diagnosesOptions = [
  * @param {Function} props.onClose - Function to close the popup.
  * @param {Object} props.recordDetails - Object containing EHR data.
  * @returns {JSX.Element} The popup UI for editing an EHR.
- */
+*/
+
 const PopupEHREdit = ({ onClose, recordDetails }) => {
   const [popupTrigger, setPopupTrigger] = useState(true);
   const [ehrData, setEhrData] = useState({

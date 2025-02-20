@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from rest_framework import viewsets,permissions,status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -32,5 +32,13 @@ class EHRView(viewsets.ModelViewSet):
         print(request.data)
         
         return super().create(request, *args, **kwargs)
+    
+    # def perform_update(self,request):
+    #     user = self.request.user
+    #     if user.role != "doctor":
+    #         return Response({"error":"Not authorized to perform updates on EHR"})
+        
+    #     record = get_object_or_404(EHR,)
+        
         
     

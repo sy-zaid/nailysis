@@ -26,7 +26,7 @@ const PopupStartAppointment = ({ onClose, appointmentDetails }) => {
   const token = localStorage.getItem("access");
   const { data: curUser } = useCurrentUserData();
   const [timer, setTimer] = useState(0);
-  const [ehrData, setehrData] = useState({
+  const [ehrData, setEhrData] = useState({
     medical_conditions: [],
     current_medications: [],
     immunization_records: [],
@@ -46,7 +46,7 @@ const PopupStartAppointment = ({ onClose, appointmentDetails }) => {
   }, []);
 
   const handleSelectChange = (name, selectedOptions) => {
-    setehrData((prevData) => ({
+    setEhrData((prevData) => ({
       ...prevData,
       [name]: selectedOptions ? selectedOptions.map((opt) => opt.value) : [],
     }));
@@ -54,12 +54,12 @@ const PopupStartAppointment = ({ onClose, appointmentDetails }) => {
 
   const handleFileChange = (e) => {
     const { name, files } = e.target;
-    setehrData((prevData) => ({ ...prevData, [name]: files[0] }));
+    setEhrData((prevData) => ({ ...prevData, [name]: files[0] }));
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setehrData((prevData) => ({ ...prevData, [name]: value }));
+    setEhrData((prevData) => ({ ...prevData, [name]: value }));
   };
 
   const handleStartAppointment = async () => {
@@ -151,7 +151,7 @@ const PopupStartAppointment = ({ onClose, appointmentDetails }) => {
             options={categoryOptions}
             defaultValue={categoryOptions[3]}
             onChange={(selected) =>
-              setehrData({ ...ehrData, category: selected.value })
+              setEhrData({ ...ehrData, category: selected.value })
             }
           />
         </div>

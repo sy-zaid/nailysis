@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import styles from "./electronic-health-records.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import axios from "axios";
+// Importing Popups for performing actions on EHR Records
 import PopupEHREdit from "../../components/Popup/popup-ehr-edit";
-import PopupAppointmentDetails from "../../components/Popup/popup-appointment-details";
+import PopupEHRDelete from "../../components/Popup/popup-ehr-delete";
+
 const ElectronicHealthRecord = () => {
   const [menuOpen, setMenuOpen] = useState(null);
   const [records, setRecords] = useState([]);
@@ -26,8 +28,7 @@ const ElectronicHealthRecord = () => {
 
         // Transform the API response to match the dummyRecords structure
         const transformedRecords = response.data.map((record) => ({
-          id: record.record_id,
-          recordId: record.record_id,
+          id: record.id,
           patientName: `${record.patient?.user?.first_name || ""} ${
             record.patient?.user?.last_name || ""
           }`,
@@ -72,7 +73,7 @@ const ElectronicHealthRecord = () => {
     };
 
     fetchData();
-  }, [token,popupContent]);
+  }, [token, popupContent]);
 
   const toggleMenu = (recordId) => {
     setMenuOpen(menuOpen === recordId ? null : recordId);
@@ -89,7 +90,7 @@ const ElectronicHealthRecord = () => {
    * Handles the selected action for an EHR record.
    *
    * @param {string} action - The action to be performed (e.g., "Edit").
-   * @param {number|string} recordId - The unique ID of the EHR record.
+   * @param {number|string} id - The unique ID of the EHR record.
    */
   const handleActionClick = (action, recordDetails) => {
     console.log(`Performing ${action} on ${recordDetails}`);
@@ -97,7 +98,18 @@ const ElectronicHealthRecord = () => {
 
     if (action === "Edit") {
       setPopupContent(
-        <PopupEHREdit onClose={handleClosePopup} recordDetails={recordDetails} />
+        <PopupEHREdit
+          onClose={handleClosePopup}
+          recordDetails={recordDetails}
+        />
+      );
+      setShowPopup(true);
+    } else if (action === "Delete") {
+      setPopupContent(
+        <PopupEHRDelete
+          onClose={handleClosePopup}
+          recordDetails={recordDetails}
+        />
       );
       setShowPopup(true);
     }
@@ -149,7 +161,6 @@ const ElectronicHealthRecord = () => {
               {records.map((record) => (
                 <tr key={record.id}>
                   <td>{record.id}</td>
-                  <td>{record.recordId}</td>
                   <td>{record.patientName}</td>
                   <td>{record.consultedBy}</td>
                   <td>{record.category}</td>
@@ -167,12 +178,16 @@ const ElectronicHealthRecord = () => {
                     {menuOpen === record.id && (
                       <div className={styles.menu}>
                         <ul>
-                          <li
-                            onClick={() => handleActionClick("Edit", record)}
-                          >
+                          <li onClick={() => handleActionClick("Edit", record)}>
                             Edit
                           </li>
-                          <li>Delete</li>
+                          <li
+                            onClick={() => {
+                              handleActionClick("Delete", record);
+                            }}
+                          >
+                            Delete
+                          </li>
                         </ul>
                       </div>
                     )}

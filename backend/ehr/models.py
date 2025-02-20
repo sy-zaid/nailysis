@@ -3,13 +3,13 @@ from users.models import Patient
 
 class EHR(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
-    record_id = models.AutoField(primary_key=True)
+    # record_id = models.AutoField(primary_key=True)
     medical_conditions = models.JSONField(blank=True, null=True)
     current_medications = models.JSONField(blank=True, null=True)
     immunization_records = models.JSONField(blank=True, null=True)
     nail_image_analysis = models.JSONField(blank=True, null=True)
     test_results = models.JSONField(blank=True, null=True)
-    diagnoses = models.JSONField(blank=True, null=True,default={"diagnoses": ["art", "necessary"]})
+    diagnoses = models.JSONField(blank=True, null=True)
     recommended_lab_test = models.JSONField(blank=True,null=True,default=list)
     # Appointment and Visit Details
     visit_date = models.DateField()  # Date of the visit
