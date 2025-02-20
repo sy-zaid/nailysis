@@ -2,25 +2,30 @@ import React, { useState, useEffect } from "react";
 import styles from "./electronic-health-records.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import axios from "axios";
-const EHR = () => {
+import PopupEHREdit from "../../components/Popup/popup-ehr-edit";
+import PopupAppointmentDetails from "../../components/Popup/popup-appointment-details";
+const ElectronicHealthRecord = () => {
   const [menuOpen, setMenuOpen] = useState(null);
   const [records, setRecords] = useState([]);
-  const [apiResponse, setApiResponse] = useState();
+  const [response, setResponse] = useState();
   const token = localStorage.getItem("access");
+  const [popupContent, setPopupContent] = useState();
+  const [showPopup, setShowPopup] = useState(false);
+
   useEffect(() => {
     // Simulate fetching data from an API
     const fetchData = async () => {
       try {
-        const apiResponse = await axios.get(
+        const response = await axios.get(
           `${import.meta.env.VITE_API_URL}/api/ehr_records`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        // console.log("SUCCESSFULLY FETCHED EHR RECORDS");
-        setApiResponse(apiResponse);
-        console.log(apiResponse);
+        // console.log("SUCCESSFULLY FETCHED ElectronicHealthRecord RECORDS");
+        setResponse(response);
+        console.log(response);
 
         // Transform the API response to match the dummyRecords structure
-        const transformedRecords = apiResponse.data.map((record) => ({
+        const transformedRecords = response.data.map((record) => ({
           id: record.record_id,
           recordId: record.record_id,
           patientName: `${record.patient?.user?.first_name || ""} ${
@@ -40,8 +45,19 @@ const EHR = () => {
           medications: Array.isArray(record.current_medications)
             ? record.current_medications.join(", ")
             : "No records",
-          immunization: Array.isArray(record.immunization_records)
-            ? record.immunization_records.join(", ")
+          immunization:
+            Array.isArray(record.immunization_records) &&
+            record.immunization_records.length > 1
+              ? record.immunization_records.join(", ")
+              : "No records",
+          familyHistory: Array.isArray(record.familyHistory)
+            ? record.familyHistory.join(", ")
+            : "No records",
+          TestReports: Array.isArray(record.test_reports)
+            ? record.TestReports.join(", ")
+            : "No records",
+          NailImageAnalysis: Array.isArray(record.nail_image_analysis)
+            ? record.NailImageAnalysis.join(", ")
             : "No records",
           diagnostics: Array.isArray(record.diagnoses)
             ? record.diagnoses.join(", ")
@@ -56,14 +72,40 @@ const EHR = () => {
     };
 
     fetchData();
-  }, [token]);
+  }, [token,popupContent]);
 
   const toggleMenu = (recordId) => {
     setMenuOpen(menuOpen === recordId ? null : recordId);
   };
 
+  const handleClosePopup = () => {
+    setShowPopup(false);
+  };
+  const handleOpenPopup = () => {
+    setShowPopup(true); // Show the popup when button is clicked
+  };
+
+  /**
+   * Handles the selected action for an EHR record.
+   *
+   * @param {string} action - The action to be performed (e.g., "Edit").
+   * @param {number|string} recordId - The unique ID of the EHR record.
+   */
+  const handleActionClick = (action, recordDetails) => {
+    console.log(`Performing ${action} on ${recordDetails}`);
+    setMenuOpen(null);
+
+    if (action === "Edit") {
+      setPopupContent(
+        <PopupEHREdit onClose={handleClosePopup} recordDetails={recordDetails} />
+      );
+      setShowPopup(true);
+    }
+  };
+
   return (
     <div className={styles.pageContainer}>
+      {showPopup && popupContent}
       <Navbar />
       <div className={styles.header}>
         <div>
@@ -93,7 +135,10 @@ const EHR = () => {
                 <th>Category</th>
                 <th>Medical Conditions</th>
                 <th>Medications</th>
+                <th>Family History</th>
                 <th>Immunization</th>
+                <th>Test Reports</th>
+                <th>Nail Image Analysis</th>
                 <th>Consultation Notes</th>
                 <th>Diagnostics</th>
                 <th>Last Updated</th>
@@ -110,7 +155,10 @@ const EHR = () => {
                   <td>{record.category}</td>
                   <td>{record.medicalConditions}</td>
                   <td>{record.medications}</td>
+                  <td>{record.familyHistory}</td>
                   <td>{record.immunization}</td>
+                  <td>{record.TestReports}</td>
+                  <td>{record.NailImageAnalysis}</td>
                   <td>{record.notes}</td>
                   <td>{record.diagnostics}</td>
                   <td>{record.lastUpdated}</td>
@@ -119,7 +167,11 @@ const EHR = () => {
                     {menuOpen === record.id && (
                       <div className={styles.menu}>
                         <ul>
-                          <li>Edit</li>
+                          <li
+                            onClick={() => handleActionClick("Edit", record)}
+                          >
+                            Edit
+                          </li>
                           <li>Delete</li>
                         </ul>
                       </div>
@@ -135,4 +187,4 @@ const EHR = () => {
   );
 };
 
-export default EHR;
+export default ElectronicHealthRecord;

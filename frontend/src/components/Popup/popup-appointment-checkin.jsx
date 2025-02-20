@@ -26,7 +26,7 @@ const PopupStartAppointment = ({ onClose, appointmentDetails }) => {
   const token = localStorage.getItem("access");
   const { data: curUser } = useCurrentUserData();
   const [timer, setTimer] = useState(0);
-  const [electronic_health_recordData, setelectronic_health_recordData] = useState({
+  const [ehrData, setehrData] = useState({
     medical_conditions: [],
     current_medications: [],
     immunization_records: [],
@@ -46,7 +46,7 @@ const PopupStartAppointment = ({ onClose, appointmentDetails }) => {
   }, []);
 
   const handleSelectChange = (name, selectedOptions) => {
-    setelectronic_health_recordData((prevData) => ({
+    setehrData((prevData) => ({
       ...prevData,
       [name]: selectedOptions ? selectedOptions.map((opt) => opt.value) : [],
     }));
@@ -54,18 +54,18 @@ const PopupStartAppointment = ({ onClose, appointmentDetails }) => {
 
   const handleFileChange = (e) => {
     const { name, files } = e.target;
-    setelectronic_health_recordData((prevData) => ({ ...prevData, [name]: files[0] }));
+    setehrData((prevData) => ({ ...prevData, [name]: files[0] }));
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setelectronic_health_recordData((prevData) => ({ ...prevData, [name]: value }));
+    setehrData((prevData) => ({ ...prevData, [name]: value }));
   };
 
   const handleStartAppointment = async () => {
     try {
       const formData = new FormData();
-      Object.entries(electronic_health_recordData).forEach(([key, value]) => {
+      Object.entries(ehrData).forEach(([key, value]) => {
         if (Array.isArray(value)) {
           formData.append(key, JSON.stringify(value)); // ✅ Keep JSON format for arrays
         } else {
@@ -151,7 +151,7 @@ const PopupStartAppointment = ({ onClose, appointmentDetails }) => {
             options={categoryOptions}
             defaultValue={categoryOptions[3]}
             onChange={(selected) =>
-              setelectronic_health_recordData({ ...electronic_health_recordData, category: selected.value })
+              setehrData({ ...ehrData, category: selected.value })
             }
           />
         </div>
@@ -162,7 +162,7 @@ const PopupStartAppointment = ({ onClose, appointmentDetails }) => {
           <textarea
             name="comments"
             placeholder="Add any additional comments"
-            value={electronic_health_recordData.comments}
+            value={ehrData.comments}
             onChange={handleInputChange}
           />
         </div>
@@ -173,7 +173,7 @@ const PopupStartAppointment = ({ onClose, appointmentDetails }) => {
           <textarea
             name="family_history"
             placeholder="Enter relevant family medical history"
-            value={electronic_health_recordData.family_history}
+            value={ehrData.family_history}
             onChange={handleInputChange}
           />
         </div>

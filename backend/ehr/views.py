@@ -22,7 +22,7 @@ from ehr.models import EHR
 class EHRView(viewsets.ModelViewSet):
     queryset = EHR.objects.all()
     serializer_class = EHRSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
     
     def get_queryset(self):
         return EHR.objects.all()
