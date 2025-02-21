@@ -7,7 +7,7 @@ import axios from "axios";
 // import { QueryClientProvider } from "@tanstack/react-query"; // Import React Query Client Provider
 // import { queryClient } from "./queryClient"; // Import the client
 import useCurrentUserData from "../../useCurrentUserData.jsx";
-import { calculateAge } from "../../utils.js";
+import { calculateAge } from "../../utils/utils.js"
 
 const visitPurposes = [
   "Consultation",

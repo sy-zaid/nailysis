@@ -5,15 +5,16 @@ import axios from "axios";
 // Importing Popups for performing actions on EHR Records
 import PopupEHREdit from "../../components/Popup/popup-ehr-edit";
 import PopupEHRDelete from "../../components/Popup/popup-ehr-delete";
+import PopupEHRCreate from "../../components/Popup/popup-ehr-create";
 
 const ElectronicHealthRecord = () => {
   const [menuOpen, setMenuOpen] = useState(null);
   const [records, setRecords] = useState([]);
-  const [response, setResponse] = useState();
   const token = localStorage.getItem("access");
+  const curUserRole = localStorage.getItem("role");
   const [popupContent, setPopupContent] = useState();
   const [showPopup, setShowPopup] = useState(false);
-  
+
   useEffect(() => {
     // Simulate fetching data from an API
     const fetchData = async () => {
@@ -23,24 +24,24 @@ const ElectronicHealthRecord = () => {
           { headers: { Authorization: `Bearer ${token}` } }
         );
         // console.log("SUCCESSFULLY FETCHED ElectronicHealthRecord RECORDS");
-        setResponse(response);
+        // setResponse(response);
         console.log(response);
 
         // Transform the API response to match the dummyRecords structure
         const transformedRecords = response.data.map((record) => ({
           id: record.id,
-          patientName: `${record.patient?.user?.first_name || ""} ${
+          patient_name: `${record.patient?.user?.first_name || ""} ${
             record.patient?.user?.last_name || ""
           }`,
           category: record.category || "N/A",
           notes: record.comments || "No comments",
-          lastUpdated: record.last_updated
+          last_updated: record.last_updated
             ? new Date(record.last_updated).toLocaleDateString() +
               " | " +
               new Date(record.last_updated).toLocaleTimeString()
             : "N/A",
-          consultedBy: record.consulted_by || "Unknown",
-          medicalConditions: Array.isArray(record.medical_conditions)
+          consulted_by: record.consulted_by || "Unknown",
+          medical_conditions: Array.isArray(record.medical_conditions)
             ? record.medical_conditions.join(", ")
             : "No records",
           medications: Array.isArray(record.current_medications)
@@ -51,14 +52,12 @@ const ElectronicHealthRecord = () => {
             record.immunization_records.length > 1
               ? record.immunization_records.join(", ")
               : "No records",
-          familyHistory: Array.isArray(record.familyHistory)
-            ? record.familyHistory.join(", ")
+          family_history: record.family_history || "No records",
+          test_reports: Array.isArray(record.test_reports)
+            ? record.test_reports.join(", ")
             : "No records",
-          TestReports: Array.isArray(record.test_reports)
-            ? record.TestReports.join(", ")
-            : "No records",
-          NailImageAnalysis: Array.isArray(record.nail_image_analysis)
-            ? record.NailImageAnalysis.join(", ")
+          nail_image_analysis: Array.isArray(record.nail_image_analysis)
+            ? record.nail_image_analysis.join(", ")
             : "No records",
           diagnostics: Array.isArray(record.diagnoses)
             ? record.diagnoses.join(", ")
@@ -112,6 +111,14 @@ const ElectronicHealthRecord = () => {
         />
       );
       setShowPopup(true);
+    } else if (action === "Add New Record") {
+      setPopupContent(
+        <PopupEHRCreate
+          onClose={handleClosePopup}
+          // recordDetails={recordDetails}
+        />
+      );
+      setShowPopup(true);
     }
   };
 
@@ -124,7 +131,14 @@ const ElectronicHealthRecord = () => {
           <h1>Electronic Health Records</h1>
           <p>View and manage patient health records</p>
         </div>
-        <button className={styles.addButton}>+ Add New Record</button>
+        <button
+          className={styles.addButton}
+          onClick={() => {
+            handleActionClick("Add New Record");
+          }}
+        >
+          + Add New Record
+        </button>
       </div>
 
       <div className={styles.statusContainer}>
@@ -155,7 +169,7 @@ const ElectronicHealthRecord = () => {
                 <th>Consultation Notes</th>
                 <th>Diagnostics</th>
                 <th>Last Updated</th>
-                <th>Actions</th>
+                {curUserRole === "doctor" && <th>Actions</th>}
               </tr>
             </thead>
             <tbody>
@@ -164,37 +178,41 @@ const ElectronicHealthRecord = () => {
                   <td>{index + 1}</td>
 
                   <td>{record.id}</td>
-                  <td>{record.patientName}</td>
-                  <td>{record.consultedBy}</td>
+                  <td>{record.patient_name}</td>
+                  <td>{record.consulted_by}</td>
                   <td>{record.category}</td>
-                  <td>{record.medicalConditions}</td>
+                  <td>{record.medical_conditions}</td>
                   <td>{record.medications}</td>
-                  <td>{record.familyHistory}</td>
+                  <td>{record.family_history}</td>
                   <td>{record.immunization}</td>
-                  <td>{record.TestReports}</td>
-                  <td>{record.NailImageAnalysis}</td>
+                  <td>{record.test_reports}</td>
+                  <td>{record.nail_image_analysis}</td>
                   <td>{record.notes}</td>
                   <td>{record.diagnostics}</td>
-                  <td>{record.lastUpdated}</td>
-                  <td>
-                    <button onClick={() => toggleMenu(record.id)}>⋮</button>
-                    {menuOpen === record.id && (
-                      <div className={styles.menu}>
-                        <ul>
-                          <li onClick={() => handleActionClick("Edit", record)}>
-                            Edit
-                          </li>
-                          <li
-                            onClick={() => {
-                              handleActionClick("Delete", record);
-                            }}
-                          >
-                            Delete
-                          </li>
-                        </ul>
-                      </div>
-                    )}
-                  </td>
+                  <td>{record.last_updated}</td>
+                  {curUserRole === "doctor" && (
+                    <td>
+                      <button onClick={() => toggleMenu(record.id)}>⋮</button>
+                      {menuOpen === record.id && (
+                        <div className={styles.menu}>
+                          <ul>
+                            <li
+                              onClick={() => handleActionClick("Edit", record)}
+                            >
+                              Edit
+                            </li>
+                            <li
+                              onClick={() => {
+                                handleActionClick("Delete", record);
+                              }}
+                            >
+                              Delete
+                            </li>
+                          </ul>
+                        </div>
+                      )}
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>

@@ -62,8 +62,11 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
     doctor: [
       {
         icon: "icon-test-results-black.jpg",
-        label: "Test Results",
-        subItems: [],
+        label: "Electronic Health Records",
+        subItems: [
+          { label: "Patient Records" },
+          { label: "Medical History & Notes" },
+        ],
       },
       {
         icon: "icon-diagnostic-results-black.jpg",

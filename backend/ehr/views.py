@@ -23,9 +23,13 @@ class EHRView(viewsets.ModelViewSet):
     queryset = EHR.objects.all()
     serializer_class = EHRSerializer
     permission_classes = [permissions.IsAuthenticated]
-    
+
     def get_queryset(self):
-        return EHR.objects.all()
+        patient_id = self.request.query_params.get("patient")  # Get patient ID from request
+        if patient_id:
+            return EHR.objects.filter(patient_id=patient_id)  # Filter EHR records for that patient
+        return EHR.objects.all()  # Return all records if no filter is applied
+
     
     def create(self, request, *args, **kwargs):
         """Debugging method to check data being sent"""

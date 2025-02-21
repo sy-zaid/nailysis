@@ -85,7 +85,7 @@ class PatientAPIView(viewsets.ModelViewSet):
         Returns:
             - Queryset filtered for the logged-in user.
         """
-        return Patient.objects.filter(user=self.request.user)
+        return Patient.objects.all()
 
     def list(self, request, *args, **kwargs):
         """
