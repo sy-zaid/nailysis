@@ -101,19 +101,19 @@ const PopupEHREdit = ({ onClose, recordDetails }) => {
   const handleSaveEdit = async () => {
     try {
       const formattedData = {
-        medicalConditions: ehrData.medicalConditions.map((item) => item.value), // Convert to array of strings
-        medications: ehrData.medications.map((item) => item.value),
+        medical_conditions: ehrData.medicalConditions.map((item) => item.value), // Convert to array of strings
+        current_medications: ehrData.medications.map((item) => item.value),
         diagnoses: ehrData.diagnoses.map((item) => item.value),
         category: ehrData.category ? ehrData.category.value : "", // Convert category to string
         comments: ehrData.comments,
-        familyHistory: ehrData.familyHistory,
+        family_history: ehrData.familyHistory,
       };
 
       console.log("JSON Data:", formattedData); // Debugging output
 
       await axios.patch(
         `${import.meta.env.VITE_API_URL}/api/ehr_records/${
-          recordDetails.recordId
+          recordDetails.id
         }/`,
         formattedData,
         {

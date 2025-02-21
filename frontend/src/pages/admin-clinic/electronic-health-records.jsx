@@ -13,7 +13,7 @@ const ElectronicHealthRecord = () => {
   const token = localStorage.getItem("access");
   const [popupContent, setPopupContent] = useState();
   const [showPopup, setShowPopup] = useState(false);
-
+  
   useEffect(() => {
     // Simulate fetching data from an API
     const fetchData = async () => {
@@ -141,6 +141,7 @@ const ElectronicHealthRecord = () => {
             <thead>
               <tr>
                 <th>#</th>
+
                 <th>Record ID</th>
                 <th>Patient Name</th>
                 <th>Consulted By</th>
@@ -158,8 +159,10 @@ const ElectronicHealthRecord = () => {
               </tr>
             </thead>
             <tbody>
-              {records.map((record) => (
+              {records.map((record, index) => (
                 <tr key={record.id}>
+                  <td>{index + 1}</td>
+
                   <td>{record.id}</td>
                   <td>{record.patientName}</td>
                   <td>{record.consultedBy}</td>
