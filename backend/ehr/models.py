@@ -1,20 +1,32 @@
 from django.db import models
+from users.models import Patient
 
 class EHR(models.Model):
-    patient = models.ForeignKey('users.Patient', on_delete=models.CASCADE)
-    record_id = models.AutoField(primary_key=True)
-    current_allergies = models.JSONField(blank=True, null=True)
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    # record_id = models.AutoField(primary_key=True)
+    medical_conditions = models.JSONField(blank=True, null=True)
     current_medications = models.JSONField(blank=True, null=True)
     immunization_records = models.JSONField(blank=True, null=True)
     nail_image_analysis = models.JSONField(blank=True, null=True)
     test_results = models.JSONField(blank=True, null=True)
     diagnoses = models.JSONField(blank=True, null=True)
-    visits = models.JSONField(blank=True, null=True)
+    recommended_lab_test = models.JSONField(blank=True,null=True,default=list)
+    # Appointment and Visit Details
+    visit_date = models.DateField(null=True, blank=True)  # Date of the visit
+    category = models.CharField(max_length=50, choices=[
+        ("Chronic", "Chronic"),
+        ("Emergency", "Emergency"),
+        ("Preventive", "Preventive"),
+        ("General", "General"),
+    ], default="General")  # Category of patient
+    comments = models.TextField(blank=True, null=True)
+    
     family_history = models.TextField(blank=True, null=True)
     date_created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
-    comments = models.TextField(blank=True, null=True)
-
+    consulted_by = models.CharField(max_length=255, blank=True)  # Name of the doctor or healthcare provider
+    
+    
     def create_record(self):
         # Logic to create a new record
         self.save()
@@ -55,4 +67,19 @@ class EHR(models.Model):
 
     def __str__(self):
         return f"EHR Record for {self.patient.first_name} {self.patient.last_name}"
+
+class MedicalHistory(models.Model):
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    surgeries = models.JSONField(null=True, blank=True)
+    family_history = models.TextField(null=True, blank=True)
+    chronic_conditions = models.JSONField(null=True, blank=True)
+    injuries = models.JSONField(null=True, blank=True)
+    immunization_history = models.JSONField(null=True, blank=True)  # Added
+    allergies = models.JSONField(null=True, blank=True)  # Added
+
+    date_created = models.DateTimeField(auto_now_add=True)
+    last_updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Medical History of {self.patient.first_name} {self.patient.last_name}"
 

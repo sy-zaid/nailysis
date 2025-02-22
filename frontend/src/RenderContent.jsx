@@ -3,7 +3,7 @@ import SystemAdminDashboard from "./pages/admin-system/system-admin-dashboard";
 
 // Clinic Admin Imports
 import ClinicAdminDashboard from "./pages/admin-clinic/clinic-admin-dashboard";
-import PatientRecords from "./pages/admin-clinic/EHR";
+import ElectronicHealthRecords from "./pages/admin-clinic/electronic-health-records";
 import PatientMedicalHistory from "./pages/admin-clinic/patient-health-history";
 import ViewAppointmentsClinicAdmin from "./pages/admin-clinic/view-appointments-clinic-admin";
 
@@ -38,7 +38,7 @@ export const renderSystemAdminContent = (view) => {
 export const renderClinicAdminContent = (view) => {
   switch (view) {
     case "Patient Records":
-      return <PatientRecords name="Patient Records" />;
+      return <ElectronicHealthRecords name="Patient Records" />;
     case "Medical History & Notes":
       return <PatientMedicalHistory name="Medical History & Notes" />;
     case "Analytics":
@@ -65,10 +65,10 @@ export const renderClinicAdminContent = (view) => {
 // Render function for Doctor
 export const renderDoctorContent = (view) => {
   switch (view) {
-    case "Test Results":
-      return <PlaceholderComponent name="Test Results" />;
-    case "Diagnostic Results":
-      return <PlaceholderComponent name="Diagnostic Results" />;
+    case "Patient Records":
+      return <ElectronicHealthRecords name="Patient Records" />;
+    case "Medical History & Notes":
+      return <PatientMedicalHistory name="Medical History & Notes" />;
     case "View Appointments":
       return <ViewAppointmentsDoctor name="View Appointment" />;
     case "Appointment History":

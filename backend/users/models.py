@@ -116,7 +116,7 @@ Below are the child classes for CustomUserClass targetting individual Users Type
 class ClinicAdmin(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE,primary_key=True, to_field="user_id",related_name="clinic_admin")    
     def __str__(self):
-        return f"Clinic Admin - {self.user.email}"
+        return f"{self.user.first_name} {self.user.last_name}"
 
 class Doctor(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE,primary_key=True, to_field="user_id")
