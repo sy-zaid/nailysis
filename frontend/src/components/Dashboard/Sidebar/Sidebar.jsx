@@ -15,8 +15,11 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
     clinic_admin: [
       {
         icon: "icon-test-results-black.jpg",
-        label: "Test Results",
-        subItems: [],
+        label: "Electronic Health Records",
+        subItems: [
+          { label: "Patient Records" },
+          { label: "Medical History & Notes" },
+        ],
       },
       {
         icon: "icon-diagnostic-results-black.jpg",
@@ -43,6 +46,16 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
       {
         icon: "icon-test-request-black.jpg",
         label: "Test Requests",
+        subItems: [],
+      },
+      {
+        icon: "icon-test-request-black.jpg",
+        label: "EHR",
+        subItems: [],
+      },
+      {
+        icon: "icon-test-request-black.jpg",
+        label: "Patient Health History",
         subItems: [],
       },
     ],
