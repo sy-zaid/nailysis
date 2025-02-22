@@ -4,6 +4,7 @@ import styles from "./popup-appointment-book.module.css";
 import Popup from "./Popup.jsx";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { createEHR } from "../../api/ehrApi.js";
 import useCurrentUserData from "../../useCurrentUserData.jsx";
 
 
@@ -219,14 +220,7 @@ const PopupEHRCreate = ({ onClose, appointmentDetails }) => {
           formData.append(key, value);
         }
       });
-      await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/ehr_records/create_record/`,
-        formData,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-          "Content-Type": "application/form-data",
-        }
-      );
+      await createEHR(formData); // FUNCTION TO POST DATA TO API
       alert("EHR created successfully");
     } catch (error) {
       alert("Failed to create new EHR");

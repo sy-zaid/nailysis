@@ -1,10 +1,20 @@
-import api from "./axiosInstance";
+// import api from "./axiosInstance";
+import axios from "axios";
+const token = localStorage.getItem("access");
 
 export const getEHR = (ehrId) => api.get(`/api/ehr_records/${ehrId}/`);
-export const updateEHR = (ehrId, data) => api.patch(`/api/ehr_records/${ehrId}/`, data);
+export const updateEHR = (ehrId, data) =>
+  api.patch(`/api/ehr_records/${ehrId}/`, data);
 export const deleteEHR = (ehrId) => api.delete(`/api/ehr_records/${ehrId}/`);
 
-
+export const createEHR = (formData) =>
+  axios.post(
+    `${import.meta.env.VITE_API_URL}/api/ehr_records/create_record/`,
+    formData,
+    {
+      headers: { Authorization: `Bearer ${token}` },
+     }
+  );
 // import { useEffect, useState } from "react";
 // import { ehrApi } from "../api";
 
