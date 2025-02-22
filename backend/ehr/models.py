@@ -12,7 +12,7 @@ class EHR(models.Model):
     diagnoses = models.JSONField(blank=True, null=True)
     recommended_lab_test = models.JSONField(blank=True,null=True,default=list)
     # Appointment and Visit Details
-    visit_date = models.DateField()  # Date of the visit
+    visit_date = models.DateField(null=True, blank=True)  # Date of the visit
     category = models.CharField(max_length=50, choices=[
         ("Chronic", "Chronic"),
         ("Emergency", "Emergency"),
@@ -67,4 +67,19 @@ class EHR(models.Model):
 
     def __str__(self):
         return f"EHR Record for {self.patient.first_name} {self.patient.last_name}"
+
+class MedicalHistory(models.Model):
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    surgeries = models.JSONField(null=True, blank=True)
+    family_history = models.TextField(null=True, blank=True)
+    chronic_conditions = models.JSONField(null=True, blank=True)
+    injuries = models.JSONField(null=True, blank=True)
+    immunization_history = models.JSONField(null=True, blank=True)  # Added
+    allergies = models.JSONField(null=True, blank=True)  # Added
+
+    date_created = models.DateTimeField(auto_now_add=True)
+    last_updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Medical History of {self.patient.first_name} {self.patient.last_name}"
 
