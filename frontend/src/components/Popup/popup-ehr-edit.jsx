@@ -7,7 +7,7 @@ import axios from "axios";
  * Predefined medical condition options for react-select.
  * Used to standardize selectable conditions.
  */
-const medicalConditionsOptions = [
+const medical_conditionsOptions = [
   { value: "Diabetes", label: "Diabetes" },
   { value: "Hypertension", label: "Hypertension" },
   { value: "Heart Disease", label: "Heart Disease" },
@@ -47,12 +47,12 @@ const diagnosesOptions = [
 const PopupEHREdit = ({ onClose, recordDetails }) => {
   const [popupTrigger, setPopupTrigger] = useState(true);
   const [ehrData, setEhrData] = useState({
-    medicalConditions: [],
+    medical_conditions: [],
     medications: [],
     diagnoses: [],
     category: "",
     comments: "",
-    familyHistory: "",
+    family_history: "",
   });
   const token = localStorage.getItem("access");
   console.log("record details:", recordDetails);
@@ -62,9 +62,9 @@ const PopupEHREdit = ({ onClose, recordDetails }) => {
   useEffect(() => {
     if (recordDetails) {
       setEhrData({
-        medicalConditions: mapSelectedOptions(
-          recordDetails.medicalConditions,
-          medicalConditionsOptions
+        medical_conditions: mapSelectedOptions(
+          recordDetails.medical_conditions,
+          medical_conditionsOptions
         ),
         medications: mapSelectedOptions(recordDetails.medications, []), // Define medication options if available
         diagnoses: mapSelectedOptions(
@@ -75,7 +75,7 @@ const PopupEHREdit = ({ onClose, recordDetails }) => {
           categoryOptions.find((opt) => opt.value === recordDetails.category) ||
           null,
         comments: recordDetails.comments || "",
-        familyHistory: recordDetails.familyHistory || "",
+        family_history: recordDetails.family_history || "",
       });
     }
   }, [recordDetails]);
@@ -101,12 +101,12 @@ const PopupEHREdit = ({ onClose, recordDetails }) => {
   const handleSaveEdit = async () => {
     try {
       const formattedData = {
-        medical_conditions: ehrData.medicalConditions.map((item) => item.value), // Convert to array of strings
+        medical_conditions: ehrData.medical_conditions.map((item) => item.value), // Convert to array of strings
         current_medications: ehrData.medications.map((item) => item.value),
         diagnoses: ehrData.diagnoses.map((item) => item.value),
         category: ehrData.category ? ehrData.category.value : "", // Convert category to string
         comments: ehrData.comments,
-        family_history: ehrData.familyHistory,
+        family_history: ehrData.family_history,
       };
 
       console.log("JSON Data:", formattedData); // Debugging output
@@ -168,10 +168,10 @@ const PopupEHREdit = ({ onClose, recordDetails }) => {
           <label>Medical Conditions</label>
           <Select
             isMulti
-            options={medicalConditionsOptions}
-            value={ehrData.medicalConditions}
+            options={medical_conditionsOptions}
+            value={ehrData.medical_conditions}
             onChange={(selected) =>
-              handleSelectChange("medicalConditions", selected)
+              handleSelectChange("medical_conditions", selected)
             }
           />
         </div>
@@ -232,9 +232,9 @@ const PopupEHREdit = ({ onClose, recordDetails }) => {
         <div className={styles.formGroup}>
           <label>Family History</label>
           <textarea
-            name="familyHistory"
+            name="family_history"
             placeholder="Enter relevant family medical history"
-            value={ehrData.familyHistory}
+            value={ehrData.family_history}
             onChange={handleInputChange}
           />
         </div>

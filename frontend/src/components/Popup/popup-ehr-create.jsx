@@ -6,11 +6,32 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import useCurrentUserData from "../../useCurrentUserData.jsx";
 
+
+const medicalConditionsOptions = [
+  { value: "Diabetes", label: "Diabetes" },
+  { value: "Hypertension", label: "Hypertension" },
+  { value: "Heart Disease", label: "Heart Disease" },
+  { value: "Asthma", label: "Asthma" },
+];
+
+/**
+ * Predefined category options for react-select.
+ */
 const categoryOptions = [
   { value: "Chronic", label: "Chronic" },
   { value: "Emergency", label: "Emergency" },
   { value: "Preventive", label: "Preventive" },
   { value: "General", label: "General" },
+];
+
+/**
+ * Predefined diagnosis options for react-select.
+ */
+const diagnosesOptions = [
+  { value: "Anemia", label: "Anemia" },
+  { value: "Diabetes", label: "Diabetes" },
+  { value: "Hypertension", label: "Hypertension" },
+  { value: "Fungal Infection", label: "Fungal Infection" },
 ];
 
 const PopupEHRCreate = ({ onClose, appointmentDetails }) => {
@@ -21,7 +42,19 @@ const PopupEHRCreate = ({ onClose, appointmentDetails }) => {
   // Fetch Patients List
   const [patients, setPatients] = useState([]);
   const [selectedPatient, setSelectedPatient] = useState(null);
-  const [ehrData, setEhrData] = useState(null);
+  const [ehrData, setEhrData] = useState({
+    patient_id: "",
+    medical_conditions: [],
+    current_medications: [],
+    immunization_records: [],
+    nail_image_analysis: "",
+    test_results: "",
+    diagnoses: [],
+    comments: "",
+    family_history: "",
+    category: "General",
+    visit_date: "2025-02-21",
+  });
   const [isPatientConfirmed, setIsPatientConfirmed] = useState(false);
   const [records, setRecords] = useState([]);
   useEffect(() => {
@@ -98,6 +131,13 @@ const PopupEHRCreate = ({ onClose, appointmentDetails }) => {
         }));
 
         setRecords(transformedRecords);
+
+        // Use setEhrData correctly to update state
+        setEhrData((prev) => ({
+          ...prev,
+          patient_id: selected.value, // Ensure patient_id is set properly
+        }));
+
         setIsPatientConfirmed(true);
       } catch (error) {
         console.error("Error fetching EHR data:", error);
@@ -105,82 +145,100 @@ const PopupEHRCreate = ({ onClose, appointmentDetails }) => {
     }
   };
 
-  const confirmPatientSelection = async () => {
-    // if (!selectedPatient) {
-    //   return;
-    // }
-    try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/ehr_records/?patient=${
-          selectedPatient.value
-        }`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+  // const confirmPatientSelection = async () => {
+  //   // if (!selectedPatient) {
+  //   //   return;
+  //   // }
+  //   try {
+  //     const response = await axios.get(
+  //       `${import.meta.env.VITE_API_URL}/api/ehr_records/?patient=${
+  //         selectedPatient.value
+  //       }`,
+  //       { headers: { Authorization: `Bearer ${token}` } }
+  //     );
 
-      const transformedRecords = response.data.map((record) => ({
-        id: record.id,
-        patient_name: `${record.patient?.user?.first_name || "Null"} ${
-          record.patient?.user?.last_name || "Null"
-        }`,
-        category: record.category || "N/A",
-        notes: record.comments || "No comments",
-        last_updated: record.last_updated
-          ? new Date(record.last_updated).toLocaleDateString() +
-            " | " +
-            new Date(record.last_updated).toLocaleTimeString()
-          : "N/A",
-        consulted_by: record.consulted_by || "Unknown",
-        medical_conditions: Array.isArray(record.medical_conditions)
-          ? record.medical_conditions.join(", ")
-          : "No records",
-        medications: Array.isArray(record.current_medications)
-          ? record.current_medications.join(", ")
-          : "No records",
-        immunization:
-          Array.isArray(record.immunization_records) &&
-          record.immunization_records.length > 1
-            ? record.immunization_records.join(", ")
-            : "No records",
-        family_history: record.family_history || "No records",
-        test_reports: Array.isArray(record.test_reports)
-          ? record.test_reports.join(", ")
-          : "No records",
-        nail_image_analysis: Array.isArray(record.nail_image_analysis)
-          ? record.nail_image_analysis.join(", ")
-          : "No records",
-        diagnostics: Array.isArray(record.diagnostics)
-          ? record.diagnostics.join(", ")
-          : "No records",
-      }));
-      setRecords(transformedRecords);
-      setIsPatientConfirmed(true);
-      console.log("ALL PATIENT RECORDS", records);
-    } catch (error) {
-      console.error("Error fetching EHR data:", error);
-    }
-  };
+  //     const transformedRecords = response.data.map((record) => ({
+  //       id: record.id,
+  //       patient_name: `${record.patient?.user?.first_name || "Null"} ${
+  //         record.patient?.user?.last_name || "Null"
+  //       }`,
+  //       category: record.category || "N/A",
+  //       notes: record.comments || "No comments",
+  //       last_updated: record.last_updated
+  //         ? new Date(record.last_updated).toLocaleDateString() +
+  //           " | " +
+  //           new Date(record.last_updated).toLocaleTimeString()
+  //         : "N/A",
+  //       consulted_by: record.consulted_by || "Unknown",
+  //       medical_conditions: Array.isArray(record.medical_conditions)
+  //         ? record.medical_conditions.join(", ")
+  //         : "No records",
+  //       medications: Array.isArray(record.current_medications)
+  //         ? record.current_medications.join(", ")
+  //         : "No records",
+  //       immunization:
+  //         Array.isArray(record.immunization_records) &&
+  //         record.immunization_records.length > 1
+  //           ? record.immunization_records.join(", ")
+  //           : "No records",
+  //       family_history: record.family_history || "No records",
+  //       test_reports: Array.isArray(record.test_reports)
+  //         ? record.test_reports.join(", ")
+  //         : "No records",
+  //       nail_image_analysis: Array.isArray(record.nail_image_analysis)
+  //         ? record.nail_image_analysis.join(", ")
+  //         : "No records",
+  //       diagnostics: Array.isArray(record.diagnostics)
+  //         ? record.diagnostics.join(", ")
+  //         : "No records",
+  //     }));
+  //     setRecords(transformedRecords);
+  //     setEhrData((prev) => ({
+  //       ...prev,
+  //       patient_id: selectedPatient.value, // Ensure patient_id is set
+  //     }));
+  //     setIsPatientConfirmed(true);
+  //     console.log("ALL PATIENT RECORDS", records);
+  //   } catch (error) {
+  //     console.error("Error fetching EHR data:", error);
+  //   }
+  // };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setEhrData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleStartAppointment = async () => {
+  const handleCreateEHR = async () => {
     try {
+      const formData = new FormData();
+      Object.entries(ehrData).forEach(([key, value]) => {
+        if (Array.isArray(value)) {
+          formData.append(key, JSON.stringify(value)); // ✅ Keep JSON format for arrays
+        } else {
+          formData.append(key, value);
+        }
+      });
       await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/doctor_appointments/${
-          appointmentDetails.appointment_id
-        }/save_and_complete/`,
-        ehrData,
-        { headers: { Authorization: `Bearer ${token}` } }
+        `${import.meta.env.VITE_API_URL}/api/ehr_records/create_record/`,
+        formData,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          "Content-Type": "application/form-data",
+        }
       );
-      alert("Appointment started and EHR updated successfully");
+      alert("EHR created successfully");
     } catch (error) {
-      alert("Failed to start the appointment");
+      alert("Failed to create new EHR");
       console.error(error);
     }
   };
-
+  const handleSelectChange = (name, selectedOptions) => {
+    setEhrData((prevData) => ({
+      ...prevData,
+      [name]: selectedOptions ? selectedOptions.map((opt) => opt.value) : [],
+    }));
+  };
   return (
     <Popup trigger={popupTrigger} setTrigger={setPopupTrigger}>
       <div className={styles.formContainer}>
@@ -197,7 +255,7 @@ const PopupEHRCreate = ({ onClose, appointmentDetails }) => {
             onChange={handlePatientChange}
             placeholder="Search & select patient"
           />
-          <button onClick={confirmPatientSelection} disabled={!selectedPatient}>
+          <button disabled={!selectedPatient}>
             Confirm Patient to Add New Record
           </button>
         </div>
@@ -271,45 +329,84 @@ const PopupEHRCreate = ({ onClose, appointmentDetails }) => {
         {/* Show details only after confirming patient */}
         {isPatientConfirmed && ehrData && (
           <>
+            {/* Medical Conditions */}
             <div className={styles.formGroup}>
               <label>Medical Conditions</label>
-              <input
-                type="text"
-                name="medical_conditions"
-                value={ehrData.medical_conditions}
-                onChange={handleInputChange}
+              <Select
+                isMulti
+                options={medicalConditionsOptions}
+                onChange={(selected) =>
+                  handleSelectChange("medical_conditions", selected)
+                }
               />
             </div>
-
+            {/* Current Medications */}
             <div className={styles.formGroup}>
               <label>Current Medications</label>
-              <input
-                type="text"
-                name="current_medications"
-                value={ehrData.current_medications}
-                onChange={handleInputChange}
+              <Select
+                isMulti
+                options={[
+                  { value: "Metformin", label: "Metformin" },
+                  { value: "Aspirin", label: "Aspirin" },
+                  { value: "Lisinopril", label: "Lisinopril" },
+                  { value: "Atorvastatin", label: "Atorvastatin" },
+                ]}
+                placeholder="Select or add medications"
+                onChange={(selected) =>
+                  handleSelectChange("current_medications", selected)
+                }
               />
             </div>
 
+            {/* Diagnoses */}
             <div className={styles.formGroup}>
-              <label>Family History</label>
-              <textarea
-                name="family_history"
-                value={ehrData.family_history}
-                onChange={handleInputChange}
+              <label>Diagnoses</label>
+              <Select
+                isMulti
+                options={[
+                  { value: "Anemia", label: "Anemia" },
+                  { value: "Diabetes", label: "Diabetes" },
+                  { value: "Hypertension", label: "Hypertension" },
+                  { value: "Fungal Infection", label: "Fungal Infection" },
+                ]}
+                placeholder="Select diagnoses"
+                onChange={(selected) =>
+                  handleSelectChange("diagnoses", selected)
+                }
               />
             </div>
 
+            {/* Category */}
             <div className={styles.formGroup}>
               <label>Category</label>
               <Select
                 options={categoryOptions}
-                defaultValue={categoryOptions.find(
-                  (opt) => opt.value === ehrData.category
-                )}
+                defaultValue={categoryOptions[3]}
                 onChange={(selected) =>
                   setEhrData({ ...ehrData, category: selected.value })
                 }
+              />
+            </div>
+
+            {/* Comments */}
+            <div className={styles.formGroup}>
+              <label>Comments</label>
+              <textarea
+                name="comments"
+                placeholder="Add any additional comments"
+                value={ehrData.comments}
+                onChange={handleInputChange}
+              />
+            </div>
+
+            {/* Family History */}
+            <div className={styles.formGroup}>
+              <label>Family History</label>
+              <textarea
+                name="family_history"
+                placeholder="Enter relevant family medical history"
+                value={ehrData.family_history}
+                onChange={handleInputChange}
               />
             </div>
 
@@ -319,7 +416,7 @@ const PopupEHRCreate = ({ onClose, appointmentDetails }) => {
               </button>
               <button
                 className={styles.confirmButton}
-                onClick={handleStartAppointment}
+                onClick={handleCreateEHR}
               >
                 Save & Complete Appointment
               </button>
