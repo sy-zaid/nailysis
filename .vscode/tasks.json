@@ -2,10 +2,25 @@
   "version": "2.0.0",
   "tasks": [
     {
+      "label": "Activate Virtual Environment",
+      "type": "shell",
+      "command": "powershell",
+      "args": ["-Command", "env/Scripts/activate"],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+    {
       "label": "Start Backend Server",
       "type": "shell",
-      "command": "python",
-      "args": ["manage.py", "runserver"],
+      "command": "powershell",
+      "args": ["-Command", "python manage.py runserver"],
       "options": {
         "cwd": "${workspaceFolder}/backend"
       },
@@ -16,6 +31,21 @@
       },
       "problemMatcher": []
     },
+    // {
+    //   "label": "Start WebSockets Server",
+    //   "type": "shell",
+    //   "command": "powershell",
+    //   "args": ["-Command", "daphne -b 0.0.0.0 -p 8001 backend.asgi:application"],
+    //   "options": {
+    //     "cwd": "${workspaceFolder}/backend"
+    //   },
+    //   "group": "build",
+    //   "presentation": {
+    //     "reveal": "always",
+    //     "panel": "new"
+    //   },
+    //   "problemMatcher": []
+    // },
     {
       "label": "Start Frontend Server",
       "type": "shell",
@@ -34,10 +64,10 @@
     {
       "label": "Start Auto Login",
       "type": "shell",
-      "command": "python",
-      "args": ["login_automation.py"],
+      "command": "powershell",
+      "args": ["-Command", "python login_automation.py"],
       "options": {
-        "cwd": "${workspaceFolder}/"
+        "cwd": "${workspaceFolder}"
       },
       "group": "build",
       "presentation": {
@@ -49,7 +79,9 @@
     {
       "label": "Start Everything",
       "dependsOn": [
+        "Activate Virtual Environment",
         "Start Backend Server",
+        // "Start WebSockets Server",
         "Start Frontend Server",
         "Start Auto Login"
       ],
