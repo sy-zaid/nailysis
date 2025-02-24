@@ -73,6 +73,11 @@ class DoctorAppointmentSerializer(serializers.ModelSerializer):
         )
 
 
+class LabTechnicianFeeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LabTechnicianAppointmentFee
+        fields = "__all__"
+
 class TechnicianAppointmentSerializer(serializers.ModelSerializer):
     """
     Serializer for lab technician-specific appointments.
@@ -87,7 +92,7 @@ class TechnicianAppointmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = TechnicianAppointment
         fields = "__all__"
-        read_only_fields = "appointment_id"
+        read_only_fields = ("appointment_id",)
         
     def create(self,validated_data):
         request = self.context.get("request")

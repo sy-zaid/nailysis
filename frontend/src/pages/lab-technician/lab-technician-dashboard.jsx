@@ -12,7 +12,6 @@ function LabTechDashboard() {
           <Navbar />
           <Header curUserRole={'Lab Technician'}/>
           <div className={styles.main}>
-            <Sidebar />
             <div className={styles.cards}>
               <Cards heading="Patients" />
               <Cards heading="Requests" />

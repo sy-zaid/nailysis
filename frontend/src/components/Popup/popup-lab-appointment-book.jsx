@@ -17,7 +17,7 @@ const visitPurposes = [
   "Prescription Refill",
 ];
 
-const PopupBookAppointment = ({ onClose }) => {
+const PopupBookLabAppointment = ({ onClose }) => {
   const [popupTrigger, setPopupTrigger] = useState(true);
   const navigate = useNavigate();
   const [appointments, setAppointments] = useState([]);
@@ -31,7 +31,7 @@ const PopupBookAppointment = ({ onClose }) => {
     if (curUserRole == "patient" && curUser && curUser.length > 0) {
       setPatient([curUser[0].patient.user, curUser[0].patient]); // Set patient data if available
       // console.log("Patient's Data: ",patient[0],patient[1]);
-    } else if (curUserRole == "clinic_admin") {
+    } else if (curUserRole == "lab_admin") {
       setPatient([]);
     } else {
       console.log("No patient data available");
@@ -40,11 +40,10 @@ const PopupBookAppointment = ({ onClose }) => {
 
   // State for appointment details
   const [formData, setFormData] = useState({
-    doctorId: "",
+    labTechnicianId: "",
     appointmentDate: "",
     appointmentTime: "",
-    appointmentType: "",
-    specialization: "",
+    LabTestType: "",
     fee: "0.00",
     patientFirstName: "",
     patientLastName: "",
@@ -55,7 +54,7 @@ const PopupBookAppointment = ({ onClose }) => {
   });
 
   const [specializations, setSpecializations] = useState([]);
-  const [doctors, setDoctors] = useState([]);
+  const [labTechnicians, setLabTechnicians] = useState([]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -75,7 +74,7 @@ const PopupBookAppointment = ({ onClose }) => {
   useEffect(() => {
     const fetchSpecializations = async () => {
       try {
-        const response = await axios.get("http://127.0.0.1:8000/api/doctors/", {
+        const response = await axios.get("http://127.0.0.1:8000/api/labTechnicians/", {
           headers: { Authorization: `Bearer ${token}` },
         });
         setSpecializations(response.data);
@@ -87,29 +86,28 @@ const PopupBookAppointment = ({ onClose }) => {
     fetchSpecializations();
   }, [token]);
 
-  // Fetch doctors based on selected specialization
+  // Fetch labTechnicians based on selected specialization
   useEffect(() => {
-    const fetchDoctors = async () => {
+    const fetchlabTechnicians = async () => {
       if (formData.specialization) {
         try {
           const response = await axios.get(
-            `http://127.0.0.1:8000/api/doctors/?specialization=${formData.specialization}`,
+            `http://127.0.0.1:8000/api/labTechnicians/?specialization=${formData.specialization}`,
             { headers: { Authorization: `Bearer ${token}` } }
           );
-          console.log("response", response.data)
-          const formattedDoctors = response.data.map((doc) => ({
+          const formattedlabTechnicians = response.data.map((doc) => ({
             id: doc.user.user_id,
             name: `${doc.user.first_name} ${doc.user.last_name}`,
           }));
-          setDoctors(formattedDoctors);
-          console.log("Formatted Docs", doctors);
+          setLabTechnicianss(formattedlabTechnicians);
+          console.log("Formatted Docs", labTechnicians);
         } catch (error) {
-          console.error("Failed to fetch doctors", error);
+          console.error("Failed to fetch labTechnicians", error);
         }
       }
     };
 
-    fetchDoctors();
+    fetchlabTechnicians();
   }, [formData.specialization, token]);
 
   // Fetch fee based on appointment type
@@ -118,7 +116,7 @@ const PopupBookAppointment = ({ onClose }) => {
       if (formData.appointmentType) {
         try {
           const response = await axios.get(
-            `http://127.0.0.1:8000/api/doctor_fees/get_fees`,
+            `http://127.0.0.1:8000/api/labTechnician_fees/get_fees`,
             { headers: { Authorization: `Bearer ${token}` } }
           );
           const filteredFee = response.data.find(
@@ -141,7 +139,7 @@ const PopupBookAppointment = ({ onClose }) => {
     e.preventDefault();
 
     const appointmentData = {
-      doctor_id: formData.doctorId,
+      labTechnician_id: formData.labTechnicianId,
       appointment_date: formData.appointmentDate,
       appointment_time: formData.appointmentTime,
       appointment_type: formData.appointmentType,
@@ -158,7 +156,7 @@ const PopupBookAppointment = ({ onClose }) => {
 
     try {
       const response = await axios.post(
-        "http://127.0.0.1:8000/api/doctor_appointments/book_appointment/",
+        "http://127.0.0.1:8000/api/labTechnician_appointments/book_appointment/",
         appointmentData,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -303,21 +301,21 @@ const PopupBookAppointment = ({ onClose }) => {
           </div>
 
           <div className={styles.formGroup}>
-            <label>Doctor</label>
+            <label>Lab Technician</label>
             <select
-              name="doctorId"
-              value={formData.doctorId}
+              name="labTechnicianId"
+              value={formData.labTechnicianId}
               onChange={handleInputChange}
             >
-              <option value="">Select Doctor</option>
-              {doctors.length > 0 ? (
-                doctors.map((doctor) => (
-                  <option key={doctor.id} value={doctor.id}>
-                    {doctor.name}
+              <option value="">Select Lab Technician</option>
+              {labTechnicians.length > 0 ? (
+                labTechnicians.map((labTechnician) => (
+                  <option key={labTechnician.id} value={labTechnician.id}>
+                    {labTechnician.name}
                   </option>
                 ))
               ) : (
-                <option disabled>Loading doctors...</option>
+                <option disabled>Loading labTechnicians...</option>
               )}
             </select>
           </div>
@@ -395,4 +393,4 @@ const PopupBookAppointment = ({ onClose }) => {
   );
 };
 
-export default PopupBookAppointment;
+export default PopupBookLabAppointment;

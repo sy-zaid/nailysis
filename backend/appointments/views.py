@@ -24,9 +24,9 @@ from .models import (
 )
 from .serializers import (
     AppointmentSerializer, DoctorAppointmentSerializer, 
-    TechnicianAppointmentSerializer, DoctorFeeSerializer, CancellationRequestSerializer
+    TechnicianAppointmentSerializer, DoctorFeeSerializer, LabTechnicianFeeSerializer, CancellationRequestSerializer
 )
-from users.models import Patient, Doctor, ClinicAdmin, CustomUser
+from users.models import Patient, Doctor, ClinicAdmin, CustomUser, LabTechnician, LabAdmin
 
 class DoctorFeeViewset(viewsets.ModelViewSet):
     """
@@ -125,7 +125,7 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
         - fee
         - patient details (if clinic admin books for a walk-in patient)
         """
-        
+        # request.data = appointmentData (from frontend)
         doctor_id = request.data.get('doctor_id')
         appointment_date = request.data.get('appointment_date')
         appointment_time = request.data.get('appointment_time')
@@ -205,6 +205,34 @@ class LabTechnicianAppointmentViewset(viewsets.ModelViewSet):
     serializer_class = TechnicianAppointmentSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    def get_queryset(self):
+        """
+        Retrieve appointments based on user role:
+        - Patients see only their own appointments.
+        - Technician see only their own appointments.
+        - Lab Admins see all appointments.
+        """
+        user = self.request.user
+
+        if user.role == "patient":
+            try:
+                patient = Patient.objects.get(user=user)
+                return TechnicianAppointment.objects.filter(patient=patient)
+            except Patient.DoesNotExist:
+                return TechnicianAppointment.objects.none()
+
+        elif user.role == "lab_admin":
+            return TechnicianAppointment.objects.all()
+
+        elif user.role == "lab_technician":
+            try:
+                lab_technician = LabTechnician.objects.get(user=user)
+                return TechnicianAppointment.objects.filter(lab_technician=lab_technician)
+            except LabTechnician.DoesNotExist:
+                return TechnicianAppointment.objects.none()
+
+        return TechnicianAppointment.objects.none()
+    
     def perform_create(self, serializer):
         """
         Create a new lab technician appointment.
@@ -223,7 +251,7 @@ class LabTechnicianAppointmentViewset(viewsets.ModelViewSet):
         service_type = request.data.get('service_type')
         lab_fee = request.data.get('lab_fee')
 
-        technician = get_object_or_404(Technician, user__id=technician_id)
+        technician = get_object_or_404(LabTechnician, user__id=technician_id)
 
         technician_appointment = TechnicianAppointment.objects.create(
             patient=request.user,
@@ -239,6 +267,29 @@ class LabTechnicianAppointmentViewset(viewsets.ModelViewSet):
             "appointment_id": technician_appointment.appointment_id
         })
 
+class LabTechnicianFeeViewset(viewsets.ModelViewSet):
+    """
+    API endpoint to manage lab technician appointment fees.
+
+    Provides:
+    - List of all lab technician appointment fees
+    - Standard CRUD operations
+    """
+    queryset = LabTechnicianAppointmentFee.objects.all()
+    serializer_class = LabTechnicianFeeSerializer
+    permission_classes = [permissions.AllowAny]
+
+    @action(detail=False, methods=['get'], url_path='get_fees')
+    def get_fees(self, request):
+        """
+        Retrieve all appointment fees for display.
+        
+        Returns:
+            JSON response containing the list of doctor fees.
+        """
+        fees = LabTechnicianAppointmentFee.objects.all()
+        serializer = self.get_serializer(fees, many=True)
+        return Response(serializer.data)
 
 class DocAppointCancellationViewSet(viewsets.ModelViewSet):
     """
