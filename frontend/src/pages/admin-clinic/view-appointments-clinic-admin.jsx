@@ -14,6 +14,8 @@ const AppointmentClinicAdmin = () => {
   const [appointments, setAppointments] = useState([]);
   const token = localStorage.getItem("access");
   const [popupContent, setPopupContent] = useState();
+  const [showPopup, setShowPopup] = useState(false);
+  
   const fetchAppointments = async () => {
     try {
       const response = await api.get(
@@ -51,7 +53,6 @@ const AppointmentClinicAdmin = () => {
     }
   };
 
-  const [showPopup, setShowPopup] = useState(false);
   const handleOpenPopup = () => {
     setShowPopup(true); // Show the popup when button is clicked
   };
@@ -67,6 +68,7 @@ const AppointmentClinicAdmin = () => {
 
   // Handle the action when an item is clicked in the menu
   const handleActionClick = (action, appointmentId) => {
+    
     console.log(`Action: ${action} on Appointment ID: ${appointmentId}`);
     setMenuOpen(null); // Close the menu after action
 
@@ -198,7 +200,7 @@ const AppointmentClinicAdmin = () => {
                     <td>{row.appointment_type || "N/A"}</td>{" "}
                     {/* Appointment Type */}
                     <td>
-                      {row.appointment_date} {row.appointment_time}
+                      {row.appointment_date} {row.appointment_start_time}
                     </td>{" "}
                     {/* Date & Time */}
                     <td className={getStatusClass(row.status)}>

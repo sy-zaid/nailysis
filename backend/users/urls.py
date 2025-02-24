@@ -3,11 +3,9 @@ from users.views import DoctorAPIView, PatientAPIView, UserSerializerView
 
 # Initialize the DRF default router
 router = DefaultRouter()
+router.register(r'doctors', DoctorAPIView, basename='doctor')
+router.register(r'patients', PatientAPIView, basename='patients')
+router.register(r'current_users', UserSerializerView, basename='current_users')
+# router.register(r'specializations', SpecializationViewSet, basename='specialization')
 
-# Register API endpoints with corresponding viewsets
-router.register(r'doctors', DoctorAPIView, basename='doctor')  # Endpoint for managing doctors
-router.register(r'current_users', UserSerializerView, basename='current_users')  # Endpoint for retrieving current user details
-# router.register(r'specializations', SpecializationViewSet, basename='specialization')  # Uncomment if needed
-
-# Generate the URL patterns from the router
 urlpatterns = router.urls

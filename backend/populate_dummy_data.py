@@ -4,6 +4,7 @@ from faker import Faker
 from users.models import CustomUser, Patient, Doctor, LabTechnician, ClinicAdmin, LabAdmin
 from appointments.models import DoctorAppointment, TechnicianAppointment, LabTechnicianAppointmentFee, DoctorAppointmentFee
 from django.utils import timezone
+from appointments.models import DoctorAppointmentFee
 
 fake = Faker()
 

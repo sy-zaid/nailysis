@@ -1,9 +1,14 @@
 import React from "react";
 import SystemAdminDashboard from "./pages/admin-system/system-admin-dashboard";
+
+// Clinic Admin Imports
 import ClinicAdminDashboard from "./pages/admin-clinic/clinic-admin-dashboard";
+import ElectronicHealthRecords from "./pages/admin-clinic/electronic-health-records";
+import PatientMedicalHistory from "./pages/admin-clinic/patient-health-history";
 import ViewAppointmentsClinicAdmin from "./pages/admin-clinic/view-appointments-clinic-admin";
-import ViewAppointmentsPatient from "./pages/patient/view-appointments-patient"
-import ViewAppointmentsDoctor from "./pages/doctor/view-appointments-doctor"
+
+import ViewAppointmentsPatient from "./pages/patient/view-appointments-patient";
+import ViewAppointmentsDoctor from "./pages/doctor/view-appointments-doctor";
 import PatientPaymentHistory from "./pages/patient/patient-payment-history";
 import PatientDiagnosticResults from "./pages/patient/patient-diagnostic-results";
 import PatientInvoiceManagement from "./pages/patient/patient-invoice-management";
@@ -34,8 +39,10 @@ export const renderSystemAdminContent = (view) => {
 // Render function for Clinic Admin
 export const renderClinicAdminContent = (view) => {
   switch (view) {
-    case "Test Results":
-      return <PlaceholderComponent name="Test Results" />;
+    case "Patient Records":
+      return <ElectronicHealthRecords name="Patient Records" />;
+    case "Medical History & Notes":
+      return <PatientMedicalHistory name="Medical History & Notes" />;
     case "Analytics":
       return <PlaceholderComponent name="Reports & Analytics" />;
     case "Diagnostic Results":
@@ -60,12 +67,12 @@ export const renderClinicAdminContent = (view) => {
 // Render function for Doctor
 export const renderDoctorContent = (view) => {
   switch (view) {
-    case "Test Results":
-      return <PlaceholderComponent name="Test Results" />;
-    case "Diagnostic Results":
-      return <PlaceholderComponent name="Diagnostic Results" />;
+    case "Patient Records":
+      return <ElectronicHealthRecords name="Patient Records" />;
+    case "Medical History & Notes":
+      return <PatientMedicalHistory name="Medical History & Notes" />;
     case "View Appointments":
-      return <ViewAppointmentsDoctor name="View Appointment"/>;
+      return <ViewAppointmentsDoctor name="View Appointment" />;
     case "Appointment History":
       return <PlaceholderComponent name="Appointment History" />;
     case "Generate Invoice":
@@ -91,15 +98,15 @@ export const renderPatientContent = (view) => {
     case "Samples":
       return <PlaceholderComponent name="Samples" />;
     case "Diagnostic Results":
-      return <PatientDiagnosticResults/>;
+      return <PatientDiagnosticResults />;
     case "View Appointments":
-      return <ViewAppointmentsPatient/>;
+      return <ViewAppointmentsPatient />;
     case "Appointment History":
       return <PlaceholderComponent name="Appointment History" />;
     case "Generate Invoice":
-      return <PatientInvoiceManagement/>;
+      return <PatientInvoiceManagement />;
     case "View Billing History":
-      return <PatientPaymentHistory/>;
+      return <PatientPaymentHistory />;
     case "Feedbacks":
       return <PlaceholderComponent name="Feedbacks" />;
     case "Test Requests":
