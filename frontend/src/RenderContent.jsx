@@ -11,6 +11,8 @@ import DoctorDashboard from "./pages/doctor/doctor-dashboard";
 import PatientDashboard from "./pages/patient/patient-dashboard";
 import LabAdminDashboard from "./pages/admin-lab/lab-admin-dashboard";
 import LabTechnicianDashboard from "./pages/lab-technician/lab-technician-dashboard";
+import LabTechnicianTestRequests from "./pages/lab-technician/lab-technician-test-requests";
+import UpcomingAppointmentsLabTechnician from "./pages/lab-technician/lab-technician-upcoming-appointments";
 import PlaceholderComponent from "./components/PlaceholderComponent"; // Placeholder for missing views
 
 // Render function for System Admin
@@ -143,7 +145,7 @@ export const renderLabTechnicianContent = (view) => {
     case "Diagnostic Results":
       return <PlaceholderComponent name="Diagnostic Results" />;
     case "Upcoming Appointments":
-      return <PlaceholderComponent name="Upcoming Appointment"/>;
+      return <UpcomingAppointmentsLabTechnician />;
     case "Appointment History":
       return <PlaceholderComponent name="Appointment History" />;
     case "Generate Invoice":
@@ -153,7 +155,7 @@ export const renderLabTechnicianContent = (view) => {
     case "Feedbacks":
       return <PlaceholderComponent name="Feedbacks" />;
     case "Test Requests":
-      return <PlaceholderComponent name="Test Requests" />;
+      return <LabTechnicianTestRequests />;
     case "Appointments":
       return <PlaceholderComponent name="Appointments" />;
     default:

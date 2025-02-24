@@ -16,24 +16,29 @@
 .popup-inner {
     position: relative;
     padding: 45px;
-    width: 60%;
+    width: 50%;
     max-width: 640px;
     max-height: 80vh; /* Prevent the popup from growing too large */
     background-color: #fff;
-    overflow-y: auto; /* Enable vertical scrolling inside the popup */
+    overflow-y: auto; /* Enables scrolling when content exceeds max-height */
+    overflow-x: hidden; /* Prevents horizontal scroll */
     z-index: 10000; /* Ensure popup content is above the blurred background */
     box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.2); /* Subtle drop shadow */
     border-radius: 70px;
+
+    scrollbar-width: thin; /* For Firefox */
+    scrollbar-color: #0067FF #F0F0F0; /* Scrollbar color for Firefox */
 }
 
 .closeBtn {
     position: absolute;
     top: 0;
-    right: 100px;
+    right: 120px;
     cursor: pointer;
     background: transparent;
     color: #4E4E4E;
     font-size: 40px;
+    z-index: 200;
 }
 
 .closeBtn i {
