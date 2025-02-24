@@ -9,6 +9,7 @@ import electronic_health_record from "./pages/admin-clinic/electronic-health-rec
 import PatientHealthHistory from "./pages/admin-clinic/patient-health-history.jsx";
 import { QueryClientProvider } from "@tanstack/react-query"; // Import React Query Client Provider
 import { queryClient } from "./queryClient.js"; // Import the client
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 import Sidebar from "./components/Dashboard/Sidebar/Sidebar";
 import {
@@ -29,6 +30,7 @@ import DoctorProfile from "./pages/admin-clinic/doctor-profile-clinic-admin";
 
 function Logout() {
   localStorage.clear();
+  queryClient.clear(); // IMPORTANT TO CLEAR ALL CACHE ON LOGOUT
   return <Navigate to="/Login" />;
 }
 
@@ -47,6 +49,7 @@ function App() {
   };
   return (
     <QueryClientProvider client={queryClient}>
+      <ReactQueryDevtools initialIsOpen={false} />
       <div className="App">
         <Routes>
           {/* System Admin */}

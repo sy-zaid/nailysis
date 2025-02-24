@@ -5,8 +5,10 @@ import Popup from "./Popup.jsx";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { createEHR } from "../../api/ehrApi.js";
+import { useAllPatients } from "../../api/usersApi.js";
 import useCurrentUserData from "../../useCurrentUserData.jsx";
-
+import { getAccessToken } from "../../utils/utils.js";
+import { toast } from "react-toastify";
 
 const medicalConditionsOptions = [
   { value: "Diabetes", label: "Diabetes" },
@@ -37,8 +39,7 @@ const diagnosesOptions = [
 
 const PopupEHRCreate = ({ onClose, appointmentDetails }) => {
   const [popupTrigger, setPopupTrigger] = useState(true);
-  const navigate = useNavigate();
-  const token = localStorage.getItem("access");
+  const token = getAccessToken();
 
   // Fetch Patients List
   const [patients, setPatients] = useState([]);
@@ -58,30 +59,49 @@ const PopupEHRCreate = ({ onClose, appointmentDetails }) => {
   });
   const [isPatientConfirmed, setIsPatientConfirmed] = useState(false);
   const [records, setRecords] = useState([]);
+  const { data: patientsData, isLoading, error } = useAllPatients();
+
+  // Added state for WebSocket connection
+  const [socket, setSocket] = useState(null);
+
+  // Set up WebSocket connection when component mounts
   useEffect(() => {
-    const fetchPatients = async () => {
-      try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}/api/patients/`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        const formattedPatients = response.data.map((patient) => ({
-          value: patient.user.user_id,
-          label: `${patient.user.first_name} ${patient.user.last_name}`,
-          details: patient,
-        }));
-        setPatients(formattedPatients);
-        console.log("Formatted Patients:", formattedPatients);
-      } catch (error) {
-        console.error("Error fetching patients:", error);
+    const ws = new WebSocket("ws://127.0.0.1:8000/ws/ehr_updates/");
+
+    setSocket(ws);
+
+    ws.onmessage = (event) => {
+      const newRecord = JSON.parse(event.data);
+      console.log("New Record Received:", newRecord); // Log the received message
+      if (newRecord.id) {
+        setRecords((prevRecords) => [...prevRecords, newRecord]);
+      } else {
+        console.error("Received record with null id:", newRecord);
       }
     };
 
-    fetchPatients();
+    return () => {
+      ws.close(); // Close WebSocket connection on unmount
+    };
   }, []);
 
+  useEffect(() => {
+    try {
+      const formattedPatients =
+        patientsData?.map((patient) => ({
+          value: patient.user.user_id,
+          label: `${patient.user.first_name} ${patient.user.last_name}`,
+          details: patient,
+        })) || [];
+
+      setPatients(formattedPatients);
+      console.log("Formatted Patients:", formattedPatients);
+    } catch (error) {
+      console.error("Error fetching patients:", error);
+    }
+  }, [patientsData]);
+  if (isLoading) return <p>Loading...</p>;
+  if (error) return <p>Error fetching patients</p>;
   const handlePatientChange = async (selected) => {
     setSelectedPatient(selected);
     setIsPatientConfirmed(false); // Reset confirmation when changing patient
@@ -146,65 +166,6 @@ const PopupEHRCreate = ({ onClose, appointmentDetails }) => {
     }
   };
 
-  // const confirmPatientSelection = async () => {
-  //   // if (!selectedPatient) {
-  //   //   return;
-  //   // }
-  //   try {
-  //     const response = await axios.get(
-  //       `${import.meta.env.VITE_API_URL}/api/ehr_records/?patient=${
-  //         selectedPatient.value
-  //       }`,
-  //       { headers: { Authorization: `Bearer ${token}` } }
-  //     );
-
-  //     const transformedRecords = response.data.map((record) => ({
-  //       id: record.id,
-  //       patient_name: `${record.patient?.user?.first_name || "Null"} ${
-  //         record.patient?.user?.last_name || "Null"
-  //       }`,
-  //       category: record.category || "N/A",
-  //       notes: record.comments || "No comments",
-  //       last_updated: record.last_updated
-  //         ? new Date(record.last_updated).toLocaleDateString() +
-  //           " | " +
-  //           new Date(record.last_updated).toLocaleTimeString()
-  //         : "N/A",
-  //       consulted_by: record.consulted_by || "Unknown",
-  //       medical_conditions: Array.isArray(record.medical_conditions)
-  //         ? record.medical_conditions.join(", ")
-  //         : "No records",
-  //       medications: Array.isArray(record.current_medications)
-  //         ? record.current_medications.join(", ")
-  //         : "No records",
-  //       immunization:
-  //         Array.isArray(record.immunization_records) &&
-  //         record.immunization_records.length > 1
-  //           ? record.immunization_records.join(", ")
-  //           : "No records",
-  //       family_history: record.family_history || "No records",
-  //       test_reports: Array.isArray(record.test_reports)
-  //         ? record.test_reports.join(", ")
-  //         : "No records",
-  //       nail_image_analysis: Array.isArray(record.nail_image_analysis)
-  //         ? record.nail_image_analysis.join(", ")
-  //         : "No records",
-  //       diagnostics: Array.isArray(record.diagnostics)
-  //         ? record.diagnostics.join(", ")
-  //         : "No records",
-  //     }));
-  //     setRecords(transformedRecords);
-  //     setEhrData((prev) => ({
-  //       ...prev,
-  //       patient_id: selectedPatient.value, // Ensure patient_id is set
-  //     }));
-  //     setIsPatientConfirmed(true);
-  //     console.log("ALL PATIENT RECORDS", records);
-  //   } catch (error) {
-  //     console.error("Error fetching EHR data:", error);
-  //   }
-  // };
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setEhrData((prev) => ({ ...prev, [name]: value }));
@@ -212,16 +173,35 @@ const PopupEHRCreate = ({ onClose, appointmentDetails }) => {
 
   const handleCreateEHR = async () => {
     try {
-      const formData = new FormData();
-      Object.entries(ehrData).forEach(([key, value]) => {
+      // Prepare request payload
+      const payload = { ...ehrData };
+
+      // Ensure arrays are sent as JSON strings (since backend expects them)
+      Object.entries(payload).forEach(([key, value]) => {
         if (Array.isArray(value)) {
-          formData.append(key, JSON.stringify(value)); // ✅ Keep JSON format for arrays
-        } else {
-          formData.append(key, value);
+          payload[key] = JSON.stringify(value);
         }
       });
-      await createEHR(formData); // FUNCTION TO POST DATA TO API
-      alert("EHR created successfully");
+
+      // Send API request
+      const response = await createEHR(payload);
+
+      if (response.status === 201) {
+        alert("EHR created successfully");
+
+        // Send WebSocket update with structured message
+        if (socket && socket.readyState === WebSocket.OPEN) {
+          socket.send(
+            JSON.stringify({
+              type: "ehr_update",
+              action: "create",
+              id: response.data.id, // Backend sends this
+              message: "New EHR Record Created!",
+              ehr_data: response.data.ehr_data, // Backend sends full EHR data
+            })
+          );
+        }
+      }
     } catch (error) {
       alert("Failed to create new EHR");
       console.error(error);

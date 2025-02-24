@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 
@@ -16,7 +16,7 @@ const getToken = () => {
       return null;
     }
 
-    return token; // Return the token instead of the decoded object
+    return token;
   } catch (error) {
     console.error("Invalid token:", error);
     localStorage.removeItem("access");
@@ -44,11 +44,11 @@ const fetchCurrentUserData = async () => {
   }
 };
 
-
 const useCurrentUserData = () => {
   const token = getToken();
+  const queryClient = useQueryClient(); // Get queryClient instance
 
-  return useQuery({
+  const query = useQuery({
     queryKey: ["CurrentUserData"],
     queryFn: fetchCurrentUserData,
     enabled: !!token, // Prevent API call if token is expired
@@ -56,6 +56,13 @@ const useCurrentUserData = () => {
     staleTime: 0,
     cacheTime: 0,
   });
+
+  // 🔥 Invalidate ALL queries when role changes
+  if (query.data?.role) {
+    queryClient.invalidateQueries(); // Clears all cached queries
+  }
+
+  return query;
 };
 
 export default useCurrentUserData;

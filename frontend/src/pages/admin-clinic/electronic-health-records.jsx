@@ -14,65 +14,150 @@ const ElectronicHealthRecord = () => {
   const curUserRole = localStorage.getItem("role");
   const [popupContent, setPopupContent] = useState();
   const [showPopup, setShowPopup] = useState(false);
-
+  // WebSocket useEffect
   useEffect(() => {
-    // Simulate fetching data from an API
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}/api/ehr_records`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        // console.log("SUCCESSFULLY FETCHED ElectronicHealthRecord RECORDS");
-        // setResponse(response);
-        console.log(response);
+    const socket = new WebSocket("ws://localhost:8000/ws/ehr_updates/");
 
-        // Transform the API response to match the dummyRecords structure
-        const transformedRecords = response.data.map((record) => ({
-          id: record.id,
-          patient_name: `${record.patient?.user?.first_name || ""} ${
-            record.patient?.user?.last_name || ""
+    socket.onopen = () => {
+      console.log("WebSocket Connected");
+    };
+
+    socket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+
+      if (data.action === "create") {
+        if (!data.ehr_data || !data.id) {
+          console.warn(
+            "Invalid WebSocket data received for 'create' action:",
+            data
+          );
+          return;
+        }
+
+        // Transform the WebSocket data to match the records structure
+        const newRecord = {
+          id: data.id,
+          patient_name: `${data.ehr_data.patient?.user?.first_name || ""} ${
+            data.ehr_data.patient?.user?.last_name || ""
           }`,
-          category: record.category || "N/A",
-          notes: record.comments || "No comments",
-          last_updated: record.last_updated
-            ? new Date(record.last_updated).toLocaleDateString() +
+          category: data.ehr_data.category || "N/A",
+          notes: data.ehr_data.comments || "No comments",
+          last_updated: data.ehr_data.last_updated
+            ? new Date(data.ehr_data.last_updated).toLocaleDateString() +
               " | " +
-              new Date(record.last_updated).toLocaleTimeString()
+              new Date(data.ehr_data.last_updated).toLocaleTimeString()
             : "N/A",
-          consulted_by: record.consulted_by || "Unknown",
-          medical_conditions: Array.isArray(record.medical_conditions)
-            ? record.medical_conditions.join(", ")
+          consulted_by: data.ehr_data.consulted_by || "Unknown",
+          medical_conditions: Array.isArray(data.ehr_data.medical_conditions)
+            ? data.ehr_data.medical_conditions.join(", ")
             : "No records",
-          medications: Array.isArray(record.current_medications)
-            ? record.current_medications.join(", ")
+          medications: Array.isArray(data.ehr_data.current_medications)
+            ? data.ehr_data.current_medications.join(", ")
             : "No records",
           immunization:
-            Array.isArray(record.immunization_records) &&
-            record.immunization_records.length > 1
-              ? record.immunization_records.join(", ")
+            Array.isArray(data.ehr_data.immunization_records) &&
+            data.ehr_data.immunization_records.length > 1
+              ? data.ehr_data.immunization_records.join(", ")
               : "No records",
-          family_history: record.family_history || "No records",
-          test_reports: Array.isArray(record.test_reports)
-            ? record.test_reports.join(", ")
+          family_history: data.ehr_data.family_history || "No records",
+          test_reports: Array.isArray(data.ehr_data.test_reports)
+            ? data.ehr_data.test_reports.join(", ")
             : "No records",
-          nail_image_analysis: Array.isArray(record.nail_image_analysis)
-            ? record.nail_image_analysis.join(", ")
+          nail_image_analysis: Array.isArray(data.ehr_data.nail_image_analysis)
+            ? data.ehr_data.nail_image_analysis.join(", ")
             : "No records",
-          diagnostics: Array.isArray(record.diagnoses)
-            ? record.diagnoses.join(", ")
-            : "No recordsss",
-        }));
+          diagnostics: Array.isArray(data.ehr_data.diagnoses)
+            ? data.ehr_data.diagnoses.join(", ")
+            : "No records",
+        };
 
-        setRecords(transformedRecords);
-        console.log("TRANSFORMED RECORDS:", records);
-      } catch (error) {
-        console.log(error);
+        setRecords((prevRecords) => [...prevRecords, newRecord]);
+
+        // fetchData();
+      } else if (data.action === "update" && data.updatedRecord) {
+        setRecords((prevRecords) =>
+          prevRecords.map((record) =>
+            record.id === data.id
+              ? { ...record, ...data.updatedRecord }
+              : record
+          )
+        ); // Update only the changed record
+      } else if (data.action === "delete" && data.id) {
+        setRecords((prevRecords) =>
+          prevRecords.filter((r) => r.id !== data.id)
+        );
       }
     };
 
+    socket.onclose = () => {
+      console.log("WebSocket Disconnected");
+    };
+
+    return () => socket.close(); // Cleanup on unmount
+  }, []); // Empty dependency array ensures it runs once
+
+  // useEffect(() => {
+  // Simulate fetching data from an API
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/ehr_records`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      // console.log("SUCCESSFULLY FETCHED ElectronicHealthRecord RECORDS");
+      // setResponse(response);
+      console.log(response);
+      console.log("API Response Data:", response.data);
+
+      // Transform the API response to match the dummyRecords structure
+      const transformedRecords = response.data.map((record) => ({
+        id: record.id,
+        patient_name: `${record.patient?.user?.first_name || ""} ${
+          record.patient?.user?.last_name || ""
+        }`,
+        category: record.category || "N/A",
+        notes: record.comments || "No comments",
+        last_updated: record.last_updated
+          ? new Date(record.last_updated).toLocaleDateString() +
+            " | " +
+            new Date(record.last_updated).toLocaleTimeString()
+          : "N/A",
+        consulted_by: record.consulted_by || "Unknown",
+        medical_conditions: Array.isArray(record.medical_conditions)
+          ? record.medical_conditions.join(", ")
+          : "No records",
+        medications: Array.isArray(record.current_medications)
+          ? record.current_medications.join(", ")
+          : "No records",
+        immunization:
+          Array.isArray(record.immunization_records) &&
+          record.immunization_records.length > 1
+            ? record.immunization_records.join(", ")
+            : "No records",
+        family_history: record.family_history || "No records",
+        test_reports: Array.isArray(record.test_reports)
+          ? record.test_reports.join(", ")
+          : "No records",
+        nail_image_analysis: Array.isArray(record.nail_image_analysis)
+          ? record.nail_image_analysis.join(", ")
+          : "No records",
+        diagnostics: Array.isArray(record.diagnoses)
+          ? record.diagnoses.join(", ")
+          : "No recordsss",
+      }));
+
+      setRecords(transformedRecords);
+      console.log("TRANSFORMED RECORDS:", records);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
     fetchData();
-  }, [token, popupContent]);
+  }, []); // Empty dependency array ensures it runs once on mount
+
+  // }, [token, popupContent]);
 
   const toggleMenu = (recordId) => {
     setMenuOpen(menuOpen === recordId ? null : recordId);
@@ -177,7 +262,7 @@ const ElectronicHealthRecord = () => {
                 <tr key={record.id}>
                   <td>{index + 1}</td>
 
-                  <td>{record.id}</td>
+                  <td>{record.id || "No ID"}</td>
                   <td>{record.patient_name}</td>
                   <td>{record.consulted_by}</td>
                   <td>{record.category}</td>

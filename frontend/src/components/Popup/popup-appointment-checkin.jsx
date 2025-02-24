@@ -67,7 +67,7 @@ const PopupStartAppointment = ({ onClose, appointmentDetails }) => {
       const formData = new FormData();
       Object.entries(ehrData).forEach(([key, value]) => {
         if (Array.isArray(value)) {
-          formData.append(key, JSON.stringify(value)); // ✅ Keep JSON format for arrays
+          formData.append(key, JSON.stringify(value)); // Keep JSON format for arrays
         } else {
           formData.append(key, value);
         }

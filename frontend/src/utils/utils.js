@@ -1,4 +1,7 @@
 // src/utils.js
+export const getAccessToken =()=>{
+  return localStorage.getItem("access")
+}
 
 export const calculateAge = (dob) => {
     const birthDate = new Date(dob);
