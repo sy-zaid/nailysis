@@ -1,7 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, Group, BaseUserManager
 from django.core.validators import FileExtensionValidator
-# Create your models here.
+
+import datetime
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -46,7 +47,7 @@ class CustomUser(AbstractUser):
     
     """Fields from the class diagram v1.1"""
     # Custom user ID field
-    user_id = models.CharField(max_length=20, unique=True, blank=True, null=True)
+    user_id = models.CharField(max_length=20, unique=True, blank=True, null=False, primary_key=True)
     #first_name = default from AbstractUser
     #last_name = default from AbstractUser
     email = models.EmailField(max_length=254,unique=True)
@@ -80,7 +81,7 @@ class CustomUser(AbstractUser):
             # Auto-create related role object if missing
         if is_new and self.role == 'clinic_admin' and not hasattr(self, 'clinic_admin'):
             ClinicAdmin.objects.create(user=self)
-    
+
     def generate_custom_user_id(self):
         role_prefixes = {
             'patient': 'PAT',
@@ -99,17 +100,26 @@ class CustomUser(AbstractUser):
         
         return f"{prefix}{str(count).zfill(3)}"
     
-""" 
+    @classmethod
+    def create_walkin_account(cls,first_name,last_name,email,phone,date_of_birth,gender):
+        if not email:
+            email = f"walkin_{int(datetime.datetime.now().timestamp())}@example.com"
+            
+        walkin_user = cls.objects.create(first_name = first_name,last_name=last_name,email=email,phone=phone,role="patient")
+        patient = Patient.objects.create(user=walkin_user,date_of_birth=date_of_birth,gender=gender)
+        return patient
+
+"""
 Below are the child classes for CustomUserClass targetting individual Users Types for additional fields specific to its role.
 """
 
 class ClinicAdmin(models.Model):
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE,primary_key=True,related_name="clinic_admin")    
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE,primary_key=True, to_field="user_id",related_name="clinic_admin")    
     def __str__(self):
-        return f"Clinic Admin - {self.user.email}"
+        return f"{self.user.first_name} {self.user.last_name}"
 
 class Doctor(models.Model):
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE,primary_key=True)
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE,primary_key=True, to_field="user_id")
     license_number = models.CharField(max_length=50, unique=True)
     specialization = models.CharField(max_length=255)
     qualifications = models.TextField(blank=True,null=True)
@@ -121,7 +131,7 @@ class Doctor(models.Model):
         return f"{self.user.first_name} {self.user.last_name}"
     
 class Patient(models.Model):
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, primary_key=True)
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE,primary_key=True, to_field="user_id")
     date_of_birth = models.DateField()
     
     GENDER_CHOICES = [
@@ -138,8 +148,12 @@ class Patient(models.Model):
     def __str__(self):
         return f"{self.user.first_name} {self.user.last_name}"
     
+    # def create_walkin_account(self):
+        
+        
+    
 class LabAdmin(models.Model):
-    user = models.OneToOneField(CustomUser,on_delete=models.CASCADE,primary_key=True)
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, primary_key=True, to_field="user_id", related_name="lab_admin")
     license_number = models.CharField(max_length=50,unique=True)
     designation = models.CharField(max_length=100)
     qualifications = models.TextField(blank=True,null=True)
@@ -148,7 +162,7 @@ class LabAdmin(models.Model):
     emergency_contact = models.CharField(max_length=20)
     
 class LabTechnician(models.Model):
-    user = models.OneToOneField(CustomUser,on_delete=models.CASCADE,primary_key=True)
+    user = models.OneToOneField(CustomUser,on_delete=models.CASCADE,primary_key=True, to_field="user_id")
     license_number = models.CharField(max_length=50,unique=True)
     specialization = models.CharField(max_length=255)
     years_of_experience = models.PositiveIntegerField()

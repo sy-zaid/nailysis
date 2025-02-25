@@ -5,7 +5,7 @@ import Header from "../../components/Dashboard/Header/Header";
 import Sidebar from "../../components/Dashboard/Sidebar/Sidebar";
 import styles from "../../components/Dashboard/Dashboard.module.css";
 import UpcomingTest from "../../components/Dashboard/UpcomingTest/UpcomingTest";
-import CancellationRequestsList from "./CancellationRequestsList";
+import CancellationRequestsList from "./cancellation-requests-list";
 function ClinicAdminDashboard() {
   return (
     <div>

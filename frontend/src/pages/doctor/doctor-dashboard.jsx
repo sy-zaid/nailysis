@@ -5,8 +5,10 @@ import Header from "../../components/Dashboard/Header/Header";
 import Sidebar from "../../components/Dashboard/Sidebar/Sidebar";
 import styles from "../../components/Dashboard/Dashboard.module.css";
 import UpcomingTest from "../../components/Dashboard/UpcomingTest/UpcomingTest";
-
+import useCurrentUserData from "../../useCurrentUserData.jsx";
 function DoctorDashboard() {
+  const { data: curUser } = useCurrentUserData(); // Fetch current User data
+  console.log("CURRUSER", curUser);
     return (
         <div>
           <Navbar />
@@ -20,6 +22,7 @@ function DoctorDashboard() {
               <Cards heading="Reports" />
             </div>
             <UpcomingTest />
+            
           </div>
         </div>
       );

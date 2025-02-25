@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import styles from "./Sidebar.module.css";
+import useCurrentUserData from "../../../useCurrentUserData";
 
 const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
   // const [isOpen, setIsOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null); // Track which dropdown is open
+  const { data: curUser } = useCurrentUserData(); // Fetch patient data
 
   const toggleDropdown = (index) => {
     setOpenDropdown(openDropdown === index ? null : index); // Toggle dropdown visibility
@@ -13,8 +15,11 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
     clinic_admin: [
       {
         icon: "icon-test-results-black.jpg",
-        label: "Test Results",
-        subItems: [],
+        label: "Electronic Health Records",
+        subItems: [
+          { label: "Patient Records" },
+          { label: "Medical History & Notes" },
+        ],
       },
       {
         icon: "icon-diagnostic-results-black.jpg",
@@ -25,7 +30,7 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
         icon: "icon-appointments-black.jpg",
         label: "Appointments",
         subItems: [
-          { label: "Upcoming Appointments" },
+          { label: "View Appointments" },
           { label: "Appointment History" },
         ],
       },
@@ -43,12 +48,25 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
         label: "Test Requests",
         subItems: [],
       },
+      {
+        icon: "icon-test-request-black.jpg",
+        label: "electronic-health-records",
+        subItems: [],
+      },
+      {
+        icon: "icon-test-request-black.jpg",
+        label: "Patient Health History",
+        subItems: [],
+      },
     ],
     doctor: [
       {
         icon: "icon-test-results-black.jpg",
-        label: "Test Results",
-        subItems: [],
+        label: "Electronic Health Records",
+        subItems: [
+          { label: "Patient Records" },
+          { label: "Medical History & Notes" },
+        ],
       },
       {
         icon: "icon-diagnostic-results-black.jpg",
@@ -59,7 +77,7 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
         icon: "icon-appointments-black.jpg",
         label: "Appointments",
         subItems: [
-          { label: "Upcoming Appointments" },
+          { label: "View Appointments" },
           { label: "Appointment History" },
         ],
       },
@@ -93,7 +111,7 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
         icon: "icon-appointments-black.jpg",
         label: "Appointments",
         subItems: [
-          { label: "Upcoming Appointments" },
+          { label: "View Appointments" },
           { label: "Appointment History" },
         ],
       },
@@ -127,7 +145,7 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
         icon: "icon-appointments-black.jpg",
         label: "Appointments",
         subItems: [
-          { label: "Upcoming Appointments" },
+          { label: "View Appointments" },
           { label: "Appointment History" },
         ],
       },
@@ -161,7 +179,7 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
         icon: "icon-appointments-black.jpg",
         label: "Appointments",
         subItems: [
-          { label: "Upcoming Appointments" },
+          { label: "View Appointments" },
           { label: "Appointment History" },
         ],
       },
@@ -309,14 +327,21 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
 
         {/* Section 4 */}
         <div className={styles.sectionFour}>
-          <div className={styles.profSection}>
-            <img src="profile-pic.jpg" alt="" />
-            <h2>
-              Mr. John Doe
-              <br />
-              <span>johndoe@gmail.com</span>
-            </h2>
-          </div>
+          {(curUser || []).map((item, index) => (
+            <div className={styles.profSection} key={index}>
+              {/* <div > */}
+              <img
+                src={item.profile_picture || "profile-pic.jpg"}
+                alt="Profile"
+              />
+              <h2>
+                {item.first_name} {item.last_name}
+                <br />
+                <span>{item.email}</span>
+              </h2>
+              {/* </div> */}
+            </div>
+          ))}
         </div>
       </div>
     </div>

@@ -1,115 +1,156 @@
-from django.shortcuts import render
-from rest_framework import viewsets, permissions,status
-from rest_framework.response import Response
-from .models import Appointment, DoctorAppointment, TechnicianAppointment, DoctorAppointmentFee,LabTechnicianAppointmentFee, CancellationRequest
-from .serializers import AppointmentSerializer, DoctorAppointmentSerializer, TechnicianAppointmentSerializer, DoctorFeeSerializer,CancellationRequestSerializer
-from users.models import Patient, Doctor,ClinicAdmin
-from rest_framework.decorators import action
+"""
+views.py - Handles API endpoints for appointments, doctor fees, 
+and cancellation requests in the Nailysis system.
+
+This module contains Django REST Framework ViewSets for managing:
+- Doctor fees
+- Doctor appointments
+- Lab technician appointments
+- Appointment cancellations
+
+Each ViewSet includes appropriate permission handling, custom actions,
+and data validation.
+"""
+
 from django.shortcuts import get_object_or_404
-import logging
+from rest_framework import viewsets, permissions, status
+from rest_framework.response import Response
+from rest_framework.decorators import action
+from rest_framework.exceptions import PermissionDenied
 
-# Main Appointment ViewSet
-class AppointmentViewSet(viewsets.ModelViewSet):
-    queryset = Appointment.objects.all()
-    serializer_class = AppointmentSerializer
-    permission_classes = [permissions.IsAuthenticated]
+from .models import (
+    Appointment, DoctorAppointment, TechnicianAppointment, 
+    DoctorAppointmentFee, LabTechnicianAppointmentFee, CancellationRequest
+)
+from .serializers import (
+    AppointmentSerializer, DoctorAppointmentSerializer, 
+    TechnicianAppointmentSerializer, DoctorFeeSerializer, LabTechnicianFeeSerializer, CancellationRequestSerializer
+)
+from users.models import Patient, Doctor, ClinicAdmin, CustomUser, LabTechnician, LabAdmin
 
-    def get_queryset(self):
-        user = self.request.user
-
-        # Admins can view all appointments
-        if user.role == "clinic_admin":
-            return Appointment.objects.all()
-
-        # Doctors can only view their appointments
-        if user.role == "doctor":
-            return Appointment.objects.filter(doctor=user)
-
-        # Patients can view their appointments
-        if user.role == "patient":
-            try:
-                patient = Patient.objects.get(user=user)
-            except Patient.DoesNotExist:
-                return Appointment.objects.none()  # Return an empty queryset if no patient found
-            return Appointment.objects.filter(patient=patient)
-
-        return Appointment.objects.none()  # Return an empty queryset if the role doesn't match
-
-# Doctor Fee ViewSet
 class DoctorFeeViewset(viewsets.ModelViewSet):
+    """
+    API endpoint to manage doctor appointment fees.
+
+    Provides:
+    - List of all doctor appointment fees
+    - Standard CRUD operations
+    """
     queryset = DoctorAppointmentFee.objects.all()
     serializer_class = DoctorFeeSerializer
     permission_classes = [permissions.AllowAny]
-    
+
     @action(detail=False, methods=['get'], url_path='get_fees')
     def get_fees(self, request):
-        """Retrieve all appointment fees for display."""
+        """
+        Retrieve all appointment fees for display.
+        
+        Returns:
+            JSON response containing the list of doctor fees.
+        """
         fees = DoctorAppointmentFee.objects.all()
         serializer = self.get_serializer(fees, many=True)
         return Response(serializer.data)
-    
-    
-# Doctor Appointment ViewSet
+
+
 class DoctorAppointmentViewset(viewsets.ModelViewSet):
+    """
+    API endpoint for managing doctor appointments.
+
+    Provides:
+    - Viewing appointments based on user role
+    - Booking new doctor appointments
+    - Cancelling and rescheduling appointments
+    """
     queryset = DoctorAppointment.objects.all()
     serializer_class = DoctorAppointmentSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-    
     def get_queryset(self):
+        """
+        Retrieve appointments based on user role:
+        - Patients see only their own appointments.
+        - Doctors see only their own appointments.
+        - Clinic admins see all appointments.
+        """
         user = self.request.user
+
         if user.role == "patient":
             try:
                 patient = Patient.objects.get(user=user)
+                return DoctorAppointment.objects.filter(patient=patient)
             except Patient.DoesNotExist:
-                return DoctorAppointment.objects.none()  # Return an empty queryset if no patient found
-            return DoctorAppointment.objects.filter(patient=patient)
-        
+                return DoctorAppointment.objects.none()
+
         elif user.role == "clinic_admin":
             return DoctorAppointment.objects.all()
 
-        # Doctors can only view their appointments
         elif user.role == "doctor":
             try:
                 doctor = Doctor.objects.get(user=user)
+                return DoctorAppointment.objects.filter(doctor=doctor)
             except Doctor.DoesNotExist:
-                return DoctorAppointment.objects.none()  # Return an empty queryset if no patient found
-            return DoctorAppointment.objects.filter(doctor=doctor)
-        
-        return DoctorAppointment.objects.none()  # Return an empty queryset if the role doesn't match
-        
-        
-    # Create a doctor appointment
+                return DoctorAppointment.objects.none()
+
+        return DoctorAppointment.objects.none()
+
     def perform_create(self, serializer):
-        # Assuming the patient is being retrieved via the logged-in user
+        """
+        Create a new doctor appointment.
+        Assumes the logged-in user is a patient.
+        """
         serializer.save(patient=self.request.user)
+
+    def perform_destroy(self, instance):
+        """
+        Ensure only clinic admins can delete an appointment.
+        """
+        user = self.request.user
+        if user.role == "clinic_admin":
+            instance.delete()
+        else:
+            raise PermissionDenied("You are not authorized to delete this appointment.")
 
     @action(detail=False, methods=['post'], url_path='book_appointment')
     def book_appointment(self, request):
-        logging.info("book_appointment action was triggered")
+        """
+        Book a new doctor appointment.
 
-        # Get data from request
+        Expected request data:
+        - doctor_id
+        - appointment_date
+        - appointment_start_time
+        - appointment_type
+        - specialization
+        - fee
+        - patient details (if clinic admin books for a walk-in patient)
+        """
+        # request.data = appointmentData (from frontend)
         doctor_id = request.data.get('doctor_id')
         appointment_date = request.data.get('appointment_date')
-        appointment_time = request.data.get('appointment_time')
+        appointment_start_time = request.data.get('appointment_start_time')
         appointment_type = request.data.get('appointment_type')
         specialization = request.data.get('specialization')
         fee = request.data.get('fee')
-        
-        print("DATA------------------------------------------------")
-        print(doctor_id,appointment_date,appointment_time,appointment_type,specialization,fee)
+        patient_email = request.data.get("patient_email")
 
-        # Get doctor by id or return 404 if not found
-        doctor = get_object_or_404(Doctor, user__id=doctor_id)
+        doctor = get_object_or_404(Doctor, user_id=doctor_id)
+        user = self.request.user
 
-        patient = get_object_or_404(Patient, user=request.user)
-        
-        # Create the DoctorAppointment
+        # Handling patient information
+        if user.role == "clinic_admin":
+            if not patient_email:
+                patient = CustomUser.create_walkin_account(**request.data)
+            else:
+                patient = get_object_or_404(Patient, user__email=patient_email)
+        elif user.role == "patient":
+            patient = get_object_or_404(Patient, user=request.user)
+
         doctor_appointment = DoctorAppointment.objects.create(
             patient=patient,
             doctor=doctor,
             appointment_date=appointment_date,
-            appointment_time=appointment_time,
+            start_time=appointment_start_time,
             appointment_type=appointment_type,
             specialization=specialization,
             fee=fee
@@ -119,7 +160,22 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
             "message": "Appointment booked successfully",
             "appointment_id": doctor_appointment.appointment_id
         })
-        
+
+    @action(detail=True, methods=["post"], url_path="cancel_appointment")
+    def cancel_appointment(self, request, pk=None):
+        """
+        Cancel a doctor appointment.
+
+        Only patients and clinic admins are authorized to cancel appointments.
+        """
+        user = request.user
+        if user.role not in ["patient", "clinic_admin"]:
+            return Response({"error": "Unauthorized action."}, status=status.HTTP_403_FORBIDDEN)
+
+        appointment = get_object_or_404(DoctorAppointment, pk=pk)
+        appointment.cancel_appointment()
+        return Response({"message": "Appointment cancelled successfully."}, status=status.HTTP_200_OK)
+    
     @action(detail=True,methods=["post"],url_path='request_cancellation')
     def request_cancellation(self,request,pk=None):
         user = self.request.user
@@ -135,42 +191,109 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
         reason = request.data.get('reason','').strip()
         if not reason:
             return Response({"error":"Cancellation reason is required"},status=status.HTTP_400_BAD_REQUEST)
-        cancellation_request = CancellationRequest.objects.create(doctor=doctor,appointment=appointment,reason = reason)
+        cancellation_request = CancellationRequest.objects.create(doctor=doctor,appointment=appointment,reason = reason,status="Pending")
+        appointment.status = "Pending"
+        appointment.save()
+        return Response({"message":"Cancellation request sent successfully","request_id":cancellation_request.id},status=status.HTTP_201_CREATED)
+
+    @action(detail=True, methods=['post'], url_path="save_and_complete")
+    def save_and_complete(self, request, pk=None):
+        import json
+        user = self.request.user
+        if user.role != "doctor":
+            return Response({"error": "Only doctors can mark an appointment as complete on this screen"}, status=status.HTTP_403_FORBIDDEN)
+
+        # Convert JSON-encoded strings to lists if necessary
+        medical_conditions = request.data.get("medical_conditions", "[]")
+        current_medications = request.data.get("current_medications", "[]")
+        immunization_records = request.data.get("immunization_records", "[]")
+        diagnoses = request.data.get("diagnoses", "[]")
+
+        # If any of these are strings, convert them to lists
+        if isinstance(medical_conditions, str):
+            medical_conditions = json.loads(medical_conditions)
+        if isinstance(current_medications, str):
+            current_medications = json.loads(current_medications)
+        if isinstance(immunization_records, str):
+            immunization_records = json.loads(immunization_records)
+        if isinstance(diagnoses, str):
+            diagnoses = json.loads(diagnoses)
+
+        comments = request.data.get("comments", "")
+        family_history = request.data.get("family_history", "")
+        category = request.data.get("category", "General")
+
+        ehr_data = [category,medical_conditions, current_medications, immunization_records, diagnoses, comments, family_history]
+        print(ehr_data)
+        try:
+            appointment = DoctorAppointment.objects.get(pk=pk)
+            appointment.complete_appointment(ehr_data=ehr_data)
+            return Response({"message": "Successfully added ehr"})
+        except (Doctor.DoesNotExist, DoctorAppointment.DoesNotExist): 
+            return Response({"error": "No Appointment Found"}, status=status.HTTP_404_NOT_FOUND)
+            
         
-        return Response({"message":"Cancellation request sent successfully","request_id":cancellation_request.id},status=status.HTTP_201_CREATED)    
-
-
-# Lab Technician Appointment ViewSet
 class LabTechnicianAppointmentViewset(viewsets.ModelViewSet):
+    """
+    API endpoint for managing lab technician appointments.
+    """
     queryset = TechnicianAppointment.objects.all()
     serializer_class = TechnicianAppointmentSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-    # Create a lab technician appointment
+    def get_queryset(self):
+        """
+        Retrieve appointments based on user role:
+        - Patients see only their own appointments.
+        - Technician see only their own appointments.
+        - Lab Admins see all appointments.
+        """
+        user = self.request.user
+
+        if user.role == "patient":
+            try:
+                patient = Patient.objects.get(user=user)
+                return TechnicianAppointment.objects.filter(patient=patient)
+            except Patient.DoesNotExist:
+                return TechnicianAppointment.objects.none()
+
+        elif user.role == "lab_admin":
+            return TechnicianAppointment.objects.all()
+
+        elif user.role == "lab_technician":
+            try:
+                lab_technician = LabTechnician.objects.get(user=user)
+                return TechnicianAppointment.objects.filter(lab_technician=lab_technician)
+            except LabTechnician.DoesNotExist:
+                return TechnicianAppointment.objects.none()
+
+        return TechnicianAppointment.objects.none()
+    
     def perform_create(self, serializer):
-        # Assuming the patient is being retrieved via the logged-in user
+        """
+        Create a new lab technician appointment.
+        """
         serializer.save(patient=self.request.user)
 
     @action(detail=False, methods=['post'], url_path='book_lab_appointment')
     def book_lab_appointment(self, request):
-        logging.info("book_lab_appointment action was triggered")
+        """
+        Book a new lab appointment.
+        """
 
-        # Get data from request
         technician_id = request.data.get('technician_id')
         appointment_date = request.data.get('appointment_date')
-        appointment_time = request.data.get('appointment_time')
-        service_type = request.data.get('service_type')  # for the lab services
+        appointment_start_time = request.data.get('appointment_start_time')
+        service_type = request.data.get('service_type')
         lab_fee = request.data.get('lab_fee')
 
-        # Get technician by id or return 404 if not found
-        technician = get_object_or_404(Technician, user__id=technician_id)
+        technician = get_object_or_404(LabTechnician, user__id=technician_id)
 
-        # Create the TechnicianAppointment
         technician_appointment = TechnicianAppointment.objects.create(
             patient=request.user,
             technician=technician,
             appointment_date=appointment_date,
-            appointment_time=appointment_time,
+            appointment_start_time=appointment_start_time,
             service_type=service_type,
             lab_fee=lab_fee
         )
@@ -180,51 +303,66 @@ class LabTechnicianAppointmentViewset(viewsets.ModelViewSet):
             "appointment_id": technician_appointment.appointment_id
         })
 
+class LabTechnicianFeeViewset(viewsets.ModelViewSet):
+    """
+    API endpoint to manage lab technician appointment fees.
+
+    Provides:
+    - List of all lab technician appointment fees
+    - Standard CRUD operations
+    """
+    queryset = LabTechnicianAppointmentFee.objects.all()
+    serializer_class = LabTechnicianFeeSerializer
+    permission_classes = [permissions.AllowAny]
+
+    @action(detail=False, methods=['get'], url_path='get_fees')
+    def get_fees(self, request):
+        """
+        Retrieve all appointment fees for display.
+        
+        Returns:
+            JSON response containing the list of doctor fees.
+        """
+        fees = LabTechnicianAppointmentFee.objects.all()
+        serializer = self.get_serializer(fees, many=True)
+        return Response(serializer.data)
 
 class DocAppointCancellationViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint for handling doctor appointment cancellation requests.
+    """
     queryset = CancellationRequest.objects.all()
     serializer_class = CancellationRequestSerializer
     permission_classes = [permissions.IsAuthenticated]
-    
+
     def get_queryset(self):
+        """
+        Allow only clinic admins to view all cancellation requests.
+        """
         user = self.request.user
         if user.role == "clinic_admin":
             return CancellationRequest.objects.all()
         return CancellationRequest.objects.none()
-    
+
     @action(detail=True, methods=['post'], url_path='review')
-    def review_request(self,request,pk):
+    def review_request(self, request, pk):
+        """
+        Allow clinic admins to approve or reject cancellation requests.
+        """
         user = self.request.user
         if user.role != "clinic_admin":
-            print("Requests can only be approved by admins")
-            return Response({"error":"Requests can only be approved by admins"},status=status.HTTP_403_FORBIDDEN)
-        
-        
-        try:
-            clinic_admin = ClinicAdmin.objects.get(user=user)  # Fetch existing instance
-        except ClinicAdmin.DoesNotExist:
-            print(Exception)
-            print("You are not a clinic admin")
-            return Response({"error": "You are not a clinic admin"}, status=status.HTTP_403_FORBIDDEN)
-        
-        try:
-            cancellation_request = CancellationRequest.objects.get(pk=pk,status="Pending")
-            
-        except CancellationRequest.DoesNotExist:
-            return Response({"error":"No pending cancellation requests"},status=status.HTTP_404_NOT_FOUND)
-        
-        action = request.data.get("action","").lower()
-        if action not in ["approve","reject"]:
-            return Response({"error":"Invalid action Use 'approve' or 'reject'."},status=status.HTTP_400_BAD_REQUEST)
-        
-        cancellation_request.status = "Approve" if action == "approve" else "Rejected"
-        cancellation_request.reviewed_by = clinic_admin
+            return Response({"error": "Only admins can review requests."}, status=status.HTTP_403_FORBIDDEN)
+
+        cancellation_request = get_object_or_404(CancellationRequest, pk=pk, status="Pending")
+        action = request.data.get("action", "").lower()
+
+        if action not in ["approve", "reject"]:
+            return Response({"error": "Invalid action. Use 'approve' or 'reject'."}, status=status.HTTP_400_BAD_REQUEST)
+
+        cancellation_request.status = "Approved" if action == "approve" else "Rejected"
         cancellation_request.save()
-        
+
         if action == "approve":
-            cancellation_request.appointment.status = "Cancelled"
-            cancellation_request.appointment.save()
-            
-        return Response({"message":f"Cancellation request {action}d successfully."})
-    
-    
+            cancellation_request.appointment.cancel_appointment()
+
+        return Response({"message": f"Cancellation request {action}d successfully."})
