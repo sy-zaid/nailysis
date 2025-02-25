@@ -4,38 +4,21 @@ import styles from "./popup-appointment-book.module.css";
 import Popup from "./Popup.jsx";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { createEHR } from "../../api/ehrApi.js";
+import { createEHR, getEHR, getEHRById } from "../../api/ehrApi.js";
 import { useAllPatients } from "../../api/usersApi.js";
 import useCurrentUserData from "../../useCurrentUserData.jsx";
-import { getAccessToken } from "../../utils/utils.js";
-import { toast } from "react-toastify";
-
-const medicalConditionsOptions = [
-  { value: "Diabetes", label: "Diabetes" },
-  { value: "Hypertension", label: "Hypertension" },
-  { value: "Heart Disease", label: "Heart Disease" },
-  { value: "Asthma", label: "Asthma" },
-];
-
-/**
- * Predefined category options for react-select.
- */
-const categoryOptions = [
-  { value: "Chronic", label: "Chronic" },
-  { value: "Emergency", label: "Emergency" },
-  { value: "Preventive", label: "Preventive" },
-  { value: "General", label: "General" },
-];
-
-/**
- * Predefined diagnosis options for react-select.
- */
-const diagnosesOptions = [
-  { value: "Anemia", label: "Anemia" },
-  { value: "Diabetes", label: "Diabetes" },
-  { value: "Hypertension", label: "Hypertension" },
-  { value: "Fungal Infection", label: "Fungal Infection" },
-];
+import {
+  getAccessToken,
+  handleSelectChange,
+  handleInputChange,
+  formatEhrRecords,
+} from "../../utils/utils.js";
+import {
+  medicalConditionsOptions,
+  categoryOptions,
+  diagnosesOptions,
+} from "../../utils/utils.js";
+import { useEhrUpdatesWS } from "../../sockets/ehrSocket.js";
 
 const PopupEHRCreate = ({ onClose, appointmentDetails }) => {
   const [popupTrigger, setPopupTrigger] = useState(true);
@@ -61,30 +44,15 @@ const PopupEHRCreate = ({ onClose, appointmentDetails }) => {
   const [records, setRecords] = useState([]);
   const { data: patientsData, isLoading, error } = useAllPatients();
 
-  // Added state for WebSocket connection
-  const [socket, setSocket] = useState(null);
-
   // Set up WebSocket connection when component mounts
-  useEffect(() => {
-    const ws = new WebSocket("ws://127.0.0.1:8000/ws/ehr_updates/");
+  const socket = useEhrUpdatesWS(setRecords);
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
 
-    setSocket(ws);
-
-    ws.onmessage = (event) => {
-      const newRecord = JSON.parse(event.data);
-      console.log("New Record Received:", newRecord); // Log the received message
-      if (newRecord.id) {
-        setRecords((prevRecords) => [...prevRecords, newRecord]);
-      } else {
-        console.error("Received record with null id:", newRecord);
-      }
-    };
-
-    return () => {
-      ws.close(); // Close WebSocket connection on unmount
-    };
-  }, []);
-
+  if (error) {
+    return <p>Error fetching patients</p>;
+  }
   useEffect(() => {
     try {
       const formattedPatients =
@@ -100,58 +68,16 @@ const PopupEHRCreate = ({ onClose, appointmentDetails }) => {
       console.error("Error fetching patients:", error);
     }
   }, [patientsData]);
-  if (isLoading) return <p>Loading...</p>;
-  if (error) return <p>Error fetching patients</p>;
+
   const handlePatientChange = async (selected) => {
     setSelectedPatient(selected);
     setIsPatientConfirmed(false); // Reset confirmation when changing patient
 
     if (selected) {
       try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}/api/ehr_records/?patient=${
-            selected.value
-          }`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-
-        const transformedRecords = response.data.map((record) => ({
-          id: record.id,
-          patient_name: `${record.patient?.user?.first_name || "Null"} ${
-            record.patient?.user?.last_name || "Null"
-          }`,
-          category: record.category || "N/A",
-          notes: record.comments || "No comments",
-          last_updated: record.last_updated
-            ? new Date(record.last_updated).toLocaleDateString() +
-              " | " +
-              new Date(record.last_updated).toLocaleTimeString()
-            : "N/A",
-          consulted_by: record.consulted_by || "Unknown",
-          medical_conditions: Array.isArray(record.medical_conditions)
-            ? record.medical_conditions.join(", ")
-            : "No records",
-          medications: Array.isArray(record.current_medications)
-            ? record.current_medications.join(", ")
-            : "No records",
-          immunization:
-            Array.isArray(record.immunization_records) &&
-            record.immunization_records.length > 1
-              ? record.immunization_records.join(", ")
-              : "No records",
-          family_history: record.family_history || "No records",
-          test_reports: Array.isArray(record.test_reports)
-            ? record.test_reports.join(", ")
-            : "No records",
-          nail_image_analysis: Array.isArray(record.nail_image_analysis)
-            ? record.nail_image_analysis.join(", ")
-            : "No records",
-          diagnostics: Array.isArray(record.diagnostics)
-            ? record.diagnostics.join(", ")
-            : "No records",
-        }));
-
-        setRecords(transformedRecords);
+        const response = await getEHR(selected.value);
+        // Formatting the response data to display on table
+        setRecords(formatEhrRecords(response));
 
         // Use setEhrData correctly to update state
         setEhrData((prev) => ({
@@ -161,14 +87,9 @@ const PopupEHRCreate = ({ onClose, appointmentDetails }) => {
 
         setIsPatientConfirmed(true);
       } catch (error) {
-        console.error("Error fetching EHR data:", error);
+        console.error("Error changing patient:", error);
       }
     }
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setEhrData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleCreateEHR = async () => {
@@ -207,12 +128,12 @@ const PopupEHRCreate = ({ onClose, appointmentDetails }) => {
       console.error(error);
     }
   };
-  const handleSelectChange = (name, selectedOptions) => {
-    setEhrData((prevData) => ({
-      ...prevData,
-      [name]: selectedOptions ? selectedOptions.map((opt) => opt.value) : [],
-    }));
-  };
+
+  // Function to update value from input field into ehrData (e.g. onChange={onInputChange})
+  const onInputChange = handleInputChange(setEhrData);
+  // Function to update value from select field into ehrData (e.g. onChange={(selected) => onSelectChange("diagnoses", selected)})
+  const onSelectChange = handleSelectChange(setEhrData);
+
   return (
     <Popup trigger={popupTrigger} setTrigger={setPopupTrigger}>
       <div className={styles.formContainer}>
@@ -310,7 +231,7 @@ const PopupEHRCreate = ({ onClose, appointmentDetails }) => {
                 isMulti
                 options={medicalConditionsOptions}
                 onChange={(selected) =>
-                  handleSelectChange("medical_conditions", selected)
+                  onSelectChange("medical_conditions", selected)
                 }
               />
             </div>
@@ -327,7 +248,7 @@ const PopupEHRCreate = ({ onClose, appointmentDetails }) => {
                 ]}
                 placeholder="Select or add medications"
                 onChange={(selected) =>
-                  handleSelectChange("current_medications", selected)
+                  onSelectChange("current_medications", selected)
                 }
               />
             </div>
@@ -344,9 +265,7 @@ const PopupEHRCreate = ({ onClose, appointmentDetails }) => {
                   { value: "Fungal Infection", label: "Fungal Infection" },
                 ]}
                 placeholder="Select diagnoses"
-                onChange={(selected) =>
-                  handleSelectChange("diagnoses", selected)
-                }
+                onChange={(selected) => onSelectChange("diagnoses", selected)}
               />
             </div>
 
@@ -368,8 +287,8 @@ const PopupEHRCreate = ({ onClose, appointmentDetails }) => {
               <textarea
                 name="comments"
                 placeholder="Add any additional comments"
-                value={ehrData.comments}
-                onChange={handleInputChange}
+                value={ehrData.comments || ""}
+                onChange={onInputChange}
               />
             </div>
 
@@ -379,8 +298,8 @@ const PopupEHRCreate = ({ onClose, appointmentDetails }) => {
               <textarea
                 name="family_history"
                 placeholder="Enter relevant family medical history"
-                value={ehrData.family_history}
-                onChange={handleInputChange}
+                value={ehrData.family_history || ""}
+                onChange={onInputChange}
               />
             </div>
 
