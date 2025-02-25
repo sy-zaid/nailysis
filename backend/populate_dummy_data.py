@@ -1,25 +1,33 @@
 import random
-from datetime import datetime, timedelta
+from datetime import datetime
 from faker import Faker
-from users.models import CustomUser, Patient, Doctor, LabTechnician,ClinicAdmin,LabAdmin
-from appointments.models import DoctorAppointment, TechnicianAppointment
-from ehr.models import EHR
+from users.models import CustomUser, Patient, Doctor, LabTechnician, ClinicAdmin, LabAdmin
+from appointments.models import DoctorAppointment, TechnicianAppointment, LabTechnicianAppointmentFee, DoctorAppointmentFee
 from django.utils import timezone
 from appointments.models import DoctorAppointmentFee
 
 fake = Faker()
 
+# Generate dummy users
+def create_dummy_users(num_users, role):
+    users = []
+    for _ in range(num_users):
+        email = f"{role}{fake.unique.random_number(digits=3)}@example.com"
+        user = CustomUser.objects.create_user(
+            email=email,
+            first_name=fake.first_name(),
+            last_name=fake.last_name(),
+            password=role,
+            role=role,
+        )
+        users.append(user)
+    return users
+
 # Generate dummy patients
 def create_dummy_patients(num_patients):
     patients = []
-    for _ in range(num_patients):
-        user = CustomUser.objects.create_user(
-            email=f"patient{fake.unique.random_number(digits=1)}@example.com",
-            first_name=fake.first_name(),
-            last_name=fake.last_name(),
-            password="pat",
-            role="patient",
-        )
+    users = create_dummy_users(num_patients, "patient")
+    for user in users:
         patient = Patient.objects.create(
             user=user,
             date_of_birth=fake.date_of_birth(minimum_age=18, maximum_age=80),
@@ -34,14 +42,8 @@ def create_dummy_patients(num_patients):
 # Generate dummy doctors
 def create_dummy_doctors(num_doctors):
     doctors = []
-    for _ in range(num_doctors):
-        user = CustomUser.objects.create_user(
-            email=f"doctor{fake.unique.random_number(digits=1)}@example.com",
-            first_name=fake.first_name(),
-            last_name=fake.last_name(),
-            password="doc",
-            role="doctor",
-        )
+    users = create_dummy_users(num_doctors, "doctor")
+    for user in users:
         doctor = Doctor.objects.create(
             user=user,
             license_number=fake.unique.random_number(digits=6),
@@ -54,45 +56,103 @@ def create_dummy_doctors(num_doctors):
         doctors.append(doctor)
     return doctors
 
-# Generate dummy clinic_admin
-def create_dummy_clinic_admin(num_clinic_admin):
-    clinic_admin = []
-    for _ in range(num_clinic_admin):
-        user = CustomUser.objects.create_user(
-            email=f"clinic_admin{fake.unique.random_number(digits=1)}@example.com",
-            first_name=fake.first_name(),
-            last_name=fake.last_name(),
-            password="cli",
-            role="clinic_admin",
+# Generate dummy clinic admins
+def create_dummy_clinic_admins(num_admins):
+    for _ in range(num_admins):
+        email = f"clinic_admin{fake.unique.random_int(min=1000, max=9999)}@example.com"
+        user, created = CustomUser.objects.get_or_create(
+            email=email,
+            defaults={
+                "first_name": fake.first_name(),
+                "last_name": fake.last_name(),
+                "password": "cli",
+                "role": "clinic_admin",
+            }
         )
-        clinic_admin = ClinicAdmin.objects.create(
-            user=user,
-        )
-        clinic_admin.append(clinic_admin)
-    return clinic_admin
+        ClinicAdmin.objects.get_or_create(user=user)
 
-# Generate dummy appointments
-def generate_dummy_appointments(num_appointments, patients, doctors):
+# Generate dummy lab admins
+def create_dummy_lab_admins(num_admins):
+    for _ in range(num_admins):
+        email = f"lab_admin{fake.unique.random_int(min=1000, max=9999)}@example.com"
+        user, created = CustomUser.objects.get_or_create(
+            email=email,
+            defaults={
+                "first_name": fake.first_name(),
+                "last_name": fake.last_name(),
+                "password": "lab",
+                "role": "lab_admin",
+            }
+        )
+        LabAdmin.objects.get_or_create(
+            user=user,
+            defaults={
+                "license_number": f"LIC-{fake.unique.random_int(min=100000, max=999999)}",
+                "designation": fake.job(),
+                "qualifications": fake.text(max_nb_chars=100),
+                "years_of_experience": fake.random_int(min=1, max=30),
+                "specialization": fake.word(),
+                "emergency_contact": fake.phone_number(),
+            }
+        )
+
+# Generate dummy lab technicians
+def create_dummy_lab_technicians(num_technicians):
+    technicians = []
+    users = create_dummy_users(num_technicians, "lab_technician")
+    for user in users:
+        technician = LabTechnician.objects.create(
+            user=user,
+            license_number=fake.unique.random_number(digits=6),
+            specialization="Laboratory Testing",
+            years_of_experience=random.randint(1, 30),
+            lab_skills=fake.text(),
+            shift_timings={"Morning": "8AM-2PM", "Evening": "2PM-8PM"},
+            emergency_contact=fake.phone_number(),
+        )
+        technicians.append(technician)
+    return technicians
+
+# Generate dummy doctor appointments
+def generate_dummy_doctor_appointments(num_appointments, patients, doctors):
     for _ in range(num_appointments):
         patient = random.choice(patients)
         doctor = random.choice(doctors)
-        appointment_date = fake.date_between(start_date="today", end_date="+30d")
-        start_time = fake.time()
-
-        doctor_appointment = DoctorAppointment.objects.create(
-            patient=patient,  # Assigning Patient instance
+        DoctorAppointment.objects.create(
+            patient=patient,
             doctor=doctor,
-            appointment_date=appointment_date,
-            start_time=start_time,
+            appointment_date=fake.date_between(start_date="today", end_date="+30d"),
+            appointment_time=fake.time(),
             appointment_type=random.choice(["Consultation", "Follow-up"]),
             specialization=doctor.specialization,
-            fee=random.uniform(50, 200),  # Set fee for each appointment
+            fee=random.uniform(50, 200),
         )
 
+# Generate dummy lab technician appointments
+def generate_dummy_lab_appointments(num_appointments, patients, lab_technicians):
+    LAB_TEST_TYPES = [
+        "Complete Blood Count (CBC)", "Basic Metabolic Panel (BMP)", "Hemoglobin A1c (HbA1c)", "Testosterone Test",
+        "PCR Test", "BRCA Gene Test"
+    ]
+    for _ in range(num_appointments):
+        patient = random.choice(patients)
+        technician = random.choice(lab_technicians)
+        lab_test_type = random.choice(LAB_TEST_TYPES)
+        test_status = random.choice(["Pending", "Sample Collected", "Results Uploaded", "Results Updated"])
+        fee = LabTechnicianAppointmentFee.get_fee(lab_test_type) or 1000.00  
+        TechnicianAppointment.objects.create(
+            patient=patient,
+            lab_technician=technician,
+            lab_test_id=random.randint(1000, 9999),
+            lab_test_type=lab_test_type,
+            test_status=test_status,
+            results_available=test_status in ["Results Uploaded", "Results Updated"],
+            appointment_date=fake.date_between(start_date="today", end_date="+30d"),
+            appointment_time=fake.time(),
+            fee=fee,  
+        )
 
-
-
-# List of appointment types with sample fees
+# Define and insert appointment fees
 APPOINTMENT_FEES = {
     "Consultation": 1500.00,
     "Follow-up": 1000.00,
@@ -101,75 +161,44 @@ APPOINTMENT_FEES = {
     "Prescription Refill": 800.00,
 }
 
-# Function to insert or update appointment fees
 def populate_doctor_appointment_fees():
     for appointment_type, fee in APPOINTMENT_FEES.items():
-        fee_obj, created = DoctorAppointmentFee.objects.update_or_create(
+        DoctorAppointmentFee.objects.update_or_create(
             appointment_type=appointment_type, defaults={"fee": fee}
         )
-        if created:
-            print(f"Added: {appointment_type} with fee {fee} PKR")
-        else:
-            print(f"Updated: {appointment_type} with new fee {fee} PKR")
 
+LAB_TEST_FEES = {
+    "Complete Blood Count (CBC)": 1500.00,
+    "Basic Metabolic Panel (BMP)": 1200.00,
+    "Hemoglobin A1c (HbA1c)": 1300.00,
+    "Testosterone Test": 2000.00,
+    "PCR Test": 2500.00,
+    "BRCA Gene Test": 3000.00,
+}
 
-# Generate dummy EHR records separately
-def generate_dummy_ehr_records(num_records, patients, doctors):
-    for _ in range(num_records):
-        patient = random.choice(patients)
-        doctor = random.choice(doctors)
-        visit_date = fake.date_between(start_date="-30d", end_date="today")
-
-        ehr_record = EHR.objects.create(
-            patient=patient,
-            medical_conditions={"conditions": [fake.word(), fake.word()]},
-            current_medications={"medications": [fake.word(), fake.word()]},
-            immunization_records={"vaccines": [fake.word(), fake.word()]},
-            nail_image_analysis={"analysis": "Normal"},
-            test_results={"tests": [fake.word(), fake.word()]},
-            diagnoses={"diagnoses": [fake.word(), fake.word()]},
-            visit_date=visit_date,
-            category=random.choice(["Chronic", "Emergency", "Preventive", "General"]),
-            comments=fake.text(),
-            family_history=fake.text(),
-            consulted_by=f"{doctor.user.first_name} {doctor.user.last_name}",
+def populate_lab_appointment_fees():
+    for lab_test_type, fee in LAB_TEST_FEES.items():
+        LabTechnicianAppointmentFee.objects.update_or_create(
+            lab_test_type=lab_test_type, defaults={"fee": fee}
         )
 
-        print(f"EHR record created for {patient.user.first_name}, consulted by Dr. {doctor.user.first_name}")
-
-# Create dummy data
+# Run script to generate dummy data
 num_patients = 5
 num_doctors = 2
-num_appointments = 5
-num_ehr_records = 7  # Independent number of EHR records
+num_lab_technicians = 2
+num_clinic_admins = 1
+num_lab_admins = 1
+num_doctor_appointments = 10
+num_lab_appointments = 10
 
 patients = create_dummy_patients(num_patients)
 doctors = create_dummy_doctors(num_doctors)
-generate_dummy_appointments(num_appointments, patients, doctors)
-generate_dummy_ehr_records(num_ehr_records, patients, doctors)
-# Run the function
+lab_technicians = create_dummy_lab_technicians(num_lab_technicians)
+create_dummy_clinic_admins(num_clinic_admins)
+create_dummy_lab_admins(num_lab_admins)
+
+generate_dummy_doctor_appointments(num_doctor_appointments, patients, doctors)
+generate_dummy_lab_appointments(num_lab_appointments, patients, lab_technicians)
+
 populate_doctor_appointment_fees()
-
-# Generate dummy clinic_admin
-def create_dummy_clinic_admin():
-    email = f"clinic_admin{fake.unique.random_int(min=1000, max=9999)}@example.com"
-        
-    # Check if a CustomUser with this email already exists
-    user, created = CustomUser.objects.get_or_create(
-        email=email,
-        defaults={
-            "first_name": fake.first_name(),
-            "last_name": fake.last_name(),
-            "password": "cli",
-            "role": "clinic_admin",
-        }
-    )
-    
-    clinic_admin, created = ClinicAdmin.objects.get_or_create(
-        user=user,
-    )
-    
-    
-    return clinic_admin 
-
-create_dummy_clinic_admin()
+populate_lab_appointment_fees()

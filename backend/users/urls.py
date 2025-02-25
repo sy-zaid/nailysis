@@ -1,6 +1,7 @@
 from rest_framework.routers import DefaultRouter
-from users.views import DoctorAPIView,PatientAPIView,UserSerializerView
+from users.views import DoctorAPIView, PatientAPIView, UserSerializerView
 
+# Initialize the DRF default router
 router = DefaultRouter()
 router.register(r'doctors', DoctorAPIView, basename='doctor')
 router.register(r'patients', PatientAPIView, basename='patients')

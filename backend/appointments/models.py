@@ -216,10 +216,11 @@ class TechnicianAppointment(Appointment):
         ehr(OneToOneField): Links every appointment with a new EHR record.
     """
     lab_technician = models.ForeignKey(LabTechnician, on_delete=models.CASCADE, related_name="technician_appointments")
-    lab_test_id = models.IntegerField()
-    test_type = models.CharField(max_length=100)
+    lab_test_id = models.IntegerField() 
+    lab_test_type = models.CharField(max_length=100)  # Keep only one declaration
     test_status = models.CharField(max_length=50, default="Pending")
     results_available = models.BooleanField(default=False)
+    fee = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)  # Ensure this field exists
     
     # Field for linking every appointment with EHR record
     ehr = models.OneToOneField(EHR,on_delete=models.SET_NULL,blank=True, null=True,related_name="tech_appointment_ehr")
@@ -235,12 +236,52 @@ class TechnicianAppointment(Appointment):
         self.results_available = True
         self.save()
 
+    def update_test_status(self, results):
+        """Marks test results as updated."""
+        self.test_status = "Results Updated"
+        self.results_available = True
+        self.save() 
+
     def __str__(self):
-        return f"Lab Test {self.lab_test_id} - {self.patient} ({self.test_type})"
+        return f"Lab Test {self.lab_test_id} - {self.patient} ({self.lab_test_type})"
 
 
 class LabTechnicianAppointmentFee(models.Model):
-    pass
+    """
+    Stores fees for different types of lab test appointments.
+    
+    Attributes:
+        lab_test_type (str): Type of lab test.
+        fee (decimal): Fee amount for the lab test type.
+    """
+    LAB_TEST_TYPES = [
+    ("Complete Blood Count (CBC)", "Complete Blood Count (CBC)"),
+    ("Basic Metabolic Panel (BMP)", "Basic Metabolic Panel (BMP)"),
+    ("Hemoglobin A1c (HbA1c)", "Hemoglobin A1c (HbA1c)"),
+    ("Testosterone Test", "Testosterone Test"),
+    ("PCR Test", "PCR Test"),
+    ("BRCA Gene Test", "BRCA Gene Test")
+    ]
+
+
+    lab_test_type = models.CharField(max_length=50, choices=LAB_TEST_TYPES, unique=True)
+    fee = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+
+    @classmethod
+    def get_fee(cls, lab_test_type):
+        """Retrieves the fee for a given lab test type."""
+        try:
+            return cls.objects.get(lab_test_type=lab_test_type).fee
+        except cls.DoesNotExist:
+            return None
+
+    @classmethod
+    def update_fee(cls, lab_test_type, new_fee):
+        """Updates or creates a fee for a lab test type."""
+        fee_obj, created = cls.objects.update_or_create(
+            lab_test_type=lab_test_type, defaults={"fee": new_fee}
+        )
+        return fee_obj
 
 from django.db import models
 from django.contrib.auth import get_user_model
