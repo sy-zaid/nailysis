@@ -3,6 +3,10 @@ export const getAccessToken = () => {
   return localStorage.getItem("access");
 };
 
+export const getRole = () => {
+  return localStorage.getItem("role");
+};
+
 export const calculateAge = (dob) => {
   const birthDate = new Date(dob);
   const today = new Date();
@@ -47,6 +51,16 @@ export const diagnosesOptions = [
   { value: "Fungal Infection", label: "Fungal Infection" },
 ];
 
+/**
+ * Predefined current medications options for react-select.
+ */
+export const currentMedicationsOptions = [
+  { value: "Metformin", label: "Metformin" },
+  { value: "Aspirin", label: "Aspirin" },
+  { value: "Lisinopril", label: "Lisinopril" },
+  { value: "Atorvastatin", label: "Atorvastatin" },
+];
+
 export const handleSelectChange = (setData) => (name, selectedOptions) => {
   setData((prevData) => ({
     ...prevData,
@@ -60,7 +74,9 @@ export const handleInputChange = (setData) => (e) => {
 };
 
 export const formatEhrRecords = (response) => {
-  return response.data.map((record) => ({
+  console.clear()
+  console.log("FORMATTING.....",response.ehr_data)
+  return response.ehr_data.map((record) => ({
     id: record.id,
     patient_name: `${record.patient?.user?.first_name || "Null"} ${
       record.patient?.user?.last_name || "Null"
@@ -97,4 +113,11 @@ export const formatEhrRecords = (response) => {
   }));
 };
 
-
+export const preparePayload = (ehrData) => {
+  return Object.fromEntries(
+    Object.entries(ehrData).map(([key, value]) => [
+      key,
+      Array.isArray(value) ? JSON.stringify(value) : value,
+    ])
+  );
+};

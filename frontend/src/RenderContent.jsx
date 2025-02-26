@@ -3,7 +3,7 @@ import SystemAdminDashboard from "./pages/admin-system/system-admin-dashboard";
 
 // Clinic Admin Imports
 import ClinicAdminDashboard from "./pages/admin-clinic/clinic-admin-dashboard";
-import ElectronicHealthRecords from "./pages/admin-clinic/electronic-health-records";
+import ElectronicHealthRecords from "./pages/electronic-health-records";
 import PatientMedicalHistory from "./pages/admin-clinic/patient-health-history";
 import ViewAppointmentsClinicAdmin from "./pages/admin-clinic/view-appointments-clinic-admin";
 

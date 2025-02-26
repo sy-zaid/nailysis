@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import styles from "./electronic-health-records.module.css";
-import Navbar from "../../components/Dashboard/Navbar/Navbar";
+import Navbar from "../components/Dashboard/Navbar/Navbar";
 import axios from "axios";
 // Importing Popups for performing actions on EHR Records
-import PopupEHREdit from "../../components/Popup/popup-ehr-edit";
-import PopupEHRDelete from "../../components/Popup/popup-ehr-delete";
-import PopupEHRCreate from "../../components/Popup/popup-ehr-create";
+import PopupEHREdit from "../components/Popup/popup-ehr-edit";
+import PopupEHRDelete from "../components/Popup/popup-ehr-delete";
+import PopupEHRCreate from "../components/Popup/popup-ehr-create";
+
+import { useEhrUpdatesWS } from "../sockets/ehrSocket";
 
 const ElectronicHealthRecord = () => {
   const [menuOpen, setMenuOpen] = useState(null);
@@ -15,86 +17,7 @@ const ElectronicHealthRecord = () => {
   const [popupContent, setPopupContent] = useState();
   const [showPopup, setShowPopup] = useState(false);
   // WebSocket useEffect
-  useEffect(() => {
-    const socket = new WebSocket("ws://localhost:8000/ws/ehr_updates/");
-
-    socket.onopen = () => {
-      console.log("WebSocket Connected");
-    };
-
-    socket.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-
-      if (data.action === "create") {
-        if (!data.ehr_data || !data.id) {
-          console.warn(
-            "Invalid WebSocket data received for 'create' action:",
-            data
-          );
-          return;
-        }
-
-        // Transform the WebSocket data to match the records structure
-        const newRecord = {
-          id: data.id,
-          patient_name: `${data.ehr_data.patient?.user?.first_name || ""} ${
-            data.ehr_data.patient?.user?.last_name || ""
-          }`,
-          category: data.ehr_data.category || "N/A",
-          notes: data.ehr_data.comments || "No comments",
-          last_updated: data.ehr_data.last_updated
-            ? new Date(data.ehr_data.last_updated).toLocaleDateString() +
-              " | " +
-              new Date(data.ehr_data.last_updated).toLocaleTimeString()
-            : "N/A",
-          consulted_by: data.ehr_data.consulted_by || "Unknown",
-          medical_conditions: Array.isArray(data.ehr_data.medical_conditions)
-            ? data.ehr_data.medical_conditions.join(", ")
-            : "No records",
-          medications: Array.isArray(data.ehr_data.current_medications)
-            ? data.ehr_data.current_medications.join(", ")
-            : "No records",
-          immunization:
-            Array.isArray(data.ehr_data.immunization_records) &&
-            data.ehr_data.immunization_records.length > 1
-              ? data.ehr_data.immunization_records.join(", ")
-              : "No records",
-          family_history: data.ehr_data.family_history || "No records",
-          test_reports: Array.isArray(data.ehr_data.test_reports)
-            ? data.ehr_data.test_reports.join(", ")
-            : "No records",
-          nail_image_analysis: Array.isArray(data.ehr_data.nail_image_analysis)
-            ? data.ehr_data.nail_image_analysis.join(", ")
-            : "No records",
-          diagnostics: Array.isArray(data.ehr_data.diagnoses)
-            ? data.ehr_data.diagnoses.join(", ")
-            : "No records",
-        };
-
-        setRecords((prevRecords) => [...prevRecords, newRecord]);
-
-        // fetchData();
-      } else if (data.action === "update" && data.updatedRecord) {
-        setRecords((prevRecords) =>
-          prevRecords.map((record) =>
-            record.id === data.id
-              ? { ...record, ...data.updatedRecord }
-              : record
-          )
-        ); // Update only the changed record
-      } else if (data.action === "delete" && data.id) {
-        setRecords((prevRecords) =>
-          prevRecords.filter((r) => r.id !== data.id)
-        );
-      }
-    };
-
-    socket.onclose = () => {
-      console.log("WebSocket Disconnected");
-    };
-
-    return () => socket.close(); // Cleanup on unmount
-  }, []); // Empty dependency array ensures it runs once
+  useEhrUpdatesWS(setRecords); // Empty dependency array ensures it runs once
 
   // useEffect(() => {
   // Simulate fetching data from an API
@@ -216,14 +139,16 @@ const ElectronicHealthRecord = () => {
           <h1>Electronic Health Records</h1>
           <p>View and manage patient health records</p>
         </div>
-        <button
-          className={styles.addButton}
-          onClick={() => {
-            handleActionClick("Add New Record");
-          }}
-        >
-          + Add New Record
-        </button>
+        {curUserRole === "doctor" && (
+          <button
+            className={styles.addButton}
+            onClick={() => {
+              handleActionClick("Add New Record");
+            }}
+          >
+            + Add New Record
+          </button>
+        )}
       </div>
 
       <div className={styles.statusContainer}>

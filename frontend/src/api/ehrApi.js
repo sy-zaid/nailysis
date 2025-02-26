@@ -2,7 +2,10 @@ import axios from "axios";
 const API_URL = import.meta.env.VITE_API_URL;
 import { getAccessToken } from "../utils/utils";
 
-// Headers with Authorization
+/**
+ * Generates headers required for API requests, including the Authorization token.
+ * @returns {Object} Headers with Authorization for API requests.
+ */
 const getHeaders = () => {
   return {
     headers: {
@@ -11,7 +14,15 @@ const getHeaders = () => {
   };
 };
 
-// GET all EHR records or filter by patient ID
+/**
+ * Fetches EHR records from the API.
+ * - If a `patientId` is provided, it returns records specific to that patient.
+ * - If no `patientId` is provided, it returns all EHR records.
+ * 
+ * @param {number|null} [patientId=null] - The ID of the patient to filter EHR records by. If null, fetches all records.
+ * @returns {Promise<Object>} API response containing the EHR records.
+ * @throws {Error} Logs and throws an error if the request fails.
+ */
 export const getEHR = async (patientId = null) => {
   try {
     const url = patientId
@@ -25,7 +36,13 @@ export const getEHR = async (patientId = null) => {
   }
 };
 
-// GET a single EHR record by ID
+/**
+ * Fetches a single EHR record by its unique ID.
+ * 
+ * @param {number} ehrId - The unique ID of the EHR record to retrieve.
+ * @returns {Promise<Object>} The EHR record data.
+ * @throws {Error} Logs and throws an error if the request fails.
+ */
 export const getEHRById = async (ehrId) => {
   try {
     const response = await axios.get(
@@ -39,7 +56,13 @@ export const getEHRById = async (ehrId) => {
   }
 };
 
-// POST (Create a new EHR record)
+/**
+ * Creates a new EHR record.
+ * 
+ * @param {Object} ehrData - The data for the new EHR record.
+ * @returns {Promise<Object>} The created EHR record.
+ * @throws {Error} Logs and throws an error if the request fails.
+ */
 export const createEHR = async (ehrData) => {
   try {
     return await axios.post(
@@ -53,7 +76,14 @@ export const createEHR = async (ehrData) => {
   }
 };
 
-// PUT (Update an existing EHR record)
+/**
+ * Updates an existing EHR record by ID.
+ * 
+ * @param {number} ehrId - The unique ID of the EHR record to update.
+ * @param {Object} ehrData - The updated data for the EHR record.
+ * @returns {Promise<Object>} The updated EHR record data.
+ * @throws {Error} Logs and throws an error if the request fails.
+ */
 export const updateEHR = async (ehrId, ehrData) => {
   try {
     const response = await axios.put(
@@ -68,7 +98,13 @@ export const updateEHR = async (ehrId, ehrData) => {
   }
 };
 
-// DELETE (Remove an EHR record)
+/**
+ * Deletes an existing EHR record by ID.
+ * 
+ * @param {number} ehrId - The unique ID of the EHR record to delete.
+ * @returns {Promise<Object>} API response confirming deletion.
+ * @throws {Error} Logs and throws an error if the request fails.
+ */
 export const deleteEHR = async (ehrId) => {
   try {
     const response = await axios.delete(

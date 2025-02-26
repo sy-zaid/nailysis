@@ -1,31 +1,25 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Select from "react-select";
 import styles from "./popup-appointment-book.module.css";
 import Popup from "./Popup.jsx";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { createEHR, getEHR, getEHRById } from "../../api/ehrApi.js";
+import { createEHR, getEHR } from "../../api/ehrApi.js";
 import { useAllPatients } from "../../api/usersApi.js";
-import useCurrentUserData from "../../useCurrentUserData.jsx";
+import { useEhrUpdatesWS } from "../../sockets/ehrSocket.js";
 import {
-  getAccessToken,
   handleSelectChange,
   handleInputChange,
   formatEhrRecords,
+  preparePayload,
 } from "../../utils/utils.js";
 import {
   medicalConditionsOptions,
   categoryOptions,
   diagnosesOptions,
+  currentMedicationsOptions,
 } from "../../utils/utils.js";
-import { useEhrUpdatesWS } from "../../sockets/ehrSocket.js";
 
-const PopupEHRCreate = ({ onClose, appointmentDetails }) => {
+const PopupEHRCreate = ({ onClose }) => {
   const [popupTrigger, setPopupTrigger] = useState(true);
-  const token = getAccessToken();
-
-  // Fetch Patients List
-  const [patients, setPatients] = useState([]);
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [ehrData, setEhrData] = useState({
     patient_id: "",
@@ -46,28 +40,24 @@ const PopupEHRCreate = ({ onClose, appointmentDetails }) => {
 
   // Set up WebSocket connection when component mounts
   const socket = useEhrUpdatesWS(setRecords);
-  if (isLoading) {
-    return <p>Loading...</p>;
-  }
 
-  if (error) {
-    return <p>Error fetching patients</p>;
-  }
-  useEffect(() => {
-    try {
-      const formattedPatients =
-        patientsData?.map((patient) => ({
-          value: patient.user.user_id,
-          label: `${patient.user.first_name} ${patient.user.last_name}`,
-          details: patient,
-        })) || [];
-
-      setPatients(formattedPatients);
-      console.log("Formatted Patients:", formattedPatients);
-    } catch (error) {
-      console.error("Error fetching patients:", error);
-    }
+  const formattedPatients = useMemo(() => {
+    return (
+      patientsData?.map((patient) => ({
+        value: patient.user.user_id,
+        label: `${patient.user.first_name} ${patient.user.last_name}`,
+        details: patient,
+      })) || []
+    );
   }, [patientsData]);
+
+  // Set `patients` directly to `formattedPatients` instead of using `useEffect`
+  const [patients, setPatients] = useState(formattedPatients);
+
+  // Update state only when `formattedPatients` changes
+  useEffect(() => {
+    setPatients(formattedPatients);
+  }, [formattedPatients]); // Only update state when `formattedPatients` changes
 
   const handlePatientChange = async (selected) => {
     setSelectedPatient(selected);
@@ -95,14 +85,7 @@ const PopupEHRCreate = ({ onClose, appointmentDetails }) => {
   const handleCreateEHR = async () => {
     try {
       // Prepare request payload
-      const payload = { ...ehrData };
-
-      // Ensure arrays are sent as JSON strings (since backend expects them)
-      Object.entries(payload).forEach(([key, value]) => {
-        if (Array.isArray(value)) {
-          payload[key] = JSON.stringify(value);
-        }
-      });
+      const payload = preparePayload(ehrData);
 
       // Send API request
       const response = await createEHR(payload);
@@ -133,7 +116,13 @@ const PopupEHRCreate = ({ onClose, appointmentDetails }) => {
   const onInputChange = handleInputChange(setEhrData);
   // Function to update value from select field into ehrData (e.g. onChange={(selected) => onSelectChange("diagnoses", selected)})
   const onSelectChange = handleSelectChange(setEhrData);
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
 
+  if (error) {
+    return <p>Error fetching patients</p>;
+  }
   return (
     <Popup trigger={popupTrigger} setTrigger={setPopupTrigger}>
       <div className={styles.formContainer}>
@@ -240,12 +229,7 @@ const PopupEHRCreate = ({ onClose, appointmentDetails }) => {
               <label>Current Medications</label>
               <Select
                 isMulti
-                options={[
-                  { value: "Metformin", label: "Metformin" },
-                  { value: "Aspirin", label: "Aspirin" },
-                  { value: "Lisinopril", label: "Lisinopril" },
-                  { value: "Atorvastatin", label: "Atorvastatin" },
-                ]}
+                options={currentMedicationsOptions}
                 placeholder="Select or add medications"
                 onChange={(selected) =>
                   onSelectChange("current_medications", selected)
@@ -258,12 +242,7 @@ const PopupEHRCreate = ({ onClose, appointmentDetails }) => {
               <label>Diagnoses</label>
               <Select
                 isMulti
-                options={[
-                  { value: "Anemia", label: "Anemia" },
-                  { value: "Diabetes", label: "Diabetes" },
-                  { value: "Hypertension", label: "Hypertension" },
-                  { value: "Fungal Infection", label: "Fungal Infection" },
-                ]}
+                options={diagnosesOptions}
                 placeholder="Select diagnoses"
                 onChange={(selected) => onSelectChange("diagnoses", selected)}
               />
