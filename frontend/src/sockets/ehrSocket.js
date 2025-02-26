@@ -35,8 +35,13 @@ export const useEhrUpdatesWS = (setRecords) => {
             );
             return;
           } else {
-            const formattedData = formatEhrRecords(data);
-            setRecords((prevRecords) => [...prevRecords, formattedData]);
+            console.log("DATA FROM WEBSOCKET", data.ehr_data);
+            const formattedData = formatEhrRecords(data.ehr_data, "ehr_ws");
+
+            setRecords((prevRecords) => {
+              const exists = prevRecords.some((rec) => rec.id === formattedData[0].id);
+              return exists ? prevRecords : [...prevRecords, formattedData[0]];
+            });
           }
         } else if (data.action === "update" && data.updatedRecord) {
           setRecords((prevRecords) =>

@@ -8,6 +8,8 @@ import PopupEHRDelete from "../components/Popup/popup-ehr-delete";
 import PopupEHRCreate from "../components/Popup/popup-ehr-create";
 
 import { useEhrUpdatesWS } from "../sockets/ehrSocket";
+import { formatEhrRecords } from "../utils/utils";
+import { getEHR } from "../api/ehrApi";
 
 const ElectronicHealthRecord = () => {
   const [menuOpen, setMenuOpen] = useState(null);
@@ -23,58 +25,20 @@ const ElectronicHealthRecord = () => {
   // Simulate fetching data from an API
   const fetchData = async () => {
     try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/ehr_records`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      // console.log("SUCCESSFULLY FETCHED ElectronicHealthRecord RECORDS");
-      // setResponse(response);
-      console.log(response);
-      console.log("API Response Data:", response.data);
+      const response = await getEHR(  );
+      // Formatting the response data to display on table
+      console.log("EHR_DATA", response);
+      const formattedData = formatEhrRecords(response.data, "ehr_create");
 
-      // Transform the API response to match the dummyRecords structure
-      const transformedRecords = response.data.map((record) => ({
-        id: record.id,
-        patient_name: `${record.patient?.user?.first_name || ""} ${
-          record.patient?.user?.last_name || ""
-        }`,
-        category: record.category || "N/A",
-        notes: record.comments || "No comments",
-        last_updated: record.last_updated
-          ? new Date(record.last_updated).toLocaleDateString() +
-            " | " +
-            new Date(record.last_updated).toLocaleTimeString()
-          : "N/A",
-        consulted_by: record.consulted_by || "Unknown",
-        medical_conditions: Array.isArray(record.medical_conditions)
-          ? record.medical_conditions.join(", ")
-          : "No records",
-        medications: Array.isArray(record.current_medications)
-          ? record.current_medications.join(", ")
-          : "No records",
-        immunization:
-          Array.isArray(record.immunization_records) &&
-          record.immunization_records.length > 1
-            ? record.immunization_records.join(", ")
-            : "No records",
-        family_history: record.family_history || "No records",
-        test_reports: Array.isArray(record.test_reports)
-          ? record.test_reports.join(", ")
-          : "No records",
-        nail_image_analysis: Array.isArray(record.nail_image_analysis)
-          ? record.nail_image_analysis.join(", ")
-          : "No records",
-        diagnostics: Array.isArray(record.diagnoses)
-          ? record.diagnoses.join(", ")
-          : "No recordsss",
-      }));
-
-      setRecords(transformedRecords);
+      setRecords(formattedData);
       console.log("TRANSFORMED RECORDS:", records);
     } catch (error) {
       console.log(error);
     }
   };
+  useEffect(() => {
+    console.log("Updated Records:", records);
+  }, [records]); // This will log the updated records when they change
 
   useEffect(() => {
     fetchData();

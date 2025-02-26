@@ -73,10 +73,22 @@ export const handleInputChange = (setData) => (e) => {
   setData((prev) => ({ ...prev, [name]: value }));
 };
 
-export const formatEhrRecords = (response) => {
-  console.clear()
-  console.log("FORMATTING.....",response.ehr_data)
-  return response.ehr_data.map((record) => ({
+export const formatEhrRecords = (response, type) => {
+  if (!response) {
+    console.error("formatEhrRecords received undefined data");
+    return [];
+  }
+  let ehrArray;
+  if (type === "ehr_ws") {
+    // Ensure ehrData is always an array
+    ehrArray = Array.isArray(response)
+      ? response
+      : [response];
+  } else if (type === "ehr_create") {
+    ehrArray = response;
+  }
+  console.log("CONVERTING THIS:",ehrArray)
+  return ehrArray.map((record) => ({
     id: record.id,
     patient_name: `${record.patient?.user?.first_name || "Null"} ${
       record.patient?.user?.last_name || "Null"

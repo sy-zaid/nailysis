@@ -67,7 +67,10 @@ const PopupEHRCreate = ({ onClose }) => {
       try {
         const response = await getEHR(selected.value);
         // Formatting the response data to display on table
-        setRecords(formatEhrRecords(response));
+        console.log("EHR_CREATE_DATA",response)
+        const formattedData = formatEhrRecords(response.data,"ehr_create")
+        
+        setRecords(formattedData);
 
         // Use setEhrData correctly to update state
         setEhrData((prev) => ({
