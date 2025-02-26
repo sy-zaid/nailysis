@@ -1,31 +1,39 @@
 .pageContainer {
-  padding: 20px;
-  background-color: #f5f5f5;
+  padding-top: 10px;
+  margin-left: 40px;
+  background-color: #ffffff;
   min-height: 100vh;
 }
 
-.header {
+.heading {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
+  flex-direction: column;
+  margin-top: 20px;
 }
 
-.header h1 {
+.heading h1 {
   font-size: 24px;
   font-weight: 600;
   margin: 0;
   color: #111827;
 }
 
-.header p {
-  color: #6B7280;
+.heading p {
+  color: #6b7280;
   margin: 4px 0 0 0;
   font-size: 14px;
 }
 
+.top {
+  display: flex;
+  /* flex-direction: row; */
+  /* justify-content: space-between;  */
+  /* align-items: center; */
+  /* width: 100%; Ensures the flex container spans full width */
+}
+
 .addButton {
-  background-color: #2563EB;
+  /* background-color: #0067ff; */
   color: white;
   padding: 8px 16px;
   border-radius: 8px;
@@ -34,51 +42,54 @@
   cursor: pointer;
   transition: background-color 0.2s;
   box-shadow: 0 2px 4px rgba(37, 99, 235, 0.1);
+  white-space: nowrap;
 }
 
 .addButton:hover {
-  background-color: #1D4ED8;
+  background-color: #1d4ed8;
   box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
 }
 
 .statusContainer {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 20px;
+  gap: 80px;
+  /* margin-bottom: 20px; */
   flex-wrap: wrap;
+  padding-top: 20px;
+  margin-bottom: 10px;
 }
 
 .status {
   padding: 6px 16px;
-  background-color: #F3F4F6;
+  /* background-color: #f3f4f6; */
   border-radius: 20px;
   font-size: 14px;
-  color: #4B5563;
+  color: #4b5563;
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .status:hover {
-  background-color: #E5E7EB;
-  color: #374151;
+  background-color: #0067ff;
+  color: #fff;
 }
 
-.status.active {
-  background-color: #2563EB;
+/* .status.active {
+  background-color: #2563eb;
   color: white;
-}
+} */
 
 .completed {
   margin-left: auto;
-  color: #6B7280;
+  color: #6b7280;
   font-size: 14px;
 }
 
 .mainContent {
   background-color: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border-radius: 50px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
 }
 
 .tableContainer {
@@ -95,12 +106,12 @@
 }
 
 .table th {
-  background-color: #F9FAFB;
+  background-color: #f9fafb;
   color: #374151;
   font-weight: 500;
   text-align: left;
   padding: 12px 16px;
-  border-bottom: 1px solid #E5E7EB;
+  border-bottom: 1px solid #e5e7eb;
   white-space: nowrap;
 }
 
@@ -114,12 +125,12 @@
 
 .table td {
   padding: 12px 16px;
-  border-bottom: 1px solid #E5E7EB;
-  color: #4B5563;
+  border-bottom: 1px solid #e5e7eb;
+  color: #4b5563;
 }
 
 .table tbody tr:hover {
-  background-color: #F9FAFB;
+  background-color: #f9fafb;
 }
 
 .table button {
@@ -127,14 +138,101 @@
   border: none;
   cursor: pointer;
   padding: 4px 8px;
-  color: #6B7280;
+  color: #6b7280;
   font-size: 16px;
   border-radius: 4px;
 }
 
 .table button:hover {
   color: #374151;
-  background-color: #F3F4F6;
+  background-color: #f3f4f6;
+}
+
+/* Add these styles to your existing CSS */
+.tableActions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.bulkActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.checkboxContainer {
+  display: inline-block;
+  position: relative;
+  padding-left: 24px;
+  cursor: pointer;
+}
+
+.checkboxContainer input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 16px;
+  width: 16px;
+  background-color: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+}
+
+.bulkActions button {
+  background-color: #ffffff;
+  color: #1118278c;
+}
+
+.checkboxContainer:hover input ~ .checkmark {
+  background-color: #f3f4f6;
+}
+
+.checkboxContainer input:checked ~ .checkmark {
+  background-color: #0067ff;
+  border-color: #0067ff;
+}
+
+.searchSort {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.sortBy {
+  color: #6b7280;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.search {
+  position: relative;
+}
+
+.search input {
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  font-size: 14px;
+  width: 200px;
+}
+
+.search input:focus {
+  outline: none;
+  border-color: #0067ff;
+  box-shadow: 0 0 0 2px rgba(0, 103, 255, 0.1);
 }
 
 .menu {
@@ -142,7 +240,8 @@
   right: 24px;
   background-color: white;
   border-radius: 8px;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
   z-index: 10;
 }
 
@@ -159,7 +258,7 @@
 }
 
 .menu li:hover {
-  background-color: #F3F4F6;
+  background-color: #f3f4f6;
 }
 
 /* Add responsiveness */
@@ -167,13 +266,13 @@
   .tableContainer {
     margin: 0 -16px;
   }
-  
+
   .header {
     flex-direction: column;
     align-items: flex-start;
     gap: 16px;
   }
-  
+
   .addButton {
     width: 100%;
   }
@@ -187,4 +286,64 @@
     margin-left: 0;
     margin-top: 8px;
   }
+}
+
+.tableActions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.bulkActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.searchSort {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.sortBy {
+  color: #6b7280;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.search {
+  position: relative;
+}
+
+.search input {
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  width: 200px;
+}
+
+.checkboxContainer {
+  display: inline-block;
+  position: relative;
+  padding-left: 24px;
+  cursor: pointer;
+}
+
+.checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 16px;
+  width: 16px;
+  background-color: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
 }

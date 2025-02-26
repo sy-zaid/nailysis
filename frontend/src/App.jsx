@@ -27,6 +27,7 @@ import YourPatients from "./pages/admin-clinic/your-patients-clinic-admin";
 import PatientProfile from "./pages/admin-clinic/patient-profile-clinic-admin";
 import DoctorProfile from "./pages/admin-clinic/doctor-profile-clinic-admin";
 
+
 function Logout() {
   localStorage.clear();
   return <Navigate to="/Login" />;
@@ -136,6 +137,7 @@ function App() {
             }
           />
 
+         
           {/*clinic-admin => Patient Health History */}
           <Route
             path="/clinic-admin/patient-history"

@@ -126,19 +126,22 @@ const ElectronicHealthRecord = () => {
     <div className={styles.pageContainer}>
       {showPopup && popupContent}
       <Navbar />
-      <div className={styles.header}>
-        <div>
+      <div className="top">
+        <div className="heading">
           <h1>Electronic Health Records</h1>
           <p>View and manage patient health records</p>
         </div>
-        <button
-          className={styles.addButton}
-          onClick={() => {
-            handleActionClick("Add New Record");
-          }}
-        >
-          + Add New Record
-        </button>
+        <div className="addButton">
+          {" "}
+          <button
+            className={styles.addButton}
+            onClick={() => {
+              handleActionClick("Add New Record");
+            }}
+          >
+            + Add New Record
+          </button>
+        </div>
       </div>
 
       <div className={styles.statusContainer}>
@@ -151,6 +154,26 @@ const ElectronicHealthRecord = () => {
 
       <div className={styles.mainContent}>
         <div className={styles.tableContainer}>
+          <div className={styles.tableActions}>
+            <div className={styles.bulkActions}>
+              <label className={styles.checkboxContainer}>
+                <input type="checkbox" />
+                <span className={styles.checkmark}></span>
+              </label>
+              <button>Bulk Action: Delete</button>
+            </div>
+            <div className={styles.searchSort}>
+              <div className={styles.sortBy}>
+                Sort By:
+                <select defaultValue="consulted_today">
+                  <option value="consulted_today">Consulted Today</option>
+                </select>
+              </div>
+              <div className={styles.search}>
+                <input type="text" placeholder="Search By Patient Name" />
+              </div>
+            </div>
+          </div>
           <table className={styles.table}>
             <thead>
               <tr>
