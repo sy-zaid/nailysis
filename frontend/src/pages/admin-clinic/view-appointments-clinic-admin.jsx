@@ -62,7 +62,7 @@ const AppointmentClinicAdmin = () => {
   };
 
   // Function to toggle the menu for a specific appointment
-  const toggleMenu = (appointmentId) => {
+  const toggleActionMenu = (appointmentId) => {
     setMenuOpen(menuOpen === appointmentId ? null : appointmentId);
   };
 
@@ -215,7 +215,7 @@ const AppointmentClinicAdmin = () => {
                     {/* Additional Notes */}
                     <td>
                       <button
-                        onClick={() => toggleMenu(row.appointment_id)}
+                        onClick={() => toggleActionMenu(row.appointment_id)}
                         className={styles.moreActionsBtn}
                       >
                         <img

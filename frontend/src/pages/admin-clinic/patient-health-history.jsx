@@ -6,7 +6,7 @@ const PatientHealthHistory = () => {
   const [menuOpen, setMenuOpen] = useState(null);
   const [selectedRows, setSelectedRows] = useState([]);
 
-  const toggleMenu = (recordId) => {
+  const toggleActionMenu = (recordId) => {
     setMenuOpen(menuOpen === recordId ? null : recordId);
   };
 
@@ -142,7 +142,7 @@ const PatientHealthHistory = () => {
                   <td>{record.consultationNotes}</td>
                   <td>{record.consultedBy}</td>
                   <td>
-                    <button onClick={() => toggleMenu(record.id)}>⋮</button>
+                    <button onClick={() => toggleActionMenu(record.id)}>⋮</button>
                     {menuOpen === record.id && (
                       <div className={styles.menu}>
                         <ul>

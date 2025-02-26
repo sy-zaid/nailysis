@@ -133,3 +133,14 @@ export const preparePayload = (ehrData) => {
     ])
   );
 };
+
+export const toggleActionMenu = (recordId) => {
+  setMenuOpen(menuOpen === recordId ? null : recordId);
+};
+
+export const handleClosePopup = () => {
+  setShowPopup(false);
+};
+export const handleOpenPopup = () => {
+  setShowPopup(true); // Show the popup when button is clicked
+};

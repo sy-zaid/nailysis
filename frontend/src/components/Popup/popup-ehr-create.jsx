@@ -189,7 +189,7 @@ const PopupEHRCreate = ({ onClose }) => {
                   <td>{record.last_updated}</td>
 
                   {/* <td>
-                    <button onClick={() => toggleMenu(record.id)}>⋮</button>
+                    <button onClick={() => toggleActionMenu(record.id)}>⋮</button>
                     {menuOpen === record.id && (
                       <div className={styles.menu}>
                         <ul>
