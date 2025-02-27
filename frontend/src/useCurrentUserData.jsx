@@ -60,7 +60,7 @@ const useCurrentUserData = () => {
     cacheTime: 0,
   });
 
-  // 🔥 Invalidate ALL queries when role changes
+  //  Invalidate ALL queries when role changes
   if (query.data?.role) {
     queryClient.invalidateQueries(); // Clears all cached queries
   }

@@ -21,7 +21,7 @@ import { getEHR } from "../api/ehrApi";
 import useCurrentUserData from "../useCurrentUserData";
 
 /**
- * **ElectronicHealthRecord Component**
+ * **ElectronicHealthRecord Component** 
  *
  * This component displays a table of Electronic Health Records (EHR) and
  * allows users (doctors) to add, edit, or delete records.

@@ -24,7 +24,7 @@ class EHRConsumer(AsyncWebsocketConsumer):
             """Handles incoming WebSocket messages from the client"""
             
             data = json.loads(text_data)
-            print("🔥 Received WebSocket Data:", data)
+            print(" Received WebSocket Data:", data)
 
             action = data.get("action")
             ehr_id = data.get("id")
@@ -55,7 +55,7 @@ class EHRConsumer(AsyncWebsocketConsumer):
 
     async def ehr_update(self, event):
         """Sends updates to all WebSocket users"""
-        print("🔥 WebSocket Broadcast ->", event)
+        print(" WebSocket Broadcast ->", event)
 
         # Deserialize `ehr_data` before sending it to the frontend
         ehr_data = event.get("ehr_data")  # No need to deserialize again
