@@ -91,6 +91,10 @@ export const renderDoctorContent = (view) => {
 // Render function for Patient
 export const renderPatientContent = (view) => {
   switch (view) {
+    case "Patient Records":
+      return <ElectronicHealthRecords name="Patient Records" />;
+    case "Medical History & Notes":
+      return <PatientMedicalHistory name="Medical History & Notes" />;
     case "Test Results":
       return <PlaceholderComponent name="Test Results" />;
     case "Samples":

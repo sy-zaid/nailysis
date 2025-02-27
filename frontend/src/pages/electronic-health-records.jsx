@@ -14,8 +14,11 @@ import {
   toggleActionMenu,
   handleOpenPopup,
   handleClosePopup,
+  getAccessToken,
+  getRole,
 } from "../utils/utils";
 import { getEHR } from "../api/ehrApi";
+import useCurrentUserData from "../useCurrentUserData";
 
 /**
  * **ElectronicHealthRecord Component**
@@ -33,10 +36,11 @@ import { getEHR } from "../api/ehrApi";
 const ElectronicHealthRecord = () => {
   const [menuOpen, setMenuOpen] = useState(null); // Track open action menu
   const [records, setRecords] = useState([]); // Store EHR records
-  const curUserRole = localStorage.getItem("role"); // Get current user role
+  const curUserRole = getRole(); // Get current user role
+
   const [popupContent, setPopupContent] = useState(); // Store popup content
   const [showPopup, setShowPopup] = useState(false); // Track popup visibility
-
+  const { data: curUser } = useCurrentUserData(); // Fetch patient data;
   // Initialize WebSocket to receive real-time EHR updates
   useEhrUpdatesWS(setRecords);
 
@@ -44,8 +48,15 @@ const ElectronicHealthRecord = () => {
    * Fetches EHR data from the backend and formats it.
    */
   const fetchData = async () => {
+    let response;
     try {
-      const response = await getEHR();
+      if (curUserRole === "patient") {
+        console.log("USER IS PATIENT SO FETCHING ONLY PATIENTS EHR",curUser[0]?.user_id);
+
+        response = await getEHR(curUser[0].user_id);
+      } else {
+        response = await getEHR();
+      }
       console.log("EHR_DATA", response);
 
       // Format fetched data before updating the state

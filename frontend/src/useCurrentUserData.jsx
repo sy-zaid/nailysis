@@ -29,10 +29,13 @@ const fetchCurrentUserData = async () => {
   if (!token) throw new Error("No valid token found");
 
   try {
-    const response = await axios.get("http://127.0.0.1:8000/api/current_users/", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    console.log(response.data);
+    const response = await axios.get(
+      "http://127.0.0.1:8000/api/current_users/",
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    console.log("CURUSERDATA:", response.data);
     return Array.isArray(response.data) ? response.data : []; // Ensure an array is returned
   } catch (error) {
     if (error.response?.status === 401) {
