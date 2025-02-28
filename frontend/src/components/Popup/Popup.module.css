@@ -2,7 +2,7 @@
 .popup {
     position: fixed;
     /* background-color: red; */
-    top: 5%;
+    top: 0;
     left: 0;
     width: 100%;
     height: 100vh;
@@ -31,10 +31,11 @@
     scrollbar-color: #0067FF #F0F0F0; /* Scrollbar color for Firefox */
 }
 
+
 .closeBtn {
     position: absolute;
-    top: 0;
-    right: 120px;
+    top: 40px;
+    right: 165px;
     cursor: pointer;
     background: transparent;
     color: #4E4E4E;
