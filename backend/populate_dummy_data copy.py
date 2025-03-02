@@ -1,5 +1,5 @@
 import random
-from datetime import datetime
+from datetime import datetime, timedelta
 from faker import Faker
 from users.models import CustomUser, Patient, Doctor, LabTechnician, ClinicAdmin, LabAdmin
 from appointments.models import DoctorAppointment, TechnicianAppointment, LabTechnicianAppointmentFee, DoctorAppointmentFee
@@ -57,43 +57,55 @@ def create_dummy_doctors(num_doctors):
 
 # Generate dummy clinic admins
 def create_dummy_clinic_admins(num_admins):
-    for _ in range(num_admins):
-        email = f"clinic_admin{fake.unique.random_int(min=1000, max=9999)}@example.com"
-        user, created = CustomUser.objects.get_or_create(
-            email=email,
-            defaults={
-                "first_name": fake.first_name(),
-                "last_name": fake.last_name(),
-                "password": "cli",
-                "role": "clinic_admin",
-            }
-        )
-        ClinicAdmin.objects.get_or_create(user=user)
+    email = f"clinic_admin{fake.unique.random_int(min=1000, max=9999)}@example.com"
+    # Check if a CustomUser with this email already exists
+    user, created = CustomUser.objects.get_or_create(
+        email=email,
+        defaults={
+            "first_name": fake.first_name(),
+            "last_name": fake.last_name(),
+            "password": "cli",
+            "role": "clinic_admin",
+        }
+    )
+    clinic_admin, created = ClinicAdmin.objects.get_or_create(
+        user=user,
+    )
+    return clinic_admin 
 
 # Generate dummy lab admins
 def create_dummy_lab_admins(num_admins):
-    for _ in range(num_admins):
-        email = f"lab_admin{fake.unique.random_int(min=1000, max=9999)}@example.com"
-        user, created = CustomUser.objects.get_or_create(
-            email=email,
-            defaults={
-                "first_name": fake.first_name(),
-                "last_name": fake.last_name(),
-                "password": "lab",
-                "role": "lab_admin",
-            }
-        )
-        LabAdmin.objects.get_or_create(
-            user=user,
-            defaults={
-                "license_number": f"LIC-{fake.unique.random_int(min=100000, max=999999)}",
-                "designation": fake.job(),
-                "qualifications": fake.text(max_nb_chars=100),
-                "years_of_experience": fake.random_int(min=1, max=30),
-                "specialization": fake.word(),
-                "emergency_contact": fake.phone_number(),
-            }
-        )
+    email = f"lab_admin{fake.unique.random_int(min=1000, max=9999)}@example.com"
+
+    # Check if a CustomUser with this email already exists
+    user, created = CustomUser.objects.get_or_create(
+        email=email,
+        defaults={
+            "first_name": fake.first_name(),
+            "last_name": fake.last_name(),
+            "password": "lab",
+            "role": "lab_admin",
+        }
+    )
+
+    # Create a unique license number
+    license_number = f"LIC-{fake.unique.random_int(min=100000, max=999999)}"
+
+    # Create or get the LabAdmin instance
+    lab_admin, created = LabAdmin.objects.get_or_create(
+        user=user,
+        defaults={
+            "license_number": license_number,
+            "designation": fake.job(),
+            "qualifications": fake.text(max_nb_chars=100),
+            "years_of_experience": fake.random_int(min=1, max=30),
+            "specialization": fake.word(),
+            "emergency_contact": fake.phone_number(),
+        }
+    )
+
+    return lab_admin
+
 
 # Generate dummy lab technicians
 def create_dummy_lab_technicians(num_technicians):
@@ -103,7 +115,7 @@ def create_dummy_lab_technicians(num_technicians):
         technician = LabTechnician.objects.create(
             user=user,
             license_number=fake.unique.random_number(digits=6),
-            specialization="Laboratory Testing",
+            specialization=fake.job(),
             years_of_experience=random.randint(1, 30),
             lab_skills=fake.text(),
             shift_timings={"Morning": "8AM-2PM", "Evening": "2PM-8PM"},
@@ -138,19 +150,20 @@ def generate_dummy_lab_appointments(num_appointments, patients, lab_technicians)
         technician = random.choice(lab_technicians)
         lab_test_type = random.choice(LAB_TEST_TYPES)
         test_status = random.choice(["Pending", "Sample Collected", "Results Uploaded", "Results Updated"])
-        fee = LabTechnicianAppointmentFee.get_fee(lab_test_type) or 1000.00  
+        fee = LabTechnicianAppointmentFee.get_fee(lab_test_type) or 1000.00  # Default fee if not found
         TechnicianAppointment.objects.create(
             patient=patient,
             lab_technician=technician,
+            lab_test_id=random.randint(1000, 9999),
             lab_test_type=lab_test_type,
             test_status=test_status,
             results_available=test_status in ["Results Uploaded", "Results Updated"],
             appointment_date=fake.date_between(start_date="today", end_date="+30d"),
             appointment_time=fake.time(),
-            fee=fee,  
+            fee=fee,
         )
 
-# Define and insert appointment fees
+# Define appointment fees
 APPOINTMENT_FEES = {
     "Consultation": 1500.00,
     "Follow-up": 1000.00,
@@ -159,12 +172,14 @@ APPOINTMENT_FEES = {
     "Prescription Refill": 800.00,
 }
 
+# Insert or update doctor appointment fees
 def populate_doctor_appointment_fees():
     for appointment_type, fee in APPOINTMENT_FEES.items():
         DoctorAppointmentFee.objects.update_or_create(
             appointment_type=appointment_type, defaults={"fee": fee}
         )
 
+# Define lab test fees
 LAB_TEST_FEES = {
     "Complete Blood Count (CBC)": 1500.00,
     "Basic Metabolic Panel (BMP)": 1200.00,
@@ -174,6 +189,7 @@ LAB_TEST_FEES = {
     "BRCA Gene Test": 3000.00,
 }
 
+# Insert or update lab technician appointment fees
 def populate_lab_appointment_fees():
     for lab_test_type, fee in LAB_TEST_FEES.items():
         LabTechnicianAppointmentFee.objects.update_or_create(

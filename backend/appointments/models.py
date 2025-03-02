@@ -65,6 +65,30 @@ class Appointment(models.Model):
         except Exception as e:
             print(f"Error while rescheduling: {e}")
 
+    def reschedule_lab_appointment(self, new_date, new_time,new_specialization,new_lab_technician,new_appointment_type):
+        try:
+            """Reschedules the appointment to a new date and time."""
+            self.appointment_date = new_date
+            self.appointment_time = new_time
+            if isinstance(self, TechnicianAppointment):  # Check if it's a LabTechnicianAppointment
+                print("YES ITS A LAB TECHNICIAN APPOINTMENT INSTANCE")
+                if new_specialization:
+                    self.specialization = new_specialization
+                if new_lab_technician:
+                   # Fetch the Lab Technician instance using the ID
+                    try:
+                        lab_technician_instance = LabTechnician.objects.get(pk=new_lab_technician)
+                        self.lab_technician = lab_technician_instance
+                    except Doctor.DoesNotExist as e:
+                        raise ValueError(f"Lab Technician with ID {new_lab_technician} does not exist") from e
+                if new_appointment_type:
+                    self.appointment_type = new_appointment_type
+            self.status = "Rescheduled"
+            self.save()
+
+        except Exception as e:
+            print(f"Error while rescheduling: {e}")        
+
     def confirm_attendance(self):
         """Marks the appointment as completed."""
         self.status = "Completed"
@@ -138,7 +162,7 @@ class DoctorAppointment(Appointment):
     """
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name="doctor_appointments")
     appointment_type = models.CharField(max_length=50)
-    specialization = models.CharField(max_length=100)
+    specialization = models.CharField(max_length=100) # REVISE THIS FIELD
     follow_up = models.BooleanField(default=False)
     fee = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 
@@ -154,16 +178,14 @@ class TechnicianAppointment(Appointment):
     
     Attributes:
         lab_technician (ForeignKey): Reference to the assigned technician.
-        lab_test_id (int): Identifier for the lab test.
         test_type (str): Type of lab test.
         test_status (str): Status of the test.
         results_available (bool): Indicates if results are available.
     """
-    lab_technician = models.ForeignKey(LabTechnician, on_delete=models.CASCADE, related_name="technician_appointments")
-    lab_test_id = models.IntegerField() 
+    lab_technician = models.ForeignKey(LabTechnician, on_delete=models.CASCADE, related_name="technician_appointments") 
     lab_test_type = models.CharField(max_length=100)  # Keep only one declaration
-    test_status = models.CharField(max_length=50, default="Pending")
-    results_available = models.BooleanField(default=False)
+    test_status = models.CharField(max_length=50, default="Pending", null=True, blank=True) # made null temporarily
+    results_available = models.BooleanField(default=False, null=True, blank=True) # made null temporarily
     fee = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)  # Ensure this field exists
 
     def collect_sample(self):
