@@ -1,9 +1,9 @@
 import React from "react";
-import styles from "../CSS Files/LabTechnician.module.css";
+import styles from "./popup-checking-in-lab-technician.module.css";
 import Popup from "./Popup";
 import { useState, useEffect  } from "react";
 
-const PopupStartConsultation = ({ startConsultaionPopup, setstartConsultaionPopup }) => {
+const PopupStartConsultation = ({ startConsultationPopup, setstartConsultationPopup }) => {
     
     // State variables 
     const [timer, setTimer] = useState(0); // Keeps track of elapsed time in seconds
@@ -53,7 +53,7 @@ const PopupStartConsultation = ({ startConsultaionPopup, setstartConsultaionPopu
 
     // useEffect to reset timer and state when popup opens
     useEffect(() => {
-        if (startConsultaionPopup) {
+        if (startConsultationPopup) {
           setTimer(0); // Reset timer when popup opens
           setIsConsultationStarted(false); // Reset consultation status
           if (intervalId) {
@@ -61,22 +61,22 @@ const PopupStartConsultation = ({ startConsultaionPopup, setstartConsultaionPopu
             setIntervalId(null); // Reset interval ID
           }
         }
-      }, [startConsultaionPopup]); // Runs when the popup state changes
+      }, [startConsultationPopup]); // Runs when the popup state changes
       
 
     return (
 
-    <Popup trigger={startConsultaionPopup} setTrigger={setstartConsultaionPopup}>
+    <Popup trigger={startConsultationPopup} setTrigger={setstartConsultationPopup}>
         <div className={styles.formContainer}>
           
           <div className={styles.tophead}>
               <div className={styles.header}>
-                <h2>{isConsultationStarted ? "Complete Patient Check-Out" : "Select an Appointment"}</h2>
+                <h2>{isConsultationStarted ? "2. Complete Patient Check-In" : "1. Confirm Patient Checking-In"}</h2>
               </div>
 
               <div className={styles.subhead}>
                 <h5>
-                  Is the test sample collected? Confirm details to finalize the process.
+                  Please confirm if this is the correct patient visiting or choose another appointment.
                 </h5>
                 <div>
                   <h2 style={{marginRight: "45px"}}>Time: <span>{formatTime(timer)}</span></h2>
@@ -89,8 +89,8 @@ const PopupStartConsultation = ({ startConsultaionPopup, setstartConsultaionPopu
           
         <div className={styles.popupBottom}>
           <p className={styles.newSubHeading}>
-            <span className={styles.seckey}> <i className="fa-solid fa-circle-notch"></i> Status: </span>
-            <span className={getStatusClass("Paid")}>Pending</span>
+            <span className={styles.key}> <i className="fa-solid fa-circle-notch"></i> Status: </span>
+            <span className={getStatusClass("Pending")}>Pending</span>
             <span className={styles.key} style={{margin: "0 0 0 50px"}}> <i className="fa-solid fa-location-dot"></i> Location: </span>
             <span className={styles.locationValue}>Chughtai Lab, North Nazimabad</span>
           </p>
@@ -100,12 +100,12 @@ const PopupStartConsultation = ({ startConsultaionPopup, setstartConsultaionPopu
                     <h3><i className="fa-solid fa-circle fa-2xs" style={{color: "#007bff", marginRight: "10px"}}></i> Patient Information</h3>
                     <div className={styles.newFormGroup}>
                       <div>
-                        <label>Patient ID</label>
-                        <p className={styles.subHeading}>123456</p>
+                        <label>First Name</label>
+                        <p className={styles.subHeading}>John</p>
                       </div>
                       <div>
-                        <label>Patient Name</label>
-                        <p className={styles.subHeading}>Mr. John Doe</p>
+                        <label>Last Name</label>
+                        <p className={styles.subHeading}>Doe</p>
                       </div>
                       <div>
                         <label>Age</label>
@@ -143,65 +143,69 @@ const PopupStartConsultation = ({ startConsultaionPopup, setstartConsultaionPopu
                       </div>
                       
                       <div>
-                        <label>Date & Time (Available)</label>
-                        <input type="date" value={new Date().toISOString().split("T")[0]} disabled/>
+                        <label>Date & Time</label>
+                        <p className={styles.subHeading}>10/10/2024 09:30 AM </p>
                       </div>
+              </div>
             </div>
-            </div>
+          
 
+            {/* {isConsultationStarted && ( */}
+            <div className={styles.commentsFormSection}>
+              <h3 style={{ color: "#737070", marginLeft: "25px", fontSize: "16px" }}>Comments</h3>
+              <div className={styles.documentFormGroup}>
+                <div>
+                  <textarea style={{ border: "none" }} defaultValue="Lorem ipsum dolor sit amet consectetur adipisicing elit" disabled></textarea>
+                </div>
+              </div>
+            </div>
+            {/* )} */}
+
+            <hr />
 
             <div className={styles.formSection}>
               <h3><i className="fa-solid fa-circle fa-2xs" style={{color: "#007bff", marginRight: "10px"}}></i> Requested Test Details</h3>
               <div style={{marginLeft: "25px"}}>
                 
                 <div className={styles.testType}>
-                  {isConsultationStarted && (
-                  <span><input type="checkbox" /></span>
-                  )}
                   <span style={{marginLeft: "25px"}}>Test Type 1 </span>
                   <span className={styles.testTypeBorder}></span>
                   <span style={{marginRight: "45px"}}>RS/- 2000</span>
                 </div>
 
                 <div className={styles.testType}>
-                  {isConsultationStarted && (
-                  <span><input type="checkbox" /></span>
-                  )}
                   <span style={{marginLeft: "25px"}}>Test Type 2</span>
                   <span className={styles.testTypeBorder}></span>
                   <span style={{marginRight: "45px"}}>RS/- 3500</span>
                 </div>
 
                 <div className={styles.testType}>
-                  {isConsultationStarted && (
-                  <span><input type="checkbox" /></span>
-                  )}
                   <span style={{marginLeft: "25px"}}>Test Type 3</span>
                   <span className={styles.testTypeBorder}></span>
                   <span style={{marginRight: "45px"}}>RS/- 2500</span>
                 </div>
+                
+                <hr style={{ marginTop: "25px", width: "93.5%", marginLeft: "25px" }} />
+
+                <div className={styles.testType}>
+                  <span style={{ marginLeft: "25px", fontWeight: "bold" }}>Subtotal</span>
+                  <span style={{ marginRight: "45px", fontWeight: "bold" }}>RS/- 8000</span>
+                </div>
+
+                <hr style={{ marginTop: "15px", width: "93.5%", marginLeft: "25px" }} />
               </div>
             </div>
 
 
-            {isConsultationStarted && (
-          <div className={styles.commentsFormSection}>
-            <h3>Comments</h3>
-            <div className={styles.documentFormGroup}>
-              <div>
-                <textarea defaultValue="Lorem ipsum dolor sit amet consectetur adipisicing elit"></textarea>
-              </div>
-            </div>
-          </div>
-        )}
+          
 
           <div className={styles.newActions}>
-            <button className={styles.cancelButton} onClick={() => setcheckInPopup(false)}>
+            <button className={styles.cancelButton} onClick={() => setstartConsultationPopup(false)}>
               Cancel
             </button>
             {!isConsultationStarted ? (
             <button className={styles.addButton} onClick={startTimer}>
-              Start Consultation
+              Confirm Patient
             </button>
           ) : (
             <button className={styles.addButton} onClick={stopTimer}>

@@ -4,7 +4,7 @@ import styles from "../../components/CSS Files/LabTechnician.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar.jsx";
 import Header from "../../components/Dashboard/Header/Header.jsx";
 import Sidebar from "../../components/Dashboard/Sidebar/Sidebar.jsx";
-import PopupStartConsultation from "../../components/Popup/popup-start-consultation.jsx";
+import PopupStartConsultation from "../../components/Popup/popup-checking-in-lab-technician.jsx";
 
 const ViewAppointments = (props) => {
   const [popupVisible, setPopupVisible] = useState(false);
@@ -15,7 +15,7 @@ const ViewAppointments = (props) => {
 
   const [activeButton, setActiveButton] = useState(0); 
 
-  const [startConsultaionPopup, setstartConsultaionPopup] = useState(false);
+  const [startConsultationPopup, setstartConsultationPopup] = useState(false);
     
 
     {/* Function to handle all popup item clicks and close the popup */}
@@ -28,7 +28,7 @@ const ViewAppointments = (props) => {
 
     const handleStartConsultation = (event) => {
       event.stopPropagation(); // Prevent click propagation issues
-      setstartConsultaionPopup(true); // Open the popup
+      setstartConsultationPopup(true); // Open the popup
       setPopupVisible(false); // Close the options popup
     };
 
@@ -115,8 +115,8 @@ const ViewAppointments = (props) => {
     <div className={styles.pageContainer}>
 
       <PopupStartConsultation 
-        startConsultaionPopup={startConsultaionPopup} 
-        setstartConsultaionPopup={setstartConsultaionPopup} 
+        startConsultationPopup={startConsultationPopup} 
+        setstartConsultationPopup={setstartConsultationPopup} 
       />
 
 

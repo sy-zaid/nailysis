@@ -4,6 +4,7 @@ import Popup from "./Popup";
 import { useState } from "react";
 
 const PopupTestDetails = ({ testDetailsPopup, setTestDetailsPopup }) => {
+    if (!testDetailsPopup) return null
 
     const testParameters = {
         Hemoglobin: {
@@ -232,7 +233,7 @@ const PopupTestDetails = ({ testDetailsPopup, setTestDetailsPopup }) => {
                 <h3><i className="fa-solid fa-circle fa-2xs" style={{color: "#007bff", marginRight: "10px"}}></i> Comments/Observations</h3>
                 <div className={styles.documentFormGroup}>
                 <div>
-                    <textarea defaultValue="Lorem ipsum dolor sit amet consectetur adipisicing elit"></textarea>
+                    <textarea style={{ borderBottom: "2px solid #0067FF" }} defaultValue="Lorem ipsum dolor sit amet consectetur adipisicing elit"></textarea>
                 </div>
                 </div>
             </div>

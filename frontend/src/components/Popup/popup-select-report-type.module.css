@@ -6,88 +6,6 @@
   }
   
   
-  .pageContainer {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-  }
-  
-  .pageTop {
-    padding-left: 0;
-  }
-  
-  .pageTop h1 {
-    padding-top: 20px;
-    padding-left: 40px;
-    font-size: 50px;
-  }
-  
-  .pageTop p {
-    font-size: 18px;
-    color: #555;
-    padding-left: 40px;
-  }
-  
-  .mainContent {
-    display: flex;
-    flex: 1;
-    padding-top: 30px;
-  }
-  
-  .appointmentsContainer {
-      flex: 1;
-      padding: 20px;
-      background-color: #ffffff;
-  }
-  
-  .filters {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin: 0 10px 20px 10px;
-  }
-  
-  .filters > :last-child {
-      margin-left: auto; /* Push the last element to the right */
-  }
-  
-  .filters p {
-    color: #737070;
-    font-weight: 400;
-    margin-left: 16px;
-  }
-  
-  .filterTabs {
-    display: flex;
-    gap: 10px;
-  }
-  
-  .filterButton {
-      padding: 8px 8px;
-      margin: 0 8px;
-      border: none;
-      background: none;
-      color: #737070;
-      cursor: pointer;
-      border-radius: 0px;
-      position: relative;
-  }
-  
-  .filterButton.active::after {
-    content: "";
-    display: block;
-    width: 100%;
-    height: 3px;
-    background-color: #0067FF; /* Bottom border color */
-    position: absolute;
-    bottom: -2px; /* Position the border just below the button */
-    left: 0;
-  }
-  
-  
-  .filterButton:hover {
-      background-color: #ffffff;
-  }
   
   .statusSummary {
     display: flex;
@@ -115,98 +33,6 @@
     background-color: #0056b3;
   }
   
-  .tableContainer {
-      overflow-x: auto;
-      overflow-y: auto;
-      max-height: 340px;
-      background-color: white;
-      padding: 20px;
-      border-radius: 20px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
-  }
-  
-  .controls {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
-  }
-  
-  .bulkAction,
-  .sortBy {
-    appearance: none;
-    border: none;
-    outline: none;
-    padding: 8px 12px;
-    margin-right: 10px;
-    cursor: pointer;
-    background: white url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>') 
-    no-repeat right 12px center; 
-  }
-
-  .emailColumn {
-    max-width: 100px; /* Set a maximum width for the email column */
-    word-wrap: break-word; /* Ensure the email text wraps to the next line when it overflows */
-    overflow-wrap: break-word; /* Same as word-wrap, adds support for some browsers */
-  }
-  
-  
-  .bulkAction:focus,
-  .sortBy:focus {
-    border-color: #004080;
-    box-shadow: 0 0 5px rgba(0, 91, 187, 0.5);
-  }
-  
-  
-  .search {
-      padding: 5px;
-      border: none;
-      border-bottom: 2px solid #1E68F8;
-      background: none;
-      border-radius: 0px;
-      outline: none;
-  }
-  
-  
-  table {
-      width: 100%;
-      border-collapse: collapse;
-      border: none;
-  }
-  
-  
-  .table th,
-  .table td {
-      border: none;
-      padding: 10px;
-      cursor: pointer;
-      text-align: center;
-  }
-
-  /*   
-  .table th {
-    background-color: #f4f4f4;
-  } */
-  
-  
-  .table tr:nth-child(even) {
-    background-color: #f9f9f9;
-  }
-  
-  .table tr:hover {
-    background-color: #f1f1f1;
-  }
-  
-  .table tr:hover:not(.noHover) {
-    background-color: #f1f1f1;
-  }
-  
-  /* Prevent hover effect for the first row */
-  .noHover:hover {
-    background-color: transparent !important;
-  }
-  
- 
-  
   .consulted {
     color: green;
   }
@@ -218,64 +44,6 @@
   .scheduled {
     color: orange;
   }
-  
-  
-  /* Responsive Styles for table*/
-  @media (max-width: 850px) {
-    .controls {
-        flex-direction: column;
-        align-items: center;
-    }
-  
-    .tableContainer {
-        padding: 10px;
-    }
-  
-    .tableWrapper {
-        overflow-x: auto;
-        max-width: 100%;
-    }
-  
-    .table th,
-    .table td {
-        padding: 8px;
-        font-size: 14px; /* Reduce font size on smaller screens */
-    }
-  }
-  
-  /* Stack Table on Very Small Screens */
-  /* @media (max-width: 768px) {
-    .table thead {
-      display: none;
-    }  
-  
-    .table, .table tbody, .table tr, .table td {
-      display: block;
-      width: 100%;
-    } 
-  
-    .table tr {
-      margin-bottom: 15px;
-    }
-  
-    .table tbody tr td {
-      text-align: right;
-      padding-left: 50%;
-      position: relative;
-    }
-  
-    input[type="checkbox"] {
-      width: 5%;
-      align-items: center;
-    }
-  
-    .table td:before {
-      content: attr(data-label);
-      position: absolute;
-      left: 0;
-    }
-  
-  } */
   
   
   /* New Styles for Modal Popup */
@@ -489,7 +257,6 @@
     display: inline-block;
     width: 70%;
     font-weight: 600;
-    /* border-bottom: 2px solid #0067FF; */
   }
   
   .newSubHeading {
@@ -505,12 +272,11 @@
     }
   
     .key, .statusValue, locationValue {
-      color: #4E4E4E;
       font-size: 16px;
       margin-right: 10px;
     }
   
-    .secKey {
+    .seckey {
       margin-left: 15%;
     }
   
@@ -542,8 +308,8 @@
     margin-bottom: 20px;
   }
 
-  .patientSelect, input[type="date"], input[type="text"] {
-    border: n0one;
+  select, input[type="date"], input[type="text"] {
+    border: none;
     border-bottom: 2px solid #0067FF;
     background: transparent;
     outline: none;
@@ -573,7 +339,7 @@
     font-size: 16px;
     padding: 0 !important;
     height: 20px !important;
-    border-bottom: 2px solid #0067FF;
+    border: none;
   }
 
 

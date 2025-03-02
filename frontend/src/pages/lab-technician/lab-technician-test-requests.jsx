@@ -3,6 +3,7 @@ import styles from "../../components/CSS Files/LabTechnician.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import Header from "../../components/Dashboard/Header/Header";
 import Sidebar from "../../components/Dashboard/Sidebar/Sidebar";
+import PopupSelectReportType from "../../components/Popup/popup-select-report-type";
 import PopupTestDetails from "../../components/Popup/popup-test-details";
 
 
@@ -14,9 +15,19 @@ const TestRequests = (props) => {
   const [activeButton, setActiveButton] = useState(0); 
 
   const [testDetailsPopup, setTestDetailsPopup] = useState(false);
+  const [selectreportTypePopup, setselectreportTypePopup] = useState(false);
 
   const handleAddNewTest = () => {
-    setTestDetailsPopup(true); // This will now correctly open the popup
+    setselectreportTypePopup(true);
+  };
+
+  const handleCloseSelectReportAndOpenTestDetails = () => {
+    setTestDetailsPopup(true);
+    setselectreportTypePopup(false);
+  };
+  
+  const handleCloseTestDetailsPopup = () => {
+    setTestDetailsPopup(false);
   };
 
   const data = [
@@ -95,10 +106,20 @@ const TestRequests = (props) => {
   }, []);
 
   return (
-    
+     
     <div className={styles.pageContainer}>
 
-      <PopupTestDetails testDetailsPopup={testDetailsPopup} setTestDetailsPopup={setTestDetailsPopup} />
+      <PopupSelectReportType 
+        selectreportTypePopup={selectreportTypePopup} 
+        setselectreportTypePopup={setselectreportTypePopup} 
+        onProceed={handleCloseSelectReportAndOpenTestDetails}
+      />
+
+      <PopupTestDetails 
+        testDetailsPopup={testDetailsPopup}
+        setTestDetailsPopup={setTestDetailsPopup} 
+        />
+
 
       <div className={styles.pageTop}>
         <Navbar />
