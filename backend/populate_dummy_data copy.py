@@ -115,11 +115,7 @@ def create_dummy_lab_technicians(num_technicians):
         technician = LabTechnician.objects.create(
             user=user,
             license_number=fake.unique.random_number(digits=6),
-<<<<<<< HEAD
-            specialization=fake.job(),
-=======
             specialization="Laboratory Testing",
->>>>>>> d763ff1f7562f45b0396423f2d6f887a01b25337
             years_of_experience=random.randint(1, 30),
             lab_skills=fake.text(),
             shift_timings={"Morning": "8AM-2PM", "Evening": "2PM-8PM"},
@@ -137,7 +133,7 @@ def generate_dummy_doctor_appointments(num_appointments, patients, doctors):
             patient=patient,
             doctor=doctor,
             appointment_date=fake.date_between(start_date="today", end_date="+30d"),
-            appointment_time=fake.time(),
+            start_time=fake.time(),
             appointment_type=random.choice(["Consultation", "Follow-up"]),
             specialization=doctor.specialization,
             fee=random.uniform(50, 200),
@@ -158,12 +154,11 @@ def generate_dummy_lab_appointments(num_appointments, patients, lab_technicians)
         TechnicianAppointment.objects.create(
             patient=patient,
             lab_technician=technician,
-            lab_test_id=random.randint(1000, 9999),
             lab_test_type=lab_test_type,
             test_status=test_status,
             results_available=test_status in ["Results Uploaded", "Results Updated"],
             appointment_date=fake.date_between(start_date="today", end_date="+30d"),
-            appointment_time=fake.time(),
+            start_time=fake.time(),
             fee=fee,
         )
 
