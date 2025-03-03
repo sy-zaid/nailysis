@@ -257,6 +257,8 @@ const PopupEHRCreate = ({ onClose, appointmentDetails }) => {
         </div>
         <hr />
 
+        <div className={styles.popupBottom}>
+
         {/* Patient Selection Dropdown */}
         <div className={styles.patientSelectSection}>
           <label>Select Patient</label>
@@ -305,6 +307,8 @@ const PopupEHRCreate = ({ onClose, appointmentDetails }) => {
             <div className={styles.infoValue}>patient@gmail.com</div>
           </div>
         </div>
+
+        <br />
 
         {/* Current Available Records Section */}
         <div className={styles.recordsSection}>
@@ -381,6 +385,8 @@ const PopupEHRCreate = ({ onClose, appointmentDetails }) => {
             Continue
           </button>
         </div>
+      </div>
+
       </div>
     </Popup>
   );
