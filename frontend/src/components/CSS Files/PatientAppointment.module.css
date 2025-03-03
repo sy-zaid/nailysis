@@ -172,10 +172,10 @@ table {
     cursor: pointer;
     text-align: center;
 }
-
+/* 
 .table th {
-  /* background-color: #f4f4f4; */
-}
+  background-color: #f4f4f4; 
+} */
 
 
 .table tr:nth-child(even) {
@@ -360,6 +360,18 @@ input[type="checkbox"] {
   border-radius: 5px;
   cursor: pointer;
   position: relative;
+}
+
+input[type="checkbox"] {
+  appearance: none; /* Removes default styling */
+  border: none;
+  background-color: #B0D5FF; 
+  border-radius: 5px;
+  cursor: pointer;
+  position: relative;
+  width: 20px;
+  height: 20px;
+  padding: 0;
 }
 
 input[type="checkbox"]:checked {
