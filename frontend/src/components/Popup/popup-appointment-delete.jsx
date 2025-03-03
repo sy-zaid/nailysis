@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import styles from "./popup-appointment-book.module.css";
+import styles from "./popup-doctor-appointment-book.module.css";
 import Popup from "./Popup.jsx";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import usePatientData from "../../useCurrentUserData.jsx";
+import useCurrentUserData from "../../useCurrentUserData.jsx";
 
 const PopupDeleteAppointment = ({ onClose, appointmentDetails }) => {
   const [popupTrigger, setPopupTrigger] = useState(true);
@@ -75,7 +75,7 @@ const PopupDeleteAppointment = ({ onClose, appointmentDetails }) => {
               <label>Appointment Date</label>
               <input
                 type="text"
-                value={`${appointmentDetails.appointment_date || ""} | ${appointmentDetails.appointment_time || ""}`}
+                value={`${appointmentDetails.appointment_date || ""} | ${appointmentDetails.appointment_start_time || ""}`}
                 disabled
               />
             </div>

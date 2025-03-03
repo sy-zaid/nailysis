@@ -15,8 +15,11 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
     clinic_admin: [
       {
         icon: "icon-test-results-black.jpg",
-        label: "Test Results",
-        subItems: [],
+        label: "Electronic Health Records",
+        subItems: [
+          { label: "Patient Records" },
+          { label: "Medical History & Notes" },
+        ],
       },
       {
         icon: "icon-diagnostic-results-black.jpg",
@@ -45,12 +48,25 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
         label: "Test Requests",
         subItems: [],
       },
+      {
+        icon: "icon-test-request-black.jpg",
+        label: "electronic-health-records",
+        subItems: [],
+      },
+      {
+        icon: "icon-test-request-black.jpg",
+        label: "Patient Health History",
+        subItems: [],
+      },
     ],
     doctor: [
       {
         icon: "icon-test-results-black.jpg",
-        label: "Test Results",
-        subItems: [],
+        label: "Electronic Health Records",
+        subItems: [
+          { label: "Patient Records" },
+          { label: "Medical History & Notes" },
+        ],
       },
       {
         icon: "icon-diagnostic-results-black.jpg",
@@ -81,6 +97,14 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
       },
     ],
     patient: [
+      {
+        icon: "icon-test-results-black.jpg",
+        label: "Electronic Health Records",
+        subItems: [
+          { label: "Patient Records" },
+          { label: "Medical History & Notes" },
+        ],
+      },
       {
         icon: "icon-test-results-black.jpg",
         label: "Test Results",

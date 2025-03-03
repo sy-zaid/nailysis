@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import styles from "./popup-appointment-book.module.css";
+import styles from "./popup-doctor-appointment-book.module.css";
 import Popup from "./Popup.jsx";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import usePatientData from "../../useCurrentUserData.jsx";
+import useCurrentUserData from "../../useCurrentUserData.jsx";
 
 const visitPurposes = [
   "Consultation",
@@ -18,7 +18,7 @@ const PopupRescheduleAppointment = ({ onClose, appointmentDetails }) => {
   const navigate = useNavigate();
   const token = localStorage.getItem("access");
   const curUserRole = localStorage.getItem("role");
-  const { data: curUser, isLoading, isError, error } = usePatientData(); // Fetch patient data
+  const { data: curUser, isLoading, isError, error } = useCurrentUserData(); // Fetch patient data
   const [patient, setPatient] = useState([]); // Initialize patient state
   const [specializations, setSpecializations] = useState([]);
   useEffect(() => {
@@ -102,7 +102,7 @@ const PopupRescheduleAppointment = ({ onClose, appointmentDetails }) => {
     const appointmentData = {
       doctor_id: formData.doctorId,
       appointment_date: formData.appointmentDate,
-      appointment_time: formData.appointmentTime,
+      appointment_start_time: formData.appointmentTime,
       appointment_type: formData.appointmentType,
       specialization: formData.specialization,
     };

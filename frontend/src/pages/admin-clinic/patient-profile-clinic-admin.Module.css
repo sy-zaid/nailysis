@@ -1,0 +1,222 @@
+/* Base styles */
+.page {
+  min-height: 100vh;
+  background-color: #f8f9fd;
+}
+
+/* Sidebar */
+.sidebar {
+  display: none;
+  height: 100vh;
+  position: fixed;
+}
+
+/* Main content */
+.profile-assets {
+  flex: 1;
+  margin-left: 80px;
+  padding: 24px;
+  max-width: 900px;
+  max-width: auto;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Cards */
+.profile,
+.medical-info,
+.disease-detection,
+.test-report,
+.contact-info {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Profile section */
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.profile img {
+  width: 200px;
+  height: 250px;
+  border-radius: 20%;
+  object-fit: cover;
+}
+
+.profile-info {
+  flex: 1;
+}
+
+.profile h2 {
+  margin: 0 0 4px;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.profile p {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.buttons button {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.buttons button:first-child {
+  background: #2563eb;
+  color: white;
+  border: none;
+}
+
+.buttons button:last-child {
+  background: white;
+  color: #2563eb;
+  border: 1px solid #2563eb;
+}
+
+/* Section titles */
+.section-title {
+  color: #2563eb;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 16px;
+}
+
+/* Info grid */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.info-item {
+  background: #f8f9fd;
+  padding: 16px;
+  border-radius: 12px;
+}
+
+.info-item h4 {
+  color: #666;
+  font-size: 14px;
+  margin: 0 0 8px;
+  font-weight: 500;
+}
+
+.info-item p {
+  margin: 0;
+  color: #111;
+  font-weight: 500;
+}
+
+/* Progress circles */
+.progress-circles {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 24px;
+}
+
+.progress-circle {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 6px solid #2563eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #2563eb;
+  font-weight: 600;
+}
+
+/* Test report */
+.test-report table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.test-report th,
+.test-report td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.test-info h4 {
+  margin: 0 0 4px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.test-info p {
+  margin: 0;
+  font-size: 12px;
+  color: #666;
+}
+
+.test-report button {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+/* Contact info */
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.contact-item h4 {
+  color: #666;
+  font-size: 14px;
+  margin: 0 0 8px;
+}
+
+.contact-item p {
+  margin: 0;
+  font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .sidebar {
+    display: none;
+  }
+
+  .profile-assets {
+    margin-left: 0;
+    padding: 16px;
+  }
+
+  .profile {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .buttons {
+    justify-content: center;
+  }
+
+  .info-grid,
+  .contact-grid {
+    grid-template-columns: 1fr;
+  }
+}

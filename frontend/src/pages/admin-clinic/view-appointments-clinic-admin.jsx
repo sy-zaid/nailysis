@@ -1,7 +1,7 @@
 import React, { act, useEffect, useState } from "react";
 import styles from "../../components/CSS Files/PatientAppointment.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
-import PopupAppointmentBook from "../../components/Popup/popup-appointment-book";
+import PopupAppointmentBook from "../../components/Popup/popup-doctor-appointment-book";
 import PopupAppointmentDetails from "../../components/Popup/popup-appointment-details";
 import PopupRescheduleAppointment from "../../components/Popup/popup-appointment-reschedule";
 import PopupDeleteAppointment from "../../components/Popup/popup-appointment-delete";
@@ -14,6 +14,8 @@ const AppointmentClinicAdmin = () => {
   const [appointments, setAppointments] = useState([]);
   const token = localStorage.getItem("access");
   const [popupContent, setPopupContent] = useState();
+  const [showPopup, setShowPopup] = useState(false);
+  
   const fetchAppointments = async () => {
     try {
       const response = await api.get(
@@ -51,7 +53,6 @@ const AppointmentClinicAdmin = () => {
     }
   };
 
-  const [showPopup, setShowPopup] = useState(false);
   const handleOpenPopup = () => {
     setShowPopup(true); // Show the popup when button is clicked
   };
@@ -61,12 +62,13 @@ const AppointmentClinicAdmin = () => {
   };
 
   // Function to toggle the menu for a specific appointment
-  const toggleMenu = (appointmentId) => {
+  const toggleActionMenu = (appointmentId) => {
     setMenuOpen(menuOpen === appointmentId ? null : appointmentId);
   };
 
   // Handle the action when an item is clicked in the menu
   const handleActionClick = (action, appointmentId) => {
+    
     console.log(`Action: ${action} on Appointment ID: ${appointmentId}`);
     setMenuOpen(null); // Close the menu after action
 
@@ -198,7 +200,7 @@ const AppointmentClinicAdmin = () => {
                     <td>{row.appointment_type || "N/A"}</td>{" "}
                     {/* Appointment Type */}
                     <td>
-                      {row.appointment_date} {row.appointment_time}
+                      {row.appointment_date} {row.appointment_start_time}
                     </td>{" "}
                     {/* Date & Time */}
                     <td className={getStatusClass(row.status)}>
@@ -213,7 +215,7 @@ const AppointmentClinicAdmin = () => {
                     {/* Additional Notes */}
                     <td>
                       <button
-                        onClick={() => toggleMenu(row.appointment_id)}
+                        onClick={() => toggleActionMenu(row.appointment_id)}
                         className={styles.moreActionsBtn}
                       >
                         <img

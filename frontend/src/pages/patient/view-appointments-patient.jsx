@@ -3,6 +3,7 @@ import styles from "../../components/CSS Files/PatientAppointment.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import Header from "../../components/Dashboard/Header/Header";
 import PopupAppointmentBook from "../../components/Popup/popup-appointment-book";
+import PopupLabAppointmentBook from "../../components/Popup/popup-lab-appointment-book";
 import PopupAppointmentDetails from "../../components/Popup/popup-appointment-details";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -52,13 +53,23 @@ const AppointmentPatients = () => {
     }
   };
 
-  const [showPopup, setShowPopup] = useState(false);
-  const handleOpenPopup = () => {
-    setShowPopup(true); // Show the popup when button is clicked
+  const [showDoctorPopup, setShowDoctorPopup] = useState(false);
+  const [showLabPopup, setShowLabPopup] = useState(false);
+
+  const handleOpenDoctorPopup = () => {
+    setShowDoctorPopup(true); // Show the popup when button is clicked
   };
 
-  const handleClosePopup = () => {
-    setShowPopup(false); // Hide the popup when closing
+  const handleCloseDoctorPopup = () => {
+    setShowDoctorPopup(false); // Hide the popup when closing
+  };
+
+  const handleOpenLabPopup = () => {
+    setShowLabPopup(true); // Show the popup when button is clicked
+  };
+
+  const handleCloseLabPopup = () => {
+    setShowLabPopup(false); // Hide the popup when closing
   };
 
   const handleFilterClick = (index) => {
@@ -92,7 +103,9 @@ const AppointmentPatients = () => {
 
   return (
     <div className={styles.pageContainer}>
-      {showPopup && <PopupAppointmentBook onClose={handleClosePopup} />}
+      {showDoctorPopup && <PopupAppointmentBook onClose={handleCloseDoctorPopup} />}
+      {showLabPopup && <PopupLabAppointmentBook onClose={handleCloseLabPopup} />}
+
       <PopupAppointmentDetails></PopupAppointmentDetails>
 
       <div className={styles.pageTop}>
@@ -147,8 +160,12 @@ const AppointmentPatients = () => {
                 Download Visit Summary
               </button>
 
-              <button className={styles.addButton} onClick={handleOpenPopup}>
-                Book New Appointment
+              <button className={styles.addButton} onClick={handleOpenDoctorPopup}>
+                Book Doctor Appointment
+              </button>
+
+              <button className={styles.addButton} onClick={handleOpenLabPopup}>
+                Book Lab Technician Appointment
               </button>
             </div>
           </div>
@@ -205,7 +222,7 @@ const AppointmentPatients = () => {
                     </td>{" "}
                     {/* Specialization */}
                     <td>
-                      {row.appointment_date} {row.appointment_time}
+                      {row.appointment_date} {row.appointment_start_time}
                     </td>{" "}
                     {/* Date and Time */}
                     <td>{row.appointment_type || "N/A"}</td>{" "}

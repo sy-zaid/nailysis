@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
-import styles from "./popup-appointment-book.module.css";
+import styles from "./popup-doctor-appointment-book.module.css";
 import Popup from "./Popup.jsx";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 // import { QueryClientProvider } from "@tanstack/react-query"; // Import React Query Client Provider
 // import { queryClient } from "./queryClient"; // Import the client
-import usePatientData from "../../useCurrentUserData.jsx";
-import { calculateAge } from "../../utils.js";
+import useCurrentUserData from "../../useCurrentUserData.jsx";
+import { calculateAge } from "../../utils/utils.js"
 
 const visitPurposes = [
   "Consultation",
@@ -23,7 +23,7 @@ const PopupBookAppointment = ({ onClose }) => {
   const [appointments, setAppointments] = useState([]);
   const token = localStorage.getItem("access");
   const curUserRole = localStorage.getItem("role");
-  const { data: curUser, isLoading, isError, error } = usePatientData(); // Fetch patient data
+  const { data: curUser, isLoading, isError, error } = useCurrentUserData(); // Fetch patient data
   console.log("CURRUSER", curUser);
   const [patient, setPatient] = useState([]); // Initialize patient state
 
@@ -42,7 +42,7 @@ const PopupBookAppointment = ({ onClose }) => {
   const [formData, setFormData] = useState({
     doctorId: "",
     appointmentDate: "",
-    appointmentTime: "",
+    appointmentStartTime: "",
     appointmentType: "",
     specialization: "",
     fee: "0.00",
@@ -67,7 +67,7 @@ const PopupBookAppointment = ({ onClose }) => {
     setFormData((prev) => ({
       ...prev,
       appointmentDate: date,
-      appointmentTime: time || "",
+      appointmentStartTime: time || "",
     }));
   };
 
@@ -96,6 +96,7 @@ const PopupBookAppointment = ({ onClose }) => {
             `http://127.0.0.1:8000/api/doctors/?specialization=${formData.specialization}`,
             { headers: { Authorization: `Bearer ${token}` } }
           );
+          console.log("response", response.data)
           const formattedDoctors = response.data.map((doc) => ({
             id: doc.user.user_id,
             name: `${doc.user.first_name} ${doc.user.last_name}`,
@@ -142,7 +143,7 @@ const PopupBookAppointment = ({ onClose }) => {
     const appointmentData = {
       doctor_id: formData.doctorId,
       appointment_date: formData.appointmentDate,
-      appointment_time: formData.appointmentTime,
+      appointment_start_time: formData.appointmentStartTime,
       appointment_type: formData.appointmentType,
       specialization: formData.specialization,
       fee: formData.fee,
@@ -327,8 +328,8 @@ const PopupBookAppointment = ({ onClose }) => {
               type="datetime-local"
               name="appointmentDateTime"
               value={
-                formData.appointmentDate && formData.appointmentTime
-                  ? `${formData.appointmentDate}T${formData.appointmentTime}`
+                formData.appointmentDate && formData.appointmentStartTime
+                  ? `${formData.appointmentDate}T${formData.appointmentStartTime}`
                   : ""
               }
               onChange={handleDateTimeChange}

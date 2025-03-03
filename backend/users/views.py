@@ -60,6 +60,47 @@ class DoctorAPIView(viewsets.ModelViewSet):
             specializations = Doctor.objects.values_list('specialization', flat=True).distinct()
             return Response(specializations)
         return super().list(request, *args, **kwargs)
+    
+
+class LabTechnicianAPIView(viewsets.ModelViewSet):
+    """
+    API view for managing lab technicians.
+
+    - Allows retrieving all doctors (`GET /api/doctors/`).
+    - Can filter doctors based on specialization using query parameters.
+    - If no specialization is provided, returns a list of distinct specializations.
+
+    Attributes:
+        - queryset: Retrieves all doctor objects.
+        - serializer_class: Specifies the serializer for doctor data.
+        - permission_classes: Requires authentication.
+    """
+    queryset = LabTechnician.objects.all()
+    serializer_class = LabTechnicianSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def list(self, request, *args, **kwargs):
+        """
+        Handles listing lab technicians and filtering by specialization.
+
+        - If `specialization` is provided in query parameters, filters lab technicians accordingly.
+        - Otherwise, returns a list of distinct specializations available.
+
+        Query Parameters:
+            - specialization (str, optional): The specialization to filter lab technicians by.
+
+        Returns:
+            - List of LabTechnicians (if specialization is provided).
+            - List of distinct specializations (if no specialization is provided).
+        """
+        specialization = request.query_params.get('specialization', None)
+        if specialization:
+            self.queryset = LabTechnician.objects.filter(specialization=specialization)
+        else:
+            # If no specialization is provided, return distinct specializations
+            specializations = LabTechnician.objects.values_list('specialization', flat=True).distinct()
+            return Response(specializations)
+        return super().list(request, *args, **kwargs)    
 
 
 class PatientAPIView(viewsets.ModelViewSet):
@@ -85,7 +126,7 @@ class PatientAPIView(viewsets.ModelViewSet):
         Returns:
             - Queryset filtered for the logged-in user.
         """
-        return Patient.objects.filter(user=self.request.user)
+        return Patient.objects.all()
 
     def list(self, request, *args, **kwargs):
         """

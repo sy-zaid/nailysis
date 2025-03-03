@@ -24,9 +24,9 @@ from .models import (
 )
 from .serializers import (
     AppointmentSerializer, DoctorAppointmentSerializer, 
-    TechnicianAppointmentSerializer, DoctorFeeSerializer, CancellationRequestSerializer
+    TechnicianAppointmentSerializer, DoctorFeeSerializer, LabTechnicianFeeSerializer, CancellationRequestSerializer
 )
-from users.models import Patient, Doctor, ClinicAdmin, CustomUser
+from users.models import Patient, Doctor, ClinicAdmin, CustomUser, LabTechnician, LabAdmin
 
 class DoctorFeeViewset(viewsets.ModelViewSet):
     """
@@ -119,16 +119,16 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
         Expected request data:
         - doctor_id
         - appointment_date
-        - appointment_time
+        - appointment_start_time
         - appointment_type
         - specialization
         - fee
         - patient details (if clinic admin books for a walk-in patient)
         """
-        
+        # request.data = appointmentData (from frontend)
         doctor_id = request.data.get('doctor_id')
         appointment_date = request.data.get('appointment_date')
-        appointment_time = request.data.get('appointment_time')
+        appointment_start_time = request.data.get('appointment_start_time')
         appointment_type = request.data.get('appointment_type')
         specialization = request.data.get('specialization')
         fee = request.data.get('fee')
@@ -150,7 +150,7 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
             patient=patient,
             doctor=doctor,
             appointment_date=appointment_date,
-            appointment_time=appointment_time,
+            start_time=appointment_start_time,
             appointment_type=appointment_type,
             specialization=specialization,
             fee=fee
@@ -196,15 +196,79 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
         appointment.save()
         return Response({"message":"Cancellation request sent successfully","request_id":cancellation_request.id},status=status.HTTP_201_CREATED)
 
+    @action(detail=True, methods=['post'], url_path="save_and_complete")
+    def save_and_complete(self, request, pk=None):
+        import json
+        user = self.request.user
+        if user.role != "doctor":
+            return Response({"error": "Only doctors can mark an appointment as complete on this screen"}, status=status.HTTP_403_FORBIDDEN)
 
+        # Convert JSON-encoded strings to lists if necessary
+        medical_conditions = request.data.get("medical_conditions", "[]")
+        current_medications = request.data.get("current_medications", "[]")
+        immunization_records = request.data.get("immunization_records", "[]")
+        diagnoses = request.data.get("diagnoses", "[]")
+
+        # If any of these are strings, convert them to lists
+        if isinstance(medical_conditions, str):
+            medical_conditions = json.loads(medical_conditions)
+        if isinstance(current_medications, str):
+            current_medications = json.loads(current_medications)
+        if isinstance(immunization_records, str):
+            immunization_records = json.loads(immunization_records)
+        if isinstance(diagnoses, str):
+            diagnoses = json.loads(diagnoses)
+
+        comments = request.data.get("comments", "")
+        family_history = request.data.get("family_history", "")
+        category = request.data.get("category", "General")
+
+        ehr_data = [category,medical_conditions, current_medications, immunization_records, diagnoses, comments, family_history]
+        print(ehr_data)
+        try:
+            appointment = DoctorAppointment.objects.get(pk=pk)
+            appointment.complete_appointment(ehr_data=ehr_data)
+            return Response({"message": "Successfully added ehr"})
+        except (Doctor.DoesNotExist, DoctorAppointment.DoesNotExist): 
+            return Response({"error": "No Appointment Found"}, status=status.HTTP_404_NOT_FOUND)
+            
+        
 class LabTechnicianAppointmentViewset(viewsets.ModelViewSet):
     """
     API endpoint for managing lab technician appointments.
     """
     queryset = TechnicianAppointment.objects.all()
     serializer_class = TechnicianAppointmentSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
 
+    def get_queryset(self):
+        """
+        Retrieve appointments based on user role:
+        - Patients see only their own appointments.
+        - Technician see only their own appointments.
+        - Lab Admins see all appointments.
+        """
+        user = self.request.user
+
+        if user.role == "patient":
+            try:
+                patient = Patient.objects.get(user=user)
+                return TechnicianAppointment.objects.filter(patient=patient)
+            except Patient.DoesNotExist:
+                return TechnicianAppointment.objects.none()
+
+        elif user.role == "lab_admin":
+            return TechnicianAppointment.objects.all()
+
+        elif user.role == "lab_technician":
+            try:
+                lab_technician = LabTechnician.objects.get(user=user)
+                return TechnicianAppointment.objects.filter(lab_technician=lab_technician)
+            except LabTechnician.DoesNotExist:
+                return TechnicianAppointment.objects.none()
+
+        return TechnicianAppointment.objects.none()
+    
     def perform_create(self, serializer):
         """
         Create a new lab technician appointment.
@@ -216,29 +280,108 @@ class LabTechnicianAppointmentViewset(viewsets.ModelViewSet):
         """
         Book a new lab appointment.
         """
-
-        technician_id = request.data.get('technician_id')
+        print(request.data)
+        # notes = request.data.get('notes')
         appointment_date = request.data.get('appointment_date')
         appointment_time = request.data.get('appointment_time')
-        service_type = request.data.get('service_type')
-        lab_fee = request.data.get('lab_fee')
+        lab_test_type = request.data.get('lab_test_type')
+        fee = request.data.get('fee')
+        lab_technician_id = request.data.get('lab_technician_id')
+        patient_email = request.data.get('patient_email')
+        user = self.request.user
 
-        technician = get_object_or_404(Technician, user__id=technician_id)
+        lab_technician = get_object_or_404(LabTechnician, user_id=lab_technician_id)
 
-        technician_appointment = TechnicianAppointment.objects.create(
-            patient=request.user,
-            technician=technician,
+        # Handling patient information
+        if user.role == "lab_admin":
+            if not patient_email:
+                patient = CustomUser.create_walkin_account(**request.data)
+            else:
+                patient = get_object_or_404(Patient, user__email=patient_email)
+        elif user.role == "patient":
+            patient = get_object_or_404(Patient, user=request.user)
+
+        lab_technician_appointment = TechnicianAppointment.objects.create(
+            patient=patient,
+            lab_technician=lab_technician,
             appointment_date=appointment_date,
             appointment_time=appointment_time,
-            service_type=service_type,
-            lab_fee=lab_fee
+            lab_test_type=lab_test_type,
+            fee=fee
         )
 
         return Response({
             "message": "Lab appointment booked successfully",
-            "appointment_id": technician_appointment.appointment_id
+            "appointment_id": lab_technician_appointment.appointment_id
         })
+    
+    @action(detail=True, methods=["post"], url_path="cancel_appointment")
+    def cancel_appointment(self, request, pk=None):
+        """
+        Cancel a lab technician appointment.
 
+        Only patients and lab admins are authorized to cancel appointments.
+        """
+        user = request.user
+        if user.role not in ["patient", "lab_admin"]:
+            return Response({"error": "Unauthorized action."}, status=status.HTTP_403_FORBIDDEN)
+
+        appointment = get_object_or_404(TechnicianAppointment, pk=pk)
+        appointment.cancel_appointment()
+        return Response({"message": "Appointment cancelled successfully."}, status=status.HTTP_200_OK)
+    
+    @action(detail=True,methods=["post"],url_path='request_cancellation')
+    def request_cancellation(self,request,pk=None):
+        user = self.request.user
+        if user.role != "lab_technician":
+            return Response({"error":"Only lab technicians can generate a cancellation request"},status=status.HTTP_403_FORBIDDEN)
+        
+        try:
+            lab_technician = LabTechnician.objects.get(user=user)
+            appointment = TechnicianAppointment.objects.get(pk=pk,doctor=lab_technician)
+        except(LabTechnician.DoesNotExist,TechnicianAppointment.DoesNotExist):
+            return Response({"error":"No Appointment Found"},status=status.HTTP_404_NOT_FOUND)
+        
+        reason = request.data.get('reason','').strip()
+        if not reason:
+            return Response({"error":"Cancellation reason is required"},status=status.HTTP_400_BAD_REQUEST)
+        cancellation_request = CancellationRequest.objects.create(lab_technician=lab_technician,appointment=appointment,reason = reason,status="Pending")
+        appointment.status = "Pending"
+        appointment.save()
+        return Response({"message":"Cancellation request sent successfully","request_id":cancellation_request.id},status=status.HTTP_201_CREATED)    
+
+    @action(detail=True,methods=["post"],url_path='reschedule_lab_appointment')
+    def reschedule_lab_appointment(self, request, pk=None):
+        lab_appointment = get_object_or_404(TechnicianAppointment, pk=pk)
+        patient = get_object_or_404(Patient, pk=pk)
+        lab_technician_id = request.data.get("user_id")
+        
+
+
+
+class LabTechnicianFeeViewset(viewsets.ModelViewSet):
+    """
+    API endpoint to manage lab technician appointment fees.
+
+    Provides:
+    - List of all lab technician appointment fees
+    - Standard CRUD operations
+    """
+    queryset = LabTechnicianAppointmentFee.objects.all()
+    serializer_class = LabTechnicianFeeSerializer
+    permission_classes = [permissions.AllowAny]
+
+    @action(detail=False, methods=['get'], url_path='get_fees')
+    def get_fees(self, request):
+        """
+        Retrieve all appointment fees for display.
+        
+        Returns:
+            JSON response containing the list of doctor fees.
+        """
+        fees = LabTechnicianAppointmentFee.objects.all()
+        serializer = self.get_serializer(fees, many=True)
+        return Response(serializer.data)
 
 class DocAppointCancellationViewSet(viewsets.ModelViewSet):
     """
@@ -279,3 +422,44 @@ class DocAppointCancellationViewSet(viewsets.ModelViewSet):
             cancellation_request.appointment.cancel_appointment()
 
         return Response({"message": f"Cancellation request {action}d successfully."})
+    
+
+class LabTechnicianAppointCancellationViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint for handling lab technician appointment cancellation requests.
+    """
+    queryset = CancellationRequest.objects.all()
+    serializer_class = CancellationRequestSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        """
+        Allow only lab admins to view all cancellation requests.
+        """
+        user = self.request.user
+        if user.role == "lab_admin":
+            return CancellationRequest.objects.all()
+        return CancellationRequest.objects.none()
+
+    @action(detail=True, methods=['post'], url_path='review')
+    def review_request(self, request, pk):
+        """
+        Allow lab admins to approve or reject cancellation requests.
+        """
+        user = self.request.user
+        if user.role != "lab_admin":
+            return Response({"error": "Only admins can review requests."}, status=status.HTTP_403_FORBIDDEN)
+
+        cancellation_request = get_object_or_404(CancellationRequest, pk=pk, status="Pending")
+        action = request.data.get("action", "").lower()
+
+        if action not in ["approve", "reject"]:
+            return Response({"error": "Invalid action. Use 'approve' or 'reject'."}, status=status.HTTP_400_BAD_REQUEST)
+
+        cancellation_request.status = "Approved" if action == "approve" else "Rejected"
+        cancellation_request.save()
+
+        if action == "approve":
+            cancellation_request.appointment.cancel_appointment()
+
+        return Response({"message": f"Cancellation request {action}d successfully."})    

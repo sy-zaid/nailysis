@@ -5,6 +5,7 @@ import PopupAppointmentDetails from "../../components/Popup/popup-appointment-de
 import { useNavigate } from "react-router-dom";
 import api from "../../api";
 import CancellationRequestForm from "./cancellation-request-form"; // Import CancellationRequestForm
+import PopupStartAppointment from "../../components/Popup/popup-appointment-checkin";
 
 const AppointmentDoctor = () => {
   const navigate = useNavigate();
@@ -29,7 +30,7 @@ const AppointmentDoctor = () => {
             },
           }
         );
-        
+
         setAppointments(response.data);
         console.log("Response from doctor appointment", response.data);
       } catch (error) {
@@ -51,8 +52,6 @@ const AppointmentDoctor = () => {
     }
   };
 
-  
-
   const handleOpenPopup = () => {
     setShowPopup(true); // Show the popup when button is clicked
   };
@@ -64,7 +63,7 @@ const AppointmentDoctor = () => {
   const [menuOpen, setMenuOpen] = useState(null);
 
   // Function to toggle the menu for a specific appointment
-  const toggleMenu = (appointmentId) => {
+  const toggleActionMenu = (appointmentId) => {
     setMenuOpen(menuOpen === appointmentId ? null : appointmentId);
   };
 
@@ -81,10 +80,18 @@ const AppointmentDoctor = () => {
         />
       );
       setShowPopup(true); // Show the Cancellation Request Form popup
+    } else if (action === "Start Appointment") {
+      setPopupContent(
+        <PopupStartAppointment
+          appointmentDetails={appointmentId}
+          onClose={handleClosePopup}
+        />
+      );
+      setShowPopup(true);
     }
     // Add logic for other actions like 'Edit' and 'Reschedule' if needed
   };
-
+  
   return (
     <div className={styles.pageContainer}>
       {showPopup && popupContent}{" "}
@@ -141,13 +148,13 @@ const AppointmentDoctor = () => {
                     <td>{row.patient?.gender || "N/A"}</td>
                     <td>{row.appointment_type || "N/A"}</td>
                     <td>
-                      {row.appointment_date} {row.appointment_time}
+                      {row.appointment_date} {row.appointment_start_time}
                     </td>
                     <td className={getStatusClass(row.status)}>{row.status}</td>
                     <td>{row.notes || "No additional notes"}</td>
                     <td>
                       <button
-                        onClick={() => toggleMenu(row.appointment_id)}
+                        onClick={() => toggleActionMenu(row.appointment_id)}
                         className={styles.moreActionsBtn}
                       >
                         <img
@@ -159,7 +166,6 @@ const AppointmentDoctor = () => {
                       {menuOpen === row.appointment_id && (
                         <div className={styles.menu}>
                           <ul>
-                            
                             <li
                               onClick={() => {
                                 handleActionClick("Cancel", row.appointment_id);
@@ -170,12 +176,12 @@ const AppointmentDoctor = () => {
                             <li
                               onClick={() =>
                                 handleActionClick(
-                                  "Reschedule",
-                                  row.appointment_id
+                                  "Start Appointment",
+                                  row
                                 )
                               }
                             >
-                              Reschedule
+                              Start Appointment
                             </li>
                           </ul>
                         </div>
