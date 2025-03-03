@@ -137,7 +137,7 @@ def generate_dummy_ehr_records(num_records, patients, doctors):
 
         print(f"EHR record created for {patient.user.first_name}, consulted by Dr. {doctor.user.first_name}")
 
-# Create dummy data
+# Create dummy data of everything
 num_patients = 5
 num_doctors = 2
 num_appointments = 5
