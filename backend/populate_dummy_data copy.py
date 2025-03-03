@@ -133,7 +133,7 @@ def generate_dummy_doctor_appointments(num_appointments, patients, doctors):
             patient=patient,
             doctor=doctor,
             appointment_date=fake.date_between(start_date="today", end_date="+30d"),
-            appointment_time=fake.time(),
+            start_time=fake.time(),
             appointment_type=random.choice(["Consultation", "Follow-up"]),
             specialization=doctor.specialization,
             fee=random.uniform(50, 200),
@@ -154,12 +154,11 @@ def generate_dummy_lab_appointments(num_appointments, patients, lab_technicians)
         TechnicianAppointment.objects.create(
             patient=patient,
             lab_technician=technician,
-            lab_test_id=random.randint(1000, 9999),
             lab_test_type=lab_test_type,
             test_status=test_status,
             results_available=test_status in ["Results Uploaded", "Results Updated"],
             appointment_date=fake.date_between(start_date="today", end_date="+30d"),
-            appointment_time=fake.time(),
+            start_time=fake.time(),
             fee=fee,
         )
 

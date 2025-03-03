@@ -21,10 +21,10 @@ from .views import DoctorAppointmentViewset, LabTechnicianAppointmentViewset, Do
 # Initialize DefaultRouter instance for appointment API endpoints
 router = DefaultRouter()
 router.register(r'doctor_appointments', DoctorAppointmentViewset, basename='doctor_appointments')
-router.register(r'technician_appointments', LabTechnicianAppointmentViewset, basename='technician_appointments')
+router.register(r'lab_technician_appointments', LabTechnicianAppointmentViewset, basename='lab_technician_appointments')
 router.register(r'cancellation_requests', DocAppointCancellationViewSet, basename='cancellation_requests')
 router.register(r'doctor_fees', DoctorFeeViewset, basename='doctor_fees')
-router.register(r'technician_fees', LabTechnicianFeeViewset, basename='technician_fees')
+router.register(r'lab_technician_fees', LabTechnicianFeeViewset, basename='lab_technician_fees')
 
 # Define appointment-specific URL patterns
 urlpatterns = [

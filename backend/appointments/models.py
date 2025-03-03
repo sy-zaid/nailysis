@@ -89,37 +89,37 @@ class Appointment(models.Model):
         except Exception as e:
             print(f"Error while rescheduling: {e}")
 
-    
-    def complete_appointment(self,ehr_data):
-        print("EHR DATA",ehr_data)
-        """Handle the creation of EHR when appointment is Completed."""
-        if self.status != 'Completed':  # Ensure appointment is not already completed
-            self.mark_completed()
-
-            # Create EHR for the patient
-            ehr_record = EHR.objects.create(
-                patient=self.patient,  # Assuming patient is available through the Appointment model
-                visit_date=self.appointment_date,  # Make sure this exists in Appointment model
-                category=ehr_data[0],  # Access category as a dictionary key
-                consulted_by=f"{self.doctor.user.first_name} {self.doctor.user.last_name}",
-                
-                # Initialize fields with default empty values or placeholders
-                medical_conditions=ehr_data[1],  # Access as dictionary
-                current_medications=ehr_data[2],  # Access as dictionary
-                immunization_records=ehr_data[3],  # Access as dictionary
-                # nail_image_analysis=ehr_data.nail_image_analysis,  # Access as dictionary
-                # test_results=ehr_data.test_results,  # Access as dictionary
-                diagnoses=ehr_data[4],  # Access as dictionary
-                comments=ehr_data[5],  # Access as dictionary
-                family_history=ehr_data[6]  # Access as dictionary
-            )
-
-            # Link the EHR record to the appointment
-            self.ehr = ehr_record
+    def reschedule_lab_appointment(self, new_date, new_time,new_specialization,new_lab_technician,new_appointment_type):
+        try:
+            """Reschedules the appointment to a new date and time."""
+            self.appointment_date = new_date
+            self.appointment_time = new_time
+            if isinstance(self, TechnicianAppointment):  # Check if it's a LabTechnicianAppointment
+                print("YES ITS A LAB TECHNICIAN APPOINTMENT INSTANCE")
+                if new_specialization:
+                    self.specialization = new_specialization
+                if new_lab_technician:
+                   # Fetch the Lab Technician instance using the ID
+                    try:
+                        lab_technician_instance = LabTechnician.objects.get(pk=new_lab_technician)
+                        self.lab_technician = lab_technician_instance
+                    except Doctor.DoesNotExist as e:
+                        raise ValueError(f"Lab Technician with ID {new_lab_technician} does not exist") from e
+                if new_appointment_type:
+                    self.appointment_type = new_appointment_type
+            self.status = "Rescheduled"
             self.save()
 
-            return True
-        return False
+        except Exception as e:
+            print(f"Error while rescheduling: {e}")        
+
+    def confirm_attendance(self):
+        """Marks the appointment as completed."""
+        self.status = "Completed"
+        self.save()
+
+        #     return True
+        # return False
 
     def view_appointment_details(self):
         """Returns a dictionary containing appointment details."""
@@ -190,8 +190,8 @@ class DoctorAppointment(Appointment):
     """
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name="doctor_appointments")
     appointment_type = models.CharField(max_length=50)
-    specialization = models.CharField(max_length=100)
-    follow_up = models.BooleanField(default=False) 
+    specialization = models.CharField(max_length=100) # REVISE THIS FIELD
+    follow_up = models.BooleanField(default=False)
     fee = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
      
     # Field for linking every appointment with EHR record
@@ -209,17 +209,15 @@ class TechnicianAppointment(Appointment):
     
     Attributes:
         lab_technician (ForeignKey): Reference to the assigned technician.
-        lab_test_id (int): Identifier for the lab test.
         test_type (str): Type of lab test.
         test_status (str): Status of the test.
         results_available (bool): Indicates if results are available.
         ehr(OneToOneField): Links every appointment with a new EHR record.
     """
-    lab_technician = models.ForeignKey(LabTechnician, on_delete=models.CASCADE, related_name="technician_appointments")
-    lab_test_id = models.IntegerField() 
+    lab_technician = models.ForeignKey(LabTechnician, on_delete=models.CASCADE, related_name="technician_appointments") 
     lab_test_type = models.CharField(max_length=100)  # Keep only one declaration
-    test_status = models.CharField(max_length=50, default="Pending")
-    results_available = models.BooleanField(default=False)
+    test_status = models.CharField(max_length=50, default="Pending", null=True, blank=True) # made null temporarily
+    results_available = models.BooleanField(default=False, null=True, blank=True) # made null temporarily
     fee = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)  # Ensure this field exists
     
     # Field for linking every appointment with EHR record
