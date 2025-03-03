@@ -32,8 +32,27 @@
       "problemMatcher": []
     },
     {
-      "label": "Start Both Servers",
-      "dependsOn": ["Start Backend Server", "Start Frontend Server"],
+      "label": "Start Auto Login",
+      "type": "shell",
+      "command": "python",
+      "args": ["login_automation.py"],
+      "options": {
+        "cwd": "${workspaceFolder}/"
+      },
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Start Everything",
+      "dependsOn": [
+        "Start Backend Server",
+        "Start Frontend Server",
+        "Start Auto Login"
+      ],
       "problemMatcher": []
     }
   ]

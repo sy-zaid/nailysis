@@ -115,7 +115,11 @@ def create_dummy_lab_technicians(num_technicians):
         technician = LabTechnician.objects.create(
             user=user,
             license_number=fake.unique.random_number(digits=6),
+<<<<<<< HEAD
             specialization=fake.job(),
+=======
+            specialization="Laboratory Testing",
+>>>>>>> d763ff1f7562f45b0396423f2d6f887a01b25337
             years_of_experience=random.randint(1, 30),
             lab_skills=fake.text(),
             shift_timings={"Morning": "8AM-2PM", "Evening": "2PM-8PM"},
