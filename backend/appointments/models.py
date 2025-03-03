@@ -94,6 +94,9 @@ class Appointment(models.Model):
         self.status = "Completed"
         self.save()
 
+        #     return True
+        # return False
+
     def view_appointment_details(self):
         """Returns a dictionary containing appointment details."""
         return {
