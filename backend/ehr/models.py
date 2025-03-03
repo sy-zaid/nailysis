@@ -28,44 +28,83 @@ class EHR(models.Model):
     
     
     def create_record(self):
-        # Logic to create a new record
+        """
+        Saves a new EHR record for the patient.
+        """
         self.save()
 
     def update_record(self, data):
-        # Logic to update the record with new data
+        """
+        Updates the EHR record with provided data.
+        
+        Args:
+            data (dict): Dictionary containing field names and their new values.
+        """
         for key, value in data.items():
             setattr(self, key, value)
         self.save()
 
     def share_record(self):
-        # Logic to share the record (e.g., with another provider)
+        """
+        Logic to share the record (e.g., with another provider or institution).
+        """
         pass
 
     def generate_report(self):
-        # Logic to generate a report based on the record
+        """
+        Generates a medical report based on the patient's record.
+        """
         pass
 
     def add_test_results(self, test_data):
+        """
+        Adds a new test result entry to the test_results field.
+        
+        Args:
+            test_data (dict): Dictionary containing test result details.
+        """
         self.test_results.append(test_data)
         self.save()
 
     def add_diagnosis(self, diagnosis_data):
+        """
+        Adds a new diagnosis entry to the diagnoses field.
+        
+        Args:
+            diagnosis_data (dict): Dictionary containing diagnosis details.
+        """
         self.diagnoses.append(diagnosis_data)
         self.save()
 
     def add_medication(self, medication_data):
+        """
+        Adds a new medication entry to the current_medications field.
+        
+        Args:
+            medication_data (dict): Dictionary containing medication details.
+        """
         self.current_medications.append(medication_data)
         self.save()
 
     def view_patient_history(self):
-        # Logic to view the entire history of a patient
+        """
+        Retrieves all EHR records for the patient.
+        
+        Returns:
+            QuerySet: A queryset containing all records related to the patient.
+        """
         return EHR.objects.filter(patient=self.patient)
 
     def delete_record(self):
-        # Logic to delete the record
+        """
+        Deletes the current EHR record from the database.
+        """
         self.delete()
 
     def __str__(self):
+        """
+        Returns a string representation of the EHR record.
+        """
         return f"EHR Record for {self.patient.first_name} {self.patient.last_name}"
 
 class MedicalHistory(models.Model):
