@@ -305,7 +305,7 @@ class LabTechnicianAppointmentViewset(viewsets.ModelViewSet):
             patient=patient,
             lab_technician=lab_technician,
             appointment_date=appointment_date,
-            appointment_time=appointment_time,
+            start_time=appointment_time,
             lab_test_type=lab_test_type,
             fee=fee
         )
