@@ -185,7 +185,7 @@ const PopupEHRCreate = ({ onClose }) => {
                   <td>{record.test_reports}</td>
                   <td>{record.nail_image_analysis}</td>
                   <td>{record.notes}</td>
-                  <td>{record.diagnostics}</td>
+                  <td>{record.diagnoses}</td>
                   <td>{record.last_updated}</td>
 
                   {/* <td>

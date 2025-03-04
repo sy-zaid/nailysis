@@ -81,13 +81,11 @@ export const formatEhrRecords = (response, type) => {
   let ehrArray;
   if (type === "ehr_ws") {
     // Ensure ehrData is always an array
-    ehrArray = Array.isArray(response)
-      ? response
-      : [response];
+    ehrArray = Array.isArray(response) ? response : [response];
   } else if (type === "ehr_create") {
     ehrArray = response;
   }
-  console.log("CONVERTING THIS:",ehrArray)
+  console.log("CONVERTING THIS:", ehrArray);
   return ehrArray.map((record) => ({
     id: record.id,
     patient_name: `${record.patient?.user?.first_name || "Null"} ${
@@ -119,9 +117,10 @@ export const formatEhrRecords = (response, type) => {
     nail_image_analysis: Array.isArray(record.nail_image_analysis)
       ? record.nail_image_analysis.join(", ")
       : "No records",
-    diagnostics: Array.isArray(record.diagnostics)
-      ? record.diagnostics.join(", ")
+    diagnoses: Array.isArray(record.diagnoses)
+      ? record.diagnoses.join(", ")
       : "No records",
+    added_to_medical_history: record.added_to_medical_history,
   }));
 };
 
@@ -134,7 +133,7 @@ export const preparePayload = (ehrData) => {
   );
 };
 
-export const toggleActionMenu = (recordId) => {
+export const toggleActionMenu = (recordId, menuOpen, setMenuOpen) => {
   setMenuOpen(menuOpen === recordId ? null : recordId);
 };
 

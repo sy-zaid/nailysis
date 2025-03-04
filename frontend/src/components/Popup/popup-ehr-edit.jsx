@@ -68,7 +68,7 @@ const PopupEHREdit = ({ onClose, recordDetails }) => {
         ),
         medications: mapSelectedOptions(recordDetails.medications, []), // Define medication options if available
         diagnoses: mapSelectedOptions(
-          recordDetails.diagnostics,
+          recordDetails.diagnoses,
           diagnosesOptions
         ),
         category:

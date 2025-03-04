@@ -146,4 +146,15 @@ class EHRView(viewsets.ModelViewSet):
         self.perform_destroy(instance)
         self.send_websocket_delete(id)  # Send WebSocket Delete Event
         return Response({"message": "EHR record deleted."}, status=status.HTTP_204_NO_CONTENT)
+    
+    @action(detail=True,methods=['post'],url_path="add_ehr_to_medical_history")
+    def add_ehr_to_medical_history(self,request,pk = None):
+        print("HELLLOOOOOOOOOOOOOOOO    ")
+        user = self.request.user
+        if user.role == "doctor":
+            ehr_record,created = EHR.objects.get_or_create(pk=pk)
+            ehr_record.add_to_medical_history()
+            return Response({"message":"Successfully Added to Medical History"}, status=status.HTTP_201_CREATED)
+        return Response({"error":"User not authorized to add ehr to medical history"})
+
 

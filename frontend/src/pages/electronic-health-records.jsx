@@ -17,11 +17,11 @@ import {
   getAccessToken,
   getRole,
 } from "../utils/utils";
-import { getEHR } from "../api/ehrApi";
+import { getEHR, addEHRToMedicalHistory } from "../api/ehrApi";
 import useCurrentUserData from "../useCurrentUserData";
 
 /**
- * **ElectronicHealthRecord Component** 
+ * **ElectronicHealthRecord Component**
  *
  * This component displays a table of Electronic Health Records (EHR) and
  * allows users (doctors) to add, edit, or delete records.
@@ -51,7 +51,10 @@ const ElectronicHealthRecord = () => {
     let response;
     try {
       if (curUserRole === "patient") {
-        console.log("USER IS PATIENT SO FETCHING ONLY PATIENTS EHR",curUser[0]?.user_id);
+        console.log(
+          "USER IS PATIENT SO FETCHING ONLY PATIENTS EHR",
+          curUser[0]?.user_id
+        );
 
         response = await getEHR(curUser[0].user_id);
       } else {
@@ -82,7 +85,7 @@ const ElectronicHealthRecord = () => {
    */
   const handleActionClick = (action, recordDetails) => {
     console.log(`Performing ${action} on`, recordDetails);
-    setMenuOpen(null); // Close action menu
+    setMenuOpen(null, menuOpen, setMenuOpen); // Close action menu
 
     if (action === "Edit") {
       setPopupContent(
@@ -100,6 +103,11 @@ const ElectronicHealthRecord = () => {
         />
       );
       setShowPopup(true);
+    } else if (action === "AddToMH") {
+      console.log("Sending this to add medical history", recordDetails);
+      addEHRToMedicalHistory(recordDetails);
+
+      alert("Updated Medical History with Selected Record");
     } else if (action === "Add New Record") {
       setPopupContent(<PopupEHRCreate onClose={handleClosePopup} />);
       setShowPopup(true);
@@ -174,11 +182,15 @@ const ElectronicHealthRecord = () => {
                   <td>{record.test_reports}</td>
                   <td>{record.nail_image_analysis}</td>
                   <td>{record.notes}</td>
-                  <td>{record.diagnostics}</td>
+                  <td>{record.diagnoses}</td>
                   <td>{record.last_updated}</td>
                   {curUserRole === "doctor" && (
                     <td>
-                      <button onClick={() => toggleActionMenu(record.id)}>
+                      <button
+                        onClick={() =>
+                          toggleActionMenu(record.id, menuOpen, setMenuOpen)
+                        }
+                      >
                         ⋮
                       </button>
                       {menuOpen === record.id && (
@@ -196,6 +208,15 @@ const ElectronicHealthRecord = () => {
                             >
                               Delete
                             </li>
+                            {!record.added_to_medical_history && (
+                              <li
+                                onClick={() =>
+                                  handleActionClick("AddToMH", record.id)
+                                }
+                              >
+                                Add to Medical History
+                              </li>
+                            )}
                           </ul>
                         </div>
                       )}

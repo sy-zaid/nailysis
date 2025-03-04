@@ -33,7 +33,7 @@ class DoctorFeeViewset(viewsets.ModelViewSet):
     API endpoint to manage doctor appointment fees.
 
     Provides:
-    - List of all doctor appointment fees
+    - List of all doctor appointment fees   
     - Standard CRUD operations
     """
     queryset = DoctorAppointmentFee.objects.all()
