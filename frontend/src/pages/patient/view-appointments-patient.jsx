@@ -2,11 +2,10 @@ import React, { useState, useRef, useEffect } from "react";
 import styles from "../../components/CSS Files/PatientAppointment.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import Header from "../../components/Dashboard/Header/Header";
-import PopupAppointmentBook from "../../components/Popup/popup-appointment-book";
+import PopupDoctorAppointmentBook from "../../components/Popup/popup-doctor-appointment-book";
 import PopupLabAppointmentBook from "../../components/Popup/popup-lab-appointment-book";
 import PopupAppointmentDetails from "../../components/Popup/popup-appointment-details";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import api from "../../api";
 
 const AppointmentPatients = () => {
@@ -103,7 +102,7 @@ const AppointmentPatients = () => {
 
   return (
     <div className={styles.pageContainer}>
-      {showDoctorPopup && <PopupAppointmentBook onClose={handleCloseDoctorPopup} />}
+      {showDoctorPopup && <PopupDoctorAppointmentBook onClose={handleCloseDoctorPopup} />}
       {showLabPopup && <PopupLabAppointmentBook onClose={handleCloseLabPopup} />}
 
       <PopupAppointmentDetails></PopupAppointmentDetails>
