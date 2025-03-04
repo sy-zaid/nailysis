@@ -10,7 +10,10 @@ function LabTechDashboard() {
     return (
         <div>
           <Navbar />
-          <Header curUserRole={'Lab Technician'}/>
+          <Header 
+            mainHeading={'Welcome, John Doe'}
+            subHeading={'Here is Your Lab Technician '}
+          />
           <div className={styles.main}>
             <div className={styles.cards}>
               <Cards heading="Patients" />
