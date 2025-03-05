@@ -4,7 +4,7 @@ import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import PopupAppointmentDetails from "../../components/Popup/popup-appointment-details";
 import { useNavigate } from "react-router-dom";
 import api from "../../api";
-import CancellationRequestForm from "./cancellation-request-form"; // Import CancellationRequestForm
+import CancellationRequestForm from "./cancellation-request-form";
 import PopupStartAppointment from "../../components/Popup/popup-appointment-checkin";
 
 const AppointmentDoctor = () => {
@@ -12,7 +12,9 @@ const AppointmentDoctor = () => {
   const [appointments, setAppointments] = useState([]);
   const token = localStorage.getItem("access");
   const [showPopup, setShowPopup] = useState(false);
-  const [popupContent, setPopupContent] = useState(null); // State to track which popup to show
+  const [popupContent, setPopupContent] = useState(null);
+  const [menuOpen, setMenuOpen] = useState(null);
+
   useEffect(() => {
     if (!token) {
       console.log("No token found, Redirecting to login");
@@ -52,15 +54,14 @@ const AppointmentDoctor = () => {
     }
   };
 
-  const handleOpenPopup = () => {
-    setShowPopup(true); // Show the popup when button is clicked
+  const handleAddAppointment = () => {
+    navigate("/add-appointment");
   };
 
   const handleClosePopup = () => {
-    setShowPopup(false); // Hide the popup when closing
+    setShowPopup(false);
+    setPopupContent(null);
   };
-
-  const [menuOpen, setMenuOpen] = useState(null);
 
   // Function to toggle the menu for a specific appointment
   const toggleMenu = (appointmentId) => {
@@ -68,35 +69,32 @@ const AppointmentDoctor = () => {
   };
 
   // Handle the action when an item is clicked in the menu
-  const handleActionClick = (action, appointmentId) => {
-    console.log(`Action: ${action} on Appointment ID: ${appointmentId}`);
+  const handleActionClick = (action, appointment) => {
+    console.log(`Action: ${action} on Appointment ID: ${appointment.appointment_id}`);
     setMenuOpen(null); // Close the menu after action
 
     if (action === "Cancel") {
       setPopupContent(
         <CancellationRequestForm
-          appointmentId={appointmentId}
+          appointmentId={appointment.appointment_id}
           onClose={handleClosePopup}
         />
       );
-      setShowPopup(true); // Show the Cancellation Request Form popup
+      setShowPopup(true);
     } else if (action === "Start Appointment") {
       setPopupContent(
         <PopupStartAppointment
-          appointmentDetails={appointmentId}
+          appointmentDetails={appointment}
           onClose={handleClosePopup}
         />
       );
       setShowPopup(true);
     }
-    // Add logic for other actions like 'Edit' and 'Reschedule' if needed
   };
-  
+
   return (
     <div className={styles.pageContainer}>
-      {showPopup && popupContent}{" "}
-      {/* Render the correct popup based on the action */}
-      <PopupAppointmentDetails />
+      {showPopup && popupContent}
       <div className={styles.pageTop}>
         <Navbar />
         <h1>Appointments</h1>
@@ -112,7 +110,12 @@ const AppointmentDoctor = () => {
               <button className={styles.filterButton}>Cancelled</button>
               <p className={styles.statusSummary}>50 completed, 4 upcoming</p>
             </div>
-            <button className={styles.addButton}>Cancel Appointment</button>
+            <button
+              onClick={handleAddAppointment}
+              className={styles.addButton}
+            >
+              Add New Appointment
+            </button>
           </div>
 
           <div className={styles.tableContainer}>
@@ -130,6 +133,7 @@ const AppointmentDoctor = () => {
                   <th>Date & Time</th>
                   <th>Status</th>
                   <th>Additional Notes</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
 
@@ -168,17 +172,14 @@ const AppointmentDoctor = () => {
                           <ul>
                             <li
                               onClick={() => {
-                                handleActionClick("Cancel", row.appointment_id);
+                                handleActionClick("Cancel", row);
                               }}
                             >
                               Request Cancellation
                             </li>
                             <li
                               onClick={() =>
-                                handleActionClick(
-                                  "Start Appointment",
-                                  row
-                                )
+                                handleActionClick("Start Appointment", row)
                               }
                             >
                               Start Appointment

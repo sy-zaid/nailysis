@@ -26,7 +26,7 @@ import Home from "./pages/Home";
 import YourPatients from "./pages/admin-clinic/your-patients-clinic-admin";
 import PatientProfile from "./pages/admin-clinic/patient-profile-clinic-admin";
 import DoctorProfile from "./pages/admin-clinic/doctor-profile-clinic-admin";
-
+import BillingHistory from "./pages/admin-clinic/billing-history.jsx";
 
 function Logout() {
   localStorage.clear();
@@ -137,7 +137,6 @@ function App() {
             }
           />
 
-         
           {/*clinic-admin => Patient Health History */}
           <Route
             path="/clinic-admin/patient-history"
@@ -155,6 +154,27 @@ function App() {
                   }`}
                 >
                   <PatientHealthHistory />
+                </div>
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/clinic-admin/billing-history"
+            element={
+              <ProtectedRoute requiredRole="clinic_admin">
+                <Sidebar
+                  userRole="clinic_admin"
+                  setView={setView}
+                  isOpen={isOpen}
+                  toggleSidebar={toggleSidebar}
+                />
+                <div
+                  className={`mainContent ${
+                    isOpen ? "sidebar-open" : "sidebar-closed"
+                  }`}
+                >
+                  <BillingHistory />
                 </div>
               </ProtectedRoute>
             }
@@ -181,6 +201,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+
           {/* Patient */}
 
           <Route
