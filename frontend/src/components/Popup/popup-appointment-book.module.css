@@ -6,6 +6,8 @@
   max-width: 850px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   position: relative;
+  max-height: 95vh;
+  overflow-y: hidden;
 }
 
 /* Header Section */
@@ -41,6 +43,11 @@
   line-height: 1;
 }
 
+.closeButton span {
+  font-size: 40px;
+  font-weight: 200;
+}
+
 hr {
   border: none;
   height: 1px;
@@ -51,7 +58,6 @@ hr {
 /* Patient Selection Dropdown */
 .patientSelectSection {
   margin: 25px 0;
-  text-align: center;
 }
 
 .patientSelectSection label {
@@ -59,7 +65,22 @@ hr {
   font-size: 14px;
   color: #666;
   margin-bottom: 8px;
+  margin-left: 32%;
 }
+
+.Select {
+  border: none;
+  outline: none;
+  cursor: pointer;
+}
+
+/* select {
+  border: none;
+  outline: none;
+  cursor: pointer;
+  width: 80% !important;
+  padding-left: 0 !important;
+} */
 
 .dropdown {
   max-width: 300px;
@@ -94,6 +115,7 @@ hr {
   grid-template-columns: repeat(5, 1fr);
   gap: 15px;
   margin-bottom: 15px;
+  margin-left: 25px;
 }
 
 .infoColumn {
@@ -115,6 +137,7 @@ hr {
 
 .emailSection {
   margin-top: 10px;
+  margin-left: 25px;
 }
 
 /* Records Table */
@@ -124,32 +147,45 @@ hr {
   margin: 15px 0;
   border-radius: 5px;
   border: 1px solid #eaeaea;
+  padding: 20px;
+  border: none;
 }
 
 .recordsTable {
   width: 100%;
   border-collapse: collapse;
   font-size: 13px;
+  border: none;
+  overflow-y: auto;
+  overflow-x: auto;
+}
+
+.recordsTable th,
+.recordsTable td {
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    text-align: center;
 }
 
 .recordsTable th {
-  background-color: #f5f5f5;
+  /* background-color: #f5f5f5; */
   padding: 10px;
-  text-align: left;
+  /* text-align: left; */
   font-weight: 600;
   color: #555;
-  border-bottom: 1px solid #eaeaea;
+  /* border-bottom: 1px solid #eaeaea; */
 }
 
 .recordsTable td {
   padding: 10px;
-  border-bottom: 1px solid #eaeaea;
+  /* border-bottom: 1px solid #eaeaea; */
   color: #333;
 }
 
-.recordsTable tr:nth-child(even) {
+/* .recordsTable tr:nth-child(even) {
   background-color: #f9f9f9;
-}
+} */
 
 .recordsTable tr:hover {
   background-color: #f0f7ff;
@@ -163,19 +199,20 @@ hr {
 }
 
 .continueButton {
-  background-color: #0066ff;
+  background-color: #007bff;
   color: white;
   border: none;
-  border-radius: 25px;
-  padding: 10px 40px;
+  border-radius: 15px;
+  padding: 8px 40px;
   font-size: 15px;
   font-weight: 500;
   cursor: pointer;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
   transition: background-color 0.2s;
 }
 
 .continueButton:hover {
-  background-color: #0052cc;
+  background-color: #0056b3;
 }
 
 /* Form fields that appear after clicking continue */
@@ -239,4 +276,13 @@ hr {
 
 .confirmButton:hover {
   background-color: #0052cc;
+}
+
+
+
+.popupBottom {
+  max-height: 75vh;
+  overflow-y: scroll;
+  scroll-behavior: smooth;
+  overflow-x: hidden;
 }
