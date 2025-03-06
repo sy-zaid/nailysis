@@ -242,7 +242,7 @@ class TechnicianAppointment(Appointment):
         self.save() 
 
     def __str__(self):
-        return f"Lab Test {self.lab_test_id} - {self.patient} ({self.lab_test_type})"
+        return f"Lab Test {self.patient} ({self.lab_test_type})"
 
 
 class LabTechnicianAppointmentFee(models.Model):
