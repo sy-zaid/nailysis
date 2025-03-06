@@ -53,6 +53,8 @@ SIMPLE_JWT = {
 
 INSTALLED_APPS = [
     'jazzmin', #JAZZMIN TEST
+    'daphne',  # Required for WebSockets
+    'channels',  # Django Channels
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -184,3 +186,13 @@ JAZZMIN_SETTINGS = {
 
 JAZZMIN_DEFAULT_ADMIN_INTERFACE = True
 
+# CONFIGURING WEBSOCKETS
+ASGI_APPLICATION = "backend.asgi.application"
+
+# WebSockets use Redis for communication
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",  # For local testing
+        # Use Redis in production: "BACKEND": "channels_redis.core.RedisChannelLayer",
+    },
+}

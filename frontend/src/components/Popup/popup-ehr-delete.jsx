@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Popup from "./Popup";
-import styles from "./popup-appointment-book.module.css";
+import styles from "./popup-doctor-appointment-book.module.css";
 const PopupEHRDelete = ({ onClose, recordDetails }) => {
   const [popupTrigger, setPopupTrigger] = useState(true);
   const [ehrData, setEhrData] = useState();

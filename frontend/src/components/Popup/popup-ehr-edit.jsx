@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Select from "react-select";
-import styles from "./popup-appointment-book.module.css";
+import styles from "./popup-doctor-appointment-book.module.css";
 import Popup from "./Popup.jsx";
 import axios from "axios";
 /**
@@ -68,7 +68,7 @@ const PopupEHREdit = ({ onClose, recordDetails }) => {
         ),
         medications: mapSelectedOptions(recordDetails.medications, []), // Define medication options if available
         diagnoses: mapSelectedOptions(
-          recordDetails.diagnostics,
+          recordDetails.diagnoses,
           diagnosesOptions
         ),
         category:

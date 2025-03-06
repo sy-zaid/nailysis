@@ -1,7 +1,7 @@
 import React, { act, useEffect, useState } from "react";
 import styles from "../../components/CSS Files/PatientAppointment.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
-import PopupAppointmentBook from "../../components/Popup/popup-appointment-book";
+import PopupAppointmentBook from "../../components/Popup/popup-doctor-appointment-book";
 import PopupAppointmentDetails from "../../components/Popup/popup-appointment-details";
 import PopupRescheduleAppointment from "../../components/Popup/popup-appointment-reschedule";
 import PopupDeleteAppointment from "../../components/Popup/popup-appointment-delete";
@@ -62,7 +62,7 @@ const AppointmentClinicAdmin = () => {
   };
 
   // Function to toggle the menu for a specific appointment
-  const toggleMenu = (appointmentId) => {
+  const toggleActionMenu = (appointmentId) => {
     setMenuOpen(menuOpen === appointmentId ? null : appointmentId);
   };
 
@@ -215,7 +215,7 @@ const AppointmentClinicAdmin = () => {
                     {/* Additional Notes */}
                     <td>
                       <button
-                        onClick={() => toggleMenu(row.appointment_id)}
+                        onClick={() => toggleActionMenu(row.appointment_id)}
                         className={styles.moreActionsBtn}
                       >
                         <img

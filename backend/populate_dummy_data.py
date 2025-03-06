@@ -122,12 +122,12 @@ def generate_dummy_ehr_records(num_records, patients, doctors):
 
         ehr_record = EHR.objects.create(
             patient=patient,
-            medical_conditions={"conditions": [fake.word(), fake.word()]},
-            current_medications={"medications": [fake.word(), fake.word()]},
-            immunization_records={"vaccines": [fake.word(), fake.word()]},
-            nail_image_analysis={"analysis": "Normal"},
-            test_results={"tests": [fake.word(), fake.word()]},
-            diagnoses={"diagnoses": [fake.word(), fake.word()]},
+            medical_conditions={fake.word(), fake.word()},
+            current_medications={fake.word(), fake.word()},
+            immunization_records={fake.word(), fake.word()},
+            nail_image_analysis={"Normal"},
+            test_results={fake.word(), fake.word()},
+            diagnoses={fake.word(), fake.word()},
             visit_date=visit_date,
             category=random.choice(["Chronic", "Emergency", "Preventive", "General"]),
             comments=fake.text(),
@@ -231,3 +231,24 @@ def create_dummy_clinic_admin():
     return clinic_admin 
 
 create_dummy_clinic_admin()
+
+
+# POPULATING LAB APPOINTMENTS FEE MODEL
+
+# Define lab test fees
+LAB_TEST_FEES = {
+    "Complete Blood Count (CBC)": 1500.00,
+    "Basic Metabolic Panel (BMP)": 1200.00,
+    "Hemoglobin A1c (HbA1c)": 1300.00,
+    "Testosterone Test": 2000.00,
+    "PCR Test": 2500.00,
+    "BRCA Gene Test": 3000.00,
+}
+
+# Insert or update lab technician appointment fees
+def populate_lab_appointment_fees():
+    for lab_test_type, fee in LAB_TEST_FEES.items():
+        LabTechnicianAppointmentFee.objects.update_or_create(
+            lab_test_type=lab_test_type, defaults={"fee": fee}
+        )
+populate_lab_appointment_fees()

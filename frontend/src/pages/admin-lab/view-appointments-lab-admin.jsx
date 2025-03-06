@@ -1,7 +1,7 @@
 import React, { act, useEffect, useState } from "react";
 import styles from "../../components/CSS Files/PatientAppointment.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
-import PopupAppointmentBook from "../../components/Popup/popup-appointment-book";
+import PopupAppointmentBook from "../../components/Popup/popup-lab-appointment-book";
 import PopupAppointmentDetails from "../../components/Popup/popup-appointment-details";
 import PopupRescheduleAppointment from "../../components/Popup/popup-appointment-reschedule";
 import PopupDeleteAppointment from "../../components/Popup/popup-appointment-delete";

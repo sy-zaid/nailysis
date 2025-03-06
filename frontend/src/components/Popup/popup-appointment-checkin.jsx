@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Select from "react-select";
-import styles from "./popup-appointment-book.module.css";
+import styles from "./popup-doctor-appointment-book.module.css";
 import Popup from "./Popup.jsx";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -67,7 +67,7 @@ const PopupStartAppointment = ({ onClose, appointmentDetails }) => {
       const formData = new FormData();
       Object.entries(ehrData).forEach(([key, value]) => {
         if (Array.isArray(value)) {
-          formData.append(key, JSON.stringify(value)); // ✅ Keep JSON format for arrays
+          formData.append(key, JSON.stringify(value)); // Keep JSON format for arrays
         } else {
           formData.append(key, value);
         }

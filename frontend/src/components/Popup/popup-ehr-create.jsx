@@ -1,46 +1,25 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Select from "react-select";
-import styles from "./popup-appointment-book.module.css";
+import styles from "./popup-doctor-appointment-book.module.css";
 import Popup from "./Popup.jsx";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import useCurrentUserData from "../../useCurrentUserData.jsx";
+import { createEHR, getEHR } from "../../api/ehrApi.js";
+import { useAllPatients } from "../../api/usersApi.js";
+import { useEhrUpdatesWS } from "../../sockets/ehrSocket.js";
+import {
+  handleSelectChange,
+  handleInputChange,
+  formatEhrRecords,
+  preparePayload,
+} from "../../utils/utils.js";
+import {
+  medicalConditionsOptions,
+  categoryOptions,
+  diagnosesOptions,
+  currentMedicationsOptions,
+} from "../../utils/utils.js";
 
-
-const medicalConditionsOptions = [
-  { value: "Diabetes", label: "Diabetes" },
-  { value: "Hypertension", label: "Hypertension" },
-  { value: "Heart Disease", label: "Heart Disease" },
-  { value: "Asthma", label: "Asthma" },
-];
-
-/**
- * Predefined category options for react-select.
- */
-const categoryOptions = [
-  { value: "Chronic", label: "Chronic" },
-  { value: "Emergency", label: "Emergency" },
-  { value: "Preventive", label: "Preventive" },
-  { value: "General", label: "General" },
-];
-
-/**
- * Predefined diagnosis options for react-select.
- */
-const diagnosesOptions = [
-  { value: "Anemia", label: "Anemia" },
-  { value: "Diabetes", label: "Diabetes" },
-  { value: "Hypertension", label: "Hypertension" },
-  { value: "Fungal Infection", label: "Fungal Infection" },
-];
-
-const PopupEHRCreate = ({ onClose, appointmentDetails }) => {
+const PopupEHRCreate = ({ onClose }) => {
   const [popupTrigger, setPopupTrigger] = useState(true);
-  const navigate = useNavigate();
-  const token = localStorage.getItem("access");
-
-  // Fetch Patients List
-  const [patients, setPatients] = useState([]);
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [ehrData, setEhrData] = useState({
     patient_id: "",
@@ -57,29 +36,28 @@ const PopupEHRCreate = ({ onClose, appointmentDetails }) => {
   });
   const [isPatientConfirmed, setIsPatientConfirmed] = useState(false);
   const [records, setRecords] = useState([]);
-  useEffect(() => {
-    const fetchPatients = async () => {
-      try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}/api/patients/`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        const formattedPatients = response.data.map((patient) => ({
-          value: patient.user.user_id,
-          label: `${patient.user.first_name} ${patient.user.last_name}`,
-          details: patient,
-        }));
-        setPatients(formattedPatients);
-        console.log("Formatted Patients:", formattedPatients);
-      } catch (error) {
-        console.error("Error fetching patients:", error);
-      }
-    };
+  const { data: patientsData, isLoading, error } = useAllPatients();
 
-    fetchPatients();
-  }, []);
+  // Set up WebSocket connection when component mounts
+  const socket = useEhrUpdatesWS(setRecords);
+
+  const formattedPatients = useMemo(() => {
+    return (
+      patientsData?.map((patient) => ({
+        value: patient.user.user_id,
+        label: `${patient.user.first_name} ${patient.user.last_name}`,
+        details: patient,
+      })) || []
+    );
+  }, [patientsData]);
+
+  // Set `patients` directly to `formattedPatients` instead of using `useEffect`
+  const [patients, setPatients] = useState(formattedPatients);
+
+  // Update state only when `formattedPatients` changes
+  useEffect(() => {
+    setPatients(formattedPatients);
+  }, [formattedPatients]); // Only update state when `formattedPatients` changes
 
   const handlePatientChange = async (selected) => {
     setSelectedPatient(selected);
@@ -87,50 +65,12 @@ const PopupEHRCreate = ({ onClose, appointmentDetails }) => {
 
     if (selected) {
       try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}/api/ehr_records/?patient=${
-            selected.value
-          }`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-
-        const transformedRecords = response.data.map((record) => ({
-          id: record.id,
-          patient_name: `${record.patient?.user?.first_name || "Null"} ${
-            record.patient?.user?.last_name || "Null"
-          }`,
-          category: record.category || "N/A",
-          notes: record.comments || "No comments",
-          last_updated: record.last_updated
-            ? new Date(record.last_updated).toLocaleDateString() +
-              " | " +
-              new Date(record.last_updated).toLocaleTimeString()
-            : "N/A",
-          consulted_by: record.consulted_by || "Unknown",
-          medical_conditions: Array.isArray(record.medical_conditions)
-            ? record.medical_conditions.join(", ")
-            : "No records",
-          medications: Array.isArray(record.current_medications)
-            ? record.current_medications.join(", ")
-            : "No records",
-          immunization:
-            Array.isArray(record.immunization_records) &&
-            record.immunization_records.length > 1
-              ? record.immunization_records.join(", ")
-              : "No records",
-          family_history: record.family_history || "No records",
-          test_reports: Array.isArray(record.test_reports)
-            ? record.test_reports.join(", ")
-            : "No records",
-          nail_image_analysis: Array.isArray(record.nail_image_analysis)
-            ? record.nail_image_analysis.join(", ")
-            : "No records",
-          diagnostics: Array.isArray(record.diagnostics)
-            ? record.diagnostics.join(", ")
-            : "No records",
-        }));
-
-        setRecords(transformedRecords);
+        const response = await getEHR(selected.value);
+        // Formatting the response data to display on table
+        console.log("EHR_CREATE_DATA",response)
+        const formattedData = formatEhrRecords(response.data,"ehr_create")
+        
+        setRecords(formattedData);
 
         // Use setEhrData correctly to update state
         setEhrData((prev) => ({
@@ -140,105 +80,52 @@ const PopupEHRCreate = ({ onClose, appointmentDetails }) => {
 
         setIsPatientConfirmed(true);
       } catch (error) {
-        console.error("Error fetching EHR data:", error);
+        console.error("Error changing patient:", error);
       }
     }
   };
 
-  // const confirmPatientSelection = async () => {
-  //   // if (!selectedPatient) {
-  //   //   return;
-  //   // }
-  //   try {
-  //     const response = await axios.get(
-  //       `${import.meta.env.VITE_API_URL}/api/ehr_records/?patient=${
-  //         selectedPatient.value
-  //       }`,
-  //       { headers: { Authorization: `Bearer ${token}` } }
-  //     );
-
-  //     const transformedRecords = response.data.map((record) => ({
-  //       id: record.id,
-  //       patient_name: `${record.patient?.user?.first_name || "Null"} ${
-  //         record.patient?.user?.last_name || "Null"
-  //       }`,
-  //       category: record.category || "N/A",
-  //       notes: record.comments || "No comments",
-  //       last_updated: record.last_updated
-  //         ? new Date(record.last_updated).toLocaleDateString() +
-  //           " | " +
-  //           new Date(record.last_updated).toLocaleTimeString()
-  //         : "N/A",
-  //       consulted_by: record.consulted_by || "Unknown",
-  //       medical_conditions: Array.isArray(record.medical_conditions)
-  //         ? record.medical_conditions.join(", ")
-  //         : "No records",
-  //       medications: Array.isArray(record.current_medications)
-  //         ? record.current_medications.join(", ")
-  //         : "No records",
-  //       immunization:
-  //         Array.isArray(record.immunization_records) &&
-  //         record.immunization_records.length > 1
-  //           ? record.immunization_records.join(", ")
-  //           : "No records",
-  //       family_history: record.family_history || "No records",
-  //       test_reports: Array.isArray(record.test_reports)
-  //         ? record.test_reports.join(", ")
-  //         : "No records",
-  //       nail_image_analysis: Array.isArray(record.nail_image_analysis)
-  //         ? record.nail_image_analysis.join(", ")
-  //         : "No records",
-  //       diagnostics: Array.isArray(record.diagnostics)
-  //         ? record.diagnostics.join(", ")
-  //         : "No records",
-  //     }));
-  //     setRecords(transformedRecords);
-  //     setEhrData((prev) => ({
-  //       ...prev,
-  //       patient_id: selectedPatient.value, // Ensure patient_id is set
-  //     }));
-  //     setIsPatientConfirmed(true);
-  //     console.log("ALL PATIENT RECORDS", records);
-  //   } catch (error) {
-  //     console.error("Error fetching EHR data:", error);
-  //   }
-  // };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setEhrData((prev) => ({ ...prev, [name]: value }));
-  };
-
   const handleCreateEHR = async () => {
     try {
-      const formData = new FormData();
-      Object.entries(ehrData).forEach(([key, value]) => {
-        if (Array.isArray(value)) {
-          formData.append(key, JSON.stringify(value)); // ✅ Keep JSON format for arrays
-        } else {
-          formData.append(key, value);
+      // Prepare request payload
+      const payload = preparePayload(ehrData);
+
+      // Send API request
+      const response = await createEHR(payload);
+
+      if (response.status === 201) {
+        alert("EHR created successfully");
+
+        // Send WebSocket update with structured message
+        if (socket && socket.readyState === WebSocket.OPEN) {
+          socket.send(
+            JSON.stringify({
+              type: "ehr_update",
+              action: "create",
+              id: response.data.id, // Backend sends this
+              message: "New EHR Record Created!",
+              ehr_data: response.data.ehr_data, // Backend sends full EHR data
+            })
+          );
         }
-      });
-      await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/ehr_records/create_record/`,
-        formData,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-          "Content-Type": "application/form-data",
-        }
-      );
-      alert("EHR created successfully");
+      }
     } catch (error) {
       alert("Failed to create new EHR");
       console.error(error);
     }
   };
-  const handleSelectChange = (name, selectedOptions) => {
-    setEhrData((prevData) => ({
-      ...prevData,
-      [name]: selectedOptions ? selectedOptions.map((opt) => opt.value) : [],
-    }));
-  };
+
+  // Function to update value from input field into ehrData (e.g. onChange={onInputChange})
+  const onInputChange = handleInputChange(setEhrData);
+  // Function to update value from select field into ehrData (e.g. onChange={(selected) => onSelectChange("diagnoses", selected)})
+  const onSelectChange = handleSelectChange(setEhrData);
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
+
+  if (error) {
+    return <p>Error fetching patients</p>;
+  }
   return (
     <Popup trigger={popupTrigger} setTrigger={setPopupTrigger}>
       <div className={styles.formContainer}>
@@ -298,11 +185,11 @@ const PopupEHRCreate = ({ onClose, appointmentDetails }) => {
                   <td>{record.test_reports}</td>
                   <td>{record.nail_image_analysis}</td>
                   <td>{record.notes}</td>
-                  <td>{record.diagnostics}</td>
+                  <td>{record.diagnoses}</td>
                   <td>{record.last_updated}</td>
 
                   {/* <td>
-                    <button onClick={() => toggleMenu(record.id)}>⋮</button>
+                    <button onClick={() => toggleActionMenu(record.id)}>⋮</button>
                     {menuOpen === record.id && (
                       <div className={styles.menu}>
                         <ul>
@@ -336,7 +223,7 @@ const PopupEHRCreate = ({ onClose, appointmentDetails }) => {
                 isMulti
                 options={medicalConditionsOptions}
                 onChange={(selected) =>
-                  handleSelectChange("medical_conditions", selected)
+                  onSelectChange("medical_conditions", selected)
                 }
               />
             </div>
@@ -345,15 +232,10 @@ const PopupEHRCreate = ({ onClose, appointmentDetails }) => {
               <label>Current Medications</label>
               <Select
                 isMulti
-                options={[
-                  { value: "Metformin", label: "Metformin" },
-                  { value: "Aspirin", label: "Aspirin" },
-                  { value: "Lisinopril", label: "Lisinopril" },
-                  { value: "Atorvastatin", label: "Atorvastatin" },
-                ]}
+                options={currentMedicationsOptions}
                 placeholder="Select or add medications"
                 onChange={(selected) =>
-                  handleSelectChange("current_medications", selected)
+                  onSelectChange("current_medications", selected)
                 }
               />
             </div>
@@ -363,16 +245,9 @@ const PopupEHRCreate = ({ onClose, appointmentDetails }) => {
               <label>Diagnoses</label>
               <Select
                 isMulti
-                options={[
-                  { value: "Anemia", label: "Anemia" },
-                  { value: "Diabetes", label: "Diabetes" },
-                  { value: "Hypertension", label: "Hypertension" },
-                  { value: "Fungal Infection", label: "Fungal Infection" },
-                ]}
+                options={diagnosesOptions}
                 placeholder="Select diagnoses"
-                onChange={(selected) =>
-                  handleSelectChange("diagnoses", selected)
-                }
+                onChange={(selected) => onSelectChange("diagnoses", selected)}
               />
             </div>
 
@@ -394,8 +269,8 @@ const PopupEHRCreate = ({ onClose, appointmentDetails }) => {
               <textarea
                 name="comments"
                 placeholder="Add any additional comments"
-                value={ehrData.comments}
-                onChange={handleInputChange}
+                value={ehrData.comments || ""}
+                onChange={onInputChange}
               />
             </div>
 
@@ -405,8 +280,8 @@ const PopupEHRCreate = ({ onClose, appointmentDetails }) => {
               <textarea
                 name="family_history"
                 placeholder="Enter relevant family medical history"
-                value={ehrData.family_history}
-                onChange={handleInputChange}
+                value={ehrData.family_history || ""}
+                onChange={onInputChange}
               />
             </div>
 
