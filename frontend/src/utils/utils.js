@@ -140,6 +140,7 @@ export const toggleActionMenu = (recordId, menuOpen, setMenuOpen) => {
 export const handleClosePopup = () => {
   setShowPopup(false);
 };
+
 export const handleOpenPopup = () => {
-  setShowPopup(true); // Show the popup when button is clicked
+  setShowPopup(true);
 };

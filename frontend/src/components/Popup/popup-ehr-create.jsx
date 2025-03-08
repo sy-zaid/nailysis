@@ -21,6 +21,19 @@ import {
 const PopupEHRCreate = ({ onClose }) => {
   const [popupTrigger, setPopupTrigger] = useState(true);
   const [selectedPatient, setSelectedPatient] = useState(null);
+
+  const [step, setStep] = useState(1); // Track the step of the form
+
+
+
+  const handleNextStep = () => {
+    if (step === 1) {
+      setPopupTrigger(false); // Close the popup immediately
+    } else {
+      setStep(step + 1); // Move to Step 2
+    }
+  };
+
   const [ehrData, setEhrData] = useState({
     patient_id: "",
     medical_conditions: [],
@@ -129,175 +142,229 @@ const PopupEHRCreate = ({ onClose }) => {
   return (
     <Popup trigger={popupTrigger} setTrigger={setPopupTrigger}>
       <div className={styles.formContainer}>
-        <h2>Start Appointment</h2>
-        <h5 className={styles.subhead}>Patient Details & EHR Record</h5>
+        <div className={styles.headerSection}>
+          <div className={styles.titleSection}>
+            <h2>Add New EHR Record</h2>
+
+            <p>{step === 1
+                ? "Choose a patient from list to add new record"
+                : "Add details for a new electronic health record"}
+            </p>
+            
+          </div>
+          {/* <button className={styles.closeButton} onClick={() => setPopupTrigger(false)}>
+            <span>×</span>
+          </button> */}
+        </div>
         <hr />
 
-        {/* Patient Selection */}
-        <div className={styles.formGroup}>
+        <div className={styles.popupBottom}>
+
+        {/* Patient Selection Dropdown */}
+        {step === 1
+                ?    
+        <div className={styles.patientSelectSection}>
           <label>Select Patient</label>
-          <Select
-            options={patients}
-            isSearchable
-            onChange={handlePatientChange}
-            placeholder="Search & select patient"
-          />
-          <button disabled={!selectedPatient}>
-            Confirm Patient to Add New Record
-          </button>
+          <div className={styles.dropdown}>
+            <Select
+              options={patients}
+              isSearchable
+              onChange={handlePatientChange}
+              placeholder="ID: PAT001 | Mr. John Doe"
+            />
+          </div>
         </div>
+        : <p style={{ margin: "10px 0 30px 0", color: "#4E4E4E"}}>Patient # PAT001 | Mr John Doe</p> }
 
-        <div className={styles.tableContainer}>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th>#</th>
 
-                <th>Record ID</th>
-                <th>Patient Name</th>
-                <th>Consulted By</th>
-                <th>Category</th>
-                <th>Medical Conditions</th>
-                <th>Medications</th>
-                <th>Family History</th>
-                <th>Immunization</th>
-                <th>Test Reports</th>
-                <th>Nail Image Analysis</th>
-                <th>Consultation Notes</th>
-                <th>Diagnostics</th>
-                <th>Last Updated</th>
-                {/* <th>Actions</th> */}
-              </tr>
-            </thead>
-            <tbody>
-              {records?.map((record, index) => (
-                <tr key={record.id}>
-                  <td>{index + 1}</td>
 
-                  <td>{record.id}</td>
-                  <td>{record.patient_name}</td>
-                  <td>{record.consulted_by}</td>
-                  <td>{record.category}</td>
-                  <td>{record.medical_conditions}</td>
-                  <td>{record.medications}</td>
-                  <td>{record.family_history}</td>
-                  <td>{record.immunization}</td>
-                  <td>{record.test_reports}</td>
-                  <td>{record.nail_image_analysis}</td>
-                  <td>{record.notes}</td>
-                  <td>{record.diagnoses}</td>
-                  <td>{record.last_updated}</td>
-
-                  {/* <td>
-                    <button onClick={() => toggleActionMenu(record.id)}>⋮</button>
-                    {menuOpen === record.id && (
-                      <div className={styles.menu}>
-                        <ul>
-                          <li onClick={() => handleActionClick("Edit", record)}>
-                            Edit
-                          </li>
-                          <li
-                            onClick={() => {
-                              handleActionClick("Delete", record);
-                            }}
-                          >
-                            Delete
-                          </li>
-                        </ul>
-                      </div>
-                    )}
-                  </td> */}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Show details only after confirming patient */}
-        {isPatientConfirmed && ehrData && (
+        {step === 1 ? (
           <>
-            {/* Medical Conditions */}
-            <div className={styles.formGroup}>
-              <label>Medical Conditions</label>
-              <Select
-                isMulti
-                options={medicalConditionsOptions}
-                onChange={(selected) =>
-                  onSelectChange("medical_conditions", selected)
-                }
-              />
-            </div>
-            {/* Current Medications */}
-            <div className={styles.formGroup}>
-              <label>Current Medications</label>
-              <Select
-                isMulti
-                options={currentMedicationsOptions}
-                placeholder="Select or add medications"
-                onChange={(selected) =>
-                  onSelectChange("current_medications", selected)
-                }
-              />
+                
+            {/* Patient Information Section */}
+            <div className={styles.infoSection}>
+              <div className={styles.sectionHeader}>
+                <div className={styles.bullet}></div>
+                <h3>Patient Information</h3>
+              </div>
+
+              <div className={styles.patientInfoGrid}>
+                <div className={styles.infoColumn}>
+                  <div className={styles.infoLabel}>Patient ID</div>
+                  <div className={styles.infoValue}>123456</div>
+                </div>
+                <div className={styles.infoColumn}>
+                  <div className={styles.infoLabel}>Patient Name</div>
+                  <div className={styles.infoValue}>Mr. John Doe</div>
+                </div>
+                <div className={styles.infoColumn}>
+                  <div className={styles.infoLabel}>Age</div>
+                  <div className={styles.infoValue}>32</div>
+                </div>
+                <div className={styles.infoColumn}>
+                  <div className={styles.infoLabel}>Gender</div>
+                  <div className={styles.infoValue}>Male</div>
+                </div>
+                <div className={styles.infoColumn}>
+                  <div className={styles.infoLabel}>Phone Number</div>
+                  <div className={styles.infoValue}>+92 12345678</div>
+                </div>
+              </div>
+
+              <div className={styles.emailSection}>
+                <div className={styles.infoLabel}>Email Address</div>
+                <div className={styles.infoValue}>patient@gmail.com</div>
+              </div>
             </div>
 
-            {/* Diagnoses */}
-            <div className={styles.formGroup}>
-              <label>Diagnoses</label>
-              <Select
-                isMulti
-                options={diagnosesOptions}
-                placeholder="Select diagnoses"
-                onChange={(selected) => onSelectChange("diagnoses", selected)}
-              />
+            <br />
+
+            {/* Current Available Records Section */}
+            <div className={styles.recordsSection}>
+              <div className={styles.sectionHeader}>
+                <div className={styles.bullet}></div>
+                <h3>Current Available Records</h3>
+              </div>
+
+              <div className={styles.tableContainer}>
+                <table className={styles.recordsTable}>
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Record ID</th>
+                      <th>Patient ID</th>
+                      <th>Patient Name</th>
+                      <th>Category</th>
+                      <th>Details/Summary</th>
+                      <th>Consultation Notes</th>
+                      <th>Consulted By</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>1</td>
+                      <td>123456</td>
+                      <td>123456</td>
+                      <td>John</td>
+                      <td>Lab Test</td>
+                      <td>
+                        Lorem ipsum è un testo segnaposto utilizzato nel settore...
+                      </td>
+                      <td>
+                        Lorem ipsum è un testo segnaposto utilizzato nel settore...
+                      </td>
+                      <td>Dr. John Doe</td>
+                    </tr>
+                    <tr>
+                      <td>2</td>
+                      <td>123456</td>
+                      <td>123456</td>
+                      <td>Doe</td>
+                      <td>Lab Test</td>
+                      <td>
+                        Lorem ipsum è un testo segnaposto utilizzato nel settore...
+                      </td>
+                      <td>
+                        Lorem ipsum è un testo segnaposto utilizzato nel settore...
+                      </td>
+                      <td>Dr. John Doe</td>
+                    </tr>
+                    <tr>
+                      <td>3</td>
+                      <td>123456</td>
+                      <td>123456</td>
+                      <td>Doe</td>
+                      <td>Lab Test</td>
+                      <td>
+                        Lorem ipsum è un testo segnaposto utilizzato nel settore...
+                      </td>
+                      <td>
+                        Lorem ipsum è un testo segnaposto utilizzato nel settore...
+                      </td>
+                      <td>Dr. John Doe</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
 
-            {/* Category */}
-            <div className={styles.formGroup}>
-              <label>Category</label>
-              <Select
-                options={categoryOptions}
-                defaultValue={categoryOptions[3]}
-                onChange={(selected) =>
-                  setEhrData({ ...ehrData, category: selected.value })
-                }
-              />
+        </>
+        ) : (
+        
+          <div className={styles.infoSection}>
+              <div className={styles.sectionHeader}>
+                <div className={styles.bullet}></div>
+                <h3>Enter Electronic Health Records</h3>
+              </div>
+
+              <div className={styles.ehrRecodsGrid}>
+                <div className={styles.ehrRecordsColumn}>
+                  <div className={styles.infoLabel}>Medical Conditions</div>
+                  <select>
+                    <option value="type 1">type 1</option>
+                  </select>
+
+                </div>
+                <div className={styles.ehrRecordsColumn}>
+                  <div className={styles.infoLabel}>Current Medications</div>
+                  <select>
+                    <option value="type 1">type 1</option>
+                  </select>
+
+                </div>
+                <div className={styles.ehrRecordsColumn}>
+                  <div className={styles.infoLabel}>Diagnoses</div>
+                  <select>
+                    <option value="type 1">type 1</option>
+                  </select>
+
+                </div>
+                <div className={styles.ehrRecordsColumn}>
+                  <div className={styles.infoLabel}>Category</div>
+                  <select>
+                    <option value="type 1">type 1</option>
+                  </select>
+                  
+                </div>
+                <div className={styles.ehrRecordsColumn}>
+                  <div className={styles.infoLabel}>Family History</div>
+                  <input type="text" placeholder="Father had heart disease" />
+                </div>
+                <div className={styles.ehrRecordsColumn}>
+                  <div className={styles.infoLabel}>Comments</div>
+                  <input type="text" placeholder="Lorem ipsum dolor, sit amet consectetur adipisicing elit." /> 
+                </div>
+
+              </div>
+
             </div>
 
-            {/* Comments */}
-            <div className={styles.formGroup}>
-              <label>Comments</label>
-              <textarea
-                name="comments"
-                placeholder="Add any additional comments"
-                value={ehrData.comments || ""}
-                onChange={onInputChange}
-              />
-            </div>
 
-            {/* Family History */}
-            <div className={styles.formGroup}>
-              <label>Family History</label>
-              <textarea
-                name="family_history"
-                placeholder="Enter relevant family medical history"
-                value={ehrData.family_history || ""}
-                onChange={onInputChange}
-              />
-            </div>
-
-            <div className={styles.actions}>
-              <button className={styles.cancelButton} onClick={onClose}>
-                Cancel
-              </button>
-              <button
-                className={styles.confirmButton}
-                onClick={handleCreateEHR}
-              >
-                Save & Complete Appointment
-              </button>
-            </div>
-          </>
         )}
+
+
+
+
+        {/* Continue Button */}
+        <div className={styles.actionSection}>
+          {/* <button className={styles.continueButton} onClick={handleCreateEHR}>
+            Continue
+          </button> */}
+
+          {step === 1
+                ?
+          <button className={styles.continueButton} onClick={handleNextStep}>
+            Continue
+          </button>
+          :
+          <button className={styles.continueButton} onClick={handleNextStep}>
+            Add Record
+          </button>
+          }
+
+        </div>
+      </div>
+
       </div>
     </Popup>
   );
