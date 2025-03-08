@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import styles from "./electronic-health-records.module.css";
-import Navbar from "../components/Dashboard/Navbar/Navbar";
+import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import axios from "axios";
 
 // Importing Popups for performing actions on EHR Records
-import PopupEHREdit from "../components/Popup/popup-ehr-edit";
-import PopupEHRDelete from "../components/Popup/popup-ehr-delete";
-import PopupEHRCreate from "../components/Popup/popup-ehr-create";
+import PopupEHREdit from "../../components/Popup/popup-ehr-edit";
+import PopupEHRDelete from "../../components/Popup/popup-ehr-delete";
+import PopupEHRCreate from "../../components/Popup/popup-ehr-create";
 
-import { useEhrUpdatesWS } from "../sockets/ehrSocket";
+import { useEhrUpdatesWS } from "../../sockets/ehrSocket";
 import {
   formatEhrRecords,
   toggleActionMenu,
@@ -16,9 +16,9 @@ import {
   handleClosePopup,
   getAccessToken,
   getRole,
-} from "../utils/utils";
-import { getEHR, addEHRToMedicalHistory } from "../api/ehrApi";
-import useCurrentUserData from "../useCurrentUserData";
+} from "../../utils/utils";
+import { getEHR, addEHRToMedicalHistory } from "../../api/ehrApi";
+import useCurrentUserData from "../../useCurrentUserData";
 
 /**
  * **ElectronicHealthRecord Component**
@@ -171,7 +171,7 @@ const ElectronicHealthRecord = () => {
               {records.map((record, index) => (
                 <tr key={record.id}>
                   <td>{index + 1}</td>
-                  <td>{record.id || "No ID"}</td>
+                  <td>{record.id || "Null"}</td>
                   <td>{record.patient_name}</td>
                   <td>{record.consulted_by}</td>
                   <td>{record.category}</td>

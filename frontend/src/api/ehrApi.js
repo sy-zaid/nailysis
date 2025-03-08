@@ -28,8 +28,7 @@ export const getEHR = async (patientId = null) => {
     const url = patientId
       ? `${API_URL}/api/ehr_records/?patient=${patientId}`
       : `${API_URL}/api/ehr_records/`;
-    const response = await axios.get(url, getHeaders());
-    return response;
+    return await axios.get(url, getHeaders());
   } catch (error) {
     console.error("Error fetching EHR records:", error);
     throw error;
@@ -128,5 +127,17 @@ export const addEHRToMedicalHistory = async (ehrId) => {
     return response.data;
   } catch (error) {
     console.log(error);
+  }
+};
+
+export const getMedicalHistory = async (patientId = null) => {
+  try {
+    const url = patientId
+      ? `${API_URL}/medical_history/?patient=${patientId}`
+      : `${API_URL}/medical_history/`;
+    return await axios.get(url, getHeaders());
+  } catch (error) {
+    console.log("Error fetching Medical History: ",error);
+    throw error;
   }
 };
