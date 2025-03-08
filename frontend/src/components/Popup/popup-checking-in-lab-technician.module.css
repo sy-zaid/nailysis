@@ -338,7 +338,7 @@
   textarea {
     outline: none;
     font-size: 16px;
-    padding: 0 !important;
+    padding: 0 ;
     height: 20px !important;
   }
 

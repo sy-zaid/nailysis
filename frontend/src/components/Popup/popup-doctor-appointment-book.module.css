@@ -66,7 +66,7 @@ hr {
   font-size: 14px;
   color: #666;
   margin-bottom: 8px;
-  margin-left: 32%;
+  margin-left: 36%;
 }
 
 .Select {
@@ -212,7 +212,7 @@ hr {
 .actionSection {
   display: flex;
   justify-content: center;
-  margin: 25px 0 10px 0;
+  margin: 35px 0 10px 0;
 }
 
 .continueButton {
@@ -303,11 +303,48 @@ hr {
   overflow-y: auto;
   scroll-behavior: smooth;
   overflow-x: hidden;
+  padding-right: 20px;
 }
 
 
-.ehrRecordsColumn select, input[type="text"] {
+.ehrRecordsColumn {
+  margin-top: 20px;
+}
+
+
+.ehrRecordsColumn Select, textarea {
   outline: none;
-  width: 90%;
+  width: 80% ;
   padding-left: 0;
+}
+
+.textarea {
+  margin-top: 10px;
+  height: 30px !important;
+}
+
+.cancelButton {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 15px;
+  cursor: pointer;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+  transition: all 0.2s;
+}
+
+.addButton {
+  padding: 8px 16px;
+  background-color:#007bff ;
+  color: white;
+  border: none;
+  border-radius: 15px; 
+  cursor: pointer;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+  transition: all 0.2s;
+}
+
+.addButton:hover {
+background-color: #0056b3;
 }
