@@ -9,17 +9,7 @@ import { deleteAppointment } from "../../../api/appointmentsApi.js";
 
 const PopupDeleteAppointment = ({ onClose, appointmentDetails }) => {
   const [popupTrigger, setPopupTrigger] = useState(true);
-  const { data: curUser, isLoading, isError, error } = useCurrentUserData(); // Fetch patient data
-  // const [patient, setPatient] = useState([]); // Initialize patient state
-
-  // useEffect(() => {
-  //   if (curUser && curUser.length > 0) {
-  //     setPatient([curUser[0].user, curUser[0]]); // Set patient data if available
-  //   } else {
-  //     console.log("No patient data available");
-  //   }
-  // }, [curUser]);
-
+  
   const handleDeleteAppointment = async () => {
     try {
       const response = await deleteAppointment(
@@ -71,7 +61,7 @@ const PopupDeleteAppointment = ({ onClose, appointmentDetails }) => {
               <input
                 type="text"
                 value={`${appointmentDetails.appointment_date || ""} | ${
-                  appointmentDetails.appointment_start_time || ""
+                  appointmentDetails.start_time || ""
                 }`}
                 disabled
               />

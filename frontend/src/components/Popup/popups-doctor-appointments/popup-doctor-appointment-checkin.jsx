@@ -2,28 +2,18 @@ import React, { useState, useEffect } from "react";
 import Select from "react-select";
 import styles from "./popup-doctor-appointment-book.module.css";
 import Popup from "../Popup.jsx";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import useCurrentUserData from "../../../useCurrentUserData.jsx";
 
-const medicalConditionsOptions = [
-  { value: "Diabetes", label: "Diabetes" },
-  { value: "Hypertension", label: "Hypertension" },
-  { value: "Heart Disease", label: "Heart Disease" },
-  { value: "Asthma", label: "Asthma" },
-];
+import {
+  medicalConditionsOptions,
+  categoryOptions,
+  handleInputChange,
+  handleSelectChange,
+} from "../../../utils/utils.js";
+import { saveAndCompleteDoctorAppointment } from "../../../api/appointmentsApi.js";
 
-const categoryOptions = [
-  { value: "Chronic", label: "Chronic" },
-  { value: "Emergency", label: "Emergency" },
-  { value: "Preventive", label: "Preventive" },
-  { value: "General", label: "General" },
-];
-
-const PopupStartAppointment = ({ onClose, appointmentDetails }) => {
+const PopupCheckinDoctorAppointment = ({ onClose, appointmentDetails }) => {
   const [popupTrigger, setPopupTrigger] = useState(true);
-  const navigate = useNavigate();
-  const token = localStorage.getItem("access");
   const { data: curUser } = useCurrentUserData();
   const [timer, setTimer] = useState(0);
   const [ehrData, setEhrData] = useState({
@@ -45,22 +35,9 @@ const PopupStartAppointment = ({ onClose, appointmentDetails }) => {
     return () => clearInterval(interval);
   }, []);
 
-  const handleSelectChange = (name, selectedOptions) => {
-    setEhrData((prevData) => ({
-      ...prevData,
-      [name]: selectedOptions ? selectedOptions.map((opt) => opt.value) : [],
-    }));
-  };
+  const onSelectChange = handleSelectChange(setEhrData);
 
-  const handleFileChange = (e) => {
-    const { name, files } = e.target;
-    setEhrData((prevData) => ({ ...prevData, [name]: files[0] }));
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setEhrData((prevData) => ({ ...prevData, [name]: value }));
-  };
+  const onInputChange = handleInputChange(setEhrData);
 
   const handleStartAppointment = async () => {
     try {
@@ -72,19 +49,11 @@ const PopupStartAppointment = ({ onClose, appointmentDetails }) => {
           formData.append(key, value);
         }
       });
-      await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/doctor_appointments/${
-          appointmentDetails.appointment_id
-        }/save_and_complete/`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/form-data",
-          },
-        }
+      await saveAndCompleteDoctorAppointment(
+        appointmentDetails.appointment_id,
+        formData
       );
-      alert("Appointment Started and electronic_health_record Created Successfully");
+      alert("Appointment Started and EHR Created Successfully");
     } catch (error) {
       alert("Failed to start the appointment");
       console.error(error);
@@ -95,7 +64,9 @@ const PopupStartAppointment = ({ onClose, appointmentDetails }) => {
     <Popup trigger={popupTrigger} setTrigger={setPopupTrigger}>
       <div className={styles.formContainer}>
         <h2>Start Appointment</h2>
-        <h5 className={styles.subhead}>Patient Details & electronic_health_record Record</h5>
+        <h5 className={styles.subhead}>
+          Patient Details & electronic_health_record Record
+        </h5>
         <hr />
 
         {/* Medical Conditions */}
@@ -105,7 +76,7 @@ const PopupStartAppointment = ({ onClose, appointmentDetails }) => {
             isMulti
             options={medicalConditionsOptions}
             onChange={(selected) =>
-              handleSelectChange("medical_conditions", selected)
+              onSelectChange("medical_conditions", selected)
             }
           />
         </div>
@@ -123,7 +94,7 @@ const PopupStartAppointment = ({ onClose, appointmentDetails }) => {
             ]}
             placeholder="Select or add medications"
             onChange={(selected) =>
-              handleSelectChange("current_medications", selected)
+              onSelectChange("current_medications", selected)
             }
           />
         </div>
@@ -140,7 +111,7 @@ const PopupStartAppointment = ({ onClose, appointmentDetails }) => {
               { value: "Fungal Infection", label: "Fungal Infection" },
             ]}
             placeholder="Select diagnoses"
-            onChange={(selected) => handleSelectChange("diagnoses", selected)}
+            onChange={(selected) => onSelectChange("diagnoses", selected)}
           />
         </div>
 
@@ -163,7 +134,7 @@ const PopupStartAppointment = ({ onClose, appointmentDetails }) => {
             name="comments"
             placeholder="Add any additional comments"
             value={ehrData.comments}
-            onChange={handleInputChange}
+            onChange={onInputChange}
           />
         </div>
 
@@ -174,7 +145,7 @@ const PopupStartAppointment = ({ onClose, appointmentDetails }) => {
             name="family_history"
             placeholder="Enter relevant family medical history"
             value={ehrData.family_history}
-            onChange={handleInputChange}
+            onChange={onInputChange}
           />
         </div>
 
@@ -194,4 +165,4 @@ const PopupStartAppointment = ({ onClose, appointmentDetails }) => {
   );
 };
 
-export default PopupStartAppointment;
+export default PopupCheckinDoctorAppointment;

@@ -31,3 +31,19 @@ export const getFeeFromAppointmentType = (appointmentType) => {
   const url = `${API_URL}/api/doctor_fees/get_fees`;
   return axios.get(url, getHeaders());
 };
+
+export const rescheduleDoctorAppointment = async (
+  appointmentId,
+  appointmentData
+) => {
+  const url = `${API_URL}/api/doctor_appointments/${appointmentId}/`;
+  return axios.put(url, appointmentData, getHeaders());
+};
+
+export const saveAndCompleteDoctorAppointment = async (
+  appointmentId,
+  ehrData
+) => {
+  const url = `${API_URL}/api/doctor_appointments/${appointmentId}/save_and_complete/`;
+  return axios.post(url, ehrData, getHeaders());
+};

@@ -119,7 +119,7 @@ const PopupBookAppointment = ({ onClose }) => {
     const appointmentData = {
       doctor_id: formData.doctorId,
       appointment_date: formData.appointmentDate,
-      appointment_start_time: formData.appointmentStartTime,
+      start_time: formData.appointmentStartTime,
       appointment_type: formData.appointmentType,
       specialization: formData.specialization,
       fee: formData.fee,

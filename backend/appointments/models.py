@@ -65,6 +65,37 @@ class Appointment(models.Model):
         self.status = "Cancelled"
         self.save()
 
+    def complete_appointment(self,ehr_data):
+        print("EHR DATA",ehr_data)
+        """Handle the creation of EHR when appointment is Completed."""
+        if self.status != 'Completed':  # Ensure appointment is not already completed
+            self.mark_completed()
+
+            # Create EHR for the patient
+            ehr_record = EHR.objects.create(
+                patient=self.patient,  # Assuming patient is available through the Appointment model
+                visit_date=self.appointment_date,  # Make sure this exists in Appointment model
+                category=ehr_data[0],  # Access category as a dictionary key
+                consulted_by=f"{self.doctor.user.first_name} {self.doctor.user.last_name}",
+                
+                # Initialize fields with default empty values or placeholders
+                medical_conditions=ehr_data[1],  # Access as dictionary
+                current_medications=ehr_data[2],  # Access as dictionary
+                immunization_records=ehr_data[3],  # Access as dictionary
+                # nail_image_analysis=ehr_data.nail_image_analysis,  # Access as dictionary
+                # test_results=ehr_data.test_results,  # Access as dictionary
+                diagnoses=ehr_data[4],  # Access as dictionary
+                comments=ehr_data[5],  # Access as dictionary
+                family_history=ehr_data[6]  # Access as dictionary
+            )
+
+            # Link the EHR record to the appointment
+            self.ehr = ehr_record
+            self.save()
+
+            return True
+        return False
+    
     def reschedule_appointment(self, new_date, new_time,new_specialization,new_doctor,new_appointment_type):
         try:
             """Reschedules the appointment to a new date and time."""

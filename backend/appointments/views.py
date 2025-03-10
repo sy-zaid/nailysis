@@ -120,7 +120,7 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
         Expected request data:
         - doctor_id
         - appointment_date
-        - appointment_start_time
+        - start_time
         - appointment_type
         - specialization
         - fee
@@ -129,7 +129,7 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
         # request.data = appointmentData (from frontend)
         doctor_id = request.data.get('doctor_id')
         appointment_date = request.data.get('appointment_date')
-        appointment_start_time = request.data.get('appointment_start_time')
+        start_time = request.data.get('start_time')
         appointment_type = request.data.get('appointment_type')
         specialization = request.data.get('specialization')
         fee = request.data.get('fee')
@@ -151,7 +151,7 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
             patient=patient,
             doctor=doctor,
             appointment_date=appointment_date,
-            start_time=appointment_start_time,
+            start_time=start_time,
             appointment_type=appointment_type,
             specialization=specialization,
             fee=fee
@@ -232,7 +232,10 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
             return Response({"message": "Successfully added ehr"})
         except (Doctor.DoesNotExist, DoctorAppointment.DoesNotExist): 
             return Response({"error": "No Appointment Found"}, status=status.HTTP_404_NOT_FOUND)
-            
+
+    @action(detail=True,methods=["put"],url_path="reschedule_appointment")
+    def reschedule_appointment(self,request,pk=None):
+        pass
         
 class LabTechnicianAppointmentViewset(viewsets.ModelViewSet):
     """

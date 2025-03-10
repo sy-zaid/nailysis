@@ -4,30 +4,24 @@ import Popup from "../Popup.jsx";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import useCurrentUserData from "../../../useCurrentUserData.jsx";
+import {
+  getAccessToken,
+  handleInputChange,
+  visitPurposes,
+} from "../../../utils/utils.js";
 
-const visitPurposes = [
-  "Consultation",
-  "Follow-up",
-  "Routine Checkup",
-  "Emergency Visit",
-  "Prescription Refill",
-];
+import {
+  getDoctorFromSpecialization,
+  getDoctorSpecializations,
+  rescheduleDoctorAppointment,
+} from "../../../api/appointmentsApi.js";
 
 const PopupRescheduleAppointment = ({ onClose, appointmentDetails }) => {
   const [popupTrigger, setPopupTrigger] = useState(true);
-  const navigate = useNavigate();
-  const token = localStorage.getItem("access");
-  const curUserRole = localStorage.getItem("role");
+  const token = getAccessToken();
   const { data: curUser, isLoading, isError, error } = useCurrentUserData(); // Fetch patient data
   const [patient, setPatient] = useState([]); // Initialize patient state
   const [specializations, setSpecializations] = useState([]);
-  useEffect(() => {
-    if (curUser && curUser.length > 0) {
-      setPatient([curUser[0].user, curUser[0]]); // Set patient data if available
-    } else {
-      console.log("No patient data available");
-    }
-  }, [curUser]);
 
   const [formData, setFormData] = useState({
     doctorId: appointmentDetails.doctor.user.id || "",
@@ -37,42 +31,53 @@ const PopupRescheduleAppointment = ({ onClose, appointmentDetails }) => {
     phone: appointmentDetails.patient.user.phone || "",
     email: appointmentDetails.patient.user.email || "",
     appointmentDate: appointmentDetails.appointmentDate || "",
-    appointmentTime: appointmentDetails.appointmentTime || "",
+    startTime: appointmentDetails.startTime || "",
     appointmentType: appointmentDetails.appointmentType || "",
   });
 
   const [doctors, setDoctors] = useState([]);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+  const onInputChange = handleInputChange(setFormData);
 
-  const handleDateTimeChange = (e) => {
-    const [date, time] = e.target.value.split("T");
-    setFormData((prev) => ({
-      ...prev,
-      appointmentDate: date,
-      appointmentTime: time || "",
-    }));
-  };
+  useEffect(() => {
+    if (curUser && curUser.length > 0) {
+      setPatient([curUser[0].user, curUser[0]]); // Set patient data if available
+    } else {
+      console.log("No patient data available");
+    }
+  }, [curUser]);
+
+  // Fetch specializations on component mount
+  useEffect(() => {
+    const fetchSpecializations = async () => {
+      try {
+        const response = await getDoctorSpecializations();
+        setSpecializations(response.data);
+      } catch (error) {
+        console.error("Failed to fetch specializations", error);
+        throw error;
+      }
+    };
+
+    fetchSpecializations();
+  }, [token]);
 
   // Fetch doctors based on selected specialization
   useEffect(() => {
     const fetchDoctors = async () => {
       if (formData.specialization) {
         try {
-          const response = await axios.get(
-            `http://127.0.0.1:8000/api/doctors/?specialization=${formData.specialization}`,
-            { headers: { Authorization: `Bearer ${token}` } }
+          const response = await getDoctorFromSpecialization(
+            formData.specialization
           );
           const formattedDoctors = response.data.map((doc) => ({
-            id: doc.user.id,
-            name: `${doc.user.first_name} ${doc.user.last_name}`,
+            id: doc.user?.user_id,
+            name: `${doc.user?.first_name} ${doc.user?.last_name}`,
           }));
           setDoctors(formattedDoctors);
         } catch (error) {
           console.error("Failed to fetch doctors", error);
+          throw error;
         }
       }
     };
@@ -80,43 +85,24 @@ const PopupRescheduleAppointment = ({ onClose, appointmentDetails }) => {
     fetchDoctors();
   }, [formData.specialization, token]);
 
-  // Fetch specializations on component mount
-  useEffect(() => {
-    const fetchSpecializations = async () => {
-      try {
-        const response = await axios.get("http://127.0.0.1:8000/api/doctors/", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setSpecializations(response.data);
-      } catch (error) {
-        console.error("Failed to fetch specializations", error);
-      }
-    };
-
-    fetchSpecializations();
-  }, [token]);
-
   const handleRescheduleAppointment = async (e) => {
     e.preventDefault();
 
     const appointmentData = {
       doctor_id: formData.doctorId,
       appointment_date: formData.appointmentDate,
-      appointment_start_time: formData.appointmentTime,
+      start_time: formData.startTime,
       appointment_type: formData.appointmentType,
       specialization: formData.specialization,
+      status: "Rescheduled",
     };
-
+    // console.log("SENDING THIS TO RESCHEDULE:", appointmentData);
     try {
-      const response = await axios.put(
-        `http://127.0.0.1:8000/api/doctor_appointments/${appointmentDetails.appointment_id}/reschedule_appointment/`,
-        appointmentData,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+      const response = await rescheduleDoctorAppointment(
+        appointmentDetails.appointment_id,
+        appointmentData
       );
       alert("Appointment Rescheduled Successfully");
-      navigate("");
     } catch (error) {
       alert("Failed to reschedule appointment");
       console.error(error);
@@ -188,7 +174,7 @@ const PopupRescheduleAppointment = ({ onClose, appointmentDetails }) => {
             <select
               name="specialization"
               value={formData.specialization}
-              onChange={handleInputChange}
+              onChange={onInputChange}
             >
               <option value="">Select Specialization</option>
               {specializations.map((spec, index) => (
@@ -204,7 +190,7 @@ const PopupRescheduleAppointment = ({ onClose, appointmentDetails }) => {
             <select
               name="doctorId"
               value={formData.doctorId}
-              onChange={handleInputChange}
+              onChange={onInputChange}
             >
               <option value="">Select Doctor</option>
               {doctors.map((doctor) => (
@@ -218,14 +204,16 @@ const PopupRescheduleAppointment = ({ onClose, appointmentDetails }) => {
           <div className={styles.formGroup}>
             <label>Date & Time</label>
             <input
-              type="datetime-local"
-              name="appointmentDateTime"
-              value={
-                formData.appointmentDate && formData.appointmentTime
-                  ? `${formData.appointmentDate}T${formData.appointmentTime}`
-                  : ""
-              }
-              onChange={handleDateTimeChange}
+              type="date"
+              name="appointmentDate"
+              value={formData.appointmentDate}
+              onChange={onInputChange}
+            />
+            <input
+              type="time"
+              name="startTime"
+              value={formData.startTime}
+              onChange={onInputChange}
             />
           </div>
 
@@ -234,7 +222,7 @@ const PopupRescheduleAppointment = ({ onClose, appointmentDetails }) => {
             <select
               name="appointmentType"
               value={formData.appointmentType}
-              onChange={handleInputChange}
+              onChange={onInputChange}
             >
               {visitPurposes.map((purpose, index) => (
                 <option key={index} value={purpose}>

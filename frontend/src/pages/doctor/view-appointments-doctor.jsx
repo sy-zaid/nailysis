@@ -5,7 +5,7 @@ import PopupAppointmentDetails from "../../components/Popup/popups-doctor-appoin
 import { useNavigate } from "react-router-dom";
 import api from "../../api";
 import CancellationRequestForm from "./cancellation-request-form"; // Import CancellationRequestForm
-import PopupStartAppointment from "../../components/Popup/popups-doctor-appointments/popup-doctor-appointment-checkin";
+import PopupCheckinDoctorAppointment from "../../components/Popup/popups-doctor-appointments/popup-doctor-appointment-checkin";
 
 const AppointmentDoctor = () => {
   const navigate = useNavigate();
@@ -82,7 +82,7 @@ const AppointmentDoctor = () => {
       setShowPopup(true); // Show the Cancellation Request Form popup
     } else if (action === "Start Appointment") {
       setPopupContent(
-        <PopupStartAppointment
+        <PopupCheckinDoctorAppointment
           appointmentDetails={appointmentId}
           onClose={handleClosePopup}
         />
@@ -148,7 +148,7 @@ const AppointmentDoctor = () => {
                     <td>{row.patient?.gender || "N/A"}</td>
                     <td>{row.appointment_type || "N/A"}</td>
                     <td>
-                      {row.appointment_date} {row.appointment_start_time}
+                      {row.appointment_date} {row.start_time}
                     </td>
                     <td className={getStatusClass(row.status)}>{row.status}</td>
                     <td>{row.notes || "No additional notes"}</td>
