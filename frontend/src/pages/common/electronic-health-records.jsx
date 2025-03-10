@@ -4,9 +4,9 @@ import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import axios from "axios";
 
 // Importing Popups for performing actions on EHR Records
-import PopupEHREdit from "../../components/Popup/popup-ehr-edit";
-import PopupEHRDelete from "../../components/Popup/popup-ehr-delete";
-import PopupEHRCreate from "../../components/Popup/popup-ehr-create";
+import PopupEHREdit from "../../components/Popup/popups-electronic-health-records/popup-ehr-edit";
+import PopupEHRDelete from "../../components/Popup/popups-electronic-health-records/popup-ehr-delete";
+import PopupEHRCreate from "../../components/Popup/popups-electronic-health-records/popup-ehr-create";
 
 import { useEhrUpdatesWS } from "../../sockets/ehrSocket";
 import {

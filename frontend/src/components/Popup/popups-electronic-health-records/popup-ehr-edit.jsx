@@ -1,38 +1,14 @@
 import React, { useState, useEffect } from "react";
 import Select from "react-select";
-import styles from "./popup-doctor-appointment-book.module.css";
-import Popup from "./Popup.jsx";
+import styles from "../popups-doctor-appointments/popup-doctor-appointment-book.module.css";
+import Popup from "../Popup.jsx";
 import axios from "axios";
-/**
- * Predefined medical condition options for react-select.
- * Used to standardize selectable conditions.
- */
-const medical_conditionsOptions = [
-  { value: "Diabetes", label: "Diabetes" },
-  { value: "Hypertension", label: "Hypertension" },
-  { value: "Heart Disease", label: "Heart Disease" },
-  { value: "Asthma", label: "Asthma" },
-]; 
- 
-/**
- * Predefined category options for react-select.
- */
-const categoryOptions = [
-  { value: "Chronic", label: "Chronic" },
-  { value: "Emergency", label: "Emergency" },
-  { value: "Preventive", label: "Preventive" },
-  { value: "General", label: "General" },
-];
 
-/**
- * Predefined diagnosis options for react-select.
- */
-const diagnosesOptions = [
-  { value: "Anemia", label: "Anemia" },
-  { value: "Diabetes", label: "Diabetes" },
-  { value: "Hypertension", label: "Hypertension" },
-  { value: "Fungal Infection", label: "Fungal Infection" },
-];
+import {
+  medicalConditionsOptions,
+  categoryOptions,
+  diagnosesOptions,
+} from "../../../utils/utils.js";
 
 /**
  * Popup for editing Electronic Health Record (EHR).
@@ -42,7 +18,7 @@ const diagnosesOptions = [
  * @param {Function} props.onClose - Function to close the popup.
  * @param {Object} props.recordDetails - Object containing EHR data.
  * @returns {JSX.Element} The popup UI for editing an EHR.
-*/
+ */
 
 const PopupEHREdit = ({ onClose, recordDetails }) => {
   const [popupTrigger, setPopupTrigger] = useState(true);
@@ -64,7 +40,7 @@ const PopupEHREdit = ({ onClose, recordDetails }) => {
       setEhrData({
         medical_conditions: mapSelectedOptions(
           recordDetails.medical_conditions,
-          medical_conditionsOptions
+          medicalConditionsOptions
         ),
         medications: mapSelectedOptions(recordDetails.medications, []), // Define medication options if available
         diagnoses: mapSelectedOptions(
@@ -101,7 +77,9 @@ const PopupEHREdit = ({ onClose, recordDetails }) => {
   const handleSaveEdit = async () => {
     try {
       const formattedData = {
-        medical_conditions: ehrData.medical_conditions.map((item) => item.value), // Convert to array of strings
+        medical_conditions: ehrData.medical_conditions.map(
+          (item) => item.value
+        ), // Convert to array of strings
         current_medications: ehrData.medications.map((item) => item.value),
         diagnoses: ehrData.diagnoses.map((item) => item.value),
         category: ehrData.category ? ehrData.category.value : "", // Convert category to string
@@ -112,9 +90,7 @@ const PopupEHREdit = ({ onClose, recordDetails }) => {
       console.log("JSON Data:", formattedData); // Debugging output
 
       await axios.patch(
-        `${import.meta.env.VITE_API_URL}/api/ehr_records/${
-          recordDetails.id
-        }/`,
+        `${import.meta.env.VITE_API_URL}/api/ehr_records/${recordDetails.id}/`,
         formattedData,
         {
           headers: {
@@ -168,7 +144,7 @@ const PopupEHREdit = ({ onClose, recordDetails }) => {
           <label>Medical Conditions</label>
           <Select
             isMulti
-            options={medical_conditionsOptions}
+            options={medicalConditionsOptions}
             value={ehrData.medical_conditions}
             onChange={(selected) =>
               handleSelectChange("medical_conditions", selected)

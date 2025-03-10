@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from "react";
 import styles from "./popup-doctor-appointment-book.module.css";
-import Popup from "./Popup.jsx";
+import Popup from "../Popup.jsx";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import useCurrentUserData from "../../useCurrentUserData.jsx";
+import useCurrentUserData from "../../../useCurrentUserData.jsx";
+import { getAccessToken } from "../../../utils/utils.js";
+import { deleteAppointment } from "../../../api/appointmentsApi.js";
 
 const PopupDeleteAppointment = ({ onClose, appointmentDetails }) => {
   const [popupTrigger, setPopupTrigger] = useState(true);
-  const navigate = useNavigate();
-  const token = localStorage.getItem("access");
+  const token = getAccessToken();
 
-  const { data: curUser, isLoading, isError, error } = usePatientData(); // Fetch patient data
+  const { data: curUser, isLoading, isError, error } = useCurrentUserData(); // Fetch patient data
   const [patient, setPatient] = useState([]); // Initialize patient state
 
   useEffect(() => {
@@ -23,16 +24,12 @@ const PopupDeleteAppointment = ({ onClose, appointmentDetails }) => {
 
   const handleDeleteAppointment = async () => {
     try {
-      await axios.delete(
-        `${import.meta.env.VITE_API_URL}/api/doctor_appointments/${
-          appointmentDetails.appointment_id
-        }/`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+      const response = await deleteAppointment(
+        appointmentDetails.appointment_id
       );
-      alert("Appointment Deleted Successfully");
-      navigate("");
+      if (response.status === 204) {
+        alert("Appointment Deleted Successfully");
+      }
     } catch (error) {
       alert("Failed to delete appointment");
       console.error(error);
@@ -75,7 +72,9 @@ const PopupDeleteAppointment = ({ onClose, appointmentDetails }) => {
               <label>Appointment Date</label>
               <input
                 type="text"
-                value={`${appointmentDetails.appointment_date || ""} | ${appointmentDetails.appointment_start_time || ""}`}
+                value={`${appointmentDetails.appointment_date || ""} | ${
+                  appointmentDetails.appointment_start_time || ""
+                }`}
                 disabled
               />
             </div>

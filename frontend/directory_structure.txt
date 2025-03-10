@@ -102,11 +102,11 @@ F:\Nailysis Application\frontend\src\components\Picture
 F:\Nailysis Application\frontend\src\components\Picture\Picture.jsx                                                   
 F:\Nailysis Application\frontend\src\components\Picture\Picture.module.css                                            
 F:\Nailysis Application\frontend\src\components\Popup                                                                 
-F:\Nailysis Application\frontend\src\components\Popup\popup-appointment-checkin.jsx                                   
-F:\Nailysis Application\frontend\src\components\Popup\popup-appointment-delete.jsx                                    
-F:\Nailysis Application\frontend\src\components\Popup\popup-appointment-details.jsx                                   
-F:\Nailysis Application\frontend\src\components\Popup\popup-appointment-details.module.css                            
-F:\Nailysis Application\frontend\src\components\Popup\popup-appointment-reschedule.jsx                                
+F:\Nailysis Application\frontend\src\components\Popup\popups-doctor-appointments/popup-appointment-checkin.jsx                                   
+F:\Nailysis Application\frontend\src\components\Popup\popups-doctor-appointments/popup-doctor-appointment-delete.jsx                                    
+F:\Nailysis Application\frontend\src\components\Popup\popup-doctor-appointment-details.jsx                                   
+F:\Nailysis Application\frontend\src\components\Popup\popup-doctor-appointment-details.module.css                            
+F:\Nailysis Application\frontend\src\components\Popup\popups-doctor-appointments/popup-doctor-appointment-reschedule.jsx                                
 F:\Nailysis Application\frontend\src\components\Popup\popup-checking-in-lab-technician.jsx                            
 F:\Nailysis Application\frontend\src\components\Popup\popup-checking-in-lab-technician.module.css                     
 F:\Nailysis Application\frontend\src\components\Popup\popup-doctor-appointment-book.jsx                               

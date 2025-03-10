@@ -1,18 +1,8 @@
 import axios from "axios";
 const API_URL = import.meta.env.VITE_API_URL;
-import { getAccessToken } from "../utils/utils";
+import { getAccessToken,getHeaders} from "../utils/utils";
 
-/**
- * Generates headers required for API requests, including the Authorization token.
- * @returns {Object} Headers with Authorization for API requests.
- */
-const getHeaders = () => {
-  return {
-    headers: {
-      Authorization: `Bearer ${getAccessToken()}`,
-    },
-  };
-};
+
 
 /**
  * Fetches EHR records from the API.
@@ -141,3 +131,5 @@ export const getMedicalHistory = async (patientId = null) => {
     throw error;
   }
 };
+
+// REMOVE TRY CATCH BLOCKS FROM HERE BUT USE ON THE PAGE!!!

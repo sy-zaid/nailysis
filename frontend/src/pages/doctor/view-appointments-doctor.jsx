@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../components/CSS Files/PatientAppointment.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
-import PopupAppointmentDetails from "../../components/Popup/popup-appointment-details";
+import PopupAppointmentDetails from "../../components/Popup/popups-doctor-appointments/popup-doctor-appointment-details";
 import { useNavigate } from "react-router-dom";
 import api from "../../api";
 import CancellationRequestForm from "./cancellation-request-form"; // Import CancellationRequestForm
-import PopupStartAppointment from "../../components/Popup/popup-appointment-checkin";
+import PopupStartAppointment from "../../components/Popup/popups-doctor-appointments/popup-doctor-appointment-checkin";
 
 const AppointmentDoctor = () => {
   const navigate = useNavigate();

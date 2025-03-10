@@ -1,28 +1,3 @@
-// src/utils.js
-export const getAccessToken = () => {
-  return localStorage.getItem("access");
-};
-
-export const getRole = () => {
-  return localStorage.getItem("role");
-};
-
-export const calculateAge = (dob) => {
-  const birthDate = new Date(dob);
-  const today = new Date();
-  const age = today.getFullYear() - birthDate.getFullYear();
-  const monthDifference = today.getMonth() - birthDate.getMonth();
-
-  // Adjust age if birthday hasn't occurred yet this year
-  if (
-    monthDifference < 0 ||
-    (monthDifference === 0 && today.getDate() < birthDate.getDate())
-  ) {
-    return age - 1;
-  }
-  return age;
-};
-
 // You can add more functions below for reuse
 export const medicalConditionsOptions = [
   { value: "Diabetes", label: "Diabetes" },
@@ -60,6 +35,50 @@ export const currentMedicationsOptions = [
   { value: "Lisinopril", label: "Lisinopril" },
   { value: "Atorvastatin", label: "Atorvastatin" },
 ];
+
+export const visitPurposes = [
+  "Consultation",
+  "Follow-up",
+  "Routine Checkup",
+  "Emergency Visit",
+  "Prescription Refill",
+];
+
+export const getAccessToken = () => {
+  return localStorage.getItem("access");
+};
+
+/**
+ * Generates headers required for API requests, including the Authorization token.
+ * @returns {Object} Headers with Authorization for API requests.
+ */
+export const getHeaders = () => {
+  return {
+    headers: {
+      Authorization: `Bearer ${getAccessToken()}`,
+    },
+  };
+};
+
+export const getRole = () => {
+  return localStorage.getItem("role");
+};
+
+export const calculateAge = (dob) => {
+  const birthDate = new Date(dob);
+  const today = new Date();
+  const age = today.getFullYear() - birthDate.getFullYear();
+  const monthDifference = today.getMonth() - birthDate.getMonth();
+
+  // Adjust age if birthday hasn't occurred yet this year
+  if (
+    monthDifference < 0 ||
+    (monthDifference === 0 && today.getDate() < birthDate.getDate())
+  ) {
+    return age - 1;
+  }
+  return age;
+};
 
 export const handleSelectChange = (setData) => (name, selectedOptions) => {
   setData((prevData) => ({

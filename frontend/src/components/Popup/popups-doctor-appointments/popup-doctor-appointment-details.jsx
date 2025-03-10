@@ -1,6 +1,6 @@
 import React from "react";
-import styles from "./popup-appointment-details.module.css";
-import Popup from "./Popup";
+import styles from "./popup-doctor-appointment-details.module.css";
+import Popup from "../Popup";
 import { useState } from "react"; 
 
 const PopupAppointmentDetails = () => {

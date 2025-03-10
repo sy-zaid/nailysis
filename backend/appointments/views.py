@@ -110,6 +110,7 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
             instance.delete()
         else:
             raise PermissionDenied("You are not authorized to delete this appointment.")
+        return Response({"message":"Successfully deleted appointment"}, status=status.HTTP_204_NO_CONTENT)
 
     @action(detail=False, methods=['post'], url_path='book_appointment')
     def book_appointment(self, request):
