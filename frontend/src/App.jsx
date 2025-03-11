@@ -5,10 +5,11 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import NotFound from "./components/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
-import electronic_health_record from "./pages/admin-clinic/electronic-health-records.jsx";
-import PatientHealthHistory from "./pages/admin-clinic/patient-health-history.jsx";
+import electronic_health_record from "./pages/common/electronic-health-records.jsx";
+import PatientHealthHistory from "./pages/common/patient-health-history.jsx";
 import { QueryClientProvider } from "@tanstack/react-query"; // Import React Query Client Provider
 import { queryClient } from "./queryClient.js"; // Import the client
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 import Sidebar from "./components/Dashboard/Sidebar/Sidebar";
 import {
@@ -30,6 +31,7 @@ import BillingHistory from "./pages/admin-clinic/billing-history.jsx";
 
 function Logout() {
   localStorage.clear();
+  queryClient.clear(); // IMPORTANT TO CLEAR ALL CACHE ON LOGOUT
   return <Navigate to="/Login" />;
 }
 
@@ -48,6 +50,7 @@ function App() {
   };
   return (
     <QueryClientProvider client={queryClient}>
+      <ReactQueryDevtools initialIsOpen={false} />
       <div className="App">
         <Routes>
           {/* System Admin */}

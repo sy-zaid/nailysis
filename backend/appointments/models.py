@@ -42,6 +42,26 @@ class Appointment(models.Model):
         self.start_time = time
         self.status = "Scheduled"
         self.save()
+    def save(self, *args, **kwargs):
+        """Checks doctor availability before saving an appointment"""
+        overlapping_appointments = DoctorAppointment.objects.filter(
+            doctor=self.doctor,
+            appointment_date=self.appointment_date,
+            start_time=self.start_time
+        ).exclude(pk=self.pk)  # Exclude self if updating
+
+        if overlapping_appointments.exists():
+            raise ValueError("Doctor is not available at this time")
+
+        # Mark the availability slot as booked
+        Availability.objects.filter(
+            doctor=self.doctor,
+            date=self.appointment_date,
+            start_time=self.start_time
+        ).update(is_booked=True)
+
+        super().save(*args, **kwargs)
+
 
     def mark_no_show(self):
         """Mark appointment as No-show if patient doesn’t arrive"""
@@ -65,31 +85,6 @@ class Appointment(models.Model):
         self.status = "Cancelled"
         self.save()
 
-    def reschedule_appointment(self, new_date, new_time,new_specialization,new_doctor,new_appointment_type):
-        try:
-            """Reschedules the appointment to a new date and time."""
-            self.appointment_date = new_date
-            self.start_time = new_time
-            if isinstance(self, DoctorAppointment):  # Check if it's a DoctorAppointment
-                print("YES ITS A DOCTOR APPOINTMENT INSTANCE")
-                if new_specialization:
-                    self.specialization = new_specialization
-                if new_doctor:
-                   # Fetch the Doctor instance using the ID
-                    try:
-                        doctor_instance = Doctor.objects.get(pk=new_doctor)
-                        self.doctor = doctor_instance
-                    except Doctor.DoesNotExist as e:
-                        raise ValueError(f"Doctor with ID {new_doctor} does not exist") from e
-                if new_appointment_type:
-                    self.appointment_type = new_appointment_type
-            self.status = "Rescheduled"
-            self.save()
-
-        except Exception as e:
-            print(f"Error while rescheduling: {e}")
-
-    
     def complete_appointment(self,ehr_data):
         print("EHR DATA",ehr_data)
         """Handle the creation of EHR when appointment is Completed."""
@@ -120,6 +115,62 @@ class Appointment(models.Model):
 
             return True
         return False
+    
+    def reschedule_appointment(self, new_date, new_time,new_specialization,new_doctor,new_appointment_type):
+        try:
+            """Reschedules the appointment to a new date and time."""
+            self.appointment_date = new_date
+            self.start_time = new_time
+            if isinstance(self, DoctorAppointment):  # Check if it's a DoctorAppointment
+                print("YES ITS A DOCTOR APPOINTMENT INSTANCE")
+                if new_specialization:
+                    self.specialization = new_specialization
+                if new_doctor:
+                   # Fetch the Doctor instance using the ID
+                    try:
+                        doctor_instance = Doctor.objects.get(pk=new_doctor)
+                        self.doctor = doctor_instance
+                    except Doctor.DoesNotExist as e:
+                        raise ValueError(f"Doctor with ID {new_doctor} does not exist") from e
+                if new_appointment_type:
+                    self.appointment_type = new_appointment_type
+            self.status = "Rescheduled"
+            self.save()
+
+        except Exception as e:
+            print(f"Error while rescheduling: {e}")
+
+    def reschedule_lab_appointment(self, new_date, new_time,new_specialization,new_lab_technician,new_appointment_type):
+        try:
+            """Reschedules the appointment to a new date and time."""
+            self.appointment_date = new_date
+            self.appointment_time = new_time
+            if isinstance(self, TechnicianAppointment):  # Check if it's a LabTechnicianAppointment
+                print("YES ITS A LAB TECHNICIAN APPOINTMENT INSTANCE")
+                if new_specialization:
+                    self.specialization = new_specialization
+                if new_lab_technician:
+                   # Fetch the Lab Technician instance using the ID
+                    try:
+                        lab_technician_instance = LabTechnician.objects.get(pk=new_lab_technician)
+                        self.lab_technician = lab_technician_instance
+                    except Doctor.DoesNotExist as e:
+                        raise ValueError(f"Lab Technician with ID {new_lab_technician} does not exist") from e
+                if new_appointment_type:
+                    self.appointment_type = new_appointment_type
+            self.status = "Rescheduled"
+            self.save()
+
+        except Exception as e:
+            print(f"Error while rescheduling: {e}")        
+
+    def confirm_attendance(self):
+        """Marks the appointment as completed."""
+        self.status = "Completed"
+        self.save()
+
+        #     return True
+        # return False
 
     def view_appointment_details(self):
         """Returns a dictionary containing appointment details."""
@@ -140,6 +191,17 @@ class Appointment(models.Model):
 
     def __str__(self):
         return f"Appointment {self.appointment_id} - {self.patient} on {self.appointment_date} at {self.start_time}"
+
+class Availability(models.Model):
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name="availability", null=True, blank=True)
+    lab_technician = models.ForeignKey(LabTechnician, on_delete=models.CASCADE, related_name="availability", null=True, blank=True)
+    date = models.DateField()
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+    is_booked = models.BooleanField(default=False)  # Tracks if the slot is taken
+
+    class Meta:
+        unique_together = ("doctor", "date", "start_time")  # Prevents duplicate entries
 
 class DoctorAppointmentFee(models.Model):
     """
@@ -190,10 +252,11 @@ class DoctorAppointment(Appointment):
     """
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name="doctor_appointments")
     appointment_type = models.CharField(max_length=50)
-    specialization = models.CharField(max_length=100)
-    follow_up = models.BooleanField(default=False) 
+    specialization = models.CharField(max_length=100) # REVISE THIS FIELD
+    follow_up = models.BooleanField(default=False)
     fee = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-     
+    recommended_tests = models.JSONField(null=True,blank=True)
+    
     # Field for linking every appointment with EHR record
     ehr = models.OneToOneField(EHR,on_delete=models.SET_NULL,blank=True, null=True,related_name="doc_appointment_ehr")
     
@@ -209,17 +272,16 @@ class TechnicianAppointment(Appointment):
     
     Attributes:
         lab_technician (ForeignKey): Reference to the assigned technician.
-        lab_test_id (int): Identifier for the lab test.
         test_type (str): Type of lab test.
         test_status (str): Status of the test.
         results_available (bool): Indicates if results are available.
         ehr(OneToOneField): Links every appointment with a new EHR record.
     """
-    lab_technician = models.ForeignKey(LabTechnician, on_delete=models.CASCADE, related_name="technician_appointments")
-    lab_test_id = models.IntegerField()
-    test_type = models.CharField(max_length=100)
-    test_status = models.CharField(max_length=50, default="Pending")
-    results_available = models.BooleanField(default=False)
+    lab_technician = models.ForeignKey(LabTechnician, on_delete=models.CASCADE, related_name="technician_appointments") 
+    lab_test_type = models.CharField(max_length=100)  # Keep only one declaration
+    test_status = models.CharField(max_length=50, default="Pending", null=True, blank=True) # made null temporarily
+    results_available = models.BooleanField(default=False, null=True, blank=True) # made null temporarily
+    fee = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)  # Ensure this field exists
     
     # Field for linking every appointment with EHR record
     ehr = models.OneToOneField(EHR,on_delete=models.SET_NULL,blank=True, null=True,related_name="tech_appointment_ehr")
@@ -235,12 +297,52 @@ class TechnicianAppointment(Appointment):
         self.results_available = True
         self.save()
 
+    def update_test_status(self, results):
+        """Marks test results as updated."""
+        self.test_status = "Results Updated"
+        self.results_available = True
+        self.save() 
+
     def __str__(self):
-        return f"Lab Test {self.lab_test_id} - {self.patient} ({self.test_type})"
+        return f"Lab Test {self.patient} ({self.lab_test_type})"
 
 
 class LabTechnicianAppointmentFee(models.Model):
-    pass
+    """
+    Stores fees for different types of lab test appointments.
+    
+    Attributes:
+        lab_test_type (str): Type of lab test.
+        fee (decimal): Fee amount for the lab test type.
+    """
+    LAB_TEST_TYPES = [
+    ("Complete Blood Count (CBC)", "Complete Blood Count (CBC)"),
+    ("Basic Metabolic Panel (BMP)", "Basic Metabolic Panel (BMP)"),
+    ("Hemoglobin A1c (HbA1c)", "Hemoglobin A1c (HbA1c)"),
+    ("Testosterone Test", "Testosterone Test"),
+    ("PCR Test", "PCR Test"),
+    ("BRCA Gene Test", "BRCA Gene Test")
+    ]
+
+
+    lab_test_type = models.CharField(max_length=50, choices=LAB_TEST_TYPES, unique=True)
+    fee = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+
+    @classmethod
+    def get_fee(cls, lab_test_type):
+        """Retrieves the fee for a given lab test type."""
+        try:
+            return cls.objects.get(lab_test_type=lab_test_type).fee
+        except cls.DoesNotExist:
+            return None
+
+    @classmethod
+    def update_fee(cls, lab_test_type, new_fee):
+        """Updates or creates a fee for a lab test type."""
+        fee_obj, created = cls.objects.update_or_create(
+            lab_test_type=lab_test_type, defaults={"fee": new_fee}
+        )
+        return fee_obj
 
 from django.db import models
 from django.contrib.auth import get_user_model
@@ -270,3 +372,6 @@ class CancellationRequest(models.Model):
         ]
     def __str__(self):
         return f"Request by {self.doctor} for {self.appointment} - {self.status}"
+    
+
+

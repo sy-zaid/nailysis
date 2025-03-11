@@ -5,9 +5,11 @@ import time
 
 # User credentials
 users = [
-    {"email": "ca@gmail.com", "password": "abcd"},
-    {"email": "doctor6@example.com", "password": "doc"},
-    {"email": "patient4@example.com", "password": "pat"}
+    # {"email": "admin@gmail.com", "password": "admin"},
+    {"email": "clinic_admin0@example.com", "password": "cli"},
+    {"email": "lab_technician0@example.com", "password": "tech"},
+    {"email": "doctor0@example.com", "password": "doc"},
+    {"email": "patient0@example.com", "password": "pat"}
 ]
 
 # Set the Nailysis frontend login page URL

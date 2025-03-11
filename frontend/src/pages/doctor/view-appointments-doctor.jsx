@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../components/CSS Files/PatientAppointment.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
-import PopupAppointmentDetails from "../../components/Popup/popup-appointment-details";
+import PopupAppointmentDetails from "../../components/Popup/popups-doctor-appointments/popup-doctor-appointment-details";
 import { useNavigate } from "react-router-dom";
 import api from "../../api";
+<<<<<<< HEAD
 import CancellationRequestForm from "./cancellation-request-form";
 import PopupStartAppointment from "../../components/Popup/popup-appointment-checkin";
+=======
+import CancellationRequestForm from "./cancellation-request-form"; // Import CancellationRequestForm
+import PopupCheckinDoctorAppointment from "../../components/Popup/popups-doctor-appointments/popup-doctor-appointment-checkin";
+>>>>>>> 0c6a7d83e0078caedabe34821b0584afde0801e1
 
 const AppointmentDoctor = () => {
   const navigate = useNavigate();
@@ -64,7 +69,7 @@ const AppointmentDoctor = () => {
   };
 
   // Function to toggle the menu for a specific appointment
-  const toggleMenu = (appointmentId) => {
+  const toggleActionMenu = (appointmentId) => {
     setMenuOpen(menuOpen === appointmentId ? null : appointmentId);
   };
 
@@ -83,8 +88,13 @@ const AppointmentDoctor = () => {
       setShowPopup(true);
     } else if (action === "Start Appointment") {
       setPopupContent(
+<<<<<<< HEAD
         <PopupStartAppointment
           appointmentDetails={appointment}
+=======
+        <PopupCheckinDoctorAppointment
+          appointmentDetails={appointmentId}
+>>>>>>> 0c6a7d83e0078caedabe34821b0584afde0801e1
           onClose={handleClosePopup}
         />
       );
@@ -152,13 +162,13 @@ const AppointmentDoctor = () => {
                     <td>{row.patient?.gender || "N/A"}</td>
                     <td>{row.appointment_type || "N/A"}</td>
                     <td>
-                      {row.appointment_date} {row.appointment_start_time}
+                      {row.appointment_date} {row.start_time}
                     </td>
                     <td className={getStatusClass(row.status)}>{row.status}</td>
                     <td>{row.notes || "No additional notes"}</td>
                     <td>
                       <button
-                        onClick={() => toggleMenu(row.appointment_id)}
+                        onClick={() => toggleActionMenu(row.appointment_id)}
                         className={styles.moreActionsBtn}
                       >
                         <img

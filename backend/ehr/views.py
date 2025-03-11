@@ -4,6 +4,11 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied
 
+# WebSockets Imports
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+import json
+
 from appointments.models import (
     Appointment, DoctorAppointment, TechnicianAppointment, 
     DoctorAppointmentFee, LabTechnicianAppointmentFee, CancellationRequest
@@ -13,10 +18,10 @@ from appointments.serializers import (
     TechnicianAppointmentSerializer, DoctorFeeSerializer, CancellationRequestSerializer
 )
 
-from .serializers import (EHRSerializer)
+from .serializers import (EHRSerializer,MedicalHistorySerializer)
 
 from users.models import Patient, Doctor, ClinicAdmin, CustomUser
-from ehr.models import EHR
+from ehr.models import EHR,MedicalHistory
 
 
 class EHRView(viewsets.ModelViewSet):
@@ -31,72 +36,138 @@ class EHRView(viewsets.ModelViewSet):
         return EHR.objects.all()  # Return all records if no filter is applied
 
     
-    def create(self, request, *args, **kwargs):
-        """Debugging method to check data being sent"""
-        print(request.data)
-        patient_id =request.data.get("patient_id")
-        patient = Patient.objects.get(user_id = patient_id)
-        user = self.request.user
-        return super().create(request, *args, **kwargs)
-    
     @action(detail=False, methods=['post'], url_path="create_record")
     def create_record(self, request):
-        import json
         user = self.request.user
         if user.role != "doctor":
-            return Response({"error": "Only doctors can mark an appointment as complete on this screen"}, status=status.HTTP_403_FORBIDDEN)
+            return Response(
+                {"error": "Only doctors can create EHR records"},
+                status=status.HTTP_403_FORBIDDEN
+            )
 
-        # Convert JSON-encoded strings to lists if necessary
-        medical_conditions = request.data.get("medical_conditions", "[]")
-        current_medications = request.data.get("current_medications", "[]")
-        immunization_records = request.data.get("immunization_records", "[]")
-        diagnoses = request.data.get("diagnoses", "[]")
+        # Convert JSON-encoded strings to lists (if necessary)
+        def parse_json_field(field):
+            return json.loads(field) if isinstance(field, str) else field
         
-        # If any of these are strings, convert them to lists
-        if isinstance(medical_conditions, str):
-            medical_conditions = json.loads(medical_conditions)
-        if isinstance(current_medications, str):
-            current_medications = json.loads(current_medications)
-        if isinstance(immunization_records, str):
-            immunization_records = json.loads(immunization_records)
-        if isinstance(diagnoses, str):
-            diagnoses = json.loads(diagnoses)
-
+        medical_conditions = parse_json_field(request.data.get("medical_conditions", "[]"))
+        current_medications = parse_json_field(request.data.get("current_medications", "[]"))
+        immunization_records = parse_json_field(request.data.get("immunization_records", "[]"))
+        diagnoses = parse_json_field(request.data.get("diagnoses", "[]"))
         comments = request.data.get("comments", "")
         family_history = request.data.get("family_history", "")
         category = request.data.get("category", "General")
         patient_id = request.data.get("patient_id")
+
         try:
             patient = Patient.objects.get(user_id=patient_id)
-        except (Patient.DoesNotExist):
+        except Patient.DoesNotExist:
             return Response({"error": "No Patient Found"}, status=status.HTTP_404_NOT_FOUND)
-        
-        ehr_data = [category,medical_conditions, current_medications, immunization_records, diagnoses, comments, family_history]
-        print(ehr_data)
+
         try:
-            # Create EHR for the patient
             ehr_record = EHR.objects.create(
-                patient=patient,  # Assuming patient is available through the Appointment model
-                visit_date="2025-02-21",  # Make sure this exists in Appointment model
-                category=ehr_data[0],  # Access category as a dictionary key
+                patient=patient,
+                visit_date="2025-02-21",  # Placeholder, update accordingly
+                category=category,
                 consulted_by=f"{user.first_name} {user.last_name}",
-                
-                # Initialize fields with default empty values or placeholders
-                medical_conditions=ehr_data[1],  # Access as dictionary
-                current_medications=ehr_data[2],  # Access as dictionary
-                # immunization_records=ehr_data[3],  # Access as dictionary
-                # nail_image_analysis=ehr_data.nail_image_analysis,  # Access as dictionary
-                # test_results=ehr_data.test_results,  # Access as dictionary
-                diagnoses=ehr_data[4],  # Access as dictionary
-                comments=ehr_data[5],  # Access as dictionary
-                family_history=ehr_data[6]  # Access as dictionary
+                medical_conditions=medical_conditions,
+                current_medications=current_medications,
+                immunization_records=immunization_records,
+                diagnoses=diagnoses,
+                comments=comments,
+                family_history=family_history
             )
             ehr_record.save()
-            return Response({"message": "Successfully added ehr"})
-        except (Doctor.DoesNotExist): 
-            return Response({"error": "No Appointment Found"}, status=status.HTTP_404_NOT_FOUND)
+
+            # **Trigger WebSocket Update**
+            self.send_websocket_create(ehr_record)
+
+            return Response({
+                "message": "Successfully added EHR",
+                "id": ehr_record.id,  # Include the new record ID
+                "ehr_data": EHRSerializer(ehr_record).data  # Send full record data
+            }, status=status.HTTP_201_CREATED)
+
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    def send_websocket_create(self, ehr_record):
+        channel_layer = get_channel_layer()
+        print("Creating....")
+        async_to_sync(channel_layer.group_send)(
+            "ehr_updates",
+            {
+                "type": "ehr_update",
+                "action": "create",
+                "id": ehr_record.id,
+                "message": "New EHR Record Created!",
+                "ehr_data": EHRSerializer(ehr_record).data  # Send full EHR data
+            }
+        )
+
+    def send_websocket_update(self, ehr_record):
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            "ehr_updates",
+            {
+                "type": "ehr_update",
+                "action": "update",
+                "id": ehr_record.id,
+                "message": "EHR Record Updated!",
+                "ehr_data": EHRSerializer(ehr_record).data  # Send updated EHR data
+            }
+        )
+
+    def send_websocket_delete(self, id):
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            "ehr_updates",
+            {
+                "type": "ehr_update",
+                "action": "delete",
+                "id": id,
+                "message": "EHR Record Deleted!",
+            }
+        )
+
         
     def update(self, request, *args, **kwargs):
-        print("PATCH Request Data:", request.data)
-        return super().update(request, *args, **kwargs)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+            self.send_websocket_update(instance)  # Send WebSocket Update Event
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        id = instance.id
+        self.perform_destroy(instance)
+        self.send_websocket_delete(id)  # Send WebSocket Delete Event
+        return Response({"message": "EHR record deleted."}, status=status.HTTP_204_NO_CONTENT)
     
+    @action(detail=True,methods=['post'],url_path="add_ehr_to_medical_history")
+    def add_ehr_to_medical_history(self,request,pk = None):
+        print("HELLLOOOOOOOOOOOOOOOO    ")
+        user = self.request.user
+        if user.role == "doctor":
+            ehr_record,created = EHR.objects.get_or_create(pk=pk)
+            ehr_record.add_to_medical_history()
+            return Response({"message":"Successfully Added to Medical History"}, status=status.HTTP_201_CREATED)
+        return Response({"error":"User not authorized to add ehr to medical history"})
+
+
+class MedicalHistoryView(viewsets.ModelViewSet):
+    queryset = MedicalHistory.objects.all()
+    serializer_class = MedicalHistorySerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        # user = self.request.user
+        # if user.role != "doctor" or user.role != "clinic_admin"
+        patient_id = self.request.query_params.get("patient")
+        if patient_id:
+            return MedicalHistory.objects.filter(patient_id = patient_id)
+        else:
+            return MedicalHistory.objects.all()
