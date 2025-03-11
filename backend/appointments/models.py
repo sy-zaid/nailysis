@@ -42,6 +42,26 @@ class Appointment(models.Model):
         self.start_time = time
         self.status = "Scheduled"
         self.save()
+    def save(self, *args, **kwargs):
+        """Checks doctor availability before saving an appointment"""
+        overlapping_appointments = DoctorAppointment.objects.filter(
+            doctor=self.doctor,
+            appointment_date=self.appointment_date,
+            start_time=self.start_time
+        ).exclude(pk=self.pk)  # Exclude self if updating
+
+        if overlapping_appointments.exists():
+            raise ValueError("Doctor is not available at this time")
+
+        # Mark the availability slot as booked
+        Availability.objects.filter(
+            doctor=self.doctor,
+            date=self.appointment_date,
+            start_time=self.start_time
+        ).update(is_booked=True)
+
+        super().save(*args, **kwargs)
+
 
     def mark_no_show(self):
         """Mark appointment as No-show if patient doesn’t arrive"""
@@ -171,6 +191,17 @@ class Appointment(models.Model):
 
     def __str__(self):
         return f"Appointment {self.appointment_id} - {self.patient} on {self.appointment_date} at {self.start_time}"
+
+class Availability(models.Model):
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name="availability", null=True, blank=True)
+    lab_technician = models.ForeignKey(LabTechnician, on_delete=models.CASCADE, related_name="availability", null=True, blank=True)
+    date = models.DateField()
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+    is_booked = models.BooleanField(default=False)  # Tracks if the slot is taken
+
+    class Meta:
+        unique_together = ("doctor", "date", "start_time")  # Prevents duplicate entries
 
 class DoctorAppointmentFee(models.Model):
     """
@@ -341,3 +372,6 @@ class CancellationRequest(models.Model):
         ]
     def __str__(self):
         return f"Request by {self.doctor} for {self.appointment} - {self.status}"
+    
+
+
