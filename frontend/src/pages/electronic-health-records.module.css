@@ -1,6 +1,6 @@
 .pageContainer {
   padding: 20px;
-  background-color: #f5f5f5;
+  background-color: #ffffff;
   min-height: 100vh;
 }
 
@@ -95,13 +95,13 @@
 }
 
 .table th {
-  background-color: #F9FAFB;
   color: #374151;
   font-weight: 500;
   text-align: left;
   padding: 12px 16px;
   border-bottom: 1px solid #E5E7EB;
   white-space: nowrap;
+  border: none;
 }
 
 .table th:first-child {
@@ -114,9 +114,10 @@
 
 .table td {
   padding: 12px 16px;
-  border-bottom: 1px solid #E5E7EB;
-  color: #4B5563;
+  /* border-bottom: 1px solid #E5E7EB; */
 }
+
+
 
 .table tbody tr:hover {
   background-color: #F9FAFB;

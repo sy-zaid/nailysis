@@ -93,6 +93,8 @@ const DiagnosticResults = (props) => {
             subHeading={'Here you can view and manage all the diagnostic results from prescribed tests'}
           />
       </div>
+
+
       <div className={styles.mainContent}>
 
         <div className={styles.appointmentsContainer}>
@@ -188,6 +190,7 @@ const DiagnosticResults = (props) => {
               </tbody>
             </table>
           </div>
+          
         </div>
       </div>
 
