@@ -1,5 +1,5 @@
-import React, { useState} from "react";
-import styles from "./patient-health-history.module.css";
+import React, { useState } from "react";
+import styles from "../common/patient-health-history.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
 
 const BillingHistory = () => {

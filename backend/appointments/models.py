@@ -42,24 +42,9 @@ class Appointment(models.Model):
         self.start_time = time
         self.status = "Scheduled"
         self.save()
+    # def save(self, *args, **kwargs):
     def save(self, *args, **kwargs):
-        """Checks doctor availability before saving an appointment"""
-        overlapping_appointments = DoctorAppointment.objects.filter(
-            doctor=self.doctor,
-            appointment_date=self.appointment_date,
-            start_time=self.start_time
-        ).exclude(pk=self.pk)  # Exclude self if updating
-
-        if overlapping_appointments.exists():
-            raise ValueError("Doctor is not available at this time")
-
-        # Mark the availability slot as booked
-        Availability.objects.filter(
-            doctor=self.doctor,
-            date=self.appointment_date,
-            start_time=self.start_time
-        ).update(is_booked=True)
-
+        print("DoctorAppointment save() called!")  # Debugging line
         super().save(*args, **kwargs)
 
 
