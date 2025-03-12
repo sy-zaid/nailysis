@@ -18,14 +18,15 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 
 from .models import (
-    Appointment, DoctorAppointment, TechnicianAppointment, Availability,
-    DoctorAppointmentFee, LabTechnicianAppointmentFee, CancellationRequest,
+    Appointment, DoctorAppointment, TechnicianAppointment,
+    DoctorAppointmentFee, LabTechnicianAppointmentFee, CancellationRequest,TimeSlot
 )
 from .serializers import (
-    AppointmentSerializer, DoctorAppointmentSerializer, AvailabilitySerializer,
+    AppointmentSerializer, DoctorAppointmentSerializer, TimeSlotSerializer,
     TechnicianAppointmentSerializer, DoctorFeeSerializer, LabTechnicianFeeSerializer, CancellationRequestSerializer
 )   
 from users.models import Patient, Doctor, ClinicAdmin, CustomUser, LabTechnician, LabAdmin
+from datetime import datetime, timedelta
 
 class DoctorFeeViewset(viewsets.ModelViewSet):
     """
@@ -68,13 +69,7 @@ class DoctorFeeViewset(viewsets.ModelViewSet):
         serializer = self.get_serializer(fees, many=True)
         return Response(serializer.data)
 
-class DoctorAppointmentAvailibility(viewsets.ModelViewSet):
-    queryset = Availability.objects.all()
-    serializer_class = AvailabilitySerializer
-    permission_classes = [permissions.AllowAny]
 
-    def get_queryset(self):
-        return Availability.objects.all()
 class DoctorAppointmentViewset(viewsets.ModelViewSet):
     """
     API endpoint for managing doctor appointments.
@@ -627,3 +622,89 @@ class LabTechnicianAppointCancellationViewSet(viewsets.ModelViewSet):
         return Response({"message": f"Cancellation request {action}d successfully."})    
 
 
+
+class TimeSlotViewSet(viewsets.ModelViewSet):
+    queryset = TimeSlot.objects.all()
+    serializer_class = TimeSlotSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        doctor_id = self.request.query_params.get('doctor_id')
+        date = self.request.query_params.get('date')
+
+        queryset = TimeSlot.objects.all()
+
+        if doctor_id:
+            queryset = queryset.filter(doctor_id=doctor_id)
+        if date:
+            queryset = queryset.filter(slot_date=date)
+
+        return queryset
+
+    # @action(detail=False,methods=["post"],url_path=)
+    def create(self, request, *args, **kwargs):
+        """
+        Create multiple slots for a doctor over a date range.
+        Expected request format:
+        {
+            "doctor_id": 1,
+            "start_date": "2025-03-12",
+            "end_date": "2025-03-18",
+            "time_slots": [
+                {"start_time": "09:00", "end_time": "09:30"},
+                {"start_time": "10:00", "end_time": "10:30"}
+            ]
+        }
+        """
+
+        user = self.request.user
+        if user.role != "doctor":
+            return Response({"error":"Not authorized to create doctor availibility slots"})
+        
+
+        doctor_id = request.data.get("doctor_id")
+        start_date = request.data.get("start_date")
+        end_date = request.data.get("end_date")
+        time_slots = request.data.get("time_slots", [])
+        WEEK_DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+
+# Get working days from request
+        working_days = request.data.get("working_days", [])  # Default to empty list if not provided
+
+        # Ensure it's a list
+        if not isinstance(working_days, list):
+            return Response({"error": "Invalid format for working_days"}, status=400)
+
+        # Calculate non-working days
+        non_working_days = [day for day in WEEK_DAYS if day not in working_days]
+
+        # OR using set difference
+        # non_working_days = list(set(WEEK_DAYS) - set(working_days))
+
+        print("Working Days:", working_days)
+        print("Non-Working Days:", non_working_days)
+
+        try:
+            doctor = Doctor.objects.get(user_id=doctor_id)
+        except Doctor.DoesNotExist:
+            return Response({"error": "Doctor not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
+        end_date = datetime.strptime(end_date, "%Y-%m-%d").date()
+
+        slots_to_create = []
+        current_date = start_date
+
+        while current_date <= end_date:
+            for slot in time_slots:
+                slots_to_create.append(TimeSlot(
+                    doctor=doctor,
+                    slot_date=current_date,
+                    start_time=slot["start_time"],
+                    end_time=slot["end_time"],
+                    is_booked=False
+                ))
+            current_date += timedelta(days=1)
+
+        TimeSlot.objects.bulk_create(slots_to_create)
+        return Response({"message": "Slots created successfully"}, status=status.HTTP_201_CREATED)
