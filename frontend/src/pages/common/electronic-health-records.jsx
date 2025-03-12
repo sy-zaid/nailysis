@@ -35,11 +35,11 @@ import useCurrentUserData from "../../useCurrentUserData";
  */
 const ElectronicHealthRecord = () => {
   const [menuOpen, setMenuOpen] = useState(null); // Track open action menu
+  const [popupContent, setPopupContent] = useState(); // Store popup content
+  const [showPopup, setShowPopup] = useState(false); // Track popup visibility
   const [records, setRecords] = useState([]); // Store EHR records
   const curUserRole = getRole(); // Get current user role
 
-  const [popupContent, setPopupContent] = useState(); // Store popup content
-  const [showPopup, setShowPopup] = useState(false); // Track popup visibility
   const { data: curUser } = useCurrentUserData(); // Fetch patient data;
   // Initialize WebSocket to receive real-time EHR updates
   useEhrUpdatesWS(setRecords);
