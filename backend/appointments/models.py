@@ -32,7 +32,7 @@ class Appointment(models.Model):
     start_time = models.TimeField()
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="Scheduled")
     check_in_time = models.DateTimeField(null=True, blank=True)  # Stores when the patient arrives
-    completion_time = models.DateTimeField(null=True, blank=True)  # Stores when the appointment ends
+    end_time = models.DateTimeField(null=True, blank=True)  # Stores when the appointment ends
     reminder_sent = models.BooleanField(default=False)
     notes = models.TextField(blank=True, null=True)
 
@@ -42,25 +42,25 @@ class Appointment(models.Model):
         self.start_time = time
         self.status = "Scheduled"
         self.save()
-    def save(self, *args, **kwargs):
-        """Checks doctor availability before saving an appointment"""
-        overlapping_appointments = DoctorAppointment.objects.filter(
-            doctor=self.doctor,
-            appointment_date=self.appointment_date,
-            start_time=self.start_time
-        ).exclude(pk=self.pk)  # Exclude self if updating
+    # def save(self, *args, **kwargs):
+    #     """Checks doctor availability before saving an appointment"""
+    #     overlapping_appointments = DoctorAppointment.objects.filter(
+    #         doctor=self.doctor,
+    #         appointment_date=self.appointment_date,
+    #         start_time=self.start_time
+    #     ).exclude(pk=self.pk)  # Exclude self if updating
 
-        if overlapping_appointments.exists():
-            raise ValueError("Doctor is not available at this time")
+    #     if overlapping_appointments.exists():
+    #         raise ValueError("Doctor is not available at this time")
 
-        # Mark the availability slot as booked
-        Availability.objects.filter(
-            doctor=self.doctor,
-            date=self.appointment_date,
-            start_time=self.start_time
-        ).update(is_booked=True)
+    #     # Mark the availability slot as booked
+    #     Availability.objects.filter(
+    #         doctor=self.doctor,
+    #         date=self.appointment_date,
+    #         start_time=self.start_time
+    #     ).update(is_booked=True)
 
-        super().save(*args, **kwargs)
+    #     super().save(*args, **kwargs)
 
 
     def mark_no_show(self):
@@ -193,15 +193,32 @@ class Appointment(models.Model):
         return f"Appointment {self.appointment_id} - {self.patient} on {self.appointment_date} at {self.start_time}"
 
 class Availability(models.Model):
-    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name="availability", null=True, blank=True)
-    lab_technician = models.ForeignKey(LabTechnician, on_delete=models.CASCADE, related_name="availability", null=True, blank=True)
-    date = models.DateField()
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name="availabilities")
+    day_of_week = models.CharField(max_length=10, choices=[
+        ('Monday', 'Monday'), ('Tuesday', 'Tuesday'), ('Wednesday', 'Wednesday'),
+        ('Thursday', 'Thursday'), ('Friday', 'Friday'), ('Saturday', 'Saturday'),
+        ('Sunday', 'Sunday')
+    ])
     start_time = models.TimeField()
     end_time = models.TimeField()
-    is_booked = models.BooleanField(default=False)  # Tracks if the slot is taken
+    slot_duration = models.IntegerField(default=30)  # Slot duration in minutes
 
-    class Meta:
-        unique_together = ("doctor", "date", "start_time")  # Prevents duplicate entries
+    def __str__(self):
+        return f"{self.doctor.user.first_name} - {self.day_of_week}: {self.start_time} to {self.end_time}"
+
+class TimeSlot(models.Model):
+    """
+    Represents available time slots for appointments.
+    These are generated in advance based on doctor availability.
+    """
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name="time_slots")
+    slot_date = models.DateField()
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+    is_booked = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.doctor} | {self.slot_date} | {self.start_time} - {self.end_time}"
 
 class DoctorAppointmentFee(models.Model):
     """

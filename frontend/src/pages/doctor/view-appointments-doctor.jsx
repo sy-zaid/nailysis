@@ -10,7 +10,7 @@ import PopupStartAppointment from "../../components/Popup/popup-appointment-chec
 =======
 import CancellationRequestForm from "./cancellation-request-form"; // Import CancellationRequestForm
 import PopupCheckinDoctorAppointment from "../../components/Popup/popups-doctor-appointments/popup-doctor-appointment-checkin";
->>>>>>> 0c6a7d83e0078caedabe34821b0584afde0801e1
+import PopupManageSlotsDoctor from "../../components/Popup/popups-doctor-appointments/popup-manage-slots-doctor";
 
 const AppointmentDoctor = () => {
   const navigate = useNavigate();
@@ -99,6 +99,9 @@ const AppointmentDoctor = () => {
         />
       );
       setShowPopup(true);
+    } else if (action === "Manage Availability") {
+      setPopupContent(<PopupManageSlotsDoctor />);
+      setShowPopup(true);
     }
   };
 
@@ -109,6 +112,12 @@ const AppointmentDoctor = () => {
         <Navbar />
         <h1>Appointments</h1>
         <p>Here you can view and manage all the booked appointments</p>
+        <button
+          className={styles.addButton}
+          onClick={() => handleActionClick("Manage Availability")}
+        >
+          Manage Availability
+        </button>
       </div>
       <div className={styles.mainContent}>
         <div className={styles.appointmentsContainer}>
