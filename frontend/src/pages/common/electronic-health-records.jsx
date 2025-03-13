@@ -1,17 +1,17 @@
 //  Imports
 import React, { useState, useEffect } from "react";
 import styles from "./electronic-health-records.module.css";
-import Navbar from "../components/Dashboard/Navbar/Navbar";
+import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import axios from "axios";
 import Header from "../components/Dashboard/Header/Header.jsx";
 import otherStyles from "../components/CSS Files/PatientAppointment.module.css";
 
 // Importing Popups for performing actions on EHR Records
-import PopupEHREdit from "../components/Popup/popup-ehr-edit";
-import PopupEHRDelete from "../components/Popup/popup-ehr-delete";
-import PopupEHRCreate from "../components/Popup/popup-ehr-create";
+import PopupEHREdit from "../../components/Popup/popups-electronic-health-records/popup-ehr-edit";
+import PopupEHRDelete from "../../components/Popup/popups-electronic-health-records/popup-ehr-delete";
+import PopupEHRCreate from "../../components/Popup/popups-electronic-health-records/popup-ehr-create";
 
-import { useEhrUpdatesWS } from "../sockets/ehrSocket";
+import { useEhrUpdatesWS } from "../../sockets/ehrSocket";
 import {
   formatEhrRecords,
   toggleActionMenu,
@@ -19,9 +19,9 @@ import {
   handleClosePopup,
   getAccessToken,
   getRole,
-} from "../utils/utils";
-import { getEHR, addEHRToMedicalHistory } from "../api/ehrApi";
-import useCurrentUserData from "../useCurrentUserData";
+} from "../../utils/utils";
+import { getEHR, addEHRToMedicalHistory } from "../../api/ehrApi";
+import useCurrentUserData from "../../useCurrentUserData";
 
 /**
  * **ElectronicHealthRecord Component**
@@ -38,11 +38,11 @@ import useCurrentUserData from "../useCurrentUserData";
  */
 const ElectronicHealthRecord = () => {
   const [menuOpen, setMenuOpen] = useState(null); // Track open action menu
+  const [popupContent, setPopupContent] = useState(); // Store popup content
+  const [showPopup, setShowPopup] = useState(false); // Track popup visibility
   const [records, setRecords] = useState([]); // Store EHR records
   const curUserRole = getRole(); // Get current user role
 
-  const [popupContent, setPopupContent] = useState(); // Store popup content
-  const [showPopup, setShowPopup] = useState(false); // Track popup visibility
   const { data: curUser } = useCurrentUserData(); // Fetch patient data;
 
   const [activeButton, setActiveButton] = useState(0); // Tracks which filter button is active 

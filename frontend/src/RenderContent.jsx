@@ -3,8 +3,8 @@ import SystemAdminDashboard from "./pages/admin-system/system-admin-dashboard";
 
 // Clinic Admin Imports
 import ClinicAdminDashboard from "./pages/admin-clinic/clinic-admin-dashboard";
-import ElectronicHealthRecords from "./pages/electronic-health-records";
-import PatientMedicalHistory from "./pages/admin-clinic/patient-health-history";
+import ElectronicHealthRecords from "./pages/common/electronic-health-records";
+import PatientMedicalHistory from "./pages/common/patient-health-history";
 import ViewAppointmentsClinicAdmin from "./pages/admin-clinic/view-appointments-clinic-admin";
 
 import ViewAppointmentsPatient from "./pages/patient/view-appointments-patient";
@@ -20,6 +20,9 @@ import LabTechnicianTestRequests from "./pages/lab-technician/lab-technician-tes
 import ViewAppointmentsLabTechnician from "./pages/lab-technician/lab-technician-view-appointments";
 import ViewAppointmentsLabAdmin from "./pages/admin-lab/view-appointments-lab-admin"
 import PlaceholderComponent from "./components/PlaceholderComponent"; // Placeholder for missing views
+
+// FEEDBACKS
+import Feedbacks from "./pages/common/feedbacks";
 
 // Render function for System Admin
 export const renderSystemAdminContent = (view) => {
@@ -57,7 +60,7 @@ export const renderClinicAdminContent = (view) => {
     case "View Payment History":
       return <PlaceholderComponent name="Payment History" />;
     case "Feedbacks":
-      return <PlaceholderComponent name="Feedbacks" />;
+      return <Feedbacks name="Feedbacks" />;
     case "Test Requests":
       return <PlaceholderComponent name="Test Requests" />;
     default:
@@ -81,7 +84,7 @@ export const renderDoctorContent = (view) => {
     case "View Payment History":
       return <PlaceholderComponent name="Payment History" />;
     case "Feedbacks":
-      return <PlaceholderComponent name="Feedbacks" />;
+      return <Feedbacks name="Feedbacks" />;
     case "Test Requests":
       return <PlaceholderComponent name="Test Requests" />;
     case "Appointments":
@@ -113,7 +116,7 @@ export const renderPatientContent = (view) => {
     case "View Billing History":
       return <PatientPaymentHistory />;
     case "Feedbacks":
-      return <PlaceholderComponent name="Feedbacks" />;
+      return <Feedbacks name="Feedbacks" />;
     case "Test Requests":
       return <PlaceholderComponent name="Test Requests" />;
     case "Appointments":
@@ -139,7 +142,7 @@ export const renderLabAdminContent = (view) => {
     case "View Payment History":
       return <PlaceholderComponent name="Payment History" />;
     case "Feedbacks":
-      return <PlaceholderComponent name="Feedbacks" />;
+      return <Feedbacks name="Feedbacks" />;
     case "Test Requests":
       return <PlaceholderComponent name="Test Requests" />;
     case "Appointments":
@@ -165,7 +168,7 @@ export const renderLabTechnicianContent = (view) => {
     case "View Payment History":
       return <PlaceholderComponent name="Payment History" />;
     case "Feedbacks":
-      return <PlaceholderComponent name="Feedbacks" />;
+      return <Feedbacks name="Feedbacks" />;
     case "Test Requests":
       return <LabTechnicianTestRequests />;
     case "Appointments":

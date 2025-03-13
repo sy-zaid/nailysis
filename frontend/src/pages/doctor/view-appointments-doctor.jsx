@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../components/CSS Files/PatientAppointment.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
-import PopupAppointmentDetails from "../../components/Popup/popup-appointment-details";
+import PopupAppointmentDetails from "../../components/Popup/popups-doctor-appointments/popup-doctor-appointment-details";
 import { useNavigate } from "react-router-dom";
 import api from "../../api";
 import CancellationRequestForm from "./cancellation-request-form"; // Import CancellationRequestForm
-import PopupStartAppointment from "../../components/Popup/popup-appointment-checkin";
+import PopupCheckinDoctorAppointment from "../../components/Popup/popups-doctor-appointments/popup-doctor-appointment-checkin";
+import PopupManageSlotsDoctor from "../../components/Popup/popups-doctor-appointments/popup-manage-slots-doctor";
 
 const AppointmentDoctor = () => {
   const navigate = useNavigate();
@@ -82,16 +83,19 @@ const AppointmentDoctor = () => {
       setShowPopup(true); // Show the Cancellation Request Form popup
     } else if (action === "Start Appointment") {
       setPopupContent(
-        <PopupStartAppointment
+        <PopupCheckinDoctorAppointment
           appointmentDetails={appointmentId}
           onClose={handleClosePopup}
         />
       );
       setShowPopup(true);
+    } else if (action === "Manage Availability") {
+      setPopupContent(<PopupManageSlotsDoctor />);
+      setShowPopup(true);
     }
     // Add logic for other actions like 'Edit' and 'Reschedule' if needed
   };
-  
+
   return (
     <div className={styles.pageContainer}>
       {showPopup && popupContent}{" "}
@@ -101,6 +105,12 @@ const AppointmentDoctor = () => {
         <Navbar />
         <h1>Appointments</h1>
         <p>Here you can view and manage all the booked appointments</p>
+        <button
+          className={styles.addButton}
+          onClick={() => handleActionClick("Manage Availability")}
+        >
+          Manage Availability
+        </button>
       </div>
       <div className={styles.mainContent}>
         <div className={styles.appointmentsContainer}>
@@ -148,7 +158,7 @@ const AppointmentDoctor = () => {
                     <td>{row.patient?.gender || "N/A"}</td>
                     <td>{row.appointment_type || "N/A"}</td>
                     <td>
-                      {row.appointment_date} {row.appointment_start_time}
+                      {row.appointment_date} {row.start_time}
                     </td>
                     <td className={getStatusClass(row.status)}>{row.status}</td>
                     <td>{row.notes || "No additional notes"}</td>
@@ -175,10 +185,7 @@ const AppointmentDoctor = () => {
                             </li>
                             <li
                               onClick={() =>
-                                handleActionClick(
-                                  "Start Appointment",
-                                  row
-                                )
+                                handleActionClick("Start Appointment", row)
                               }
                             >
                               Start Appointment

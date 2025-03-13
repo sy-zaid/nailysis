@@ -2,9 +2,9 @@ import React, { act, useEffect, useState } from "react";
 import styles from "../../components/CSS Files/PatientAppointment.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import PopupAppointmentBook from "../../components/Popup/popup-lab-appointment-book";
-import PopupAppointmentDetails from "../../components/Popup/popup-appointment-details";
-import PopupRescheduleAppointment from "../../components/Popup/popup-appointment-reschedule";
-import PopupDeleteAppointment from "../../components/Popup/popup-appointment-delete";
+import PopupAppointmentDetails from "../../components/Popup/popups-doctor-appointments/popup-doctor-appointment-details";
+import PopupRescheduleAppointment from "../../components/Popup/popups-doctor-appointments/popup-doctor-appointment-reschedule";
+import PopupDeleteAppointment from "../../components/Popup/popups-doctor-appointments/popup-doctor-appointment-delete";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import api from "../../api";
@@ -71,9 +71,14 @@ const AppointmentLabAdmin = () => {
     if (action === "Cancel") {
       const handleCancellation = async (appointmentId, action) => {
         try {
-          console.log("SUBMITTING APPOINTMENT ID FOR CANCELLING", appointmentId);
+          console.log(
+            "SUBMITTING APPOINTMENT ID FOR CANCELLING",
+            appointmentId
+          );
           const response = await axios.post(
-            `${import.meta.env.VITE_API_URL}/api/lab_appointments/${appointmentId}/cancel_appointment/`,
+            `${
+              import.meta.env.VITE_API_URL
+            }/api/lab_appointments/${appointmentId}/cancel_appointment/`,
             { action },
             {
               headers: {
@@ -139,7 +144,10 @@ const AppointmentLabAdmin = () => {
           </div>
 
           <div className={styles.tableContainer}>
-            <table className={styles.table} style={{ borderCollapse: "collapse" }}>
+            <table
+              className={styles.table}
+              style={{ borderCollapse: "collapse" }}
+            >
               <thead>
                 <tr>
                   <th>#</th>
@@ -156,29 +164,58 @@ const AppointmentLabAdmin = () => {
               </thead>
               <tbody>
                 {appointments.map((row, index) => (
-                  <tr key={row.appointment_id} style={{ borderBottom: "1px solid #ddd" }}>
+                  <tr
+                    key={row.appointment_id}
+                    style={{ borderBottom: "1px solid #ddd" }}
+                  >
                     <td>{index + 1}</td>
                     <td>{row.appointment_id}</td>
                     <td>
-                      {row.patient?.user?.first_name || "No first name"} {row.patient?.user?.last_name || "No last name"}
+                      {row.patient?.user?.first_name || "No first name"}{" "}
+                      {row.patient?.user?.last_name || "No last name"}
                     </td>
                     <td>{row.lab_test || "No test specified"}</td>
                     <td>{row.appointment_type || "N/A"}</td>
-                    <td>{row.appointment_date} {row.appointment_time}</td>
+                    <td>
+                      {row.appointment_date} {row.appointment_time}
+                    </td>
                     <td className={getStatusClass(row.status)}>{row.status}</td>
                     <td>{row.fee ? `PKR ${row.fee}` : "Not available"}</td>
                     <td>{row.booking_date || "Not available"}</td>
                     <td>{row.notes || "No additional notes"}</td>
                     <td>
-                      <button onClick={() => toggleMenu(row.appointment_id)} className={styles.moreActionsBtn}>
-                        <img src="/icon-three-dots.png" alt="More Actions" className={styles.moreActionsIcon} />
+                      <button
+                        onClick={() => toggleMenu(row.appointment_id)}
+                        className={styles.moreActionsBtn}
+                      >
+                        <img
+                          src="/icon-three-dots.png"
+                          alt="More Actions"
+                          className={styles.moreActionsIcon}
+                        />
                       </button>
                       {menuOpen === row.appointment_id && (
                         <div className={styles.menu}>
                           <ul>
-                            <li onClick={() => handleActionClick("Cancel", row.appointment_id)}>Cancel Appointment</li>
-                            <li onClick={() => handleActionClick("Reschedule", row)}>Edit / Reschedule Appointment</li>
-                            <li onClick={() => handleActionClick("Delete", row)}>Delete Appointment</li>
+                            <li
+                              onClick={() =>
+                                handleActionClick("Cancel", row.appointment_id)
+                              }
+                            >
+                              Cancel Appointment
+                            </li>
+                            <li
+                              onClick={() =>
+                                handleActionClick("Reschedule", row)
+                              }
+                            >
+                              Edit / Reschedule Appointment
+                            </li>
+                            <li
+                              onClick={() => handleActionClick("Delete", row)}
+                            >
+                              Delete Appointment
+                            </li>
                           </ul>
                         </div>
                       )}

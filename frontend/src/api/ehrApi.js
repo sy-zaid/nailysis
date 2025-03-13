@@ -1,18 +1,8 @@
 import axios from "axios";
 const API_URL = import.meta.env.VITE_API_URL;
-import { getAccessToken } from "../utils/utils";
+import { getAccessToken,getHeaders} from "../utils/utils";
 
-/**
- * Generates headers required for API requests, including the Authorization token.
- * @returns {Object} Headers with Authorization for API requests.
- */
-const getHeaders = () => {
-  return {
-    headers: {
-      Authorization: `Bearer ${getAccessToken()}`,
-    },
-  };
-};
+
 
 /**
  * Fetches EHR records from the API.
@@ -28,8 +18,7 @@ export const getEHR = async (patientId = null) => {
     const url = patientId
       ? `${API_URL}/api/ehr_records/?patient=${patientId}`
       : `${API_URL}/api/ehr_records/`;
-    const response = await axios.get(url, getHeaders());
-    return response;
+    return await axios.get(url, getHeaders());
   } catch (error) {
     console.error("Error fetching EHR records:", error);
     throw error;
@@ -130,3 +119,17 @@ export const addEHRToMedicalHistory = async (ehrId) => {
     console.log(error);
   }
 };
+
+export const getMedicalHistory = async (patientId = null) => {
+  try {
+    const url = patientId
+      ? `${API_URL}/medical_history/?patient=${patientId}`
+      : `${API_URL}/medical_history/`;
+    return await axios.get(url, getHeaders());
+  } catch (error) {
+    console.log("Error fetching Medical History: ",error);
+    throw error;
+  }
+};
+
+// REMOVE TRY CATCH BLOCKS FROM HERE BUT USE ON THE PAGE!!!

@@ -1,28 +1,3 @@
-// src/utils.js
-export const getAccessToken = () => {
-  return localStorage.getItem("access");
-};
-
-export const getRole = () => {
-  return localStorage.getItem("role");
-};
-
-export const calculateAge = (dob) => {
-  const birthDate = new Date(dob);
-  const today = new Date();
-  const age = today.getFullYear() - birthDate.getFullYear();
-  const monthDifference = today.getMonth() - birthDate.getMonth();
-
-  // Adjust age if birthday hasn't occurred yet this year
-  if (
-    monthDifference < 0 ||
-    (monthDifference === 0 && today.getDate() < birthDate.getDate())
-  ) {
-    return age - 1;
-  }
-  return age;
-};
-
 // You can add more functions below for reuse
 export const medicalConditionsOptions = [
   { value: "Diabetes", label: "Diabetes" },
@@ -60,6 +35,50 @@ export const currentMedicationsOptions = [
   { value: "Lisinopril", label: "Lisinopril" },
   { value: "Atorvastatin", label: "Atorvastatin" },
 ];
+
+export const visitPurposes = [
+  "Consultation",
+  "Follow-up",
+  "Routine Checkup",
+  "Emergency Visit",
+  "Prescription Refill",
+];
+
+export const getAccessToken = () => {
+  return localStorage.getItem("access");
+};
+
+/**
+ * Generates headers required for API requests, including the Authorization token.
+ * @returns {Object} Headers with Authorization for API requests.
+ */
+export const getHeaders = () => {
+  return {
+    headers: {
+      Authorization: `Bearer ${getAccessToken()}`,
+    },
+  };
+};
+
+export const getRole = () => {
+  return localStorage.getItem("role");
+};
+
+export const calculateAge = (dob) => {
+  const birthDate = new Date(dob);
+  const today = new Date();
+  const age = today.getFullYear() - birthDate.getFullYear();
+  const monthDifference = today.getMonth() - birthDate.getMonth();
+
+  // Adjust age if birthday hasn't occurred yet this year
+  if (
+    monthDifference < 0 ||
+    (monthDifference === 0 && today.getDate() < birthDate.getDate())
+  ) {
+    return age - 1;
+  }
+  return age;
+};
 
 export const handleSelectChange = (setData) => (name, selectedOptions) => {
   setData((prevData) => ({
@@ -125,6 +144,48 @@ export const formatEhrRecords = (response, type) => {
   }));
 };
 
+export const formatMedicalHistoryRecords = (response) => {
+  if (!response) {
+    console.log("formatMedicalHistoryRecords received undefined data");
+  }
+
+  let medicalHistoryArray;
+  medicalHistoryArray = response;
+
+  return medicalHistoryArray.data.map((record) => ({
+    id: record.id,
+    patient_id: `${record.patient?.user?.user_id || "Null"}`,
+    patient_name: `${record.patient?.user?.first_name || "Null"} ${
+      record.patient?.user?.last_name || "Null"
+    }`,
+    family_history: record.family_history || "No Records",
+    allergies: Array.isArray(record.allergies)
+      ? record.allergies.join(", ")
+      : "No Records",
+    chronic_conditions: Array.isArray(record.chronic_conditions)
+      ? record.chronic_conditions.join(", ")
+      : "No Records",
+    immunization_history: Array.isArray(record.immunization_history)
+      ? record.immunization_history.join(", ")
+      : "No Records",
+    injuries: Array.isArray(record.injuries)
+      ? record.injuries.join(", ")
+      : "No Records",
+    surgeries: Array.isArray(record.surgeries)
+      ? record.surgeries.join(", ")
+      : "No Records",
+    date_created: record.date_created
+      ? new Date(record.date_created).toLocaleDateString() +
+        " | " +
+        new Date(record.date_created).toLocaleTimeString()
+      : "N/A",
+    last_updated: record.last_updated
+      ? new Date(record.last_updated).toLocaleDateString() +
+        " | " +
+        new Date(record.last_updated).toLocaleTimeString()
+      : "N/A",
+  }));
+};
 export const preparePayload = (ehrData) => {
   return Object.fromEntries(
     Object.entries(ehrData).map(([key, value]) => [

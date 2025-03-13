@@ -1,22 +1,22 @@
 import React, { useState, useEffect, useMemo } from "react";
 import Select from "react-select";
-import styles from "./popup-doctor-appointment-book.module.css";
-import Popup from "./Popup.jsx";
-import { createEHR, getEHR } from "../../api/ehrApi.js";
-import { useAllPatients } from "../../api/usersApi.js";
-import { useEhrUpdatesWS } from "../../sockets/ehrSocket.js";
+import styles from "../popups-doctor-appointments/popup-doctor-appointment-book.module.css";
+import Popup from "../Popup.jsx";
+import { createEHR, getEHR } from "../../../api/ehrApi.js";
+import { useAllPatients } from "../../../api/usersApi.js";
+import { useEhrUpdatesWS } from "../../../sockets/ehrSocket.js";
 import {
   handleSelectChange,
   handleInputChange,
   formatEhrRecords,
   preparePayload,
-} from "../../utils/utils.js";
+} from "../../../utils/utils.js";
 import {
   medicalConditionsOptions,
   categoryOptions,
   diagnosesOptions,
   currentMedicationsOptions,
-} from "../../utils/utils.js";
+} from "../../../utils/utils.js";
 
 const PopupEHRCreate = ({ onClose }) => {
   const [popupTrigger, setPopupTrigger] = useState(true);

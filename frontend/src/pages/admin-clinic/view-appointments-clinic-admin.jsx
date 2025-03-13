@@ -1,10 +1,10 @@
 import React, { act, useEffect, useState } from "react";
 import styles from "../../components/CSS Files/PatientAppointment.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
-import PopupAppointmentBook from "../../components/Popup/popup-doctor-appointment-book";
-import PopupAppointmentDetails from "../../components/Popup/popup-appointment-details";
-import PopupRescheduleAppointment from "../../components/Popup/popup-appointment-reschedule";
-import PopupDeleteAppointment from "../../components/Popup/popup-appointment-delete";
+import PopupAppointmentBook from "../../components/Popup/popups-doctor-appointments/popup-doctor-appointment-book";
+import PopupAppointmentDetails from "../../components/Popup/popups-doctor-appointments/popup-doctor-appointment-details";
+import PopupRescheduleAppointment from "../../components/Popup/popups-doctor-appointments/popup-doctor-appointment-reschedule";
+import PopupDeleteAppointment from "../../components/Popup/popups-doctor-appointments/popup-doctor-appointment-delete";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import api from "../../api";
@@ -200,7 +200,7 @@ const AppointmentClinicAdmin = () => {
                     <td>{row.appointment_type || "N/A"}</td>{" "}
                     {/* Appointment Type */}
                     <td>
-                      {row.appointment_date} {row.appointment_start_time}
+                      {row.appointment_date} {row.start_time}
                     </td>{" "}
                     {/* Date & Time */}
                     <td className={getStatusClass(row.status)}>
