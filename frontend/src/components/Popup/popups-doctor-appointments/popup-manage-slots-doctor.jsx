@@ -9,8 +9,7 @@ const ManageSlots = () => {
   const { data: curUser } = useCurrentUserData();
   const [user, setUser] = useState();
   const [weekdays, setWeekdays] = useState([]);
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [month, setMonth] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [slotDuration, setSlotDuration] = useState("");
@@ -39,10 +38,16 @@ const ManageSlots = () => {
   };
 
   const generateSlots = () => {
-    if (!startTime || !endTime || !slotDuration) return;
+    if (!startTime || !endTime || !slotDuration) {
+      alert("Please enter all time fields.");
+      return;
+    }
 
-    const start = new Date(`2023-01-01T${startTime}`);
-    const end = new Date(`2023-01-01T${endTime}`);
+    const start = new Date();
+    start.setHours(...startTime.split(":").map(Number), 0); // Set hours & minutes
+    const end = new Date();
+    end.setHours(...endTime.split(":").map(Number), 0);
+
     const duration = parseInt(slotDuration, 10);
     let slots = [];
     let currentTime = new Date(start);
@@ -57,16 +62,24 @@ const ManageSlots = () => {
           end_time: nextTime.toTimeString().substring(0, 5),
         });
       }
+
       currentTime = nextTime;
     }
 
+    console.log("Generated Slots:", slots);
     setCalculatedSlots(slots);
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (!startDate || !endDate || weekdays.length === 0 || !startTime || !endTime || !slotDuration) {
+    if (
+      !month ||
+      weekdays.length === 0 ||
+      !startTime ||
+      !endTime ||
+      !slotDuration
+    ) {
       alert("Please fill all fields.");
       return;
     }
@@ -76,17 +89,42 @@ const ManageSlots = () => {
       return;
     }
 
+    // Extract year and month from input
+    const [year, selectedMonth] = month.split("-").map(Number);
+
+    // First and last day calculations (without .toISOString())
+    const firstDay = new Date(year, selectedMonth - 1, 1);
+    const lastDay = new Date(year, selectedMonth, 0);
+
+    // Format as YYYY-MM-DD manually
+    const formatDate = (date) =>
+      `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
+        2,
+        "0"
+      )}-${String(date.getDate()).padStart(2, "0")}`;
+
+    const startDate = formatDate(firstDay);
+    const endDate = formatDate(lastDay);
+
+    console.log("Selected Month:", month);
+    console.log("Computed Start Date:", startDate);
+    console.log("Computed End Date:", endDate);
+
     const payload = {
       doctor_id: user?.user_id,
       start_date: startDate,
       end_date: endDate,
       time_slots: calculatedSlots,
-      working_days: weekdays
+      working_days: weekdays,
     };
 
     try {
       console.log("SENDING THIS TO MAKE SLOTS", payload);
-      await axios.post("http://127.0.0.1:8000/api/time_slots/", payload,getHeaders());
+      await axios.post(
+        "http://127.0.0.1:8000/api/time_slots/",
+        payload,
+        getHeaders()
+      );
       alert("Availability set successfully!");
     } catch (error) {
       console.error("Error setting availability:", error);
@@ -98,19 +136,11 @@ const ManageSlots = () => {
       <div>
         <h2>Manage Availability</h2>
         <form onSubmit={handleSubmit}>
-          <label>Start Date:</label>
+          <label>Select Month:</label>
           <input
-            type="date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-            required
-          />
-
-          <label>End Date:</label>
-          <input
-            type="date"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
+            type="month"
+            value={month}
+            onChange={(e) => setMonth(e.target.value)}
             required
           />
 
@@ -171,7 +201,7 @@ const ManageSlots = () => {
               <ul>
                 {calculatedSlots.map((slot, index) => (
                   <li key={index}>
-                    {slot.start_time} - {slot.end_time}
+                    {slot.date} - {slot.start_time} to {slot.end_time}
                   </li>
                 ))}
               </ul>
