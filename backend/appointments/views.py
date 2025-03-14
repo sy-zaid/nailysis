@@ -27,6 +27,7 @@ from .serializers import (
 )   
 from users.models import Patient, Doctor, ClinicAdmin, CustomUser, LabTechnician, LabAdmin
 from datetime import datetime, timedelta
+import calendar
 
 class DoctorFeeViewset(viewsets.ModelViewSet):
     """
@@ -626,13 +627,13 @@ class LabTechnicianAppointCancellationViewSet(viewsets.ModelViewSet):
 class TimeSlotViewSet(viewsets.ModelViewSet):
     queryset = TimeSlot.objects.all()
     serializer_class = TimeSlotSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
 
     def get_queryset(self):
         doctor_id = self.request.query_params.get('doctor_id')
         date = self.request.query_params.get('date')
 
-        queryset = TimeSlot.objects.all()
+        queryset = TimeSlot.objects.filter(is_booked=False)  # Only booked slots
 
         if doctor_id:
             queryset = queryset.filter(doctor_id=doctor_id)
@@ -641,7 +642,7 @@ class TimeSlotViewSet(viewsets.ModelViewSet):
 
         return queryset
 
-    # @action(detail=False,methods=["post"],url_path=)
+
     def create(self, request, *args, **kwargs):
         """
         Create multiple slots for a doctor over a date range.
@@ -653,58 +654,62 @@ class TimeSlotViewSet(viewsets.ModelViewSet):
             "time_slots": [
                 {"start_time": "09:00", "end_time": "09:30"},
                 {"start_time": "10:00", "end_time": "10:30"}
-            ]
+            ],
+            "working_days": ["Monday", "Wednesday", "Friday"]
         }
         """
-
-        user = self.request.user
-        if user.role != "doctor":
-            return Response({"error":"Not authorized to create doctor availibility slots"})
         
-
+        user = request.user
+        if user.role != "doctor":
+            return Response({"error": "Not authorized to create doctor availability slots"}, status=status.HTTP_403_FORBIDDEN)
+        
         doctor_id = request.data.get("doctor_id")
         start_date = request.data.get("start_date")
         end_date = request.data.get("end_date")
         time_slots = request.data.get("time_slots", [])
-        WEEK_DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+        working_days = request.data.get("working_days", [])
 
-# Get working days from request
-        working_days = request.data.get("working_days", [])  # Default to empty list if not provided
+        # Validate required fields
+        if not all([doctor_id, start_date, end_date, time_slots, working_days]):
+            return Response({"error": "Missing required fields"}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Ensure it's a list
-        if not isinstance(working_days, list):
-            return Response({"error": "Invalid format for working_days"}, status=400)
-
-        # Calculate non-working days
-        non_working_days = [day for day in WEEK_DAYS if day not in working_days]
-
-        # OR using set difference
-        # non_working_days = list(set(WEEK_DAYS) - set(working_days))
-
-        print("Working Days:", working_days)
-        print("Non-Working Days:", non_working_days)
+        # Validate working_days format
+        if not isinstance(working_days, list) or any(day not in calendar.day_name for day in working_days):
+            return Response({"error": "Invalid format for working_days"}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             doctor = Doctor.objects.get(user_id=doctor_id)
         except Doctor.DoesNotExist:
             return Response({"error": "Doctor not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
-        end_date = datetime.strptime(end_date, "%Y-%m-%d").date()
+        try:
+            start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
+            end_date = datetime.strptime(end_date, "%Y-%m-%d").date()
+        except ValueError:
+            return Response({"error": "Invalid date format, use YYYY-MM-DD"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if start_date > end_date:
+            return Response({"error": "Start date must be before end date"}, status=status.HTTP_400_BAD_REQUEST)
 
         slots_to_create = []
         current_date = start_date
 
         while current_date <= end_date:
-            for slot in time_slots:
-                slots_to_create.append(TimeSlot(
-                    doctor=doctor,
-                    slot_date=current_date,
-                    start_time=slot["start_time"],
-                    end_time=slot["end_time"],
-                    is_booked=False
-                ))
-            current_date += timedelta(days=1)
+            day_name = calendar.day_name[current_date.weekday()]  # Get day name (e.g., 'Monday')
+            if day_name in working_days:  # Only create slots for working days
+                for slot in time_slots:
+                    slots_to_create.append(TimeSlot(
+                        doctor=doctor,
+                        slot_date=current_date,
+                        start_time=slot["start_time"],
+                        end_time=slot["end_time"],
+                        is_booked=False
+                    ))
+            current_date += timedelta(days=1)  # Move to the next day
 
-        TimeSlot.objects.bulk_create(slots_to_create)
-        return Response({"message": "Slots created successfully"}, status=status.HTTP_201_CREATED)
+        # Bulk create time slots
+        if slots_to_create:
+            TimeSlot.objects.bulk_create(slots_to_create)
+            return Response({"message": "Slots created successfully"}, status=status.HTTP_201_CREATED)
+        else:
+            return Response({"message": "No slots created, check working days"}, status=status.HTTP_400_BAD_REQUEST)
