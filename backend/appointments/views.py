@@ -198,8 +198,9 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
         - A 403 Forbidden response if the user is unauthorized.
         """
         doctor_id = request.data.get('doctor_id')
-        appointment_date = request.data.get('appointment_date')
-        start_time = request.data.get('start_time')
+        
+        slot_id = request.data.get('slot_id')
+        
         appointment_type = request.data.get('appointment_type')
         specialization = request.data.get('specialization')
         fee = request.data.get('fee')
@@ -207,6 +208,9 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
 
         user = self.request.user
         doctor = get_object_or_404(Doctor, user_id=doctor_id)
+        time_slot = get_object_or_404(TimeSlot,id=slot_id)
+        time_slot.is_booked = True
+        time_slot.save()
 
         if user.role == "clinic_admin":
             if not patient_email:
@@ -221,13 +225,13 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
         doctor_appointment = DoctorAppointment.objects.create(
             patient=patient,
             doctor=doctor,
-            appointment_date=appointment_date,
-            start_time=start_time,
+            time_slot = time_slot,
+            
             appointment_type=appointment_type,
             specialization=specialization,
             fee=fee
         )
-
+        
         return Response({
             "message": "Appointment booked successfully",
             "appointment_id": doctor_appointment.appointment_id
@@ -443,7 +447,7 @@ class LabTechnicianAppointmentViewset(viewsets.ModelViewSet):
         print(request.data)
         # notes = request.data.get('notes')
         appointment_date = request.data.get('appointment_date')
-        appointment_time = request.data.get('appointment_time')
+        start_time = request.data.get('start_time')
         lab_test_type = request.data.get('lab_test_type')
         fee = request.data.get('fee')
         lab_technician_id = request.data.get('lab_technician_id')
@@ -464,8 +468,8 @@ class LabTechnicianAppointmentViewset(viewsets.ModelViewSet):
         lab_technician_appointment = TechnicianAppointment.objects.create(
             patient=patient,
             lab_technician=lab_technician,
-            appointment_date=appointment_date,
-            start_time=appointment_time,
+            
+            
             lab_test_type=lab_test_type,
             fee=fee
         )
@@ -627,7 +631,7 @@ class LabTechnicianAppointCancellationViewSet(viewsets.ModelViewSet):
 class TimeSlotViewSet(viewsets.ModelViewSet):
     queryset = TimeSlot.objects.all()
     serializer_class = TimeSlotSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         doctor_id = self.request.query_params.get('doctor_id')
@@ -645,10 +649,10 @@ class TimeSlotViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         """
-        Create multiple slots for a doctor over a date range.
+        Create multiple slots for a doctor or a lab technician over a date range.
         Expected request format:
         {
-            "doctor_id": 1,
+            "doctor_id": 1,   # OR "lab_tech_id": 2
             "start_date": "2025-03-12",
             "end_date": "2025-03-18",
             "time_slots": [
@@ -658,30 +662,44 @@ class TimeSlotViewSet(viewsets.ModelViewSet):
             "working_days": ["Monday", "Wednesday", "Friday"]
         }
         """
-        
+
         user = request.user
-        if user.role != "doctor":
-            return Response({"error": "Not authorized to create doctor availability slots"}, status=status.HTTP_403_FORBIDDEN)
-        
+        if user.role not in ["doctor", "lab_technician"]:
+            return Response({"error": "Not authorized to create availability slots"}, status=status.HTTP_403_FORBIDDEN)
+
         doctor_id = request.data.get("doctor_id")
+        lab_tech_id = request.data.get("lab_tech_id")
         start_date = request.data.get("start_date")
         end_date = request.data.get("end_date")
         time_slots = request.data.get("time_slots", [])
         working_days = request.data.get("working_days", [])
 
+        # Ensure either doctor_id or lab_tech_id is provided
+        if not doctor_id and not lab_tech_id:
+            return Response({"error": "Either doctor_id or lab_tech_id must be provided"}, status=status.HTTP_400_BAD_REQUEST)
+
         # Validate required fields
-        if not all([doctor_id, start_date, end_date, time_slots, working_days]):
+        if not all([start_date, end_date, time_slots, working_days]):
             return Response({"error": "Missing required fields"}, status=status.HTTP_400_BAD_REQUEST)
 
         # Validate working_days format
         if not isinstance(working_days, list) or any(day not in calendar.day_name for day in working_days):
             return Response({"error": "Invalid format for working_days"}, status=status.HTTP_400_BAD_REQUEST)
 
-        try:
-            doctor = Doctor.objects.get(user_id=doctor_id)
-        except Doctor.DoesNotExist:
-            return Response({"error": "Doctor not found"}, status=status.HTTP_404_NOT_FOUND)
+        # Fetch doctor or lab technician instance
+        user_instance = None
+        if doctor_id:
+            try:
+                user_instance = Doctor.objects.get(user_id=doctor_id)
+            except Doctor.DoesNotExist:
+                return Response({"error": "Doctor not found"}, status=status.HTTP_404_NOT_FOUND)
+        elif lab_tech_id:
+            try:
+                user_instance = LabTechnician.objects.get(user_id=lab_tech_id)
+            except LabTechnician.DoesNotExist:
+                return Response({"error": "Lab Technician not found"}, status=status.HTTP_404_NOT_FOUND)
 
+        # Validate date format
         try:
             start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
             end_date = datetime.strptime(end_date, "%Y-%m-%d").date()
@@ -699,7 +717,8 @@ class TimeSlotViewSet(viewsets.ModelViewSet):
             if day_name in working_days:  # Only create slots for working days
                 for slot in time_slots:
                     slots_to_create.append(TimeSlot(
-                        doctor=doctor,
+                        doctor=user_instance if doctor_id else None,
+                        lab_technician=user_instance if lab_tech_id else None,
                         slot_date=current_date,
                         start_time=slot["start_time"],
                         end_time=slot["end_time"],
