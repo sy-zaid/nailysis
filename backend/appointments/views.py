@@ -631,19 +631,21 @@ class LabTechnicianAppointCancellationViewSet(viewsets.ModelViewSet):
 class TimeSlotViewSet(viewsets.ModelViewSet):
     queryset = TimeSlot.objects.all()
     serializer_class = TimeSlotSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
 
     def get_queryset(self):
         doctor_id = self.request.query_params.get('doctor_id')
+        technician_id = self.request.query_params.get('technician_id')
         date = self.request.query_params.get('date')
 
         queryset = TimeSlot.objects.filter(is_booked=False)  # Only booked slots
 
         if doctor_id:
             queryset = queryset.filter(doctor_id=doctor_id)
+        if technician_id:
+            queryset = queryset.filter(lab_technician_id=technician_id)
         if date:
             queryset = queryset.filter(slot_date=date)
-
         return queryset
 
 

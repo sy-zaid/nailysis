@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import styles from "./popup-doctor-appointment-book.module.css";
+import styles from "./doctor-appointment-book-popup.module.css";
 import Popup from "../Popup.jsx";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -16,7 +16,7 @@ import {
   rescheduleDoctorAppointment,
 } from "../../../api/appointmentsApi.js";
 
-const PopupRescheduleAppointment = ({ onClose, appointmentDetails }) => {
+const RescheduleAppointmentPopup = ({ onClose, appointmentDetails }) => {
   const [popupTrigger, setPopupTrigger] = useState(true);
   const token = getAccessToken();
   const { data: curUser, isLoading, isError, error } = useCurrentUserData(); // Fetch patient data
@@ -250,4 +250,4 @@ const PopupRescheduleAppointment = ({ onClose, appointmentDetails }) => {
   );
 };
 
-export default PopupRescheduleAppointment;
+export default RescheduleAppointmentPopup;

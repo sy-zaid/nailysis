@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Select from "react-select";
-import styles from "./popup-doctor-appointment-book.module.css";
+import styles from "./doctor-appointment-book-popup.module.css";
 import Popup from "../Popup.jsx";
 import useCurrentUserData from "../../../useCurrentUserData.jsx";
 
@@ -12,7 +12,7 @@ import {
 } from "../../../utils/utils.js";
 import { saveAndCompleteDoctorAppointment } from "../../../api/appointmentsApi.js";
 
-const PopupCheckinDoctorAppointment = ({ onClose, appointmentDetails }) => {
+const CheckinDoctorAppointmentPopup= ({ onClose, appointmentDetails }) => {
   const [popupTrigger, setPopupTrigger] = useState(true);
   const { data: curUser } = useCurrentUserData();
   const [timer, setTimer] = useState(0);
@@ -165,4 +165,4 @@ const PopupCheckinDoctorAppointment = ({ onClose, appointmentDetails }) => {
   );
 };
 
-export default PopupCheckinDoctorAppointment;
+export default CheckinDoctorAppointmentPopup;

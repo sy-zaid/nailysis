@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import styles from "./popup-doctor-appointment-book.module.css";
+import styles from "./doctor-appointment-book-popup.module.css";
 import Popup from "../Popup.jsx";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -7,7 +7,7 @@ import useCurrentUserData from "../../../useCurrentUserData.jsx";
 import { getAccessToken } from "../../../utils/utils.js";
 import { deleteAppointment } from "../../../api/appointmentsApi.js";
 
-const PopupDeleteAppointment = ({ onClose, appointmentDetails }) => {
+const DeleteAppointmentPopup = ({ onClose, appointmentDetails }) => {
   const [popupTrigger, setPopupTrigger] = useState(true);
   
   const handleDeleteAppointment = async () => {
@@ -85,4 +85,4 @@ const PopupDeleteAppointment = ({ onClose, appointmentDetails }) => {
   );
 };
 
-export default PopupDeleteAppointment;
+export default DeleteAppointmentPopup;

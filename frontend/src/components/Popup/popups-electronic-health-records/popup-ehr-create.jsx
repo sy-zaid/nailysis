@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import Select from "react-select";
-import styles from "../popups-doctor-appointments/popup-doctor-appointment-book.module.css";
+import styles from "../popups-doctor-appointments/doctor-appointment-book-popup.module.css";
 import Popup from "../Popup.jsx";
 import { createEHR, getEHR } from "../../../api/ehrApi.js";
 import { useAllPatients } from "../../../api/usersApi.js";

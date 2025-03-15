@@ -1,9 +1,9 @@
 import React from "react";
-import styles from "./popup-doctor-appointment-details.module.css";
+import styles from "./doctor-appointment-details-popup.module.css";
 import Popup from "../Popup";
 import { useState } from "react"; 
 
-const PopupAppointmentDetails = () => {
+const AppointmentDetailsPopup = () => {
   const [popupTrigger, setPopupTrigger] = useState(false);
 
   return (
@@ -114,4 +114,4 @@ const PopupAppointmentDetails = () => {
   );
 };
 
-export default PopupAppointmentDetails;
+export default AppointmentDetailsPopup;

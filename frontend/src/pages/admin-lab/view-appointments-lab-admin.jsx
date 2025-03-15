@@ -2,9 +2,9 @@ import React, { act, useEffect, useState } from "react";
 import styles from "../../components/CSS Files/PatientAppointment.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import PopupAppointmentBook from "../../components/Popup/popup-lab-appointment-book";
-import PopupAppointmentDetails from "../../components/Popup/popups-doctor-appointments/popup-doctor-appointment-details";
-import PopupRescheduleAppointment from "../../components/Popup/popups-doctor-appointments/popup-doctor-appointment-reschedule";
-import PopupDeleteAppointment from "../../components/Popup/popups-doctor-appointments/popup-doctor-appointment-delete";
+import AppointmentDetailsPopup from "../../components/Popup/popups-doctor-appointments/doctor-appointment-details-popup";
+import RescheduleAppointmentPopup from "../../components/Popup/popups-doctor-appointments/doctor-appointment-reschedule-popup";
+import DeleteAppointmentPopup from "../../components/Popup/popups-doctor-appointments/doctor-appointment-delete-popup";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import api from "../../api";
@@ -95,7 +95,7 @@ const AppointmentLabAdmin = () => {
       handleCancellation(appointmentId, action);
     } else if (action === "Reschedule") {
       setPopupContent(
-        <PopupRescheduleAppointment
+        <RescheduleAppointmentPopup
           appointmentDetails={appointmentId}
           onClose={handleClosePopup}
         />
@@ -106,7 +106,7 @@ const AppointmentLabAdmin = () => {
       setShowPopup(true);
     } else if (action === "Delete") {
       setPopupContent(
-        <PopupDeleteAppointment
+        <DeleteAppointmentPopup
           onClose={handleClosePopup}
           appointmentDetails={appointmentId}
         />
@@ -118,7 +118,7 @@ const AppointmentLabAdmin = () => {
   return (
     <div className={styles.pageContainer}>
       {showPopup && popupContent}
-      <PopupAppointmentDetails></PopupAppointmentDetails>
+      <AppointmentDetailsPopup></AppointmentDetailsPopup>
 
       <div className={styles.pageTop}>
         <Navbar />

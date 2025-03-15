@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import styles from "./popup-doctor-appointment-book.module.css";
+import styles from "./doctor-appointment-book-popup.module.css";
 import Popup from "../Popup.jsx";
 import useCurrentUserData from "../../../useCurrentUserData.jsx";
 import {
@@ -17,7 +17,7 @@ import {
   getAvailableSlots,
 } from "../../../api/appointmentsApi.js";
 
-const PopupBookAppointment = ({ onClose }) => {
+const BookDoctorAppointmentPopup = ({ onClose }) => {
   const [popupTrigger, setPopupTrigger] = useState(true);
   const token = getAccessToken();
   const curUserRole = getRole();
@@ -404,4 +404,4 @@ const PopupBookAppointment = ({ onClose }) => {
   );
 };
 
-export default PopupBookAppointment;
+export default BookDoctorAppointmentPopup;

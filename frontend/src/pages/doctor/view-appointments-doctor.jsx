@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../components/CSS Files/PatientAppointment.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
-import PopupAppointmentDetails from "../../components/Popup/popups-doctor-appointments/popup-doctor-appointment-details";
+import AppointmentDetailsPopup from "../../components/Popup/popups-doctor-appointments/doctor-appointment-details-popup";
 import { useNavigate } from "react-router-dom";
 import api from "../../api";
 import CancellationRequestForm from "./cancellation-request-form"; // Import CancellationRequestForm
-import PopupCheckinDoctorAppointment from "../../components/Popup/popups-doctor-appointments/popup-doctor-appointment-checkin";
-import PopupManageSlotsDoctor from "../../components/Popup/popups-doctor-appointments/popup-manage-slots-doctor";
+import CheckinDoctorAppointmentPopup from "../../components/Popup/popups-doctor-appointments/doctor-appointment-checkin-popup";
+import PopupManageSlotsDoctor from "../../components/Popup/popups-doctor-appointments/manage-slots-doctor-popup";
 
 const AppointmentDoctor = () => {
   const navigate = useNavigate();
@@ -83,7 +83,7 @@ const AppointmentDoctor = () => {
       setShowPopup(true); // Show the Cancellation Request Form popup
     } else if (action === "Start Appointment") {
       setPopupContent(
-        <PopupCheckinDoctorAppointment
+        <CheckinDoctorAppointmentPopup
           appointmentDetails={appointmentId}
           onClose={handleClosePopup}
         />
@@ -100,7 +100,7 @@ const AppointmentDoctor = () => {
     <div className={styles.pageContainer}>
       {showPopup && popupContent}{" "}
       {/* Render the correct popup based on the action */}
-      <PopupAppointmentDetails />
+      <AppointmentDetailsPopup />
       <div className={styles.pageTop}>
         <Navbar />
         <h1>Appointments</h1>

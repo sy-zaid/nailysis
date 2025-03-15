@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../components/CSS Files/PatientAppointment.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
-import PopupAppointmentDetails from "../../components/Popup/popups-doctor-appointments/popup-doctor-appointment-details";
+import AppointmentDetailsPopup from "../../components/Popup/popups-doctor-appointments/doctor-appointment-details-popup";
 import { useNavigate } from "react-router-dom";
 import api from "../../api";
 import CancellationRequestForm from "./cancellation-request-form"; // Import CancellationRequestForm
@@ -89,7 +89,7 @@ const AppointmentTechnician = () => {
     <div className={styles.pageContainer}>
       {showPopup && popupContent}{" "}
       {/* Render the correct popup based on the action */}
-      <PopupAppointmentDetails />
+      <AppointmentDetailsPopup />
       <div className={styles.pageTop}>
         <Navbar />
         <h1>Appointments</h1>
@@ -105,6 +105,7 @@ const AppointmentTechnician = () => {
               <button className={styles.filterButton}>Cancelled</button>
               <p className={styles.statusSummary}>50 completed, 4 upcoming</p>
             </div>
+            <button onClick={()=>{handleActionClick("Manage Availability")}} className={styles.addButton}>Manage Availability</button>
             <button className={styles.addButton}>Cancel Appointment</button>
           </div>
 

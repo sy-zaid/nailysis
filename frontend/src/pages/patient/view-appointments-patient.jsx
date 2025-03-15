@@ -2,9 +2,9 @@ import React, { useState, useRef, useEffect } from "react";
 import styles from "../../components/CSS Files/PatientAppointment.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import Header from "../../components/Dashboard/Header/Header";
-import PopupDoctorAppointmentBook from "../../components/Popup/popups-doctor-appointments/popup-doctor-appointment-book";
+import PopupDoctorAppointmentBook from "../../components/Popup/popups-doctor-appointments/doctor-appointment-book-popup";
 import PopupLabAppointmentBook from "../../components/Popup/popup-lab-appointment-book";
-import PopupAppointmentDetails from "../../components/Popup/popups-doctor-appointments/popup-doctor-appointment-details";
+import AppointmentDetailsPopup from "../../components/Popup/popups-doctor-appointments/doctor-appointment-details-popup";
 import { useNavigate } from "react-router-dom";
 import api from "../../api";
 
@@ -105,7 +105,7 @@ const AppointmentPatients = () => {
       {showDoctorPopup && <PopupDoctorAppointmentBook onClose={handleCloseDoctorPopup} />}
       {showLabPopup && <PopupLabAppointmentBook onClose={handleCloseLabPopup} />}
 
-      <PopupAppointmentDetails></PopupAppointmentDetails>
+      <AppointmentDetailsPopup></AppointmentDetailsPopup>
 
       <div className={styles.pageTop}>
         <Navbar />

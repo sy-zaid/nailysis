@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Popup from "../Popup.jsx";
 import useCurrentUserData from "../../../useCurrentUserData.jsx";
-import { getHeaders } from "../../../utils/utils";
+import { getHeaders } from "../../../utils/utils.js";
 
-const ManageSlots = () => {
+const ManageSlotsPopup = () => {
   const [popupTrigger, setPopupTrigger] = useState(true);
   const { data: curUser } = useCurrentUserData();
   const [user, setUser] = useState();
@@ -215,4 +215,4 @@ const ManageSlots = () => {
   );
 };
 
-export default ManageSlots;
+export default ManageSlotsPopup;
