@@ -105,7 +105,7 @@ const PopupRescheduleLabAppointment = ({ onClose, appointmentDetails }) => {
     const appointmentData = {
       user_id: formData.user_id,
       appointment_date: formData.appointmentDate,
-      appointment_time: formData.appointmentTime,
+      start_time: formData.appointmentTime,
       appointment_type: formData.appointmentType,
       specialization: formData.specialization,
     };

@@ -177,7 +177,7 @@ const AppointmentLabAdmin = () => {
                     <td>{row.lab_test || "No test specified"}</td>
                     <td>{row.appointment_type || "N/A"}</td>
                     <td>
-                      {row.appointment_date} {row.appointment_time}
+                      {row.appointment_date} {row.start_time}
                     </td>
                     <td className={getStatusClass(row.status)}>{row.status}</td>
                     <td>{row.fee ? `PKR ${row.fee}` : "Not available"}</td>

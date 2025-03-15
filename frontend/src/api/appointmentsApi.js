@@ -47,3 +47,9 @@ export const saveAndCompleteDoctorAppointment = async (
   const url = `${API_URL}/api/doctor_appointments/${appointmentId}/save_and_complete/`;
   return axios.post(url, ehrData, getHeaders());
 };
+
+export const getAvailableSlots = async (doctorId, date) => {
+  const url = `${API_URL}/api/time_slots/?doctor_id=${doctorId}&date=${date}`;
+  const response = await axios.get(url, getHeaders());
+  return Array.isArray(response.data) ? response.data : [];
+};

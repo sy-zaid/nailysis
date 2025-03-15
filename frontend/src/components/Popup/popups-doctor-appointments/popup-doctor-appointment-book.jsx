@@ -14,6 +14,7 @@ import {
   getDoctorFromSpecialization,
   getDoctorSpecializations,
   getFeeFromAppointmentType,
+  getAvailableSlots,
 } from "../../../api/appointmentsApi.js";
 
 const PopupBookAppointment = ({ onClose }) => {
@@ -24,14 +25,15 @@ const PopupBookAppointment = ({ onClose }) => {
   const [patient, setPatient] = useState([]); // Initialize patient state
   const [specializations, setSpecializations] = useState([]);
   const [doctors, setDoctors] = useState([]);
+  const [availableSlots, setAvailableSlots] = useState([]);
   // State for appointment details
   const [formData, setFormData] = useState({
     doctorId: "",
     appointmentDate: "",
-    appointmentStartTime: "",
-    appointmentType: "",
+    slotId: "",
+    appointmentType: visitPurposes[0],
     specialization: "",
-    fee: "0.00",
+    fee: "",
     patientFirstName: "",
     patientLastName: "",
     date_of_birth: "",
@@ -119,7 +121,7 @@ const PopupBookAppointment = ({ onClose }) => {
     const appointmentData = {
       doctor_id: formData.doctorId,
       appointment_date: formData.appointmentDate,
-      start_time: formData.appointmentStartTime,
+      slot_id: formData.slotId,
       appointment_type: formData.appointmentType,
       specialization: formData.specialization,
       fee: formData.fee,
@@ -140,6 +142,29 @@ const PopupBookAppointment = ({ onClose }) => {
     } catch (error) {
       alert("Failed to book appointment");
       console.error(error);
+      throw error;
+    }
+  };
+  useEffect(() => {
+    if (formData.doctorId && formData.appointmentDate) {
+      fetchAvailableSlots();
+    }
+  }, [formData.doctorId, formData.appointmentDate]);
+  const fetchAvailableSlots = async () => {
+    try {
+      console.log(
+        "SENDING THIS TO FETCH DOCID AND DATE",
+        formData.doctorId,
+        formData.appointmentDate
+      );
+      const response = await getAvailableSlots(
+        formData.doctorId,
+        formData.appointmentDate
+      );
+      console.log("FETCHING SLOTS", response);
+      setAvailableSlots(response);
+    } catch (error) {
+      console.log("Failed to fetch available slots", error);
       throw error;
     }
   };
@@ -299,12 +324,25 @@ const PopupBookAppointment = ({ onClose }) => {
               value={formData.appointmentDate}
               onChange={onInputChange}
             />
-            <input
-              type="time"
-              name="appointmentStartTime"
-              value={formData.appointmentStartTime}
+          </div>
+          {/* Available Slots Selection */}
+          <div className={styles.formGroup}>
+            <label>Available Slots</label>
+            <select
+              name="slotId"
+              value={formData.slotId}
               onChange={onInputChange}
-            />
+              disabled={availableSlots.length === 0}
+            >
+              <option value="">
+                {availableSlots.length ? "Select a Slot" : "No slots available"}
+              </option>
+              {availableSlots.map((slot, index) => (
+                <option key={index} value={slot.id}>
+                  {slot.slot_id} - {slot.end_time}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className={styles.formGroup}>

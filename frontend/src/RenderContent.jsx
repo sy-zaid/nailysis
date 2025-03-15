@@ -17,7 +17,7 @@ import PatientDashboard from "./pages/patient/patient-dashboard";
 import LabAdminDashboard from "./pages/admin-lab/lab-admin-dashboard";
 import LabTechnicianDashboard from "./pages/lab-technician/lab-technician-dashboard";
 import LabTechnicianTestRequests from "./pages/lab-technician/lab-technician-test-requests";
-import ViewAppointmentsLabTechnician from "./pages/lab-technician/lab-technician-view-appointments";
+import ViewAppointmentsLabTechnician from "./pages/lab-technician/view-appointments-lab-technician";
 import ViewAppointmentsLabAdmin from "./pages/admin-lab/view-appointments-lab-admin"
 import PlaceholderComponent from "./components/PlaceholderComponent"; // Placeholder for missing views
 

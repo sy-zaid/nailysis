@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../components/CSS Files/PatientAppointment.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
-import PopupAppointmentDetails from "../../components/Popup/popup-doctor-appointment-details";
+import PopupAppointmentDetails from "../../components/Popup/popups-doctor-appointments/popup-doctor-appointment-details";
 import { useNavigate } from "react-router-dom";
 import api from "../../api";
 import CancellationRequestForm from "./cancellation-request-form"; // Import CancellationRequestForm
-
+import PopupManageSlotsLabTechnician from "../../components/Popup/popups-lab-technician-appointments/popup-manage-slots-lab-technician";
 const AppointmentTechnician = () => {
   const navigate = useNavigate();
   const [appointments, setAppointments] = useState([]);
   const token = localStorage.getItem("access");
-  const [showPopup, setShowPopup] = useState(false); 
+  const [showPopup, setShowPopup] = useState(false);
   const [popupContent, setPopupContent] = useState(null); // State to track which popup to show
   useEffect(() => {
     if (!token) {
@@ -29,7 +29,7 @@ const AppointmentTechnician = () => {
             },
           }
         );
-        
+
         setAppointments(response.data);
         console.log("Response from technician appointment", response.data);
       } catch (error) {
@@ -50,8 +50,6 @@ const AppointmentTechnician = () => {
         return styles.scheduled;
     }
   };
-
-  
 
   const handleOpenPopup = () => {
     setShowPopup(true); // Show the popup when button is clicked
@@ -81,8 +79,10 @@ const AppointmentTechnician = () => {
         />
       );
       setShowPopup(true); // Show the Cancellation Request Form popup
+    } else if (action === "Manage Availability") {
+      setPopupContent(<PopupManageSlotsLabTechnician />);
+      setShowPopup(true);
     }
-    // Add logic for other actions like 'Edit' and 'Reschedule' if needed
   };
 
   return (
@@ -141,7 +141,7 @@ const AppointmentTechnician = () => {
                     <td>{row.patient?.gender || "N/A"}</td>
                     <td>{row.lab_test_type || "N/A"}</td>
                     <td>
-                      {row.appointment_date} {row.appointment_time}
+                      {row.appointment_date} {row.start_time}
                     </td>
                     <td className={getStatusClass(row.status)}>{row.status}</td>
                     <td>{row.notes || "No additional notes"}</td>
@@ -159,7 +159,6 @@ const AppointmentTechnician = () => {
                       {menuOpen === row.appointment_id && (
                         <div className={styles.menu}>
                           <ul>
-                            
                             <li
                               onClick={() => {
                                 handleActionClick("Cancel", row.appointment_id);

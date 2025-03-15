@@ -158,7 +158,8 @@ const AppointmentDoctor = () => {
                     <td>{row.patient?.gender || "N/A"}</td>
                     <td>{row.appointment_type || "N/A"}</td>
                     <td>
-                      {row.appointment_date} {row.start_time}
+                      {row.time_slot?.slot_date} | {row.time_slot?.start_time} -{" "}
+                      {row.time_slot?.end_time}
                     </td>
                     <td className={getStatusClass(row.status)}>{row.status}</td>
                     <td>{row.notes || "No additional notes"}</td>

@@ -75,7 +75,7 @@ const PopupDeleteLabAppointment = ({ onClose, appointmentDetails }) => {
               <label>Appointment Date</label>
               <input
                 type="text"
-                value={`${appointmentDetails.appointment_date || ""} | ${appointmentDetails.appointment_time || ""}`}
+                value={`${appointmentDetails.appointment_date || ""} | ${appointmentDetails.start_time || ""}`}
                 disabled
               />
             </div>

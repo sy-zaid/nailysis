@@ -221,7 +221,7 @@ const AppointmentPatients = () => {
                     </td>{" "}
                     {/* Specialization */}
                     <td>
-                      {row.appointment_date} {row.start_time}
+                    {row.time_slot?.slot_date} | {row.time_slot?.start_time} - {row.time_slot?.end_time}
                     </td>{" "}
                     {/* Date and Time */}
                     <td>{row.appointment_type || "N/A"}</td>{" "}
