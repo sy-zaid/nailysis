@@ -207,7 +207,6 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
         doctor = get_object_or_404(Doctor, user_id=doctor_id)
         time_slot = get_object_or_404(TimeSlot,id=slot_id)
         
-
         if user.role == "clinic_admin":
             if not patient_email:
                 patient = CustomUser.create_walkin_account(**request.data)
@@ -225,7 +224,7 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
 
         if conflict_exists:
             return Response(
-                {"error": "You already have a lab appointment at this time slot."},
+                {"error": "A lab appointment exists at this time slot."},
                 status=status.HTTP_409_CONFLICT
             )
 
@@ -460,9 +459,6 @@ class LabTechnicianAppointmentViewset(viewsets.ModelViewSet):
         lab_technician = get_object_or_404(LabTechnician, user_id=lab_technician_id)
         time_slot = get_object_or_404(TimeSlot,id=slot_id)
         
-        time_slot.is_booked = True
-        time_slot.save()
-
         # Handling patient information
         if user.role == "lab_admin":
             if not patient_email:
@@ -471,7 +467,18 @@ class LabTechnicianAppointmentViewset(viewsets.ModelViewSet):
                 patient = get_object_or_404(Patient, user__email=patient_email)
         elif user.role == "patient":
             patient = get_object_or_404(Patient, user=request.user)
+        
+        conflict_exists = DoctorAppointment.objects.filter(
+            patient=patient,
+            time_slot__start_time=time_slot.start_time
+        ).exists()
 
+        if conflict_exists:
+            return Response(
+                {"error": "A doctor appointment exists at this time slot."},
+                status=status.HTTP_409_CONFLICT
+            )
+            
         lab_technician_appointment = TechnicianAppointment.objects.create(
             patient=patient,
             lab_technician=lab_technician,
@@ -479,6 +486,12 @@ class LabTechnicianAppointmentViewset(viewsets.ModelViewSet):
             lab_test_type=lab_test_type,
             fee=fee
         )
+        
+        if time_slot.is_booked == False:
+            time_slot.is_booked = True
+        else:
+            return Response({"error":"Time slot already occupied for other appointment"},status=status.HTTP_409_CONFLICT)
+        time_slot.save()
 
         return Response({
             "message": "Lab appointment booked successfully",
