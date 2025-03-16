@@ -198,19 +198,15 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
         - A 403 Forbidden response if the user is unauthorized.
         """
         doctor_id = request.data.get('doctor_id')
-        
         slot_id = request.data.get('slot_id')
-        
         appointment_type = request.data.get('appointment_type')
-        specialization = request.data.get('specialization')
         fee = request.data.get('fee')
         patient_email = request.data.get("patient_email")
 
         user = self.request.user
         doctor = get_object_or_404(Doctor, user_id=doctor_id)
         time_slot = get_object_or_404(TimeSlot,id=slot_id)
-        time_slot.is_booked = True
-        time_slot.save()
+        
 
         if user.role == "clinic_admin":
             if not patient_email:
@@ -222,15 +218,29 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
         else:
             return Response({"error": "You are not authorized to book a doctor appointment"}, status=status.HTTP_403_FORBIDDEN)
 
+        conflict_exists = TechnicianAppointment.objects.filter(
+            patient=patient,
+            time_slot__start_time=time_slot.start_time
+        ).exists()
+
+        if conflict_exists:
+            return Response(
+                {"error": "You already have a lab appointment at this time slot."},
+                status=status.HTTP_409_CONFLICT
+            )
+
         doctor_appointment = DoctorAppointment.objects.create(
             patient=patient,
             doctor=doctor,
             time_slot = time_slot,
-            
             appointment_type=appointment_type,
-            specialization=specialization,
             fee=fee
         )
+        if time_slot.is_booked == False:
+            time_slot.is_booked = True
+        else:
+            return Response({"error":"Time slot already occupied for other appointment"},status=status.HTTP_409_CONFLICT)
+        time_slot.save()
         
         return Response({
             "message": "Appointment booked successfully",
@@ -433,28 +443,25 @@ class LabTechnicianAppointmentViewset(viewsets.ModelViewSet):
 
         return TechnicianAppointment.objects.none()
     
-    def perform_create(self, serializer):
-        """
-        Create a new lab technician appointment.
-        """
-        serializer.save(patient=self.request.user)
 
     @action(detail=False, methods=['post'], url_path='book_lab_appointment')
     def book_lab_appointment(self, request):
         """
         Book a new lab appointment.
         """
-        print(request.data)
-        # notes = request.data.get('notes')
-        appointment_date = request.data.get('appointment_date')
-        start_time = request.data.get('start_time')
-        lab_test_type = request.data.get('lab_test_type')
-        fee = request.data.get('fee')
-        lab_technician_id = request.data.get('lab_technician_id')
-        patient_email = request.data.get('patient_email')
         user = self.request.user
 
+        lab_technician_id = request.data.get('lab_technician_id')
+        patient_email = request.data.get('patient_email')
+        lab_test_type = request.data.get('lab_test_type')
+        slot_id = request.data.get('slot_id')
+        fee = request.data.get('fee')
+        
         lab_technician = get_object_or_404(LabTechnician, user_id=lab_technician_id)
+        time_slot = get_object_or_404(TimeSlot,id=slot_id)
+        
+        time_slot.is_booked = True
+        time_slot.save()
 
         # Handling patient information
         if user.role == "lab_admin":
@@ -468,8 +475,7 @@ class LabTechnicianAppointmentViewset(viewsets.ModelViewSet):
         lab_technician_appointment = TechnicianAppointment.objects.create(
             patient=patient,
             lab_technician=lab_technician,
-            
-            
+            time_slot = time_slot,
             lab_test_type=lab_test_type,
             fee=fee
         )
@@ -635,7 +641,7 @@ class TimeSlotViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         doctor_id = self.request.query_params.get('doctor_id')
-        technician_id = self.request.query_params.get('technician_id')
+        technician_id = self.request.query_params.get('lab_technician_id')
         date = self.request.query_params.get('date')
 
         queryset = TimeSlot.objects.filter(is_booked=False)  # Only booked slots

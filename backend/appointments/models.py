@@ -44,16 +44,11 @@ class Appointment(models.Model):
 
     appointment_id = models.AutoField(primary_key=True)
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name="appointments")
-    # appointment_date = models.DateField()# REMOVE THIS FIELD AFTER CORRECTING TECH CODE
-    # start_time = models.TimeField(null=True,blank=True) # REMOVE THIS FIELD AFTER CORRECTING TECH CODE
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="Scheduled")
-    # check_in_time = models.DateTimeField(null=True, blank=True)  # Stores when the patient arrives|  # REMOVE THIS FIELD AFTER CORRECTING TECH CODE
-    # end_time = models.DateTimeField(null=True, blank=True)  # Stores when the appointment ends | # REMOVE THIS FIELD AFTER CORRECTING TECH CODE
     reminder_sent = models.BooleanField(default=False)
     notes = models.TextField(blank=True, null=True)
-
-    time_slot = models.ForeignKey(TimeSlot,on_delete=models.SET_NULL,null=True,blank=True)
-
+    time_slot = models.OneToOneField(TimeSlot, on_delete=models.SET_NULL, null=True, blank=True)
+    
     def mark_no_show(self):
         """Mark appointment as No-show if patient doesn’t arrive"""
         self.status = "No-Show"
@@ -164,7 +159,7 @@ class Appointment(models.Model):
             print(f"Error while rescheduling: {e}")        
 
     def __str__(self):
-        return f"Appointment {self.appointment_id} - {self.patient} on {self.appointment_date} at {self.start_time}"
+        return f"Appointment {self.appointment_id} - {self.patient}"
 
 class DoctorAppointmentFee(models.Model):
     """
@@ -215,7 +210,7 @@ class DoctorAppointment(Appointment):
     """
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name="doctor_appointments")
     appointment_type = models.CharField(max_length=50)
-    specialization = models.CharField(max_length=100) # REVISE THIS FIELD
+    
     follow_up = models.BooleanField(default=False)
     fee = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     recommended_tests = models.JSONField(null=True,blank=True)
@@ -249,22 +244,6 @@ class TechnicianAppointment(Appointment):
     # Field for linking every appointment with EHR record
     ehr = models.OneToOneField(EHR,on_delete=models.SET_NULL,blank=True, null=True,related_name="tech_appointment_ehr")
 
-    def collect_sample(self):
-        """Updates test status when a sample is collected."""
-        self.test_status = "Sample Collected"
-        self.save()
-
-    def upload_test_results(self, results):
-        """Marks test results as uploaded."""
-        self.test_status = "Results Uploaded"
-        self.results_available = True
-        self.save()
-
-    def update_test_status(self, results):
-        """Marks test results as updated."""
-        self.test_status = "Results Updated"
-        self.results_available = True
-        self.save() 
 
     def __str__(self):
         return f"Lab Test {self.patient} ({self.lab_test_type})"
