@@ -3,7 +3,7 @@ import styles from "../../components/CSS Files/PatientAppointment.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import Header from "../../components/Dashboard/Header/Header";
 import PopupDoctorAppointmentBook from "../../components/Popup/popups-doctor-appointments/doctor-appointment-book-popup";
-import PopupLabAppointmentBook from "../../components/Popup/popup-lab-appointment-book";
+import PopupLabAppointmentBook from "../../components/Popup/popups-lab-technician-appointments/technician-appointment-book-popup";
 import AppointmentDetailsPopup from "../../components/Popup/popups-doctor-appointments/doctor-appointment-details-popup";
 import { useNavigate } from "react-router-dom";
 import api from "../../api";

@@ -13,7 +13,7 @@ import {
   bookAppointment,
   getDoctorFromSpecialization,
   getDoctorSpecializations,
-  getFeeFromAppointmentType,
+  getDocFeeByType,
   getAvailableSlots,
 } from "../../../api/appointmentsApi.js";
 
@@ -97,7 +97,7 @@ const BookDoctorAppointmentPopup = ({ onClose }) => {
     const fetchFee = async () => {
       if (formData.appointmentType) {
         try {
-          const response = await getFeeFromAppointmentType();
+          const response = await getDocFeeByType();
           const filteredFee = response.data.find(
             (item) => item.appointment_type === formData.appointmentType
           );
@@ -120,7 +120,6 @@ const BookDoctorAppointmentPopup = ({ onClose }) => {
 
     const appointmentData = {
       doctor_id: formData.doctorId,
-      appointment_date: formData.appointmentDate,
       slot_id: formData.slotId,
       appointment_type: formData.appointmentType,
       specialization: formData.specialization,
@@ -145,6 +144,7 @@ const BookDoctorAppointmentPopup = ({ onClose }) => {
       throw error;
     }
   };
+  // Fetch Available Slots On Chosen Date
   useEffect(() => {
     if (formData.doctorId && formData.appointmentDate) {
       fetchAvailableSlots();
@@ -158,7 +158,7 @@ const BookDoctorAppointmentPopup = ({ onClose }) => {
         formData.appointmentDate
       );
       const response = await getAvailableSlots(
-        formData.doctorId,
+        formData.doctorId,null,
         formData.appointmentDate
       );
       console.log("FETCHING SLOTS", response);

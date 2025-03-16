@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import styles from "./popup-lab-appointment-book.module.css";
-import Popup from "./Popup.jsx";
+import styles from "./technician-appointment-book-popup.module.css";
+import Popup from "../Popup.jsx";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import usePatientData from "../../useCurrentUserData.jsx";
+import usePatientData from "../../../useCurrentUserData.jsx";
 
 const visitPurposes = [
   "Complete Blood Count (CBC)",

@@ -44,6 +44,15 @@ export const visitPurposes = [
   "Prescription Refill",
 ];
 
+export const technicianVisitPurposes = [
+  "Complete Blood Count (CBC)",
+    "Basic Metabolic Panel (BMP)",
+    "Hemoglobin A1c (HbA1c)",
+    "Testosterone Test",
+    "PCR Test",
+    "BRCA Gene Test",
+];
+
 export const getAccessToken = () => {
   return localStorage.getItem("access");
 };

@@ -5,7 +5,7 @@ import AppointmentDetailsPopup from "../../components/Popup/popups-doctor-appoin
 import { useNavigate } from "react-router-dom";
 import api from "../../api";
 import CancellationRequestForm from "./cancellation-request-form"; // Import CancellationRequestForm
-import PopupManageSlotsLabTechnician from "../../components/Popup/popups-lab-technician-appointments/popup-manage-slots-lab-technician";
+import PopupManageSlotsLabTechnician from "../../components/Popup/popups-lab-technician-appointments/manage-slots-lab-technician-popup";
 const AppointmentTechnician = () => {
   const navigate = useNavigate();
   const [appointments, setAppointments] = useState([]);
