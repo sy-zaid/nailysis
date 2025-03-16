@@ -1,0 +1,158 @@
+.formContainer {
+  background-color: white;
+  border-radius: 8px;
+  padding: 20px;
+  width: 1100px;
+  max-width: 1100px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  position: relative;
+  height: 85vh;
+  max-height: 95vh;
+  overflow-y: hidden;
+  margin-top: -6%;
+}
+
+.headerSection {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 15px;
+}
+
+.titleSection h2 {
+  font-size: 28px;
+  font-weight: 600;
+  margin: 0 0 5px 0;
+  color: #333;
+}
+
+.titleSection p {
+  margin: 0;
+  font-size: 16px;
+  color: #666;
+}
+
+
+.popupBottom {
+  max-height: 75vh;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+  padding-right: 20px;
+  width: 75%;
+  margin-left: 12.5%;
+  
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.newSubHeading {
+  margin: 20px 20px 10px 0;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+}
+
+.key, .statusValue, locationValue {
+  color: #4E4E4E;
+  font-size: 16px;
+  margin-right: 10px;
+}
+
+.secKey {
+  margin-left: 15%;
+}
+
+.locationValue {
+  color: #000;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.resolved {
+  color: green;
+}
+
+.inProgress {
+  color: #007bff;
+}
+
+.pending {
+  color: orange;
+}
+
+hr {
+  border: none;
+  height: 1px;
+  background-color: #e0e0e0;
+  margin: 15px 0;
+}
+
+select, textarea {
+  outline: none;
+  padding-left: 0;
+}
+
+textarea {
+  margin-top: 10px;
+  height: auto;
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 0;
+  min-height: 80px;
+  font-family: inherit;
+  font-size: 16px;
+}
+
+textarea::placeholder {
+  font-size: 14px;
+}
+
+label {
+  margin: 40px 0 10px -66%;
+}
+
+/* Buttons */
+
+/* Action buttons for the form */
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 25px;
+}
+
+.addButton {
+  display: block;
+  padding: 8px 16px;
+  background-color:#007bff ;
+  color: white;
+  border: none;
+  border-radius: 15px; 
+  cursor: pointer;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+  transition: all 0.1s;
+}
+
+.addButton:hover {
+  background-color: #0056b3;
+}
+
+.cancelButton {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 15px;
+  cursor: pointer;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+  transition: all 0.1s;
+}
+
+.cancelButton:hover {
+  background-color: #b12937;
+}

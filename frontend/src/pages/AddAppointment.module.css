@@ -128,7 +128,7 @@ label {
 input,
 select,
 textarea {
-  width: 100%;
+  width: 80%;
   border:none;
   /* border-radius: 5px; */
   background: transparent;
