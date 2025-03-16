@@ -3,8 +3,8 @@ import React, { useState, useEffect } from "react";
 import styles from "./electronic-health-records.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import axios from "axios";
-import Header from "../components/Dashboard/Header/Header.jsx";
-import otherStyles from "../components/CSS Files/PatientAppointment.module.css";
+import Header from "../../components/Dashboard/Header/Header.jsx";
+import otherStyles from "../../components/CSS Files/PatientAppointment.module.css";
 
 // Importing Popups for performing actions on EHR Records
 import PopupEHREdit from "../../components/Popup/popups-electronic-health-records/popup-ehr-edit";
