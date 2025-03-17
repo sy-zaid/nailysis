@@ -59,7 +59,7 @@ const AppointmentDoctor = () => {
 
   const handleClosePopup = () => {
     setShowPopup(false); // Hide the popup when closing
-    onClose();
+    
   };
 
   const [menuOpen, setMenuOpen] = useState(null);
