@@ -158,7 +158,8 @@ const BookDoctorAppointmentPopup = ({ onClose }) => {
         formData.appointmentDate
       );
       const response = await getAvailableSlots(
-        formData.doctorId,null,
+        formData.doctorId,
+        null,
         formData.appointmentDate
       );
       console.log("FETCHING SLOTS", response);
