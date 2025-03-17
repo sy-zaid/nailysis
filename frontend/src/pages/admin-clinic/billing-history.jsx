@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import styles from "./invoice.module.css";
+import React, { useEffect, useState  } from "react";
+import styles from "../common/invoice.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
 
 const BillingHistory = () => {
