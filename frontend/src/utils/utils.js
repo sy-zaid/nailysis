@@ -44,6 +44,15 @@ export const visitPurposes = [
   "Prescription Refill",
 ];
 
+export const technicianVisitPurposes = [
+  "Complete Blood Count (CBC)",
+    "Basic Metabolic Panel (BMP)",
+    "Hemoglobin A1c (HbA1c)",
+    "Testosterone Test",
+    "PCR Test",
+    "BRCA Gene Test",
+];
+
 export const getAccessToken = () => {
   return localStorage.getItem("access");
 };
@@ -107,6 +116,7 @@ export const formatEhrRecords = (response, type) => {
   console.log("CONVERTING THIS:", ehrArray);
   return ehrArray.map((record) => ({
     id: record.id,
+    patient_id: record.patient?.user?.user_id || "Unknown", // Patient ID
     patient_name: `${record.patient?.user?.first_name || "Null"} ${
       record.patient?.user?.last_name || "Null"
     }`,
@@ -201,6 +211,7 @@ export const toggleActionMenu = (recordId, menuOpen, setMenuOpen) => {
 export const handleClosePopup = () => {
   setShowPopup(false);
 };
+
 export const handleOpenPopup = () => {
-  setShowPopup(true); // Show the popup when button is clicked
+  setShowPopup(true);
 };

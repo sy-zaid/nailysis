@@ -27,7 +27,7 @@ import Popup from "../../components/Popup/Popup"; // Reusable Popup component
  * 
  * @returns {JSX.Element} A modal form for submitting a cancellation request.
  */
-const CancellationRequestForm = ({ appointmentId }) => {
+const CancellationRequestForm = ({ appointmentId, onClose }) => {
   // State variables to handle form data, messages, and errors
   const [reason, setReason] = useState(""); // Stores the reason for cancellation
   const [message, setMessage] = useState(""); // Stores success message
@@ -67,7 +67,7 @@ const CancellationRequestForm = ({ appointmentId }) => {
   };
 
   return (
-    <Popup trigger={popupTrigger} setTrigger={setPopupTrigger}>
+    <Popup trigger={popupTrigger} setTrigger={setPopupTrigger} onClose={onClose}>
       <div>
         <h2>Request Appointment Cancellation</h2>
         {message && <div className="success">{message}</div>}

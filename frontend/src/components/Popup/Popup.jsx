@@ -16,10 +16,15 @@ function Popup(props) {
     };
   }, [props.trigger]);
 
+  const handleClose = () => {
+    props.setTrigger(false);  // Close locally
+    if (props.onClose) props.onClose(); // Also notify the parent
+  };
+
   return props.trigger ? (
     <div className={styles.popup}>
         <div className={styles.popupInner}>
-            <button className={styles.closeBtn} onClick={() => props.setTrigger(false)}><i className='bx bx-x'></i></button>
+            <button className={styles.closeBtn} onClick={handleClose}><i className='bx bx-x'></i></button>
             {props.children}
         </div>
     </div>

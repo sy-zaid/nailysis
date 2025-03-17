@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Popup from "../Popup";
-import styles from "../popups-doctor-appointments/popup-doctor-appointment-book.module.css";
+import styles from "../all-popups-styles.module.css";
 const PopupEHRDelete = ({ onClose, recordDetails }) => {
   const [popupTrigger, setPopupTrigger] = useState(true);
   
@@ -23,7 +23,7 @@ const PopupEHRDelete = ({ onClose, recordDetails }) => {
   };
 
   return (
-    <Popup trigger={popupTrigger} setTrigger={setPopupTrigger}>
+    <Popup trigger={popupTrigger} setTrigger={setPopupTrigger} onClose={onClose}>
       <div className={styles.formContainer}>
         <div className={styles.header}>
           <h2>Delete Record</h2>

@@ -2,9 +2,9 @@ import React, { useState, useRef, useEffect } from "react";
 import styles from "../../components/CSS Files/PatientAppointment.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import Header from "../../components/Dashboard/Header/Header";
-import PopupDoctorAppointmentBook from "../../components/Popup/popups-doctor-appointments/popup-doctor-appointment-book";
-import PopupLabAppointmentBook from "../../components/Popup/popup-lab-appointment-book";
-import PopupAppointmentDetails from "../../components/Popup/popups-doctor-appointments/popup-doctor-appointment-details";
+import PopupDoctorAppointmentBook from "../../components/Popup/popups-doctor-appointments/doctor-appointment-book-popup";
+import PopupLabAppointmentBook from "../../components/Popup/popups-lab-technician-appointments/technician-appointment-book-popup";
+import AppointmentDetailsPopup from "../../components/Popup/popups-doctor-appointments/doctor-appointment-details-popup";
 import { useNavigate } from "react-router-dom";
 import api from "../../api";
 
@@ -105,7 +105,7 @@ const AppointmentPatients = () => {
       {showDoctorPopup && <PopupDoctorAppointmentBook onClose={handleCloseDoctorPopup} />}
       {showLabPopup && <PopupLabAppointmentBook onClose={handleCloseLabPopup} />}
 
-      <PopupAppointmentDetails></PopupAppointmentDetails>
+      <AppointmentDetailsPopup></AppointmentDetailsPopup>
 
       <div className={styles.pageTop}>
         <Navbar />
@@ -221,7 +221,7 @@ const AppointmentPatients = () => {
                     </td>{" "}
                     {/* Specialization */}
                     <td>
-                      {row.appointment_date} {row.start_time}
+                    {row.time_slot?.slot_date} | {row.time_slot?.start_time} - {row.time_slot?.end_time}
                     </td>{" "}
                     {/* Date and Time */}
                     <td>{row.appointment_type || "N/A"}</td>{" "}

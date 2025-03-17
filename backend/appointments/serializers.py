@@ -56,6 +56,7 @@ class DoctorAppointmentSerializer(serializers.ModelSerializer):
     """
     patient = PatientSerializer(read_only=True)
     doctor = DoctorSerializer(read_only=True)
+    time_slot = TimeSlotSerializer(read_only = True)
 
     class Meta:
         model = DoctorAppointment
