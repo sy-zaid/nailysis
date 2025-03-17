@@ -24,8 +24,11 @@ const SendFeedback = () => {
     console.log(`Performing ${action} on`, recordDetails);
     setMenuOpen(null, menuOpen, setMenuOpen); // Close action menu
 
-    if (action === "Submit Feedback") {
+    if (action === "Submit Clinic Feedback") {
       setPopupContent(<PopupFeedbackForm onClose={handleClosePopup} />);
+      setShowPopup(true);
+    }  else if (action === "Submit Lab Feedback") {
+      setPupupContentContent(<PopupFeedbackForm onClose={handleClosePopup} />)  
       setShowPopup(true);
     } else if (action === "Respond To Feedback") {
       setPopupContent(<PopupFeedbackResponse onClose={handleClosePopup} />);
@@ -35,8 +38,11 @@ const SendFeedback = () => {
   return (
     <div className="p-5">
       {showPopup && popupContent}
-      <button onClick={() => handleActionClick("Submit Feedback")}>
-        Submit New Feedback
+      <button onClick={() => handleActionClick("Submit Clinic Feedback")}>
+        Submit Clinic Feedback
+      </button>
+      <button onClick={() => handleActionClick("Submit Lab Feedback")}>
+        Submit Lab Feedback
       </button>
       <button onClick={() => handleActionClick("Respond To Feedback")}>
         Respond To Feedback
@@ -47,6 +53,9 @@ const SendFeedback = () => {
           <tr>
             <th>ID</th>
             <th>Category</th>
+            <th>Status</th>
+            <th>Response</th>
+            <th>Responded by</th>
             <th>Status</th>
             <th>Action</th>
           </tr>
