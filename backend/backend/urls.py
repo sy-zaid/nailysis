@@ -24,6 +24,10 @@ from users.urls import urlpatterns as users_urls
 
 from ehr.urls import urlpatterns as ehr_urls
 from ehr.urls import router as ehr_router
+
+from feedbacks.urls import urlpatterns as feedbacks_urls
+from feedbacks.urls import router as feedbacks_router
+
 # Define URL patterns
 urlpatterns = [
     path("admin/", admin.site.urls),  # Django admin panel for managing users, models, etc.
@@ -54,6 +58,10 @@ urlpatterns = [
     # EHR API endpoints
     path("api/", include(ehr_router.urls)),  # Registers viewsets using Django REST Framework's router
     *ehr_urls,   # Additional ehr-related URLs
+
+    # feedbacks API endpoints
+    path("api/", include(feedbacks_router.urls)),  # Registers viewsets using Django REST Framework's router
+    *feedbacks_urls,   # Additional feedbacks-related URLs
 ]
 from django.conf import settings
 from django.conf.urls.static import static
