@@ -6,6 +6,8 @@ import { useNavigate } from "react-router-dom";
 import api from "../../api";
 import CancellationRequestForm from "./cancellation-request-form"; // Import CancellationRequestForm
 import PopupManageSlotsLabTechnician from "../../components/Popup/popups-lab-technician-appointments/manage-slots-lab-technician-popup";
+import TechnicianAppointmentCheckinPopup from "../../components/Popup/popups-lab-technician-appointments/technician-appointment-checkin-popup";
+
 const AppointmentTechnician = () => {
   const navigate = useNavigate();
   const [appointments, setAppointments] = useState([]);
@@ -22,7 +24,7 @@ const AppointmentTechnician = () => {
     const fetchAppointments = async () => {
       try {
         const response = await api.get(
-          `${import.meta.env.VITE_API_URL}/api/technician_appointments/`,
+          `${import.meta.env.VITE_API_URL}/api/lab_technician_appointments/`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -79,8 +81,11 @@ const AppointmentTechnician = () => {
         />
       );
       setShowPopup(true); // Show the Cancellation Request Form popup
-    } else if (action === "Manage Availability") {
-      setPopupContent(<PopupManageSlotsLabTechnician />);
+    } else if (action === "Start Appointment") {
+      setPopupContent(<TechnicianAppointmentCheckinPopup/>);
+      setShowPopup(true);
+    } else if (action === " Appointment") {
+      setPopupContent(<TechnicianAppointmentCheckinPopup />);
       setShowPopup(true);
     }
   };
@@ -105,7 +110,14 @@ const AppointmentTechnician = () => {
               <button className={styles.filterButton}>Cancelled</button>
               <p className={styles.statusSummary}>50 completed, 4 upcoming</p>
             </div>
-            <button onClick={()=>{handleActionClick("Manage Availability")}} className={styles.addButton}>Manage Availability</button>
+            <button
+              onClick={() => {
+                handleActionClick("Manage Availability");
+              }}
+              className={styles.addButton}
+            >
+              Manage Availability
+            </button>
             <button className={styles.addButton}>Cancel Appointment</button>
           </div>
 
@@ -160,6 +172,16 @@ const AppointmentTechnician = () => {
                       {menuOpen === row.appointment_id && (
                         <div className={styles.menu}>
                           <ul>
+                            <li
+                              onClick={() => {
+                                handleActionClick(
+                                  "Start Appointment",
+                                  row.appointment_id
+                                );
+                              }}
+                            >
+                              Start Appointment
+                            </li>
                             <li
                               onClick={() => {
                                 handleActionClick("Cancel", row.appointment_id);

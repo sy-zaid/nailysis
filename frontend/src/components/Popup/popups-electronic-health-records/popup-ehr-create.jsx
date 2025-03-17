@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import Select from "react-select";
-import styles from "all-popups-styles.module.css";
+import styles from "../all-popups-styles.module.css";
 import Popup from "../Popup.jsx";
 import { createEHR, getEHR } from "../../../api/ehrApi.js";
 import { useAllPatients } from "../../../api/usersApi.js";
@@ -136,7 +136,7 @@ const PopupEHRCreate = ({ onClose }) => {
     return <p>Error fetching patients</p>;
   }
   return (
-    <Popup trigger={popupTrigger} setTrigger={setPopupTrigger}>
+    <Popup trigger={popupTrigger} setTrigger={setPopupTrigger} onClose={onClose}>
       <div className={styles.formContainer}>
         <div className={styles.headerSection}>
           <div className={styles.titleSection}>

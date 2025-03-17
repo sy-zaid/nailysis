@@ -61,7 +61,7 @@ const CheckinDoctorAppointmentPopup= ({ onClose, appointmentDetails }) => {
   };
 
   return (
-    <Popup trigger={popupTrigger} setTrigger={setPopupTrigger}>
+    <Popup trigger={popupTrigger} setTrigger={setPopupTrigger} onClose={onClose}>
       <div className={styles.formContainer}>
         <h2>Start Appointment</h2>
         <h5 className={styles.subhead}>

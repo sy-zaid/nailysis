@@ -37,7 +37,7 @@ const FeedbackResponse = ({ onClose }) => {
  
 
   return (
-    <Popup trigger={popupTrigger} setTrigger={setPopupTrigger}>
+    <Popup trigger={popupTrigger} setTrigger={setPopupTrigger} onClose={onClose}>
 
       <div className={styles.formContainer}>
 

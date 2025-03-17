@@ -4,7 +4,7 @@ import styles from "../../components/CSS Files/LabTechnician.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar.jsx";
 import Header from "../../components/Dashboard/Header/Header.jsx";
 import Sidebar from "../../components/Dashboard/Sidebar/Sidebar.jsx";
-import PopupStartConsultation from "../../components/Popup/popups-lab-technician-appointments/technician-appointment-checkin-popup.jsx";
+import StartTechnicianAppointmentPopup from "../../components/Popup/popups-lab-technician-appointments/technician-appointment-checkin-popup.jsx";
 
 const ViewAppointments = (props) => {
   const [popupVisible, setPopupVisible] = useState(false);
@@ -114,7 +114,7 @@ const ViewAppointments = (props) => {
     
     <div className={styles.pageContainer}>
 
-      <PopupStartConsultation 
+      <StartTechnicianAppointmentPopup 
         startConsultationPopup={startConsultationPopup} 
         setstartConsultationPopup={setstartConsultationPopup} 
       />

@@ -67,7 +67,7 @@ const CancellationRequestForm = ({ appointmentId }) => {
   };
 
   return (
-    <Popup trigger={popupTrigger} setTrigger={setPopupTrigger}>
+    <Popup trigger={popupTrigger} setTrigger={setPopupTrigger} onClose={onClose}>
       <div>
         <h2>Request Appointment Cancellation</h2>
         {message && <div className="success">{message}</div>}

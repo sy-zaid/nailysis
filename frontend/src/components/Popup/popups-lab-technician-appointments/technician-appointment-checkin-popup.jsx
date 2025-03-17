@@ -3,15 +3,12 @@ import styles from "./technician-appointment-checkin-popup.module.css";
 import Popup from "../Popup";
 import { useState, useEffect } from "react";
 
-const PopupStartConsultation = ({
-  startConsultationPopup,
-  setstartConsultationPopup,
-}) => {
+const StartTechnicianAppointmentPopup = ({onClose}) => {
   // State variables
   const [timer, setTimer] = useState(0); // Keeps track of elapsed time in seconds
   const [isConsultationStarted, setIsConsultationStarted] = useState(false); // Tracks whether consultation has started
   const [intervalId, setIntervalId] = useState(null); // Stores the timer's interval ID to control it
-
+  const [popupTrigger, setPopupTrigger] = useState(true);
   // Function to format time in HH:MM:SS format
   const formatTime = (time) => {
     const hours = String(Math.floor(time / 3600)).padStart(2, "0");
@@ -55,7 +52,7 @@ const PopupStartConsultation = ({
 
   // useEffect to reset timer and state when popup opens
   useEffect(() => {
-    if (startConsultationPopup) {
+    if (popupTrigger) {
       setTimer(0); // Reset timer when popup opens
       setIsConsultationStarted(false); // Reset consultation status
       if (intervalId) {
@@ -63,13 +60,10 @@ const PopupStartConsultation = ({
         setIntervalId(null); // Reset interval ID
       }
     }
-  }, [startConsultationPopup]); // Runs when the popup state changes
+  }, [popupTrigger]); // Runs when the popup state changes
 
   return (
-    <Popup
-      trigger={startConsultationPopup}
-      setTrigger={setstartConsultationPopup}
-    >
+    <Popup trigger={popupTrigger} setTrigger={setPopupTrigger} onClose={onClose}>
       <div className={styles.formContainer}>
         <div className={styles.tophead}>
           <div className={styles.header}>
@@ -254,7 +248,7 @@ const PopupStartConsultation = ({
           <div className={styles.newActions}>
             <button
               className={styles.cancelButton}
-              onClick={() => setstartConsultationPopup(false)}
+              onClick={() => setPopupTrigger(false)}
             >
               Cancel
             </button>
@@ -274,4 +268,4 @@ const PopupStartConsultation = ({
   );
 };
 
-export default PopupStartConsultation;
+export default StartTechnicianAppointmentPopup;

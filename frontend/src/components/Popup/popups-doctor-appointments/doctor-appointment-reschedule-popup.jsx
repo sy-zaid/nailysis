@@ -110,7 +110,7 @@ const RescheduleAppointmentPopup = ({ onClose, appointmentDetails }) => {
   };
 
   return (
-    <Popup trigger={popupTrigger} setTrigger={setPopupTrigger}>
+    <Popup trigger={popupTrigger} setTrigger={setPopupTrigger} onClose={onClose}>
       <div className={styles.formContainer}>
         <div className={styles.header}>
           <h2>Reschedule Your Appointment</h2>

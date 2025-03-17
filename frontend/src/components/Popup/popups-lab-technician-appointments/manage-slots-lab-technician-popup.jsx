@@ -132,7 +132,7 @@ const ManageSlotsPopup = () => {
   };
 
   return (
-    <Popup trigger={popupTrigger} setTrigger={setPopupTrigger}>
+    <Popup trigger={popupTrigger} setTrigger={setPopupTrigger} onClose={onClose}>
       <div>
         <h2>Manage Availability</h2>
         <form onSubmit={handleSubmit}>

@@ -7,7 +7,7 @@ const AppointmentDetailsPopup = () => {
   const [popupTrigger, setPopupTrigger] = useState(false);
 
   return (
-    <Popup trigger={popupTrigger} setTrigger={setPopupTrigger}>
+    <Popup trigger={popupTrigger} setTrigger={setPopupTrigger} onClose={onClose}>
       <div className={styles.formContainer}>
         <div className={styles.header}>
           <h2>Appointment Details: John Doe (Appointment ID: 123456)</h2>

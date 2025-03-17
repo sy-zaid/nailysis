@@ -180,7 +180,7 @@ const PopupBookLabAppointment = ({ onClose }) => {
   };
 
   return (
-    <Popup trigger={popupTrigger} setTrigger={setPopupTrigger}>
+    <Popup trigger={popupTrigger} setTrigger={setPopupTrigger} onClose={onClose}>
       <div className={styles.formContainer}>
         <div className={styles.header}>
           <h2>Schedule Your Appointment</h2>
