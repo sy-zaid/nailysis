@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import api from "../../api";
 
-const AppointmentClinicAdmin = () => {
+const AppointmentClinicAdmin = ( onClose ) => {
   const navigate = useNavigate();
   const [appointments, setAppointments] = useState([]);
   const token = localStorage.getItem("access");
@@ -130,7 +130,7 @@ const AppointmentClinicAdmin = () => {
       {showPopup && popupContent}
       {/* {showPopup && <PopupAppointmentBook onClose={handleClosePopup} />} */}
       {/* {showPopup && <RescheduleAppointmentPopup onClose={handleClosePopup} />} */}
-      <AppointmentDetailsPopup></AppointmentDetailsPopup>
+
 
       <div className={styles.pageTop}>
         <Navbar />

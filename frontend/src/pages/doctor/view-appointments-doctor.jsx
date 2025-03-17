@@ -91,7 +91,9 @@ const AppointmentDoctor = () => {
       );
       setShowPopup(true);
     } else if (action === "Manage Availability") {
-      setPopupContent(<PopupManageSlotsDoctor />);
+      setPopupContent(<PopupManageSlotsDoctor
+        onClose={handleClosePopup}
+      />);
       setShowPopup(true);
     }
     // Add logic for other actions like 'Edit' and 'Reschedule' if needed
@@ -101,7 +103,7 @@ const AppointmentDoctor = () => {
     <div className={styles.pageContainer}>
       {showPopup && popupContent}{" "}
       {/* Render the correct popup based on the action */}
-      <AppointmentDetailsPopup />
+
       <div className={styles.pageTop}>
         <Navbar />
         <h1>Appointments</h1>

@@ -251,7 +251,6 @@ const ElectronicHealthRecord = () => {
       {showPopup && popupContent}
       <Navbar />
 
-      {showPopup && popupContent}
 
 
       {/* Page Header */}
