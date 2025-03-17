@@ -1,15 +1,15 @@
 import React, { act, useEffect, useState } from "react";
 import styles from "../../components/CSS Files/PatientAppointment.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
-import PopupAppointmentBook from "../../components/Popup/popups-doctor-appointments/popup-doctor-appointment-book";
-import PopupAppointmentDetails from "../../components/Popup/popups-doctor-appointments/popup-doctor-appointment-details";
-import PopupRescheduleAppointment from "../../components/Popup/popups-doctor-appointments/popup-doctor-appointment-reschedule";
-import PopupDeleteAppointment from "../../components/Popup/popups-doctor-appointments/popup-doctor-appointment-delete";
+import PopupAppointmentBook from "../../components/Popup/popups-doctor-appointments/doctor-appointment-book-popup";
+import AppointmentDetailsPopup from "../../components/Popup/popups-doctor-appointments/doctor-appointment-details-popup";
+import RescheduleAppointmentPopup from "../../components/Popup/popups-doctor-appointments/doctor-appointment-reschedule-popup";
+import DeleteAppointmentPopup from "../../components/Popup/popups-doctor-appointments/doctor-appointment-delete-popup";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import api from "../../api";
 
-const AppointmentClinicAdmin = () => {
+const AppointmentClinicAdmin = ( onClose ) => {
   const navigate = useNavigate();
   const [appointments, setAppointments] = useState([]);
   const token = localStorage.getItem("access");
@@ -103,7 +103,7 @@ const AppointmentClinicAdmin = () => {
       handleCancellation(appointmentId, action);
     }else if (action === "Reschedule") {
       setPopupContent(
-        <PopupRescheduleAppointment
+        <RescheduleAppointmentPopup
           appointmentDetails={appointmentId}
           onClose={handleClosePopup}
         />
@@ -114,7 +114,7 @@ const AppointmentClinicAdmin = () => {
       setShowPopup(true);
     } else if (action === "Delete") {
       setPopupContent(
-        <PopupDeleteAppointment
+        <DeleteAppointmentPopup
           onClose={handleClosePopup}
           appointmentDetails={appointmentId}
         />
@@ -129,8 +129,8 @@ const AppointmentClinicAdmin = () => {
     <div className={styles.pageContainer}>
       {showPopup && popupContent}
       {/* {showPopup && <PopupAppointmentBook onClose={handleClosePopup} />} */}
-      {/* {showPopup && <PopupRescheduleAppointment onClose={handleClosePopup} />} */}
-      <PopupAppointmentDetails></PopupAppointmentDetails>
+      {/* {showPopup && <RescheduleAppointmentPopup onClose={handleClosePopup} />} */}
+
 
       <div className={styles.pageTop}>
         <Navbar />
@@ -200,7 +200,7 @@ const AppointmentClinicAdmin = () => {
                     <td>{row.appointment_type || "N/A"}</td>{" "}
                     {/* Appointment Type */}
                     <td>
-                      {row.appointment_date} {row.start_time}
+                      {row.time_slot?.slot_date} | {row.time_slot?.start_time} - {row.time_slot?.end_time}
                     </td>{" "}
                     {/* Date & Time */}
                     <td className={getStatusClass(row.status)}>

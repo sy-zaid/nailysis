@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Select from "react-select";
-import styles from "../popups-doctor-appointments/popup-doctor-appointment-book.module.css";
+import styles from "../popups-doctor-appointments/doctor-appointment-book-popup.module.css";
 import Popup from "../Popup.jsx";
 import axios from "axios";
 
@@ -131,7 +131,7 @@ const PopupEHREdit = ({ onClose, recordDetails }) => {
   };
 
   return (
-    <Popup trigger={popupTrigger} setTrigger={setPopupTrigger}>
+    <Popup trigger={popupTrigger} setTrigger={setPopupTrigger} onClose={onClose}>
       <div className={styles.formContainer}>
         <h2>Edit EHR</h2>
         <h5 className={styles.subhead}>

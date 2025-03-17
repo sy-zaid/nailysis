@@ -31,7 +31,8 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
         label: "Appointments",
         subItems: [
           { label: "View Appointments" },
-          { label: "Appointment History" },
+          { label: "Appointments History" },
+          { label: "Cancellation Requests" },
         ],
       },
       {
@@ -43,11 +44,6 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
         ],
       },
       { icon: "icon-feedback-black.jpg", label: "Feedbacks", subItems: [] },
-      {
-        icon: "icon-test-request-black.jpg",
-        label: "Test Requests",
-        subItems: [],
-      },
     ],
     doctor: [
       {
@@ -68,7 +64,9 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
         label: "Appointments",
         subItems: [
           { label: "View Appointments" },
-          { label: "Appointment History" },
+          { label: "Appointments History" },
+          { label: "Manage Availability" },
+          { label: "Cancellation Requests" },
         ],
       },
       {
@@ -80,11 +78,6 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
         ],
       },
       { icon: "icon-feedback-black.jpg", label: "Feedbacks", subItems: [] },
-      {
-        icon: "icon-test-request-black.jpg",
-        label: "Test Requests",
-        subItems: [],
-      },
     ],
     patient: [
       {
@@ -110,7 +103,8 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
         label: "Appointments",
         subItems: [
           { label: "View Appointments" },
-          { label: "Appointment History" },
+          { label: "Appointments History" },
+          { label: "Cancellation Requests" },
         ],
       },
       {
@@ -144,7 +138,8 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
         label: "Appointments",
         subItems: [
           { label: "View Appointments" },
-          { label: "Appointment History" },
+          { label: "Appointments History" },
+          { label: "Cancellation Requests" },
         ],
       },
       {
@@ -178,7 +173,9 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
         label: "Appointments",
         subItems: [
           { label: "View Appointments" },
-          { label: "Appointment History" },
+          { label: "Appointments History" },
+          { label: "Manage Availability" },
+          { label: "Cancellation Requests" },
         ],
       },
       {

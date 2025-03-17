@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../components/CSS Files/PatientAppointment.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
-import PopupAppointmentDetails from "../../components/Popup/popups-doctor-appointments/popup-doctor-appointment-details";
+import AppointmentDetailsPopup from "../../components/Popup/popups-doctor-appointments/doctor-appointment-details-popup";
 import { useNavigate } from "react-router-dom";
 import api from "../../api";
-import CancellationRequestForm from "./cancellation-request-form";
-import PopupCheckinDoctorAppointment from "../../components/Popup/popups-doctor-appointments/popup-doctor-appointment-checkin";
-import PopupManageSlotsDoctor from "../../components/Popup/popups-doctor-appointments/popup-manage-slots-doctor";
+import CancellationRequestForm from "./cancellation-request-form"; // Import CancellationRequestForm
+import CheckinDoctorAppointmentPopup from "../../components/Popup/popups-doctor-appointments/doctor-appointment-checkin-popup";
+import PopupManageSlotsDoctor from "../../components/Popup/popups-doctor-appointments/manage-slots-doctor-popup";
 
 const AppointmentDoctor = () => {
   const navigate = useNavigate();
@@ -60,8 +60,8 @@ const AppointmentDoctor = () => {
   };
 
   const handleClosePopup = () => {
-    setShowPopup(false);
-    setPopupContent(null);
+    setShowPopup(false); // Hide the popup when closing
+    onClose();
   };
 
   // Function to toggle the menu for a specific appointment
@@ -86,21 +86,25 @@ const AppointmentDoctor = () => {
       setShowPopup(true);
     } else if (action === "Start Appointment") {
       setPopupContent(
-        <PopupCheckinDoctorAppointment
+        <CheckinDoctorAppointmentPopup
           appointmentDetails={appointmentId}
           onClose={handleClosePopup}
         />
       );
       setShowPopup(true);
     } else if (action === "Manage Availability") {
-      setPopupContent(<PopupManageSlotsDoctor />);
+      setPopupContent(<PopupManageSlotsDoctor
+        onClose={handleClosePopup}
+      />);
       setShowPopup(true);
     }
   };
 
   return (
     <div className={styles.pageContainer}>
-      {showPopup && popupContent}
+      {showPopup && popupContent}{" "}
+      {/* Render the correct popup based on the action */}
+
       <div className={styles.pageTop}>
         <Navbar />
         <h1>Appointments</h1>
@@ -161,7 +165,8 @@ const AppointmentDoctor = () => {
                     <td>{row.patient?.gender || "N/A"}</td>
                     <td>{row.appointment_type || "N/A"}</td>
                     <td>
-                      {row.appointment_date} {row.start_time}
+                      {row.time_slot?.slot_date} | {row.time_slot?.start_time} -{" "}
+                      {row.time_slot?.end_time}
                     </td>
                     <td className={getStatusClass(row.status)}>{row.status}</td>
                     <td>{row.notes || "No additional notes"}</td>

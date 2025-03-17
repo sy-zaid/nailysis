@@ -27,6 +27,7 @@ from .serializers import (
 )   
 from users.models import Patient, Doctor, ClinicAdmin, CustomUser, LabTechnician, LabAdmin
 from datetime import datetime, timedelta
+import calendar
 
 class DoctorFeeViewset(viewsets.ModelViewSet):
     """
@@ -197,16 +198,15 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
         - A 403 Forbidden response if the user is unauthorized.
         """
         doctor_id = request.data.get('doctor_id')
-        appointment_date = request.data.get('appointment_date')
-        start_time = request.data.get('start_time')
+        slot_id = request.data.get('slot_id')
         appointment_type = request.data.get('appointment_type')
-        specialization = request.data.get('specialization')
         fee = request.data.get('fee')
         patient_email = request.data.get("patient_email")
 
         user = self.request.user
         doctor = get_object_or_404(Doctor, user_id=doctor_id)
-
+        time_slot = get_object_or_404(TimeSlot,id=slot_id)
+        
         if user.role == "clinic_admin":
             if not patient_email:
                 patient = CustomUser.create_walkin_account(**request.data)
@@ -217,16 +217,30 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
         else:
             return Response({"error": "You are not authorized to book a doctor appointment"}, status=status.HTTP_403_FORBIDDEN)
 
+        conflict_exists = TechnicianAppointment.objects.filter(
+            patient=patient,
+            time_slot__start_time=time_slot.start_time
+        ).exists()
+
+        if conflict_exists:
+            return Response(
+                {"error": "A lab appointment exists at this time slot."},
+                status=status.HTTP_409_CONFLICT
+            )
+
         doctor_appointment = DoctorAppointment.objects.create(
             patient=patient,
             doctor=doctor,
-            appointment_date=appointment_date,
-            start_time=start_time,
+            time_slot = time_slot,
             appointment_type=appointment_type,
-            specialization=specialization,
             fee=fee
         )
-
+        if time_slot.is_booked == False:
+            time_slot.is_booked = True
+        else:
+            return Response({"error":"Time slot already occupied for other appointment"},status=status.HTTP_409_CONFLICT)
+        time_slot.save()
+        
         return Response({
             "message": "Appointment booked successfully",
             "appointment_id": doctor_appointment.appointment_id
@@ -428,29 +442,23 @@ class LabTechnicianAppointmentViewset(viewsets.ModelViewSet):
 
         return TechnicianAppointment.objects.none()
     
-    def perform_create(self, serializer):
-        """
-        Create a new lab technician appointment.
-        """
-        serializer.save(patient=self.request.user)
 
     @action(detail=False, methods=['post'], url_path='book_lab_appointment')
     def book_lab_appointment(self, request):
         """
         Book a new lab appointment.
         """
-        print(request.data)
-        # notes = request.data.get('notes')
-        appointment_date = request.data.get('appointment_date')
-        appointment_time = request.data.get('appointment_time')
-        lab_test_type = request.data.get('lab_test_type')
-        fee = request.data.get('fee')
-        lab_technician_id = request.data.get('lab_technician_id')
-        patient_email = request.data.get('patient_email')
         user = self.request.user
 
+        lab_technician_id = request.data.get('lab_technician_id')
+        patient_email = request.data.get('patient_email')
+        lab_test_type = request.data.get('lab_test_type')
+        slot_id = request.data.get('slot_id')
+        fee = request.data.get('fee')
+        
         lab_technician = get_object_or_404(LabTechnician, user_id=lab_technician_id)
-
+        time_slot = get_object_or_404(TimeSlot,id=slot_id)
+        
         # Handling patient information
         if user.role == "lab_admin":
             if not patient_email:
@@ -459,15 +467,31 @@ class LabTechnicianAppointmentViewset(viewsets.ModelViewSet):
                 patient = get_object_or_404(Patient, user__email=patient_email)
         elif user.role == "patient":
             patient = get_object_or_404(Patient, user=request.user)
+        
+        conflict_exists = DoctorAppointment.objects.filter(
+            patient=patient,
+            time_slot__start_time=time_slot.start_time
+        ).exists()
 
+        if conflict_exists:
+            return Response(
+                {"error": "A doctor appointment exists at this time slot."},
+                status=status.HTTP_409_CONFLICT
+            )
+            
         lab_technician_appointment = TechnicianAppointment.objects.create(
             patient=patient,
             lab_technician=lab_technician,
-            appointment_date=appointment_date,
-            start_time=appointment_time,
+            time_slot = time_slot,
             lab_test_type=lab_test_type,
             fee=fee
         )
+        
+        if time_slot.is_booked == False:
+            time_slot.is_booked = True
+        else:
+            return Response({"error":"Time slot already occupied for other appointment"},status=status.HTTP_409_CONFLICT)
+        time_slot.save()
 
         return Response({
             "message": "Lab appointment booked successfully",
@@ -626,85 +650,106 @@ class LabTechnicianAppointCancellationViewSet(viewsets.ModelViewSet):
 class TimeSlotViewSet(viewsets.ModelViewSet):
     queryset = TimeSlot.objects.all()
     serializer_class = TimeSlotSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
 
     def get_queryset(self):
         doctor_id = self.request.query_params.get('doctor_id')
+        technician_id = self.request.query_params.get('lab_technician_id')
         date = self.request.query_params.get('date')
 
-        queryset = TimeSlot.objects.all()
+        queryset = TimeSlot.objects.filter(is_booked=False)  # Only booked slots
 
         if doctor_id:
             queryset = queryset.filter(doctor_id=doctor_id)
+        if technician_id:
+            queryset = queryset.filter(lab_technician_id=technician_id)
         if date:
             queryset = queryset.filter(slot_date=date)
-
         return queryset
 
-    # @action(detail=False,methods=["post"],url_path=)
+
     def create(self, request, *args, **kwargs):
         """
-        Create multiple slots for a doctor over a date range.
+        Create multiple slots for a doctor or a lab technician over a date range.
         Expected request format:
         {
-            "doctor_id": 1,
+            "doctor_id": 1,   # OR "lab_tech_id": 2
             "start_date": "2025-03-12",
             "end_date": "2025-03-18",
             "time_slots": [
                 {"start_time": "09:00", "end_time": "09:30"},
                 {"start_time": "10:00", "end_time": "10:30"}
-            ]
+            ],
+            "working_days": ["Monday", "Wednesday", "Friday"]
         }
         """
 
-        user = self.request.user
-        if user.role != "doctor":
-            return Response({"error":"Not authorized to create doctor availibility slots"})
-        
+        user = request.user
+        if user.role not in ["doctor", "lab_technician"]:
+            return Response({"error": "Not authorized to create availability slots"}, status=status.HTTP_403_FORBIDDEN)
 
         doctor_id = request.data.get("doctor_id")
+        lab_tech_id = request.data.get("lab_tech_id")
         start_date = request.data.get("start_date")
         end_date = request.data.get("end_date")
         time_slots = request.data.get("time_slots", [])
-        WEEK_DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+        working_days = request.data.get("working_days", [])
 
-# Get working days from request
-        working_days = request.data.get("working_days", [])  # Default to empty list if not provided
+        # Ensure either doctor_id or lab_tech_id is provided
+        if not doctor_id and not lab_tech_id:
+            return Response({"error": "Either doctor_id or lab_tech_id must be provided"}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Ensure it's a list
-        if not isinstance(working_days, list):
-            return Response({"error": "Invalid format for working_days"}, status=400)
+        # Validate required fields
+        if not all([start_date, end_date, time_slots, working_days]):
+            return Response({"error": "Missing required fields"}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Calculate non-working days
-        non_working_days = [day for day in WEEK_DAYS if day not in working_days]
+        # Validate working_days format
+        if not isinstance(working_days, list) or any(day not in calendar.day_name for day in working_days):
+            return Response({"error": "Invalid format for working_days"}, status=status.HTTP_400_BAD_REQUEST)
 
-        # OR using set difference
-        # non_working_days = list(set(WEEK_DAYS) - set(working_days))
+        # Fetch doctor or lab technician instance
+        user_instance = None
+        if doctor_id:
+            try:
+                user_instance = Doctor.objects.get(user_id=doctor_id)
+            except Doctor.DoesNotExist:
+                return Response({"error": "Doctor not found"}, status=status.HTTP_404_NOT_FOUND)
+        elif lab_tech_id:
+            try:
+                user_instance = LabTechnician.objects.get(user_id=lab_tech_id)
+            except LabTechnician.DoesNotExist:
+                return Response({"error": "Lab Technician not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        print("Working Days:", working_days)
-        print("Non-Working Days:", non_working_days)
-
+        # Validate date format
         try:
-            doctor = Doctor.objects.get(user_id=doctor_id)
-        except Doctor.DoesNotExist:
-            return Response({"error": "Doctor not found"}, status=status.HTTP_404_NOT_FOUND)
+            start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
+            end_date = datetime.strptime(end_date, "%Y-%m-%d").date()
+        except ValueError:
+            return Response({"error": "Invalid date format, use YYYY-MM-DD"}, status=status.HTTP_400_BAD_REQUEST)
 
-        start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
-        end_date = datetime.strptime(end_date, "%Y-%m-%d").date()
+        if start_date > end_date:
+            return Response({"error": "Start date must be before end date"}, status=status.HTTP_400_BAD_REQUEST)
 
         slots_to_create = []
         current_date = start_date
 
         while current_date <= end_date:
-            for slot in time_slots:
-                slots_to_create.append(TimeSlot(
-                    doctor=doctor,
-                    slot_date=current_date,
-                    start_time=slot["start_time"],
-                    end_time=slot["end_time"],
-                    is_booked=False
-                ))
-            current_date += timedelta(days=1)
+            day_name = calendar.day_name[current_date.weekday()]  # Get day name (e.g., 'Monday')
+            if day_name in working_days:  # Only create slots for working days
+                for slot in time_slots:
+                    slots_to_create.append(TimeSlot(
+                        doctor=user_instance if doctor_id else None,
+                        lab_technician=user_instance if lab_tech_id else None,
+                        slot_date=current_date,
+                        start_time=slot["start_time"],
+                        end_time=slot["end_time"],
+                        is_booked=False
+                    ))
+            current_date += timedelta(days=1)  # Move to the next day
 
-        TimeSlot.objects.bulk_create(slots_to_create)
-        return Response({"message": "Slots created successfully"}, status=status.HTTP_201_CREATED)
+        # Bulk create time slots
+        if slots_to_create:
+            TimeSlot.objects.bulk_create(slots_to_create)
+            return Response({"message": "Slots created successfully"}, status=status.HTTP_201_CREATED)
+        else:
+            return Response({"message": "No slots created, check working days"}, status=status.HTTP_400_BAD_REQUEST)

@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../components/CSS Files/PatientAppointment.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
-import PopupAppointmentDetails from "../../components/Popup/popup-doctor-appointment-details";
+import AppointmentDetailsPopup from "../../components/Popup/popups-doctor-appointments/doctor-appointment-details-popup";
 import { useNavigate } from "react-router-dom";
 import api from "../../api";
 import CancellationRequestForm from "./cancellation-request-form"; // Import CancellationRequestForm
+import PopupManageSlotsLabTechnician from "../../components/Popup/popups-lab-technician-appointments/manage-slots-lab-technician-popup";
+import TechnicianAppointmentCheckinPopup from "../../components/Popup/popups-lab-technician-appointments/technician-appointment-checkin-popup";
 
 const AppointmentTechnician = () => {
   const navigate = useNavigate();
   const [appointments, setAppointments] = useState([]);
   const token = localStorage.getItem("access");
-  const [showPopup, setShowPopup] = useState(false); 
+  const [showPopup, setShowPopup] = useState(false);
   const [popupContent, setPopupContent] = useState(null); // State to track which popup to show
   useEffect(() => {
     if (!token) {
@@ -22,14 +24,14 @@ const AppointmentTechnician = () => {
     const fetchAppointments = async () => {
       try {
         const response = await api.get(
-          `${import.meta.env.VITE_API_URL}/api/technician_appointments/`,
+          `${import.meta.env.VITE_API_URL}/api/lab_technician_appointments/`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           }
         );
-        
+
         setAppointments(response.data);
         console.log("Response from technician appointment", response.data);
       } catch (error) {
@@ -50,8 +52,6 @@ const AppointmentTechnician = () => {
         return styles.scheduled;
     }
   };
-
-  
 
   const handleOpenPopup = () => {
     setShowPopup(true); // Show the popup when button is clicked
@@ -81,15 +81,20 @@ const AppointmentTechnician = () => {
         />
       );
       setShowPopup(true); // Show the Cancellation Request Form popup
+    } else if (action === "Start Appointment") {
+      setPopupContent(<TechnicianAppointmentCheckinPopup/>);
+      setShowPopup(true);
+    } else if (action === " Appointment") {
+      setPopupContent(<TechnicianAppointmentCheckinPopup />);
+      setShowPopup(true);
     }
-    // Add logic for other actions like 'Edit' and 'Reschedule' if needed
   };
 
   return (
     <div className={styles.pageContainer}>
       {showPopup && popupContent}{" "}
       {/* Render the correct popup based on the action */}
-      <PopupAppointmentDetails />
+      <AppointmentDetailsPopup />
       <div className={styles.pageTop}>
         <Navbar />
         <h1>Appointments</h1>
@@ -105,6 +110,14 @@ const AppointmentTechnician = () => {
               <button className={styles.filterButton}>Cancelled</button>
               <p className={styles.statusSummary}>50 completed, 4 upcoming</p>
             </div>
+            <button
+              onClick={() => {
+                handleActionClick("Manage Availability");
+              }}
+              className={styles.addButton}
+            >
+              Manage Availability
+            </button>
             <button className={styles.addButton}>Cancel Appointment</button>
           </div>
 
@@ -141,7 +154,7 @@ const AppointmentTechnician = () => {
                     <td>{row.patient?.gender || "N/A"}</td>
                     <td>{row.lab_test_type || "N/A"}</td>
                     <td>
-                      {row.appointment_date} {row.appointment_time}
+                      {row.appointment_date} {row.start_time}
                     </td>
                     <td className={getStatusClass(row.status)}>{row.status}</td>
                     <td>{row.notes || "No additional notes"}</td>
@@ -159,7 +172,16 @@ const AppointmentTechnician = () => {
                       {menuOpen === row.appointment_id && (
                         <div className={styles.menu}>
                           <ul>
-                            
+                            <li
+                              onClick={() => {
+                                handleActionClick(
+                                  "Start Appointment",
+                                  row.appointment_id
+                                );
+                              }}
+                            >
+                              Start Appointment
+                            </li>
                             <li
                               onClick={() => {
                                 handleActionClick("Cancel", row.appointment_id);
