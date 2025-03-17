@@ -129,7 +129,7 @@ const ElectronicHealthRecord = () => {
       <div className="top">
         <div className="heading">
           <h1>Electronic Health Records</h1>
-          <p>View and manage patient health records</p>
+          <p> and manage patient health records</p>
         </div>
         <div className="addButton">
           {" "}

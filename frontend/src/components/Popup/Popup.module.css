@@ -1,66 +1,47 @@
 /* Popup.module.css */
 .popup {
-    position: fixed;
-    /* background-color: red; */
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 999;
-    backdrop-filter: blur(10px); /* Apply blur to the content behind the popup */
-    -webkit-backdrop-filter: blur(10px); /* For Safari */
+  position: fixed;
+  /* background-color: red; */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  backdrop-filter: blur(10px); /* Apply blur to the content behind the popup */
+  -webkit-backdrop-filter: blur(10px); /* For Safari */
 }
 
 .popup-inner {
-    position: relative;
-    padding: 45px;
-    width: 50%;
-    max-width: 640px;
-    max-height: 80vh; /* Prevent the popup from growing too large */
-<<<<<<< HEAD
-    background-color: #d74141;
-    overflow-y: auto; /* Enable vertical scrolling inside the popup */
-    overflow-x: hidden;
-=======
-    background-color: #fff;
-    overflow-y: auto; /* Enables scrolling when content exceeds max-height */
-    overflow-x: hidden; /* Prevents horizontal scroll */
->>>>>>> 0c6a7d83e0078caedabe34821b0584afde0801e1
-    z-index: 10000; /* Ensure popup content is above the blurred background */
-    box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.2); /* Subtle drop shadow */
-    border-radius: 70px;
+  position: relative;
+  padding: 45px;
+  width: 50%;
+  max-width: 640px;
+  max-height: 80vh; /* Prevent the popup from growing too large */
+  background-color: #fff;
+  overflow-y: auto; /* Enables scrolling when content exceeds max-height */
+  overflow-x: hidden; /* Prevents horizontal scroll */
+  z-index: 10000; /* Ensure popup content is above the blurred background */
+  box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.2); /* Subtle drop shadow */
+  border-radius: 70px;
 
-    scrollbar-width: thin; /* For Firefox */
-    scrollbar-color: #0067FF #F0F0F0; /* Scrollbar color for Firefox */
+  scrollbar-width: thin; /* For Firefox */
+  scrollbar-color: #0067ff #f0f0f0; /* Scrollbar color for Firefox */
 }
 
-<<<<<<< HEAD
-.popup.show {
-    opacity: 1;
-    visibility: visible;
-  }
-  
-=======
->>>>>>> 0c6a7d83e0078caedabe34821b0584afde0801e1
-
 .closeBtn {
-    position: absolute;
-    top: 40px;
-<<<<<<< HEAD
-    right: 100px;
-=======
-    right: 165px;
->>>>>>> 0c6a7d83e0078caedabe34821b0584afde0801e1
-    cursor: pointer;
-    background: transparent;
-    color: #4E4E4E;
-    font-size: 40px;
-    z-index: 200;
+  position: absolute;
+  top: 40px;
+  right: 165px;
+  cursor: pointer;
+  background: transparent;
+  color: #4e4e4e;
+  font-size: 40px;
+  z-index: 200;
 }
 
 .closeBtn i {
-    font-size: 40px;
+  font-size: 40px;
 }

@@ -1,73 +1,64 @@
 .pageContainer {
-  padding-top: 10px;
-  margin-left: 40px;
-  background-color: #ffffff;
+  background-color: #f8f9fd;
   min-height: 100vh;
 }
 
-.heading {
+.header {
+  margin-top: 30px;
   display: flex;
-  flex-direction: column;
-  margin-top: 20px;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  margin-left: 20px;
+  margin-right: 20px;
 }
 
-.heading h1 {
-  font-size: 24px;
+.header h1 {
+  font-size: 30px;
   font-weight: 600;
   margin: 0;
   color: #111827;
 }
 
-.heading p {
+.header p {
   color: #6b7280;
   margin: 4px 0 0 0;
-  font-size: 14px;
-}
-
-.top {
-  display: flex;
-  /* flex-direction: row; */
-  /* justify-content: space-between;  */
-  /* align-items: center; */
-  /* width: 100%; Ensures the flex container spans full width */
+  font-size: 18px;
 }
 
 .addButton {
-  /* background-color: #0067ff; */
+  background-color: #0067ff;
   color: white;
   padding: 8px 16px;
-  border-radius: 8px;
+  border-radius: 15px;
   border: none;
   font-size: 14px;
   cursor: pointer;
-  transition: background-color 0.2s;
-  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.1);
-  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 36px;
 }
 
 .addButton:hover {
-  background-color: #1d4ed8;
-  box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+  background-color: #0067ff;
 }
 
 .statusContainer {
+  margin-left: 20px;
   display: flex;
   align-items: center;
-  gap: 80px;
-  /* margin-bottom: 20px; */
-  flex-wrap: wrap;
-  padding-top: 20px;
-  margin-bottom: 10px;
+  margin-bottom: 16px;
 }
 
 .status {
   padding: 6px 16px;
-  /* background-color: #f3f4f6; */
-  border-radius: 20px;
   font-size: 14px;
   color: #4b5563;
   cursor: pointer;
-  transition: all 0.2s;
+  border-radius: 20px;
+  border: none;
+  background: none;
 }
 
 .status:hover {
@@ -81,7 +72,6 @@
 } */
 
 .completed {
-  margin-left: auto;
   color: #6b7280;
   font-size: 14px;
 }

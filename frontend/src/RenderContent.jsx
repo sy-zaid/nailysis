@@ -18,9 +18,10 @@ import LabAdminDashboard from "./pages/admin-lab/lab-admin-dashboard";
 import LabTechnicianDashboard from "./pages/lab-technician/lab-technician-dashboard";
 import LabTechnicianTestRequests from "./pages/lab-technician/lab-technician-test-requests";
 import ViewAppointmentsLabTechnician from "./pages/lab-technician/lab-technician-view-appointments";
-import ViewAppointmentsLabAdmin from "./pages/admin-lab/view-appointments-lab-admin"
+import ViewAppointmentsLabAdmin from "./pages/admin-lab/view-appointments-lab-admin";
 import PlaceholderComponent from "./components/PlaceholderComponent"; // Placeholder for missing views
 import BillingHistory from "./pages/admin-clinic/billing-history";
+import GenerateInvoice from "./pages/admin-clinic/invoice";
 
 // FEEDBACKS
 import Feedbacks from "./pages/common/feedbacks";
@@ -57,15 +58,13 @@ export const renderClinicAdminContent = (view) => {
     case "Appointment History":
       return <PlaceholderComponent name="Appointment History" />;
     case "Generate Invoice":
-      return <PlaceholderComponent name="Generate Invoice" />;
+      return <GenerateInvoice name="Generate Invoice" />;
     case "View Payment History":
-      return <PlaceholderComponent name="Payment History" />;
+      return <BillingHistory name="View Payment History" />;
     case "Feedbacks":
       return <Feedbacks name="Feedbacks" />;
     case "Test Requests":
       return <PlaceholderComponent name="Test Requests" />;
-    case "Billing History":
-      return <PlaceholderComponent name="Billing History" />;
     default:
       return <ClinicAdminDashboard />;
   }
@@ -137,7 +136,7 @@ export const renderLabAdminContent = (view) => {
     case "Diagnostic Results":
       return <PlaceholderComponent name="Diagnostic Results" />;
     case "View Appointments":
-      return <ViewAppointmentsLabAdmin name="View Appointment"/>;
+      return <ViewAppointmentsLabAdmin name="View Appointment" />;
     case "Appointment History":
       return <PlaceholderComponent name="Appointment History" />;
     case "Generate Invoice":

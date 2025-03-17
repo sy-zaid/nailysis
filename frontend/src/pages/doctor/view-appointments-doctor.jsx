@@ -4,11 +4,7 @@ import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import PopupAppointmentDetails from "../../components/Popup/popups-doctor-appointments/popup-doctor-appointment-details";
 import { useNavigate } from "react-router-dom";
 import api from "../../api";
-<<<<<<< HEAD
 import CancellationRequestForm from "./cancellation-request-form";
-import PopupStartAppointment from "../../components/Popup/popup-appointment-checkin";
-=======
-import CancellationRequestForm from "./cancellation-request-form"; // Import CancellationRequestForm
 import PopupCheckinDoctorAppointment from "../../components/Popup/popups-doctor-appointments/popup-doctor-appointment-checkin";
 import PopupManageSlotsDoctor from "../../components/Popup/popups-doctor-appointments/popup-manage-slots-doctor";
 
@@ -75,7 +71,9 @@ const AppointmentDoctor = () => {
 
   // Handle the action when an item is clicked in the menu
   const handleActionClick = (action, appointment) => {
-    console.log(`Action: ${action} on Appointment ID: ${appointment.appointment_id}`);
+    console.log(
+      `Action: ${action} on Appointment ID: ${appointment.appointment_id}`
+    );
     setMenuOpen(null); // Close the menu after action
 
     if (action === "Cancel") {
@@ -88,13 +86,8 @@ const AppointmentDoctor = () => {
       setShowPopup(true);
     } else if (action === "Start Appointment") {
       setPopupContent(
-<<<<<<< HEAD
-        <PopupStartAppointment
-          appointmentDetails={appointment}
-=======
         <PopupCheckinDoctorAppointment
           appointmentDetails={appointmentId}
->>>>>>> 0c6a7d83e0078caedabe34821b0584afde0801e1
           onClose={handleClosePopup}
         />
       );
@@ -129,10 +122,7 @@ const AppointmentDoctor = () => {
               <button className={styles.filterButton}>Cancelled</button>
               <p className={styles.statusSummary}>50 completed, 4 upcoming</p>
             </div>
-            <button
-              onClick={handleAddAppointment}
-              className={styles.addButton}
-            >
+            <button onClick={handleAddAppointment} className={styles.addButton}>
               Add New Appointment
             </button>
           </div>

@@ -116,23 +116,15 @@ const ElectronicHealthRecord = () => {
 
   return (
     <div className={styles.pageContainer}>
-      {showPopup && popupContent}
       <Navbar />
-
-      {/* Page Header */}
       <div className={styles.header}>
         <div>
-          <h1>Electronic Health Records</h1>
-          <p>View and manage patient health records</p>
+          <h1>Electronic Health Record</h1>
+          <p>
+            Here you can view and manage all time health records of the patients
+          </p>
         </div>
-        {curUserRole === "doctor" && (
-          <button
-            className={styles.addButton}
-            onClick={() => handleActionClick("Add New Record")}
-          >
-            + Add New Record
-          </button>
-        )}
+        <button className={styles.addButton}>+ Add New Record</button>
       </div>
 
       {/* Status Section */}
