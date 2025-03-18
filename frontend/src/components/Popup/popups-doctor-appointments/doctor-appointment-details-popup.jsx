@@ -3,7 +3,7 @@ import styles from "./doctor-appointment-details-popup.module.css";
 import Popup from "../Popup";
 import { useState } from "react"; 
 
-const AppointmentDetailsPopup = () => {
+const AppointmentDetailsPopup = ({onClose}) => {
   const [popupTrigger, setPopupTrigger] = useState(false);
 
   return (
