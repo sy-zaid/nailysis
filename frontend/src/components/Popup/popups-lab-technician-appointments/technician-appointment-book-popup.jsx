@@ -98,7 +98,7 @@ const PopupBookLabAppointment = ({ onClose }) => {
   // Fetch fee based on appointment type
   useEffect(() => {
     const fetchFee = async () => {
-      if (formData.labTestType) {
+      if (formData.LabTestType) {
         try {
           const response = await getTechFeeByType(formData.LabTestType);
 
@@ -182,7 +182,7 @@ const PopupBookLabAppointment = ({ onClose }) => {
   return (
     <Popup trigger={popupTrigger} setTrigger={setPopupTrigger} onClose={onClose}>
       <div className={styles.formContainer}>
-        <div className={styles.header}>
+        <div className={styles.titleSection}>
           <h2>Schedule Your Appointment</h2>
         </div>
 
@@ -192,9 +192,11 @@ const PopupBookLabAppointment = ({ onClose }) => {
         <hr />
 
         <form onSubmit={(e) => e.preventDefault()}>
+
+          <div className={styles.popupBottom}>
           {/* Patient Information */}
           <div className={styles.formSection}>
-            <h3>Patient Information</h3>
+            <h3><i className="fa-solid fa-circle fa-2xs" style={{color: "#007bff", marginRight: "10px"}}></i> Patient Information</h3>
             <div className={styles.formGroup}>
               <div>
                 <label>First Name</label>
@@ -269,6 +271,7 @@ const PopupBookLabAppointment = ({ onClose }) => {
                       : "Enter phone number"
                   }
                   disabled={curUserRole === "patient"}
+                  style={{ height: "20px" }}
                 />
               </div>
               <div>
@@ -290,90 +293,97 @@ const PopupBookLabAppointment = ({ onClose }) => {
           </div>
 
           {/* Appointment Details */}
-          <div className={styles.formGroup}>
-            <label>Specialization</label>
-            <select
-              name="specialization"
-              value={formData.specialization}
-              onChange={onInputChange}
-            >
-              <option value="">Select Specialization</option>
-              {specializations.map((spec, index) => (
-                <option key={index} value={spec}>
-                  {spec}
-                </option>
-              ))}
-            </select>
-          </div>
+          <div className={styles.selectFormSection}>
+            <h3><i className="fa-solid fa-circle fa-2xs" style={{color: "#007bff", marginRight: "10px"}}></i> Appointment Details</h3>
+            
+            <div className={styles.formGroup}>
+              <div>
+                  <label>Specialization</label>
+                  <select
+                    name="specialization"
+                    value={formData.specialization}
+                    onChange={onInputChange}
+                  >
+                    <option value="">Select Specialization</option>
+                    {specializations.map((spec, index) => (
+                      <option key={index} value={spec}>
+                        {spec}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
-          <div className={styles.formGroup}>
-            <label>Lab Technician</label>
-            <select
-              name="labTechnicianId"
-              value={formData.labTechnicianId}
-              onChange={onInputChange}
-            >
-              <option value="">Select Lab Technician</option>
-              {labTechnicians.length > 0 ? (
-                labTechnicians.map((labTechnician) => (
-                  <option key={labTechnician.id} value={labTechnician.id}>
-                    {labTechnician.name}
+              <div>
+                <label>Lab Technician</label>
+                <select
+                  name="labTechnicianId"
+                  value={formData.labTechnicianId}
+                  onChange={onInputChange}
+                >
+                  <option value="">Select Lab Technician</option>
+                  {labTechnicians.length > 0 ? (
+                    labTechnicians.map((labTechnician) => (
+                      <option key={labTechnician.id} value={labTechnician.id}>
+                        {labTechnician.name}
+                      </option>
+                    ))
+                  ) : (
+                    <option disabled>Loading labTechnicians...</option>
+                  )}
+                </select>
+              </div>
+
+              <div>
+                <label>Date & Time</label>
+                <input
+                  type="date"
+                  name="appointmentDate"
+                  value={formData.appointmentDate}
+                  onChange={onInputChange}
+                />
+              </div>
+
+            {/* Available Slots Selection */}
+            <div>
+              <label>Available Slots</label>
+              <select
+                name="slotId"
+                value={formData.slotId}
+                onChange={onInputChange}
+                disabled={availableSlots.length === 0}
+              >
+                <option value="">
+                  {availableSlots.length ? "Select a Slot" : "No slots available"}
+                </option>
+                {availableSlots.map((slot, index) => (
+                  <option key={index} value={slot.id}>
+                    {slot.slot_id} - {slot.end_time}
                   </option>
-                ))
-              ) : (
-                <option disabled>Loading labTechnicians...</option>
-              )}
-            </select>
-          </div>
+                ))}
+              </select>
+            </div>
 
-          <div className={styles.formGroup}>
-            <label>Date & Time</label>
-            <input
-              type="date"
-              name="appointmentDate"
-              value={formData.appointmentDate}
-              onChange={onInputChange}
-            />
-          </div>
-          {/* Available Slots Selection */}
-          <div className={styles.formGroup}>
-            <label>Available Slots</label>
-            <select
-              name="slotId"
-              value={formData.slotId}
-              onChange={onInputChange}
-              disabled={availableSlots.length === 0}
-            >
-              <option value="">
-                {availableSlots.length ? "Select a Slot" : "No slots available"}
-              </option>
-              {availableSlots.map((slot, index) => (
-                <option key={index} value={slot.id}>
-                  {slot.slot_id} - {slot.end_time}
-                </option>
-              ))}
-            </select>
-          </div>
+            <div>
+              <label>Visit Purpose</label>
+              <select
+                name="labTestType"
+                value={formData.labTestType}
+                onChange={onInputChange}
+              >
+                {technicianVisitPurposes.map((purpose, index) => (
+                  <option key={index} value={purpose}>
+                    {purpose}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          <div className={styles.formGroup}>
-            <label>Visit Purpose</label>
-            <select
-              name="labTestType"
-              value={formData.labTestType}
-              onChange={onInputChange}
-            >
-              {technicianVisitPurposes.map((purpose, index) => (
-                <option key={index} value={purpose}>
-                  {purpose}
-                </option>
-              ))}
-            </select>
+            <div>
+              <label>Fee</label>
+              <p className={styles.subHeading}>RS/- {formData.fee}</p>
+            </div>
           </div>
-
-          <div className={styles.formGroup}>
-            <label>Fee</label>
-            <p className={styles.subHeading}>RS/- {formData.fee}</p>
-          </div>
+        </div>
 
           {/* Payment Details */}
           <div className={styles.formSection}>
@@ -401,14 +411,17 @@ const PopupBookLabAppointment = ({ onClose }) => {
               Cancel
             </button>
             <button
-              className={styles.confirmButton}
+              className={styles.addButton}
               type="submit"
               onClick={handleBookAppointment}
             >
               Continue to Next Step
             </button>
           </div>
+          </div>
         </form>
+
+        
       </div>
     </Popup>
   );
