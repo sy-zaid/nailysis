@@ -55,6 +55,10 @@ const ElectronicHealthRecord = () => {
   // Initialize WebSocket to receive real-time EHR updates
   useEhrUpdatesWS(setRecords);
 
+  const handleClosePopup = () => {
+    setShowPopup(false); // Hide the popup when closing
+    onClose();
+  };
 
   // Select or Deselect All Records (using Checkboxes)
   const handleSelectAll = () => {
@@ -241,6 +245,7 @@ const ElectronicHealthRecord = () => {
       setShowPopup(true);
     }
 
+
   };
 
   console.log("Sorted Records:", sortedRecords);
@@ -251,7 +256,6 @@ const ElectronicHealthRecord = () => {
       {showPopup && popupContent}
       <Navbar />
 
-      {showPopup && popupContent}
 
 
       {/* Page Header */}

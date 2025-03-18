@@ -8,11 +8,34 @@ const FeedbackResponse = ({ onClose }) => {
   const [status, setStatus] = useState("Pending");
 
   // Static feedback data (3 sample rows)
-  const feedbackList = [
-    { id: "PAT001", category: "Service Issue", message: "The waiting time is too long.", status: "Pending" },
-    { id: "PAT002", category: "Technical Issue", message: "The app crashes on login.", status: "In Progress" },
-    { id: "PAT003", category: "Billing Issue", message: "Incorrect charge on my bill.", status: "Resolved" }
+  const data = [
+    {
+        id: 1,
+        feedbackID: "123456",
+        feedbackBy: "John",
+        role: "patient",
+        dateAndTimeofFeedback: "10/10/2024 09:30 AM",
+        category: "Service Issues",
+        feedbackComments: "Lorem Ipsum è un testo segnaposto utilizzato nel settore ...",
+        response: "xyz lorem ipsum",
+        respondedBy: "CA/LA",
+        status: "Resolved",
+    },
+
+    {
+        id: 2,
+        feedbackID: "123456",
+        feedbackBy: "John",
+        role: "patient",
+        dateAndTimeofFeedback: "10/10/2024 09:30 AM",
+        category: "Technical Issues",
+        feedbackComments: "Lorem Ipsum è un testo segnaposto utilizzato nel settore ...",
+        response: "N/a",
+        respondedBy: "N/a",
+        status: "Pending",
+    },
   ];
+
 
   const getStatusClass = (status) => {
     switch (status) {
@@ -28,7 +51,7 @@ const FeedbackResponse = ({ onClose }) => {
   }
 
   // Using the first feedback entry for display (for now)
-  const feedback = feedbackList[0];
+  const feedback = data[0];
 
   const handleResponse = () => {
     console.log("Response Submitted:", { response, status });
@@ -39,13 +62,13 @@ const FeedbackResponse = ({ onClose }) => {
   return (
     <Popup trigger={popupTrigger} setTrigger={setPopupTrigger} onClose={onClose}>
 
-      <div className={styles.formContainer}>
+      <div className={styles.formContainer} style={{ marginTop: "-2%" }}>
 
         <div className={styles.headerSection}>
 
           <div className={styles.titleSection}>
-            <h2 style={{ marginLeft: "20px" }}>Feedback Details</h2> 
-            <p style={{ marginLeft: "20px" }}>Review and respond to the feedback provided to ensure all concerns are addressed effectively</p>
+            <h2 style={{ marginLeft: "20px" }}>Respond to Feedback</h2> 
+            <p style={{ marginLeft: "20px" }}>Check insights from the patient's feedback for continuous improvement in care.</p>
           </div>
 
         </div>
@@ -53,39 +76,71 @@ const FeedbackResponse = ({ onClose }) => {
         <hr />
 
         <p className={styles.newSubHeading}>
-            <span className={styles.key} style={{margin: "0 0 0 20px"}}> <i class='bx bx-category'></i> Category: </span>
-            <span className={styles.locationValue}>{feedback.category}</span>
-
-            <span className={styles.key} style={{margin: "0 0 0 20px"}}> <i class='bx bx-message-rounded'></i> Message: </span>
-            <span className={styles.locationValue}>{feedback.message}</span>
-
             <span className={styles.key} style={{margin: "0 0 0 20px"}}> <i className="fa-solid fa-circle-notch" style={{ fontSize: "12px" }}></i> Status: </span>
-            <span className={getStatusClass(status)} style={{ fontSize: "16px" }}>{status}</span>
-          </p>
+            <span className={getStatusClass(status)} style={{ fontSize: "16px" }}>{feedback.status}</span>
+
+            <span className={styles.key} style={{margin: "0 0 0 20px"}}> <i class='bx bx-message-rounded'></i> Date Submitted: </span>
+            <span className={styles.locationValue}>{feedback.dateAndTimeofFeedback}</span>
+
+        </p>
 
         <div className={styles.popupBottom}>
 
-          <label style={{ marginRight: "10px" }}>Enter Response</label>
-          <textarea
-            placeholder="Write your response here..."
-            onChange={(e) => setResponse(e.target.value)}
-          />
+          <div className={styles.formSection}>
+                    <h3><i className="fa-solid fa-circle fa-2xs" style={{color: "#007bff", marginRight: "10px"}}></i> Feedback Submitted By</h3>
+                    <div className={styles.newFormGroup}>
+                      <div>
+                        <label>Patient ID</label>
+                        <p className={styles.subHeading}>123456</p>
+                      </div>
+                      <div>
+                        <label>Patient Name</label>
+                        <p className={styles.subHeading}>Mr. John Doe</p>
+                      </div>
+                      <div>
+                        <label>Age</label>
+                        <p className={styles.subHeading}>32</p>
+                      </div>
+                      <div>
+                        <label>Gender</label>
+                        <p className={styles.subHeading}>Male</p>
+                      </div>
+                      <div>
+                        <label>Phone Number</label>
+                        <p className={styles.subHeading}>+92 12345678</p>
+                      </div>
 
-          <label style={{ marginRight: "47px" }}>Set Status</label>
-          <select
-            value={status}
-            onChange={(e) => setStatus(e.target.value)}
-          >
-            <option value="Pending">Pending</option>
-            <option value="In Progress">In Progress</option>
-            <option value="Resolved">Resolved</option>
-          </select>
+                      <div>
+                        <label>Email Address</label>
+                        <p className={styles.subHeading}>patient@gmail.com</p>
+                      </div>
+
+                    </div>
+          </div>
+
+          <hr />
+
+          <div className={styles.formSection}>
+              <h3><i className="fa-solid fa-circle fa-2xs" style={{color: "#007bff", marginRight: "10px"}}></i> Comments/Observations</h3>
+              <div>
+                <div>
+                  <textarea style={{ borderBottom: "2px solid #0067FF" }} defaultValue="Lorem ipsum dolor sit amet consectetur adipisicing elit"></textarea>
+                </div>
+              </div>
+          </div>
+
+          <hr />
+
+          <div>
+
+          </div>
+
 
           <div className={styles.actions}>
 
             <button 
               className={styles.cancelButton}
-              onClick={() => setPopupTrigger(false)}
+              onClick={onClose}
               >
                 Cancel
             </button>

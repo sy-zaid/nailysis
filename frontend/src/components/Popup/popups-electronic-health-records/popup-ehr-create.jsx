@@ -521,6 +521,11 @@ const PopupEHRCreate = ({ onClose }) => {
             Continue
           </button> */}
 
+          <button className={styles.cancelButton} style={{marginRight: "20px"}} onClick={onClose}>
+            Cancel
+          </button> 
+          
+
           {step === 1
                 ?
           <button className={styles.addButton} onClick={handleNextStep}>
@@ -535,9 +540,6 @@ const PopupEHRCreate = ({ onClose }) => {
           </button>
           }
 
-          <button className={styles.cancelButton} style={{marginLeft: "20px"}}  onClick={() => setPopupTrigger(false)}>
-            Cancel
-          </button> 
           
 
         </div>

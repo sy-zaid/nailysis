@@ -110,16 +110,21 @@ const AppointmentTechnician = () => {
               <button className={styles.filterButton}>Cancelled</button>
               <p className={styles.statusSummary}>50 completed, 4 upcoming</p>
             </div>
-            <button
-              onClick={() => {
-                handleActionClick("Manage Availability");
-              }}
-              className={styles.addButton}
-            >
-              Manage Availability
-            </button>
-            <button className={styles.addButton}>Cancel Appointment</button>
+
+            <div className={styles.appointmentButtons}>
+              <button
+                onClick={() => {
+                  handleActionClick("Manage Availability");
+                }}
+                className={styles.addButton}
+              >
+                Manage Availability
+              </button>
+              <button className={styles.addButton}>Cancel Appointment</button>
+            </div>
+            
           </div>
+
 
           <div className={styles.tableContainer}>
             <table

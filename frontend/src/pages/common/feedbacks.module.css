@@ -107,6 +107,7 @@
 
 .appointmentButtons button {
   width: 100%;
+  margin-bottom: -50px;
 }
 
 .addButton {
@@ -208,3 +209,14 @@
   background-color: #F9FAFB;
 }
 
+.resolved {
+  color: green;
+}
+
+.inProgress {
+  color: #007bff;
+}
+
+.pending {
+  color: orange;
+}
