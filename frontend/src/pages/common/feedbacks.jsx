@@ -1,6 +1,7 @@
 import React from "react";
-import PopupFeedbackForm from "../../components/Popup/feedbacks-popups/popup-feedback-form";
-import PopupFeedbackResponse from "../../components/Popup/feedbacks-popups/popup-feedback-response";
+import PopupFeedbackForm from "../../components/Popup/feedbacks-popups/feedback-form-popup.jsx";
+import PopupFeedbackResponse from "../../components/Popup/feedbacks-popups/feedback-response-popup.jsx";
+import PopupFeedbackDetails from "../../components/Popup/feedbacks-popups/feedback-details-popup.jsx";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -45,7 +46,7 @@ const SendFeedback = () => {
     {
         id: 2,
         feedbackID: "123456",
-        feedbackBy: "John",
+        feedbackBy: "Doe",
         role: "patient",
         dateAndTimeofFeedback: "10/10/2024 09:30 AM",
         category: "Technical Issues",
@@ -54,6 +55,18 @@ const SendFeedback = () => {
         respondedBy: "N/a",
         status: "Pending",
     },
+    {
+      id: 3,
+      feedbackID: "123456",
+      feedbackBy: "John",
+      role: "doctor",
+      dateAndTimeofFeedback: "10/10/2024 09:30 AM",
+      category: "Technical Issues",
+      feedbackComments: "Lorem Ipsum è un testo segnaposto utilizzato nel settore ...",
+      response: "N/a",
+      respondedBy: "N/a",
+      status: "Pending",
+  },
   ];
 
 
@@ -115,25 +128,26 @@ const SendFeedback = () => {
     if (action === "Submit Feedback") {
       setPopupContent(<PopupFeedbackForm onClose={handleClosePopup} />);
       setShowPopup(true);
+    } if (action === "View Feedback Details") {
+      setPopupContent(<PopupFeedbackDetails onClose={handleClosePopup} />);
+      setShowPopup(true);
     } else if (action === "Respond To Feedback") {
       setPopupContent(<PopupFeedbackResponse onClose={handleClosePopup} />);
       setShowPopup(true);
-    }
+    } 
   };
   
 
   return (
-    <div className="p-5">
-
-      <div className={styles.pageContainer}>
+    <div className={styles.pageContainer}>
       {showPopup && popupContent}
       <Navbar />
 
       {/* Page Header */}
       <div className={styles.pageTop}>
           <Header 
-            mainHeading={'Feedbacks'}
-            subHeading={'View and manage your Feedbacks'}
+            mainHeading={'Feedback Management'}
+            subHeading={'Here you can view and manage all the feedbacks'}
           />
       </div>
 
@@ -154,23 +168,23 @@ const SendFeedback = () => {
               className={`${styles.filterButton} ${activeButton === 1 ? styles.active : ''}`}
               onClick={() => handleFilterClick(1)}
             >
-              Filter 1
+              Patients
             </button>
             <button
               className={`${styles.filterButton} ${activeButton === 2 ? styles.active : ''}`}
               onClick={() => handleFilterClick(2)}
             >
-              Filter 2
+              Doctors
             </button>
             <button
               className={`${styles.filterButton} ${activeButton === 3 ? styles.active : ''}`}
               onClick={() => handleFilterClick(3)}
             >
-              Filter 3
+              Technician
             </button>
                    
             {/* <p>Total Records: {filteredRecords.length}</p> */}
-            <p>Total Records: 50</p>
+            <p>Total Records: 45</p>
 
             <div className={styles.appointmentButtons}>
               
@@ -183,7 +197,7 @@ const SendFeedback = () => {
 
               {/* Show 'Respond To Feedback' for lab admins and clinic admins */}
               {(curUserRole === "lab_admin" || curUserRole === "clinic_admin") && (
-              <button className={styles.addButton} onClick={() => handleActionClick("Respond To Feedback")}>
+              <button className={styles.addButton}>
                 <i className='bx bx-plus-circle'></i> Request New Feedback
               </button>
               )}
@@ -229,7 +243,9 @@ const SendFeedback = () => {
                     <th>#</th>
                     <th>Feedback ID</th>
                     <th>Feedback By</th>
-                    <th>Role</th>
+                    {(curUserRole === "lab_admin" || curUserRole === "clinic_admin") && (
+                      <th>Role</th>
+                    )}
                     <th>Date & Time Of Feedback</th>
                     <th>Category</th>
                     <th>Feedback Comments</th>
@@ -251,7 +267,9 @@ const SendFeedback = () => {
                       <td>{row.id}</td>
                       <td>{row.feedbackID}</td>
                       <td>{row.feedbackBy}</td>
-                      <td>{row.role}</td>
+                      {(curUserRole === "lab_admin" || curUserRole === "clinic_admin") && (
+                        <td>{row.role}</td>
+                      )}
                       <td>{row.dateAndTimeofFeedback}</td>
                       <td>{row.category}</td>
                       <td>{row.feedbackComments}</td>
@@ -299,7 +317,7 @@ const SendFeedback = () => {
           }}
         >
           
-          <p style={{ margin: "10px 0", cursor: "pointer" }}> 
+          <p style={{ margin: "10px 0", cursor: "pointer" }} onClick={() => handleActionClick("View Feedback Details")}> 
             <i className="fa-solid fa-repeat" style={{margin: "0 5px 0 0"}}></i> View Details
           </p>
 
@@ -315,9 +333,9 @@ const SendFeedback = () => {
         </div>
       )}
 
-    </div>
+  </div>
 
-    </div>
+
   );
 };
 

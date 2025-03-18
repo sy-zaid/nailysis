@@ -2,12 +2,11 @@ import React, { useState } from "react";
 import Popup from "../Popup.jsx";
 import styles from "./popup-feedback.module.css";
 
-const FeedbackResponse = ({ onClose }) => {
+const FeedbackDetails = ({ onClose }) => {
   const [popupTrigger, setPopupTrigger] = useState(true);
-  const [response, setResponse] = useState("");
-  const [status, setStatus] = useState("Pending");
+  const [status, setStatus] = useState("Resolved");
 
-  // Static feedback data (3 sample rows)
+  // Static feedback data (2 sample rows)
   const data = [
     {
         id: 1,
@@ -67,8 +66,8 @@ const FeedbackResponse = ({ onClose }) => {
         <div className={styles.headerSection}>
 
           <div className={styles.titleSection}>
-            <h2 style={{ marginLeft: "20px" }}>Respond to Feedback</h2> 
-            <p style={{ marginLeft: "20px" }}>Check insights from the patient's feedback for continuous improvement in care.</p>
+            <h2 style={{ marginLeft: "20px" }}>Feedback Details</h2> 
+            <p style={{ marginLeft: "20px" }}>View feedback details to understand user concerns and improve service quality.</p>
           </div>
 
         </div>
@@ -76,11 +75,14 @@ const FeedbackResponse = ({ onClose }) => {
         <hr />
 
         <p className={styles.newSubHeading}>
-            <span className={styles.key} style={{margin: "0 0 0 20px"}}> <i className="fa-solid fa-circle-notch" style={{ fontSize: "12px" }}></i> Status: </span>
+            <span className={styles.key} style={{margin: "0 0 0 20px"}}> <i className="fa-solid fa-circle-notch" style={{ fontSize: "14px" }}></i> Status: </span>
             <span className={getStatusClass(status)} style={{ fontSize: "16px" }}>{feedback.status}</span>
 
-            <span className={styles.key} style={{margin: "0 0 0 20px"}}> <i class='bx bx-message-rounded'></i> Date Submitted: </span>
+            <span className={styles.key} style={{margin: "0 0 0 20px"}}> <i class='bx bx-calendar-alt'></i> Date Submitted: </span>
             <span className={styles.locationValue}>{feedback.dateAndTimeofFeedback}</span>
+
+            <span className={styles.key} style={{margin: "0 0 0 20px"}}> <i class='bx bx-calendar-check' ></i> Date Responded: </span>
+            <span className={styles.locationValue}>10/10/2024 09:30 AM</span>
 
         </p>
 
@@ -121,20 +123,26 @@ const FeedbackResponse = ({ onClose }) => {
           <hr />
 
           <div className={styles.formSection}>
-              <h3><i className="fa-solid fa-circle fa-2xs" style={{color: "#007bff", marginRight: "10px"}}></i> Comments/Observations</h3>
+              <h3><i className="fa-solid fa-circle fa-2xs" style={{color: "#007bff", marginRight: "10px"}}></i> Comments/Feedback</h3>
               <div>
                 <div>
-                  <textarea style={{ borderBottom: "2px solid #0067FF" }} defaultValue="Lorem ipsum dolor sit amet consectetur adipisicing elit"></textarea>
+                  <textarea defaultValue="Very good technician" disabled></textarea>
                 </div>
               </div>
           </div>
 
           <hr />
 
-          <div>
-
+          <div className={styles.formSection}>
+              <h3><i className="fa-solid fa-circle fa-2xs" style={{color: "#007bff", marginRight: "10px"}}></i> Response By Clinic Admin/Lab Admin</h3>
+              <div>
+                <div>
+                  <textarea defaultValue="Thank You!" disabled></textarea>
+                </div>
+              </div>
           </div>
 
+          <hr />
 
           <div className={styles.actions}>
 
@@ -142,14 +150,7 @@ const FeedbackResponse = ({ onClose }) => {
               className={styles.cancelButton}
               onClick={onClose}
               >
-                Cancel
-            </button>
-
-            <button
-              className={styles.addButton}
-              onClick={handleResponse}
-            >
-              Submit
+                Close
             </button>
 
           </div>
@@ -192,4 +193,4 @@ const FeedbackResponse = ({ onClose }) => {
   );
 };
 
-export default FeedbackResponse;
+export default FeedbackDetails;
