@@ -6,10 +6,9 @@
   max-width: 1100px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   position: relative;
-  height: 85vh;
   max-height: 95vh;
   overflow-y: hidden;
-  margin-top: -6%;
+  top: -2%;
 }
 
 .headerSection {
@@ -34,18 +33,31 @@
 
 
 .popupBottom {
-  max-height: 75vh;
+  max-height: 60vh;
   overflow-y: auto;
   scroll-behavior: smooth;
   overflow-x: hidden;
   padding-right: 20px;
-  width: 75%;
-  margin-left: 12.5%;
-  
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  margin-left: 20px;
+}
+
+.formSection {
+  margin-bottom: 10px;
+}
+
+.newFormGroup {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  width: 100%;
+  /* gap: 10px; */
+  margin-left: 26px;
+}
+
+.subHeading {
+  margin: 10px 10px 20px auto;
+  display: inline-block;
+  width: 70%;
+  font-weight: 600;
 }
 
 .newSubHeading {
@@ -53,7 +65,6 @@
   display: flex;
   gap: 10px;
   align-items: center;
-  justify-content: center;
 }
 
 .key, .statusValue, locationValue {
@@ -98,21 +109,22 @@ select, textarea {
 
 textarea {
   margin-top: 10px;
-  height: auto;
+  height: 20px;
   width: 100%;
   padding: 10px;
   border: 1px solid #ddd;
   border-radius: 0;
-  min-height: 80px;
+  min-height: 40px;
   font-family: inherit;
   font-size: 16px;
+  margin-left: 26px;
 }
 
 textarea::placeholder {
   font-size: 14px;
 }
 
-label {
+.feedbackLabel {
   margin: 40px 0 10px -66%;
 }
 

@@ -131,7 +131,7 @@ const ViewAppointments = (props) => {
 
         <div className={styles.appointmentsContainer}>
           <div className={styles.filters}>
-          <button
+            <button
               className={`${styles.filterButton} ${activeButton === 0 ? styles.active : ''}`}
               onClick={() => handleFilterClick(0)}
             >
