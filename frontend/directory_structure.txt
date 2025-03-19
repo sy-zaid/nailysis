@@ -118,7 +118,7 @@ F:\Nailysis Application\frontend\src\pages\lab-technician\cancellation-request-f
 F:\Nailysis Application\frontend\src\pages\lab-technician\lab-technician-dashboard.jsx                   
 F:\Nailysis Application\frontend\src\pages\lab-technician\lab-technician-test-requests.jsx               
 F:\Nailysis Application\frontend\src\pages\lab-technician\lab-technician-view-appointments.jsx           
-F:\Nailysis Application\frontend\src\pages\lab-technician\view-appointments-lab-technician.jsx           
+F:\Nailysis Application\frontend\src\pages\lab-technician\common/view-lab-appointments.jsx           
 F:\Nailysis Application\frontend\src\pages\patient                                                       
 F:\Nailysis Application\frontend\src\pages\patient\patient-dashboard.jsx                                 
 F:\Nailysis Application\frontend\src\pages\patient\patient-diagnostic-results.jsx                        

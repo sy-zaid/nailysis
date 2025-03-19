@@ -10,7 +10,7 @@ These serializers ensure proper data validation and transformation for API inter
 """
 
 from rest_framework import serializers
-from appointments.models import Appointment, DoctorAppointment,TimeSlot, TechnicianAppointment, DoctorAppointmentFee, LabTechnicianAppointmentFee,CancellationRequest
+from appointments.models import Appointment, DoctorAppointment,TimeSlot, TechnicianAppointment, DoctorAppointmentFee,CancellationRequest
 from users.models import Doctor,LabTechnician
 from users.serializers import PatientSerializer, DoctorSerializer, LabTechnicianSerializer
 
@@ -81,10 +81,7 @@ class DoctorAppointmentSerializer(serializers.ModelSerializer):
         )
 
 
-class LabTechnicianFeeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = LabTechnicianAppointmentFee
-        fields = "__all__"
+
 
 class TechnicianAppointmentSerializer(serializers.ModelSerializer):
     """

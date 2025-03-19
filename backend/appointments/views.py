@@ -19,11 +19,11 @@ from rest_framework.decorators import action
 
 from .models import (
     Appointment, DoctorAppointment, TechnicianAppointment,
-    DoctorAppointmentFee, LabTechnicianAppointmentFee, CancellationRequest,TimeSlot
+    DoctorAppointmentFee, CancellationRequest,TimeSlot
 )
 from .serializers import (
     AppointmentSerializer, DoctorAppointmentSerializer, TimeSlotSerializer,
-    TechnicianAppointmentSerializer, DoctorFeeSerializer, LabTechnicianFeeSerializer, CancellationRequestSerializer
+    TechnicianAppointmentSerializer, DoctorFeeSerializer, CancellationRequestSerializer
 )   
 from users.models import Patient, Doctor, ClinicAdmin, CustomUser, LabTechnician, LabAdmin
 from datetime import datetime, timedelta
@@ -542,29 +542,29 @@ class LabTechnicianAppointmentViewset(viewsets.ModelViewSet):
         lab_technician_id = request.data.get("user_id")
     
 
-class LabTechnicianFeeViewset(viewsets.ModelViewSet):
-    """
-    API endpoint to manage lab technician appointment fees.
+# class LabTechnicianFeeViewset(viewsets.ModelViewSet):
+#     """
+#     API endpoint to manage lab technician appointment fees.
 
-    Provides:
-    - List of all lab technician appointment fees
-    - Standard CRUD operations
-    """
-    queryset = LabTechnicianAppointmentFee.objects.all()
-    serializer_class = LabTechnicianFeeSerializer
-    permission_classes = [permissions.AllowAny]
+#     Provides:
+#     - List of all lab technician appointment fees
+#     - Standard CRUD operations
+#     """
+#     queryset = LabTechnicianAppointmentFee.objects.all()
+#     serializer_class = LabTechnicianFeeSerializer
+#     permission_classes = [permissions.AllowAny]
 
-    @action(detail=False, methods=['get'], url_path='get_fees')
-    def get_fees(self, request):
-        """
-        Retrieve all appointment fees for display.
+#     @action(detail=False, methods=['get'], url_path='get_fees')
+#     def get_fees(self, request):
+#         """
+#         Retrieve all appointment fees for display.
         
-        Returns:
-            JSON response containing the list of doctor fees.
-        """
-        fees = LabTechnicianAppointmentFee.objects.all()
-        serializer = self.get_serializer(fees, many=True)
-        return Response(serializer.data)
+#         Returns:
+#             JSON response containing the list of doctor fees.
+#         """
+#         fees = LabTechnicianAppointmentFee.objects.all()
+#         serializer = self.get_serializer(fees, many=True)
+#         return Response(serializer.data)
 
 class DocAppointCancellationViewSet(viewsets.ModelViewSet):
     """

@@ -3,7 +3,10 @@ import axios from "axios";
 import { getHeaders } from "../utils/utils";
 const API_URL = import.meta.env.VITE_API_URL;
 
-export const getAppointments = async () => api.get("/api/appointments/");
+export const getLabTechnicianAppointments = async () => {
+  const url = `${API_URL}/api/lab_technician_appointments/`;
+  return axios.get(url, getHeaders());
+};
 export const bookAppointment = (appointmentData) => {
   const url = `${API_URL}/api/doctor_appointments/book_appointment/`;
   return axios.post(url, appointmentData, getHeaders());
@@ -53,10 +56,7 @@ export const rescheduleDoctorAppointment = async (
   return axios.put(url, appointmentData, getHeaders());
 };
 
-export const saveAndCompleteDoctorAppointment = async (
-  appointmentId,
-  ehrData
-) => {
+export const saveCompleteDoctorAppointment = async (appointmentId, ehrData) => {
   const url = `${API_URL}/api/doctor_appointments/${appointmentId}/save_and_complete/`;
   return axios.post(url, ehrData, getHeaders());
 };

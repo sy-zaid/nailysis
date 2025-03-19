@@ -46,11 +46,25 @@ export const visitPurposes = [
 
 export const technicianVisitPurposes = [
   "Complete Blood Count (CBC)",
-    "Basic Metabolic Panel (BMP)",
-    "Hemoglobin A1c (HbA1c)",
-    "Testosterone Test",
-    "PCR Test",
-    "BRCA Gene Test",
+  "Basic Metabolic Panel (BMP)",
+  "Hemoglobin A1c (HbA1c)",
+  "Testosterone Test",
+  "PCR Test",
+  "BRCA Gene Test",
+];
+
+export const testTypes = [
+  { value: "CBC", label: "Complete Blood Count (CBC)" },
+  { value: "BloodSugar", label: "Blood Sugar Test" },
+  { value: "HbA1c", label: "HbA1c (Diabetes Test)" },
+  {
+    value: "LipidProfile",
+    label: "Lipid Profile (Cholesterol Test)",
+  },
+  {
+    value: "Thyroid",
+    label: "Thyroid Function Test (T3, T4, TSH)",
+  },
 ];
 
 export const getAccessToken = () => {

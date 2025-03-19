@@ -8,6 +8,7 @@ users = [
     # {"email": "admin@gmail.com", "password": "admin"},
     {"email": "clinic_admin0@example.com", "password": "cli"},
     {"email": "lab_technician0@example.com", "password": "tech"},
+    {"email": "la@e.com", "password": "la"},
     {"email": "doctor0@example.com", "password": "doc"},
     {"email": "patient0@example.com", "password": "pat"}
 ]

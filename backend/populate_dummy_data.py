@@ -4,6 +4,7 @@ from faker import Faker
 from users.models import CustomUser, Patient, Doctor, LabTechnician,ClinicAdmin,LabAdmin
 from appointments.models import DoctorAppointment, TechnicianAppointment, LabTechnicianAppointmentFee, DoctorAppointmentFee
 from ehr.models import EHR
+from labs.models import LabTestType
 from django.utils import timezone
 from appointments.models import DoctorAppointmentFee
 
@@ -247,6 +248,45 @@ def populate_lab_appointment_fees():
         LabTechnicianAppointmentFee.objects.update_or_create(
             lab_test_type=lab_test_type, defaults={"fee": fee}
         )
+        
+
+
+def populate_lab_test_types():
+    """
+    Populates the LabTestType model with predefined test types.
+    """
+    test_types = [
+        {"name": "CBC", "label": "Complete Blood Count (CBC)", "category": "Blood Test", "price": 500.00},
+        {"name": "BloodSugar", "label": "Blood Sugar Test", "category": "Blood Test", "price": 300.00},
+        {"name": "HbA1c", "label": "HbA1c (Diabetes Test)", "category": "Blood Test", "price": 700.00},
+        {"name": "LipidProfile", "label": "Lipid Profile (Cholesterol Test)", "category": "Blood Test", "price": 1000.00},
+        {"name": "Thyroid", "label": "Thyroid Function Test (T3, T4, TSH)", "category": "Blood Test", "price": 1200.00},
+        {"name": "UrineTest", "label": "Urine Analysis", "category": "Urine Test", "price": 400.00},
+        {"name": "LiverFunction", "label": "Liver Function Test (LFT)", "category": "Blood Test", "price": 1500.00},
+        {"name": "KidneyFunction", "label": "Kidney Function Test (KFT)", "category": "Blood Test", "price": 1300.00},
+        {"name": "Electrolytes", "label": "Electrolyte Panel", "category": "Blood Test", "price": 800.00},
+        {"name": "CRP", "label": "C-Reactive Protein (CRP) Test", "category": "Blood Test", "price": 600.00},
+        {"name": "VitaminD", "label": "Vitamin D Test", "category": "Blood Test", "price": 1100.00},
+        {"name": "VitaminB12", "label": "Vitamin B12 Test", "category": "Blood Test", "price": 950.00},
+        {"name": "IronPanel", "label": "Iron Panel (Ferritin, TIBC)", "category": "Blood Test", "price": 1250.00},
+        {"name": "GeneticTest", "label": "Genetic Testing", "category": "Genetic Test", "price": 5000.00},
+    ]
+
+    for test in test_types:
+        obj, created = LabTestType.objects.get_or_create(
+            name=test["name"],
+            defaults={
+                "label": test["label"],
+                "category": test["category"],
+                "price": test["price"]
+            }
+        )
+        if created:
+            print(f"Added: {obj.label} ({obj.category}) - Rs. {obj.price}")
+        else:
+            print(f"Already exists: {obj.label}")
+
+populate_lab_test_types()
 
 
 # Create dummy data of everything

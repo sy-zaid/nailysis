@@ -9,17 +9,20 @@ import {
   categoryOptions,
   handleInputChange,
   handleSelectChange,
+  testTypes,
 } from "../../../utils/utils.js";
-import { saveAndCompleteDoctorAppointment } from "../../../api/appointmentsApi.js";
+import { saveCompleteDoctorAppointment } from "../../../api/appointmentsApi.js";
 
-const CheckinDoctorAppointmentPopup= ({ onClose, appointmentDetails }) => {
+const CheckinDoctorAppointmentPopup = ({ onClose, appointmentDetails }) => {
   const [popupTrigger, setPopupTrigger] = useState(true);
   const { data: curUser } = useCurrentUserData();
   const [timer, setTimer] = useState(0);
+  
   const [ehrData, setEhrData] = useState({
     medical_conditions: [],
     current_medications: [],
     immunization_records: [],
+    recommended_lab_test: [],
     nail_image_analysis: "",
     test_results: "",
     diagnoses: [],
@@ -39,7 +42,7 @@ const CheckinDoctorAppointmentPopup= ({ onClose, appointmentDetails }) => {
 
   const onInputChange = handleInputChange(setEhrData);
 
-  const handleStartAppointment = async () => {
+  const handleCompleteAppointment = async () => {
     try {
       const formData = new FormData();
       Object.entries(ehrData).forEach(([key, value]) => {
@@ -49,10 +52,12 @@ const CheckinDoctorAppointmentPopup= ({ onClose, appointmentDetails }) => {
           formData.append(key, value);
         }
       });
-      await saveAndCompleteDoctorAppointment(
+
+      await saveCompleteDoctorAppointment(
         appointmentDetails.appointment_id,
         formData
       );
+      console.log("SENDING THIS TO COMPLETE CHECKIN", formData,ehrData);
       alert("Appointment Started and EHR Created Successfully");
     } catch (error) {
       alert("Failed to start the appointment");
@@ -61,7 +66,11 @@ const CheckinDoctorAppointmentPopup= ({ onClose, appointmentDetails }) => {
   };
 
   return (
-    <Popup trigger={popupTrigger} setTrigger={setPopupTrigger} onClose={onClose}>
+    <Popup
+      trigger={popupTrigger}
+      setTrigger={setPopupTrigger}
+      onClose={onClose}
+    >
       <div className={styles.formContainer}>
         <h2>Start Appointment</h2>
         <h5 className={styles.subhead}>
@@ -127,6 +136,19 @@ const CheckinDoctorAppointmentPopup= ({ onClose, appointmentDetails }) => {
           />
         </div>
 
+        {/* Recommended Test Types */}
+        <div className={styles.formGroup}>
+          <label>Recommended Tests</label>
+          <Select
+            isMulti
+            options={testTypes}
+            placeholder="Recommend any test to patient"
+            onChange={(selected) =>
+              onSelectChange("recommended_lab_test", selected)
+            }
+          />
+        </div>
+
         {/* Comments */}
         <div className={styles.formGroup}>
           <label>Comments</label>
@@ -155,7 +177,7 @@ const CheckinDoctorAppointmentPopup= ({ onClose, appointmentDetails }) => {
           </button>
           <button
             className={styles.confirmButton}
-            onClick={handleStartAppointment}
+            onClick={handleCompleteAppointment}
           >
             Save & Complete Appointment
           </button>

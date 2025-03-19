@@ -4,41 +4,31 @@ import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import AppointmentDetailsPopup from "../../components/Popup/popups-doctor-appointments/doctor-appointment-details-popup";
 import { useNavigate } from "react-router-dom";
 import api from "../../api";
-import CancellationRequestForm from "./cancellation-request-form"; // Import CancellationRequestForm
+import CancellationRequestForm from "../lab-technician/cancellation-request-form"; // Import CancellationRequestForm
 import PopupManageSlotsLabTechnician from "../../components/Popup/popups-lab-technician-appointments/manage-slots-lab-technician-popup";
 import TechnicianAppointmentCheckinPopup from "../../components/Popup/popups-lab-technician-appointments/technician-appointment-checkin-popup";
+import { getAccessToken } from "../../utils/utils";
+import useCurrentUserData from "../../useCurrentUserData";
+import { getLabTechnicianAppointments } from "../../api/appointmentsApi";
 
 const AppointmentTechnician = () => {
   const navigate = useNavigate();
   const [appointments, setAppointments] = useState([]);
-  const token = localStorage.getItem("access");
+  const token = getAccessToken();
+  const { data: curUser, isLoading, error } = useCurrentUserData(); // Use Logged-in user data from cache.
   const [showPopup, setShowPopup] = useState(false);
   const [popupContent, setPopupContent] = useState(null); // State to track which popup to show
-  useEffect(() => {
-    if (!token) {
-      console.log("No token found, Redirecting to login");
-      navigate("/login");
-      return;
-    }
 
+  useEffect(() => {
     const fetchAppointments = async () => {
       try {
-        const response = await api.get(
-          `${import.meta.env.VITE_API_URL}/api/lab_technician_appointments/`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
+        const response = await getLabTechnicianAppointments();
         setAppointments(response.data);
         console.log("Response from technician appointment", response.data);
       } catch (error) {
         console.log(error);
       }
     };
-
     fetchAppointments();
   }, [token, navigate]);
 
@@ -82,7 +72,7 @@ const AppointmentTechnician = () => {
       );
       setShowPopup(true); // Show the Cancellation Request Form popup
     } else if (action === "Start Appointment") {
-      setPopupContent(<TechnicianAppointmentCheckinPopup/>);
+      setPopupContent(<TechnicianAppointmentCheckinPopup />);
       setShowPopup(true);
     } else if (action === " Appointment") {
       setPopupContent(<TechnicianAppointmentCheckinPopup />);
@@ -122,9 +112,7 @@ const AppointmentTechnician = () => {
               </button>
               <button className={styles.addButton}>Cancel Appointment</button>
             </div>
-            
           </div>
-
 
           <div className={styles.tableContainer}>
             <table
@@ -137,10 +125,14 @@ const AppointmentTechnician = () => {
                   <th>Appointment ID</th>
                   <th>Patient Name</th>
                   <th>Gender</th>
-                  <th>Lab Test Type</th>
                   <th>Date & Time</th>
-                  <th>Status</th>
+                  <th>Lab Test Type</th>
+                  <th>Technician Name</th>
+                  <th>Specialization</th>
+                  <th>Test Status</th>
+                  <th>Results Available</th>
                   <th>Additional Notes</th>
+                  <th>Fee</th>
                 </tr>
               </thead>
 
@@ -157,12 +149,18 @@ const AppointmentTechnician = () => {
                       {row.patient?.user?.last_name || "No last name"}
                     </td>
                     <td>{row.patient?.gender || "N/A"}</td>
-                    <td>{row.lab_test_type || "N/A"}</td>
                     <td>
-                      {row.appointment_date} {row.start_time}
+                      {row.time_slot?.slot_date} | {row.time_slot?.start_time} -{" "}
+                      {row.time_slot?.end_time}
                     </td>
+                    <td>{row.lab_test_type || "N/A"}</td>
+                    <td>{row.lab_technician?.user?.first_name || "N/A"} {row.lab_technician?.user?.last_name || "N/A"}</td>
+                    <td>{row.lab_technician?.specialization || "N/A"}</td>
+
                     <td className={getStatusClass(row.status)}>{row.status}</td>
+                    <td>{row.results_available}</td>
                     <td>{row.notes || "No additional notes"}</td>
+                    <td>{row.fee}</td>
                     <td>
                       <button
                         onClick={() => toggleMenu(row.appointment_id)}
