@@ -1,7 +1,9 @@
 from django.db import models
 from users.models import Patient, Doctor, LabTechnician, ClinicAdmin
 from ehr.models import EHR
+
 from django.utils.timezone import now
+from datetime import datetime
 
 class TimeSlot(models.Model):
     """
@@ -38,7 +40,6 @@ class Appointment(models.Model):
         ("Completed", "Completed"),
         ("Cancelled", "Cancelled"),
         ("Rescheduled", "Rescheduled"),
-        ("Checked-In", "Checked-In"),
         ("No-Show", "No-Show"),
     ]
 
@@ -47,6 +48,11 @@ class Appointment(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="Scheduled")
     reminder_sent = models.BooleanField(default=False)
     notes = models.TextField(blank=True, null=True)
+    
+    # THESE ARE FOR SAVING APPOINTMENT DETAILS AFTER COMPLETION/DELETING TIMESLOT RECORD.
+    appointment_date = models.DateField(null=True,blank=True)
+    checkin_time = models.TimeField(null=True,blank=True)
+    checkout_time = models.TimeField(null=True,blank=True)
     time_slot = models.OneToOneField(TimeSlot, on_delete=models.SET_NULL, null=True, blank=True)
     
     def mark_no_show(self):
@@ -54,17 +60,20 @@ class Appointment(models.Model):
         self.status = "No-Show"
         self.save()
         
-    def mark_checked_in(self):
-        """Mark appointment as Checked-in when patient arrives"""
-        self.status = "Checked-In"
-        self.check_in_time = now()
-        self.save()
     
     def mark_completed(self):
         """Mark appointment as Completed when the consultation is done"""
         self.status = "Completed"
-        self.completion_time = now()
-        self.save()   
+        # Ensure slot_date and slot_time are combined correctly
+        self.appointment_date = self.time_slot.slot_date
+        self.checkin_time = self.time_slot.start_time
+        self.checkout_time = now()
+        
+        # Delete the associated time slot
+        self.time_slot.delete()
+        # Remove reference to prevent accessing a deleted object
+        self.time_slot = None 
+        self.save()
         
     def cancel_appointment(self):
         """Cancels the appointment."""
@@ -79,15 +88,15 @@ class Appointment(models.Model):
             self.save()
 
     def complete_appointment(self,ehr_data):
-        print("EHR DATA",ehr_data)
+        
         """Handle the creation of EHR when appointment is Completed."""
         if self.status != 'Completed':  # Ensure appointment is not already completed
-            self.mark_completed()
+            
 
             # Create EHR for the patient
             ehr_record = EHR.objects.create(
                 patient=self.patient,  # Assuming patient is available through the Appointment model
-                visit_date=self.appointment_date,  # Make sure this exists in Appointment model
+                visit_date=self.time_slot.slot_date,  # Make sure this exists in Appointment model
                 category=ehr_data[0],  # Access category as a dictionary key
                 consulted_by=f"{self.doctor.user.first_name} {self.doctor.user.last_name}",
                 
@@ -95,15 +104,16 @@ class Appointment(models.Model):
                 medical_conditions=ehr_data[1],  # Access as dictionary
                 current_medications=ehr_data[2],  # Access as dictionary
                 immunization_records=ehr_data[3],  # Access as dictionary
+                recommended_lab_test=ehr_data[7],  # Access as dictionary
                 # nail_image_analysis=ehr_data.nail_image_analysis,  # Access as dictionary
                 # test_results=ehr_data.test_results,  # Access as dictionary
                 diagnoses=ehr_data[4],  # Access as dictionary
                 comments=ehr_data[5],  # Access as dictionary
                 family_history=ehr_data[6]  # Access as dictionary
             )
-
             # Link the EHR record to the appointment
             self.ehr = ehr_record
+            self.mark_completed()
             self.save()
 
             return True

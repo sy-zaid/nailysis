@@ -375,6 +375,7 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
         current_medications = request.data.get("current_medications", "[]")
         immunization_records = request.data.get("immunization_records", "[]")
         diagnoses = request.data.get("diagnoses", "[]")
+        recommended_lab_test = request.data.get("recommended_lab_test", "[]")
 
         # Ensure these fields are properly converted to lists
         if isinstance(medical_conditions, str):
@@ -383,6 +384,8 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
             current_medications = json.loads(current_medications)
         if isinstance(immunization_records, str):
             immunization_records = json.loads(immunization_records)
+        if isinstance(recommended_lab_test, str):
+            recommended_lab_test = json.loads(recommended_lab_test)
         if isinstance(diagnoses, str):
             diagnoses = json.loads(diagnoses)
 
@@ -390,8 +393,8 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
         family_history = request.data.get("family_history", "")
         category = request.data.get("category", "General")
 
-        ehr_data = [category, medical_conditions, current_medications, immunization_records, diagnoses, comments, family_history]
-        
+        ehr_data = [category, medical_conditions, current_medications, immunization_records, diagnoses, comments, family_history,recommended_lab_test]
+        print("EHRDATA",ehr_data)
         try:
             appointment = DoctorAppointment.objects.get(pk=pk)
             appointment.complete_appointment(ehr_data=ehr_data)
@@ -404,7 +407,6 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
                 {"error": "No matching appointment found."},
                 status=status.HTTP_404_NOT_FOUND
             )
-    
         
 class LabTechnicianAppointmentViewset(viewsets.ModelViewSet):
     """

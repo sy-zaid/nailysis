@@ -96,6 +96,7 @@ class TechnicianAppointmentSerializer(serializers.ModelSerializer):
     """
     patient = PatientSerializer()
     lab_technician = LabTechnicianSerializer()
+    time_slot = TimeSlotSerializer(read_only = True)
 
     class Meta:
         model = TechnicianAppointment
