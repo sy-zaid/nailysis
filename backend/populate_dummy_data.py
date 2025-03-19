@@ -2,7 +2,7 @@ import random
 from datetime import datetime, timedelta
 from faker import Faker
 from users.models import CustomUser, Patient, Doctor, LabTechnician,ClinicAdmin,LabAdmin
-from appointments.models import DoctorAppointment, TechnicianAppointment, LabTechnicianAppointmentFee, DoctorAppointmentFee
+from appointments.models import DoctorAppointment, TechnicianAppointment, DoctorAppointmentFee
 from ehr.models import EHR
 from labs.models import LabTestType
 from django.utils import timezone
@@ -28,21 +28,6 @@ APPOINTMENT_FEES = {
     "Emergency Visit": 2000.00,
     "Prescription Refill": 800.00,
 }
-
-# def create_dummy_users(num_users, role,password):
-#     users = []
-#     for _ in range(num_users):
-#         email = f"{role}{fake.unique.random_number(digits=3)}@example.com"
-#         user = CustomUser.objects.create_user(
-#             email=email,
-#             first_name=fake.first_name(),
-#             last_name=fake.last_name(),
-#             password=password,
-#             role=role,
-#         )
-#         users.append(user)
-#     return users
-
 
 def create_superadmin():
     email = "admin@gmail.com"
@@ -163,7 +148,6 @@ def populate_doctor_appointment_fees():
         else:
             print(f"Updated: {appointment_type} with new fee {fee} PKR")
 
-
 # Generate dummy EHR records separately
 def generate_dummy_ehr_records(num_records, patients, doctors):
     for _ in range(num_records):
@@ -189,11 +173,6 @@ def generate_dummy_ehr_records(num_records, patients, doctors):
         print(f"EHR record created for {patient.user.first_name}, consulted by Dr. {doctor.user.first_name}")
 
 
-
-
-
-
-
 def generate_dummy_lab_appointments(num_appointments, patients, lab_technicians):
     LAB_TEST_TYPES = [
         "Complete Blood Count (CBC)", "Basic Metabolic Panel (BMP)", "Hemoglobin A1c (HbA1c)", "Testosterone Test",
@@ -216,10 +195,7 @@ def generate_dummy_lab_appointments(num_appointments, patients, lab_technicians)
             fee=fee,
         )
 
-
-
 # Generate dummy clinic_admin
-
 def create_dummy_clinic_admin():
     email = f"clinic_admin0@example.com"
     
@@ -302,10 +278,10 @@ lab_technicians = create_dummy_lab_technicians(num_lab_technicians)
 clinic_admin = create_dummy_clinic_admin()
 
 # Run the function
-generate_dummy_appointments(num_appointments, patients, doctors)
+# generate_dummy_appointments(num_appointments, patients, doctors)
 generate_dummy_ehr_records(num_ehr_records, patients, doctors)
 populate_doctor_appointment_fees()
-populate_lab_appointment_fees()
-generate_dummy_lab_appointments(num_lab_appointments, patients, lab_technicians)
+# populate_lab_appointment_fees()
+# generate_dummy_lab_appointments(num_lab_appointments, patients, lab_technicians)
 
 create_superadmin()

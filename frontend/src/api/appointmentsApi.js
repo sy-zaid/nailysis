@@ -7,6 +7,12 @@ export const getLabTechnicianAppointments = async () => {
   const url = `${API_URL}/api/lab_technician_appointments/`;
   return axios.get(url, getHeaders());
 };
+
+export const getAvailableLabTests = async () => {
+  const url = `${API_URL}/api/test_types/`;
+  return axios.get(url, getHeaders());
+};
+
 export const bookAppointment = (appointmentData) => {
   const url = `${API_URL}/api/doctor_appointments/book_appointment/`;
   return axios.post(url, appointmentData, getHeaders());

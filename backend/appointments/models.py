@@ -1,7 +1,6 @@
 from django.db import models
 from users.models import Patient, Doctor, LabTechnician, ClinicAdmin
 from ehr.models import EHR
-from labs.models import LabTestType
 from django.utils.timezone import now
 from datetime import datetime
 
@@ -234,7 +233,7 @@ class DoctorAppointment(Appointment):
             self.fee = DoctorAppointmentFee.get_fee(self.appointment_type) or 0.00
         super().save(*args, **kwargs)
     
-from django.db import models
+
 
 class TechnicianAppointment(Appointment):
     """
@@ -252,12 +251,6 @@ class TechnicianAppointment(Appointment):
         LabTechnician, 
         on_delete=models.CASCADE, 
         related_name="technician_appointments"
-    )
-
-    # Multiple lab tests can be part of a single appointment
-    lab_tests = models.ManyToManyField(
-        LabTestType, 
-        related_name="appointments"
     )
 
     # The total fee for all selected lab tests (calculated or manually set)
@@ -292,6 +285,10 @@ class TechnicianAppointment(Appointment):
             self.save()
         return self.fee
 
+    def save(self,*args,**kwargs):
+        self.fee = self.calculate_fee()
+        super().save(*args,**kwargs)
+        
     def __str__(self):
         """
         String representation of the TechnicianAppointment instance.

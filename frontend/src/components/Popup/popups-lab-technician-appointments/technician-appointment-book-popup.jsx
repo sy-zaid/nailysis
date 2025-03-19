@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from "react";
+import Select from "react-select";
 import styles from "./technician-appointment-book-popup.module.css";
 import Popup from "../Popup.jsx";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import usePatientData from "../../../useCurrentUserData.jsx";
+import { calculateAge, handleInputChange, handleSelectChange } from "../../../utils/utils.js";
 import {
-  calculateAge,
-  handleInputChange,
-  technicianVisitPurposes,
-} from "../../../utils/utils.js";
-import {
+  getAvailableLabTests,
   getAvailableSlots,
   getTechFeeByType,
   getTechnicianFromSpecialization,
@@ -23,13 +21,29 @@ const PopupBookLabAppointment = ({ onClose }) => {
   const [availableSlots, setAvailableSlots] = useState([]);
   const [specializations, setSpecializations] = useState([]);
   const [labTechnicians, setLabTechnicians] = useState([]);
+  const [availableLabTests, setAvailableLabTests] = useState([]);
   const token = localStorage.getItem("access");
   const curUserRole = localStorage.getItem("role");
   const { data: curUser, isLoading, isError, error } = usePatientData(); // Fetch patient data
+  // State for appointment details
+  const [formData, setFormData] = useState({
+    labTechnicianId: "",
+    appointmentDate: "",
+    slotId: "",
+    specialization: "",
+    requestedLabTests: [],
+    fee: "0.00",
+    patientFirstName: "",
+    patientLastName: "",
+    date_of_birth: "",
+    gender: "",
+    phone: "",
+    email: "",
+  });
 
   console.log("CURRUSER", curUser);
   const [patient, setPatient] = useState([]); // Initialize patient state
-
+  
   useEffect(() => {
     if (curUserRole == "patient" && curUser && curUser.length > 0) {
       setPatient([curUser[0].patient.user, curUser[0].patient]); // Set patient data if available
@@ -40,24 +54,26 @@ const PopupBookLabAppointment = ({ onClose }) => {
       console.log("No patient data available");
     }
   }, [curUser]); // Triggered whenever `curUser` changes
-
-  // State for appointment details
-  const [formData, setFormData] = useState({
-    labTechnicianId: "",
-    appointmentDate: "",
-    slotId: "",
-    specialization: "",
-    LabTestType: technicianVisitPurposes[0],
-    fee: "0.00",
-    patientFirstName: "",
-    patientLastName: "",
-    date_of_birth: "",
-    gender: "",
-    phone: "",
-    email: "",
-  });
-
+  
+  const onSelectChange = handleSelectChange(setFormData)
   const onInputChange = handleInputChange(setFormData);
+  // Fetch available tests on component mount
+  useEffect(() => {
+    const fetchLabTests = async () => {
+      try {
+        const response = await getAvailableLabTests(); // Replace with your actual API endpoint
+        const transformedData = response.data.map((test) => ({
+          value: test.id, // This id is also sent to formData
+          label: test.label + " | " + test.price + " PKR", // Set label + price for a test
+        }));
+        setAvailableLabTests(transformedData);
+      } catch (error) {
+        console.error("Error fetching lab tests:", error);
+      }
+    };
+
+    fetchLabTests();
+  }, []);
 
   // Fetch specializations on component mount
   useEffect(() => {
@@ -124,7 +140,7 @@ const PopupBookLabAppointment = ({ onClose }) => {
     const appointmentData = {
       lab_technician_id: formData.labTechnicianId,
       slot_id: formData.slotId,
-      lab_test_type: formData.labTestType,
+      requested_lab_tests: formData.requestedLabTests,
       specialization: formData.specialization,
       fee: formData.fee,
       patient_first_name:
@@ -160,7 +176,7 @@ const PopupBookLabAppointment = ({ onClose }) => {
     console.log("Updated Technician ID:", formData.labTechnicianId);
     console.log("Updated Appointment Date:", formData.appointmentDate);
     if (formData.labTechnicianId && formData.appointmentDate) {
-      fetchAvailableSlots(formData.labTechnicianId,formData.appointmentDate);
+      fetchAvailableSlots(formData.labTechnicianId, formData.appointmentDate);
     }
   }, [formData.labTechnicianId, formData.appointmentDate]);
 
@@ -180,7 +196,11 @@ const PopupBookLabAppointment = ({ onClose }) => {
   };
 
   return (
-    <Popup trigger={popupTrigger} setTrigger={setPopupTrigger} onClose={onClose}>
+    <Popup
+      trigger={popupTrigger}
+      setTrigger={setPopupTrigger}
+      onClose={onClose}
+    >
       <div className={styles.formContainer}>
         <div className={styles.header}>
           <h2>Schedule Your Appointment</h2>
@@ -356,18 +376,40 @@ const PopupBookLabAppointment = ({ onClose }) => {
           </div>
 
           <div className={styles.formGroup}>
-            <label>Visit Purpose</label>
-            <select
-              name="labTestType"
-              value={formData.labTestType}
-              onChange={onInputChange}
-            >
-              {technicianVisitPurposes.map((purpose, index) => (
-                <option key={index} value={purpose}>
-                  {purpose}
-                </option>
-              ))}
-            </select>
+            <div className={styles.infoLabel}>Required Lab Tests</div>
+            <div>
+              <Select
+                isMulti
+                options={availableLabTests}
+                placeholder="Select required lab tests"
+                onChange={(selected) =>
+                  onSelectChange("requestedLabTests", selected)
+                }
+                styles={{
+                  control: (base) => ({
+                    ...base,
+                    border: "none",
+                    borderBottom: "2px solid #1E68F8",
+                    borderRadius: "none",
+                    padding: "0",
+                    outline: "none",
+
+                    width: "80%",
+                  }),
+                  option: (base, state) => ({
+                    ...base,
+                    color: state.isSelected ? "white" : "black", // Change text color
+                    cursor: "pointer",
+                    outline: "none",
+                    padding: "5px",
+                  }),
+                  menu: (base) => ({
+                    ...base,
+                    width: "80%", // Set dropdown width
+                  }),
+                }}
+              />
+            </div>
           </div>
 
           <div className={styles.formGroup}>

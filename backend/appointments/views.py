@@ -26,6 +26,7 @@ from .serializers import (
     TechnicianAppointmentSerializer, DoctorFeeSerializer, CancellationRequestSerializer
 )   
 from users.models import Patient, Doctor, ClinicAdmin, CustomUser, LabTechnician, LabAdmin
+from labs.models import LabTestOrder,LabTestType
 from datetime import datetime, timedelta
 import calendar
 
@@ -454,7 +455,7 @@ class LabTechnicianAppointmentViewset(viewsets.ModelViewSet):
 
         lab_technician_id = request.data.get('lab_technician_id')
         patient_email = request.data.get('patient_email')
-        lab_test_type = request.data.get('lab_test_type')
+        requested_lab_tests = request.data.get('requested_lab_tests')
         slot_id = request.data.get('slot_id')
         fee = request.data.get('fee')
         
@@ -485,9 +486,19 @@ class LabTechnicianAppointmentViewset(viewsets.ModelViewSet):
             patient=patient,
             lab_technician=lab_technician,
             time_slot = time_slot,
-            lab_test_type=lab_test_type,
             fee=fee
         )
+        
+        # Retrieve the selected LabTestType records using the requested IDs
+        selected_tests = LabTestType.objects.filter(id__in=requested_lab_tests)
+
+        # Create a LabTestOrder and link it to the TechnicianAppointment
+        lab_test_order = LabTestOrder.objects.create(
+            lab_technician_appointment=lab_technician_appointment
+        )
+
+        # Associate the selected LabTestType records with the order in a JUNCTION TABLE
+        lab_test_order.test_types.set(selected_tests)  # ManyToMany field
         
         if time_slot.is_booked == False:
             time_slot.is_booked = True

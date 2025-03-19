@@ -126,7 +126,7 @@ const AppointmentTechnician = () => {
                   <th>Patient Name</th>
                   <th>Gender</th>
                   <th>Date & Time</th>
-                  <th>Lab Test Type</th>
+                  <th>Requested Tests</th>
                   <th>Technician Name</th>
                   <th>Specialization</th>
                   <th>Test Status</th>

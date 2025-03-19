@@ -1,5 +1,6 @@
 from django.db import models
-
+from appointments.models import TechnicianAppointment
+from users.models import LabTechnician
 class LabTestType(models.Model):
     """
     Represents a type of laboratory test.
@@ -50,31 +51,60 @@ class LabTestType(models.Model):
     def __str__(self):
         return f"{self.label} ({self.category})"
 
+class LabTestOrder(models.Model):
+    """
+    Represents a lab test order, linking an appointment to multiple lab tests.
+    
+    Attributes:
+        appointment (ForeignKey): The related TechnicianAppointment.
+        test_type (ForeignKey): The specific test being conducted.
+        test_status (str): Status of the test (Pending, In Progress, Completed, etc.).
+        results_available (bool): Indicates if the results are available.
+        assigned_technician (ForeignKey): Technician assigned to conduct the test.
+        created_at (DateTime): Timestamp for when the order was created.
+        updated_at (DateTime): Timestamp for the last update.
+    """
+    TEST_STATUS_CHOICES = [
+        ("Pending", "Pending"),
+        ("In Progress", "In Progress"),
+        ("Completed", "Completed"),
+        ("Canceled", "Canceled"),
+    ]
+    
+    lab_technician_appointment = models.ForeignKey(TechnicianAppointment, on_delete=models.CASCADE, related_name="test_orders")
+    test_types = models.ManyToManyField(  # 🔹 Change ForeignKey to ManyToManyField
+        LabTestType, 
+        related_name="test_orders"
+    )
+    test_status = models.CharField(max_length=20, choices=TEST_STATUS_CHOICES, default="Pending")
+    results_available = models.BooleanField(default=False)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.test_type.name} - {self.test_status} ({self.appointment})"
+class LabTestResult(models.Model):
+    """
+    Represents the results of a completed lab test.
+
+    Attributes:
+        test_order (OneToOneField): The associated test order.
+        result_details (TextField): The detailed results of the test.
+        reference_range (TextField): The normal range for the test (optional).
+        result_file (FileField): An optional file for scanned reports.
+        reviewed_by (ForeignKey): The technician who reviewed the results.
+        reviewed_at (DateTime): Timestamp when the result was finalized.
+    """
+    test_order = models.OneToOneField(LabTestOrder, on_delete=models.CASCADE, related_name="test_result")
+    result_details = models.TextField()
+    reference_range = models.TextField(null=True, blank=True)
+    result_file = models.FileField(upload_to='lab_results/', null=True, blank=True)
+    
+    reviewed_by = models.ForeignKey(LabTechnician, on_delete=models.SET_NULL, null=True, blank=True)
+    reviewed_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Results for {self.test_order.test_type.name}"
 
     
-# class TestRequest(models.Model):
-#     patient = models.ForeignKey(CustomUser, on_delete=models.CASCADE, limit_choices_to={'role': 'Patient'})
-#     test_type = models.ForeignKey(TestType, on_delete=models.CASCADE)
-#     requested_by = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="test_requests")
-#     status_choices = [
-#         ('Pending', 'Pending'),
-#         ('In Progress', 'In Progress'),
-#         ('Completed', 'Completed'),
-#         ('Cancelled', 'Cancelled'),
-#     ]
-#     status = models.CharField(max_length=20, choices=status_choices, default='Pending')
-#     created_at = models.DateTimeField(auto_now_add=True)
-
-#     def __str__(self):
-#         return f"{self.patient.get_full_name()} - {self.test_type.name}"
-
-
-# class TestResult(models.Model):
-#     test_request = models.OneToOneField(TestRequest, on_delete=models.CASCADE)
-#     technician = models.ForeignKey(LabTechnician, on_delete=models.SET_NULL, null=True)
-#     result_data = models.TextField()  # Can store formatted JSON or plain text
-#     report_file = models.FileField(upload_to='lab_reports/', null=True, blank=True)
-#     issued_at = models.DateTimeField(auto_now_add=True)
-
-#     def __str__(self):
-#         return f"Result for {self.test_request.patient.get_full_name()} - {self.test_request.test_type.name}"
