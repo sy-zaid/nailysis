@@ -16,7 +16,8 @@ const ViewAppointments = (props) => {
   const [activeButton, setActiveButton] = useState(0); 
 
   const [startConsultationPopup, setstartConsultationPopup] = useState(false);
-    
+  
+  
 
     {/* Function to handle all popup item clicks and close the popup */}
     const handlePopupItemClick = (callback) => {

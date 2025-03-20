@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import usePatientData from "../../../useCurrentUserData.jsx";
 
-const PopupDeleteLabAppointment = ({ onClose, appointmentDetails }) => {
+const PopupDeleteTechnicianAppointment = ({ onClose, appointmentDetails }) => {
   const [popupTrigger, setPopupTrigger] = useState(true);
   const navigate = useNavigate();
   const token = localStorage.getItem("access");
@@ -100,4 +100,4 @@ const PopupDeleteLabAppointment = ({ onClose, appointmentDetails }) => {
   );
 };
 
-export default PopupDeleteLabAppointment;
+export default PopupDeleteTechnicianAppointment;

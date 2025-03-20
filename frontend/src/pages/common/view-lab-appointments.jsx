@@ -7,15 +7,20 @@ import api from "../../api";
 import CancellationRequestForm from "../lab-technician/cancellation-request-form"; // Import CancellationRequestForm
 import PopupManageSlotsLabTechnician from "../../components/Popup/popups-lab-technician-appointments/manage-slots-lab-technician-popup";
 import TechnicianAppointmentCheckinPopup from "../../components/Popup/popups-lab-technician-appointments/technician-appointment-checkin-popup";
-import { getAccessToken } from "../../utils/utils";
+import TechnicianAppointmentReschedulePopup from "../../components/Popup/popups-lab-technician-appointments/technician-appointment-reschedule-popup"
+import {
+  getAccessToken,
+  handleOpenPopup,
+  handleClosePopup,
+} from "../../utils/utils";
 import useCurrentUserData from "../../useCurrentUserData";
 import { getLabTechnicianAppointments } from "../../api/appointmentsApi";
 
 const AppointmentTechnician = () => {
-  const navigate = useNavigate();
   const [appointments, setAppointments] = useState([]);
   const token = getAccessToken();
   const { data: curUser, isLoading, error } = useCurrentUserData(); // Use Logged-in user data from cache.
+
   const [showPopup, setShowPopup] = useState(false);
   const [popupContent, setPopupContent] = useState(null); // State to track which popup to show
 
@@ -30,7 +35,7 @@ const AppointmentTechnician = () => {
       }
     };
     fetchAppointments();
-  }, [token, navigate]);
+  }, [token]);
 
   const getStatusClass = (status) => {
     switch (status) {
@@ -41,14 +46,6 @@ const AppointmentTechnician = () => {
       default:
         return styles.scheduled;
     }
-  };
-
-  const handleOpenPopup = () => {
-    setShowPopup(true); // Show the popup when button is clicked
-  };
-
-  const handleClosePopup = () => {
-    setShowPopup(false); // Hide the popup when closing
   };
 
   const [menuOpen, setMenuOpen] = useState(null);
@@ -74,17 +71,16 @@ const AppointmentTechnician = () => {
     } else if (action === "Start Appointment") {
       setPopupContent(<TechnicianAppointmentCheckinPopup />);
       setShowPopup(true);
-    } else if (action === " Appointment") {
-      setPopupContent(<TechnicianAppointmentCheckinPopup />);
+    } else if (action === "Reschedule") {
+      setPopupContent(<TechnicianAppointmentReschedulePopup onClose={handleClosePopup} appointmentDetails={appointmentId}/>);
       setShowPopup(true);
     }
   };
 
   return (
     <div className={styles.pageContainer}>
-      {showPopup && popupContent}{" "}
       {/* Render the correct popup based on the action */}
-      <AppointmentDetailsPopup />
+      {showPopup && popupContent}{" "}
       <div className={styles.pageTop}>
         <Navbar />
         <h1>Appointments</h1>
@@ -123,16 +119,25 @@ const AppointmentTechnician = () => {
                 <tr>
                   <th>#</th>
                   <th>Appointment ID</th>
-                  <th>Patient Name</th>
-                  <th>Gender</th>
+
+                  {curUser[0].role !== "patient" && <th>Patient Name</th>}
+                  {curUser[0].role !== "patient" && <th>Gender</th>}
+
                   <th>Date & Time</th>
                   <th>Requested Tests</th>
-                  <th>Technician Name</th>
-                  <th>Specialization</th>
-                  <th>Test Status</th>
-                  <th>Results Available</th>
-                  <th>Additional Notes</th>
+
+                  {curUser[0].role !== "lab_technician" && (
+                    <th>Technician Name</th>
+                  )}
+                  {curUser[0].role !== "lab_technician" && (
+                    <th>Specialization</th>
+                  )}
+
                   <th>Fee</th>
+                  <th>Additional Notes</th>
+                  <th>Test Status</th>
+                  <th>Appointment Status</th>
+                  <th>Results Available</th>
                 </tr>
               </thead>
 
@@ -144,23 +149,52 @@ const AppointmentTechnician = () => {
                   >
                     <td>{index + 1}</td>
                     <td>{row.appointment_id}</td>
-                    <td>
-                      {row.patient?.user?.first_name || "No first name"}{" "}
-                      {row.patient?.user?.last_name || "No last name"}
-                    </td>
-                    <td>{row.patient?.gender || "N/A"}</td>
+                    {curUser[0].role !== "patient" && (
+                      <td>
+                        {row.patient?.user?.first_name || "No first name"}{" "}
+                        {row.patient?.user?.last_name || "No last name"}
+                      </td>
+                    )}
+                    {curUser[0].role !== "patient" && (
+                      <td>{row.patient?.gender || "N/A"}</td>
+                    )}
                     <td>
                       {row.time_slot?.slot_date} | {row.time_slot?.start_time} -{" "}
                       {row.time_slot?.end_time}
                     </td>
-                    <td>{row.lab_test_type || "N/A"}</td>
-                    <td>{row.lab_technician?.user?.first_name || "N/A"} {row.lab_technician?.user?.last_name || "N/A"}</td>
-                    <td>{row.lab_technician?.specialization || "N/A"}</td>
+                    <td>
+                      <ul>
+                        {row.test_orders.length > 0 &&
+                          row.test_orders[0].test_types.map((test) => (
+                            <li key={test.id}>{test.label}</li>
+                          ))}
+                      </ul>
+                    </td>
 
-                    <td className={getStatusClass(row.status)}>{row.status}</td>
-                    <td>{row.results_available}</td>
-                    <td>{row.notes || "No additional notes"}</td>
+                    {curUser[0].role !== "lab_technician" && (
+                      <td>
+                        {row.lab_technician?.user?.first_name || "N/A"}{" "}
+                        {row.lab_technician?.user?.last_name || "N/A"}
+                      </td>
+                    )}
+
+                    {curUser[0].role !== "lab_technician" && (
+                      <td>{row.lab_technician?.specialization || "N/A"}</td>
+                    )}
                     <td>{row.fee}</td>
+
+                    <td>{row.notes || "No additional notes"}</td>
+
+                    <td
+                      className={getStatusClass(row.test_orders[0].test_status)}
+                    >
+                      {row.test_orders[0].test_status}
+                    </td>
+                    <td className={getStatusClass(row.status)}>{row.status}</td>
+                    <td className={getStatusClass(row.status)}>
+                      {row.test_orders[0].results_available ? "Yes" : "No"}
+                    </td>
+                    {/* ------------------------- ACTION BUTTONS -------------------------*/}
                     <td>
                       <button
                         onClick={() => toggleMenu(row.appointment_id)}
@@ -172,36 +206,49 @@ const AppointmentTechnician = () => {
                           className={styles.moreActionsIcon}
                         />
                       </button>
+
                       {menuOpen === row.appointment_id && (
                         <div className={styles.menu}>
                           <ul>
-                            <li
-                              onClick={() => {
-                                handleActionClick(
-                                  "Start Appointment",
-                                  row.appointment_id
-                                );
-                              }}
-                            >
-                              Start Appointment
-                            </li>
-                            <li
-                              onClick={() => {
-                                handleActionClick("Cancel", row.appointment_id);
-                              }}
-                            >
-                              Request Cancellation
-                            </li>
-                            <li
-                              onClick={() =>
-                                handleActionClick(
-                                  "Reschedule",
-                                  row.appointment_id
-                                )
-                              }
-                            >
-                              Reschedule
-                            </li>
+                            {curUser[0].role === "lab_technician" && (
+                              <li
+                                onClick={() => {
+                                  handleActionClick(
+                                    "Start Appointment",
+                                    row.appointment_id
+                                  );
+                                }}
+                              >
+                                Start Appointment
+                              </li>
+                            )}
+
+                            {(curUser[0].role === "patient" ||
+                              curUser[0].role === "lab_technician") && (
+                              <li
+                                onClick={() => {
+                                  handleActionClick(
+                                    "Cancel",
+                                    row.appointment_id
+                                  );
+                                }}
+                              >
+                                Request Cancellation
+                              </li>
+                            )}
+
+                            {curUser[0].role === "lab_admin" && (
+                              <li
+                                onClick={() =>
+                                  handleActionClick(
+                                    "Reschedule",
+                                    row
+                                  )
+                                }
+                              >
+                                Reschedule
+                              </li>
+                            )}
                           </ul>
                         </div>
                       )}

@@ -43,6 +43,6 @@ def generate_dummy_time_slots(num_slots=10):
     print(f"✅ {len(created_slots)} dummy time slots added successfully!")
 
 # Run the function to insert dummy data
-generate_dummy_time_slots(15)  # Generates 15 random slots
+generate_dummy_time_slots(400)  # Generates 15 random slots
 
 

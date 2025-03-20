@@ -14,7 +14,7 @@ import {
   getTechnicianSpecializations,
 } from "../../../api/appointmentsApi.js";
 
-const PopupBookLabAppointment = ({ onClose }) => {
+const PopupBookTechnicianAppointment = ({ onClose }) => {
   const [popupTrigger, setPopupTrigger] = useState(true);
   const navigate = useNavigate();
   const [appointments, setAppointments] = useState([]);
@@ -456,4 +456,4 @@ const PopupBookLabAppointment = ({ onClose }) => {
   );
 };
 
-export default PopupBookLabAppointment;
+export default PopupBookTechnicianAppointment;

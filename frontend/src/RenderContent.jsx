@@ -17,7 +17,7 @@ import PatientDashboard from "./pages/patient/patient-dashboard";
 import LabAdminDashboard from "./pages/admin-lab/lab-admin-dashboard";
 import LabTechnicianDashboard from "./pages/lab-technician/lab-technician-dashboard";
 import LabTechnicianTestRequests from "./pages/lab-technician/lab-technician-test-requests";
-import ViewLabAppointments  from "./pages/common/view-lab-appointments";
+import ViewTechnicianAppointments from "./pages/common/view-lab-appointments";
 import PlaceholderComponent from "./components/PlaceholderComponent"; // Placeholder for missing views
 
 // FEEDBACKS
@@ -106,7 +106,9 @@ export const renderPatientContent = (view) => {
       return <PlaceholderComponent name="Samples" />;
     case "Diagnostic Results":
       return <PatientDiagnosticResults />;
-    case "View Appointments":
+    case "View Lab Appointments":
+      return <ViewTechnicianAppointments />;
+    case "View Clinic Appointments":
       return <ViewAppointmentsPatient />;
     case "Appointments History":
       return <PlaceholderComponent name="Appointments History" />;
@@ -133,7 +135,7 @@ export const renderLabAdminContent = (view) => {
     case "Diagnostic Results":
       return <PlaceholderComponent name="Diagnostic Results" />;
     case "View Appointments":
-      return <ViewLabAppointments name="View Appointment"/>;
+      return <ViewTechnicianAppointments name="View Appointment" />;
     case "Appointments History":
       return <PlaceholderComponent name="Appointments History" />;
     case "Generate Invoice":
@@ -159,7 +161,7 @@ export const renderLabTechnicianContent = (view) => {
     case "Diagnostic Results":
       return <PlaceholderComponent name="Diagnostic Results" />;
     case "View Appointments":
-      return <ViewLabAppointments  />;
+      return <ViewTechnicianAppointments />;
     case "Appointments History":
       return <PlaceholderComponent name="Appointments History" />;
     case "Generate Invoice":

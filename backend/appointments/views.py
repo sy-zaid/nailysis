@@ -546,12 +546,75 @@ class LabTechnicianAppointmentViewset(viewsets.ModelViewSet):
         appointment.save()
         return Response({"message":"Cancellation request sent successfully","request_id":cancellation_request.id},status=status.HTTP_201_CREATED)    
 
-    @action(detail=True,methods=["post"],url_path='reschedule_lab_appointment')
+    @action(detail=True, methods=["post"], url_path='reschedule_lab_appointment')
     def reschedule_lab_appointment(self, request, pk=None):
-        lab_appointment = get_object_or_404(TechnicianAppointment, pk=pk)
-        patient = get_object_or_404(Patient, pk=pk)
-        lab_technician_id = request.data.get("user_id")
-    
+        """
+        Reschedules a lab appointment by reallocating the time slot, updating details,
+        and ensuring test orders are reset.
+        """
+        try:
+            lab_technician_appointment = get_object_or_404(TechnicianAppointment, id=pk)  # Appointment to be rescheduled
+            
+            lab_technician_id = request.data.get('lab_technician_id')
+            requested_lab_tests = request.data.get('requested_lab_tests', [])
+            slot_id = request.data.get('slot_id')
+            fee = request.data.get('fee')
+
+            # Validate Inputs
+            if not slot_id:
+                return Response({"error": "Time slot ID is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+            if not lab_technician_id:
+                return Response({"error": "Lab technician ID is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Fetch Lab Technician and Time Slot
+            lab_technician = get_object_or_404(LabTechnician, user_id=lab_technician_id)
+            time_slot = get_object_or_404(TimeSlot, id=slot_id)
+
+            # Check for conflicts with Doctor Appointments
+            conflict_exists = DoctorAppointment.objects.filter(
+                patient=lab_technician_appointment.patient,
+                time_slot__start_time=time_slot.start_time
+            ).exists()
+
+            if conflict_exists:
+                return Response(
+                    {"error": "A doctor appointment exists at this time slot."},
+                    status=status.HTTP_409_CONFLICT
+                )
+
+            # Reschedule Time Slot
+            if not lab_technician_appointment.reschedule_time_slot(slot_id):
+                return Response(
+                    {"error": "Rescheduling failed. The slot might be unavailable."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            # Update Lab Technician and Fee
+            lab_technician_appointment.lab_technician = lab_technician
+            lab_technician_appointment.fee = fee
+            lab_technician_appointment.save()
+
+            # Delete Previous LabTestOrder
+            LabTestOrder.objects.filter(lab_technician_appointment=lab_technician_appointment).delete()
+
+            # Retrieve the selected LabTestType records using the requested IDs
+            selected_tests = LabTestType.objects.filter(id__in=requested_lab_tests)
+
+            # Create a New LabTestOrder
+            lab_test_order = LabTestOrder.objects.create(
+                lab_technician_appointment=lab_technician_appointment
+            )
+            lab_test_order.test_types.set(selected_tests)  # ManyToMany field
+
+            return Response({
+                "message": "Lab appointment rescheduled successfully",
+                "appointment_id": lab_technician_appointment.appointment_id
+            })
+
+        except Exception as e:
+            return Response({"error": f"An error occurred: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 # class LabTechnicianFeeViewset(viewsets.ModelViewSet):
 #     """

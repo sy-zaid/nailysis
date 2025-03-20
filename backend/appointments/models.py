@@ -118,54 +118,42 @@ class Appointment(models.Model):
             return True
         return False
     
-    def reschedule_doctor_appointment(self, new_date, new_time,new_specialization,new_doctor,new_appointment_type):
-        """NOT USED TILL NOW, DIRECT PUT REQUEST IS USED"""
+    def reschedule_time_slot(self, slot_id):
+        """
+        Handles the reallocation of time slots when an appointment is rescheduled.
+        Ensures that:
+        - The previous time slot is freed up.
+        - A new available time slot is allocated.
+        - Conflicts are checked to prevent double bookings.
+        """
         try:
-            """Reschedules the appointment to a new date and time."""
-            self.appointment_date = new_date
-            self.start_time = new_time
-            if isinstance(self, DoctorAppointment):  # Check if it's a DoctorAppointment
-                print("YES ITS A DOCTOR APPOINTMENT INSTANCE")
-                if new_specialization:
-                    self.specialization = new_specialization
-                if new_doctor:
-                   # Fetch the Doctor instance using the ID
-                    try:
-                        doctor_instance = Doctor.objects.get(pk=new_doctor)
-                        self.doctor = doctor_instance
-                    except Doctor.DoesNotExist as e:
-                        raise ValueError(f"Doctor with ID {new_doctor} does not exist") from e
-                if new_appointment_type:
-                    self.appointment_type = new_appointment_type
+            # Get the new time slot
+            new_slot = TimeSlot.objects.filter(id=slot_id, is_booked=False).first()
+
+            if not new_slot:
+                raise ValueError("The selected time slot is either unavailable or already booked.")
+
+            # Free up the old time slot
+            if self.time_slot:
+                self.time_slot.is_booked = False
+                self.time_slot.save()
+
+            # Assign the new time slot
+            new_slot.is_booked = True
+            new_slot.save()
+            self.time_slot = new_slot
+
+            # Update appointment status
             self.status = "Rescheduled"
             self.save()
+
+            return True  # Successfully rescheduled
 
         except Exception as e:
             print(f"Error while rescheduling: {e}")
+            return False  # Rescheduling failed
 
-    def reschedule_lab_appointment(self, new_date, new_time,new_specialization,new_lab_technician,new_appointment_type):
-        try:
-            """Reschedules the appointment to a new date and time."""
-            self.appointment_date = new_date
-            self.start_time = new_time
-            if isinstance(self, TechnicianAppointment):  # Check if it's a LabTechnicianAppointment
-                print("YES ITS A LAB TECHNICIAN APPOINTMENT INSTANCE")
-                if new_specialization:
-                    self.specialization = new_specialization
-                if new_lab_technician:
-                   # Fetch the Lab Technician instance using the ID
-                    try:
-                        lab_technician_instance = LabTechnician.objects.get(pk=new_lab_technician)
-                        self.lab_technician = lab_technician_instance
-                    except Doctor.DoesNotExist as e:
-                        raise ValueError(f"Lab Technician with ID {new_lab_technician} does not exist") from e
-                if new_appointment_type:
-                    self.appointment_type = new_appointment_type
-            self.status = "Rescheduled"
-            self.save()
 
-        except Exception as e:
-            print(f"Error while rescheduling: {e}")        
 
     def __str__(self):
         return f"Appointment {self.appointment_id} - {self.patient}"
