@@ -292,8 +292,10 @@ const PopupBookLabAppointment = ({ onClose }) => {
             </div>
           </div>
 
+          <hr />
+
           {/* Appointment Details */}
-          <div className={styles.selectFormSection}>
+          <div className={styles.formSection}>
             <h3><i className="fa-solid fa-circle fa-2xs" style={{color: "#007bff", marginRight: "10px"}}></i> Appointment Details</h3>
             
             <div className={styles.formGroup}>
@@ -384,10 +386,12 @@ const PopupBookLabAppointment = ({ onClose }) => {
             </div>
           </div>
         </div>
+        
+        <hr />
 
-          {/* Payment Details */}
-          <div className={styles.formSection}>
-            <h3>Payment Details</h3>
+        {/* Payment Details */}
+        <div className={styles.formSection}>
+            <h3><i className="fa-solid fa-circle fa-2xs" style={{color: "#007bff", marginRight: "10px"}}></i> Payment Details</h3>
             <div className={styles.formGroup}>
               <div>
                 <label>Discount Code</label>

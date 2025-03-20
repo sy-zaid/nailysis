@@ -238,6 +238,10 @@ hr {
   margin-top: 20px;
 }
 
+.formSection {
+  margin: 25px 0;
+}
+
 .formGroup {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -266,6 +270,11 @@ hr {
   font-size: 16px;
   color: #4E4E4E;
   font-weight: 300;
+}
+
+.subHeading {
+  margin: 20px 10px 20px auto;
+  font-size: 14px;
 }
 
 /* Action buttons for the form */
