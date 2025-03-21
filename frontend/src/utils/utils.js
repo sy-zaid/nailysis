@@ -44,8 +44,6 @@ export const visitPurposes = [
   "Prescription Refill",
 ];
 
-
-
 export const testTypes = [
   { value: "CBC", label: "Complete Blood Count (CBC)" },
   { value: "BloodSugar", label: "Blood Sugar Test" },
@@ -215,8 +213,9 @@ export const toggleActionMenu = (recordId, menuOpen, setMenuOpen) => {
   setMenuOpen(menuOpen === recordId ? null : recordId);
 };
 
-export const handleClosePopup = () => {
+export const handleClosePopup = (setShowPopup, setPopupContent) => {
   setShowPopup(false);
+  setPopupContent(null);
 };
 
 export const handleOpenPopup = () => {

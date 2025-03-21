@@ -7,7 +7,7 @@ import api from "../../api";
 import CancellationRequestForm from "../lab-technician/cancellation-request-form"; // Import CancellationRequestForm
 import PopupManageSlotsLabTechnician from "../../components/Popup/popups-lab-technician-appointments/manage-slots-lab-technician-popup";
 import TechnicianAppointmentCheckinPopup from "../../components/Popup/popups-lab-technician-appointments/technician-appointment-checkin-popup";
-import TechnicianAppointmentReschedulePopup from "../../components/Popup/popups-lab-technician-appointments/technician-appointment-reschedule-popup"
+import TechnicianAppointmentReschedulePopup from "../../components/Popup/popups-lab-technician-appointments/technician-appointment-reschedule-popup";
 import {
   getAccessToken,
   handleOpenPopup,
@@ -34,8 +34,11 @@ const AppointmentTechnician = () => {
         console.log(error);
       }
     };
-    fetchAppointments();
-  }, [token]);
+    if (!showPopup) {
+      // ✅ Fetch only when popup is closed
+      fetchAppointments();
+    }
+  }, [showPopup]);
 
   const getStatusClass = (status) => {
     switch (status) {
@@ -64,7 +67,7 @@ const AppointmentTechnician = () => {
       setPopupContent(
         <CancellationRequestForm
           appointmentId={appointmentId}
-          onClose={handleClosePopup}
+          onClose={() => handleClosePopup(setShowPopup, setPopupContent)}
         />
       );
       setShowPopup(true); // Show the Cancellation Request Form popup
@@ -72,7 +75,12 @@ const AppointmentTechnician = () => {
       setPopupContent(<TechnicianAppointmentCheckinPopup />);
       setShowPopup(true);
     } else if (action === "Reschedule") {
-      setPopupContent(<TechnicianAppointmentReschedulePopup onClose={handleClosePopup} appointmentDetails={appointmentId}/>);
+      setPopupContent(
+        <TechnicianAppointmentReschedulePopup
+          onClose={() => handleClosePopup(setShowPopup, setPopupContent)}
+          appointmentDetails={appointmentId}
+        />
+      );
       setShowPopup(true);
     }
   };
@@ -240,10 +248,7 @@ const AppointmentTechnician = () => {
                             {curUser[0].role === "lab_admin" && (
                               <li
                                 onClick={() =>
-                                  handleActionClick(
-                                    "Reschedule",
-                                    row
-                                  )
+                                  handleActionClick("Reschedule", row)
                                 }
                               >
                                 Reschedule

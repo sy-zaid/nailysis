@@ -6,7 +6,11 @@ import Popup from "../Popup.jsx";
 import axios from "axios";
 
 import { handleInputChange, handleSelectChange } from "../../../utils/utils.js";
-import { getAvailableLabTests, getAvailableSlots } from "../../../api/appointmentsApi.js";
+import {
+  getAvailableLabTests,
+  getAvailableSlots,
+  rescheduleLabAppointment,
+} from "../../../api/appointmentsApi.js";
 
 const PopupRescheduleTechnicianAppointment = ({
   onClose,
@@ -22,6 +26,10 @@ const PopupRescheduleTechnicianAppointment = ({
   const [formData, setFormData] = useState({
     user_id: "",
     specialization: "",
+    labTechnicianId:"",
+    slotId:"",
+    requestedLabTests: [],
+    fee: "0.00",
     patientName: appointmentDetails.patient.user.patient_name || "",
     age: appointmentDetails.patient.user.age || "",
     phone: appointmentDetails.patient.user.phone || "",
@@ -43,9 +51,9 @@ const PopupRescheduleTechnicianAppointment = ({
             { headers: { Authorization: `Bearer ${token}` } }
           );
           console.log("Response", response.data);
-          const formattedLabTechnicians = response.data.map((doc) => ({
-            id: doc.user.user_id,
-            name: `${doc.user.first_name} ${doc.user.last_name}`,
+          const formattedLabTechnicians = response.data.map((tech) => ({
+            id: tech.user.user_id,
+            name: `${tech.user.first_name} ${tech.user.last_name}`,
           }));
           console.log("fetch lab technician", formattedLabTechnicians);
           setLabTechnicians(formattedLabTechnicians);
@@ -80,61 +88,51 @@ const PopupRescheduleTechnicianAppointment = ({
   const handleRescheduleAppointment = async (e) => {
     e.preventDefault();
 
-    const appointmentData = {
-      user_id: formData.user_id,
-      appointment_date: formData.appointmentDate,
-      start_time: formData.appointmentTime,
-      appointment_type: formData.appointmentType,
-      specialization: formData.specialization,
+    const payload = {
+      lab_technician_id: formData.labTechnicianId,
+      slot_id:formData.slotId,
+      requested_lab_tests:formData.requestedLabTests,
+      fee:formData.fee,
     };
 
     try {
-      console.log("Sending this to update", appointmentData);
-      const response = await axios.put(
-        `http://127.0.0.1:8000/api/lab_technician_appointments/${appointmentDetails.appointment_id}/`,
-        appointmentData,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      console.log("Sending this to update", payload);
+      const response = await rescheduleLabAppointment(appointmentDetails.appointment_id,payload)
       alert("Appointment Rescheduled Successfully");
-      navigate("");
+      
     } catch (error) {
       alert("Failed to reschedule appointment");
       console.error(error);
     }
   };
   const onInputChange = handleInputChange(setFormData);
-  const onSelectChange = handleSelectChange(setFormData)
+  const onSelectChange = handleSelectChange(setFormData);
   const [availableSlots, setAvailableSlots] = useState([]);
   const [availableLabTests, setAvailableLabTests] = useState([]);
 
   // Fetch available tests on component mount
-    useEffect(() => {
-      const fetchLabTests = async () => {
-        try {
-          const response = await getAvailableLabTests(); // Replace with your actual API endpoint
-          const transformedData = response.data.map((test) => ({
-            value: test.id, // This id is also sent to formData
-            label: test.label + " | " + test.price + " PKR", // Set label + price for a test
-          }));
-          setAvailableLabTests(transformedData);
-        } catch (error) {
-          console.error("Error fetching lab tests:", error);
-        }
-      };
-  
-      fetchLabTests();
-    }, []);
+  useEffect(() => {
+    const fetchLabTests = async () => {
+      try {
+        const response = await getAvailableLabTests(); // Replace with your actual API endpoint
+        const transformedData = response.data.map((test) => ({
+          value: test.id, // This id is also sent to formData
+          label: test.label + " | " + test.price + " PKR", // Set label + price for a test
+        }));
+        setAvailableLabTests(transformedData);
+      } catch (error) {
+        console.error("Error fetching lab tests:", error);
+      }
+    };
+
+    fetchLabTests();
+  }, []);
   // Fetch Available Slots On Chosen Date
   useEffect(() => {
-    console.log("Updated Technician ID:", formData.labTechnicianId);
-    console.log("Updated Appointment Date:", formData.appointmentDate);
     if (formData.labTechnicianId && formData.appointmentDate) {
       fetchAvailableSlots(formData.labTechnicianId, formData.appointmentDate);
     }
   }, [formData.labTechnicianId, formData.appointmentDate]);
-
 
   const fetchAvailableSlots = async (technicianId, appointmentDate) => {
     try {

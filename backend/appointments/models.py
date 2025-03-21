@@ -273,9 +273,9 @@ class TechnicianAppointment(Appointment):
             self.save()
         return self.fee
 
-    def save(self,*args,**kwargs):
-        self.fee = self.calculate_fee()
-        super().save(*args,**kwargs)
+    # def save(self,*args,**kwargs):
+    #     self.fee = self.calculate_fee()
+    #     super().save(*args,**kwargs)
         
     def __str__(self):
         """

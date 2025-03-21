@@ -546,20 +546,21 @@ class LabTechnicianAppointmentViewset(viewsets.ModelViewSet):
         appointment.save()
         return Response({"message":"Cancellation request sent successfully","request_id":cancellation_request.id},status=status.HTTP_201_CREATED)    
 
-    @action(detail=True, methods=["post"], url_path='reschedule_lab_appointment')
+    @action(detail=True, methods=["put"], url_path='reschedule_lab_appointment')
     def reschedule_lab_appointment(self, request, pk=None):
         """
         Reschedules a lab appointment by reallocating the time slot, updating details,
         and ensuring test orders are reset.
         """
         try:
-            lab_technician_appointment = get_object_or_404(TechnicianAppointment, id=pk)  # Appointment to be rescheduled
+            print("REQUESTS DATA TO RESC",request.data)
+            lab_technician_appointment = get_object_or_404(TechnicianAppointment, appointment_id=pk)  # Appointment to be rescheduled
             
             lab_technician_id = request.data.get('lab_technician_id')
             requested_lab_tests = request.data.get('requested_lab_tests', [])
             slot_id = request.data.get('slot_id')
             fee = request.data.get('fee')
-
+            
             # Validate Inputs
             if not slot_id:
                 return Response({"error": "Time slot ID is required."}, status=status.HTTP_400_BAD_REQUEST)

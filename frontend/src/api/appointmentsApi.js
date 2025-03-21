@@ -81,3 +81,11 @@ export const getAvailableSlots = async (doctorId, labTechnicianId, date) => {
   const response = await axios.get(url, getHeaders());
   return Array.isArray(response.data) ? response.data : [];
 };
+
+export const rescheduleLabAppointment = async (
+  appointmentId,
+  appointmentData
+) => {
+  const url = `${API_URL}/api/lab_technician_appointments/${appointmentId}/reschedule_lab_appointment/`;
+  return axios.put(url, appointmentData,getHeaders());
+};
