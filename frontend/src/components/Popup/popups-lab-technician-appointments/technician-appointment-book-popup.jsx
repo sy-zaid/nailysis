@@ -124,11 +124,14 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
 
   const handleBookAppointment = async (e) => {
     e.preventDefault();
-
+    // Transform requestedLabTests to an array of test IDs
+    const requestedLabTestIds = formData.requestedLabTests.map(
+      (test) => test.value
+    );
     const payload = {
       lab_technician_id: formData.labTechnicianId,
       slot_id: formData.slotId,
-      requested_lab_tests: formData.requestedLabTests,
+      requested_lab_tests: requestedLabTestIds,
       specialization: formData.specialization,
       fee: formData.fee,
       notes: formData.notes,
@@ -184,23 +187,22 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
     }
   };
 
-  useEffect(() => {
-    const total = formData.requestedLabTests?.reduce((sum, test) => {
-      const testPrice =
-        availableTestPrices.find((t) => t.id === test.value)?.price || 0;
-      return sum + parseFloat(testPrice);
-    }, 0);
-    setFormData((prevData) => ({ ...prevData, fee: total.toFixed(2) }));
-  }, [formData.requestedLabTests, availableTestPrices]);
-
-  const updateFee = (selectedTests) => {
+  const calculateTotalFee = (selectedTests) => {
     const total = selectedTests.reduce((sum, test) => {
       const testPrice =
         availableTestPrices.find((t) => t.id === test.value)?.price || 0;
       return sum + parseFloat(testPrice);
     }, 0);
+    return total.toFixed(2);
+  };
 
-    setFormData((prevData) => ({ ...prevData, fee: total.toFixed(2) }));
+  const handleTestSelection = (selectedTests) => {
+    const totalFee = calculateTotalFee(selectedTests);
+    setFormData((prevData) => ({
+      ...prevData,
+      requestedLabTests: selectedTests,
+      fee: totalFee,
+    }));
   };
 
   return (
@@ -390,10 +392,7 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
                 isMulti
                 options={availableLabTests}
                 placeholder="Select required lab tests"
-                onChange={(selected) => {
-                  updateFee(selected);
-                  onSelectChange("requestedLabTests", selected);
-                }}
+                onChange={handleTestSelection} // Use handleTestSelection here
                 styles={{
                   control: (base) => ({
                     ...base,
@@ -406,14 +405,14 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
                   }),
                   option: (base, state) => ({
                     ...base,
-                    color: state.isSelected ? "white" : "black", // Change text color
+                    color: state.isSelected ? "white" : "black",
                     cursor: "pointer",
                     outline: "none",
                     padding: "5px",
                   }),
                   menu: (base) => ({
                     ...base,
-                    width: "80%", // Set dropdown width
+                    width: "80%",
                   }),
                 }}
               />
