@@ -12,6 +12,7 @@ import {
   handleSelectChange,
 } from "../../../utils/utils.js";
 import {
+  bookTechnicianAppointment,
   getAvailableLabTests,
   getAvailableSlots,
   getTechnicianFromSpecialization,
@@ -88,13 +89,7 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
     };
 
     try {
-      const response = await axios.post(
-        "http://127.0.0.1:8000/api/lab_technician_appointments/book_appointment/",
-        payload,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const response = await bookTechnicianAppointment(payload);
       alert("Appointment Booked Successfully");
       setAppointments([...appointments, response.data]);
       console.log("Sending this to book:", payload);
@@ -202,7 +197,6 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
       fetchAvailableSlots(formData.labTechnicianId, formData.appointmentDate);
     }
   }, [formData.labTechnicianId, formData.appointmentDate]);
-  
 
   return (
     <Popup

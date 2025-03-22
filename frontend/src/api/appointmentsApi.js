@@ -49,10 +49,6 @@ export const getDocFeeByType = (appointmentType) => {
   const url = `${API_URL}/api/doctor_fees/get_fees`;
   return axios.get(url, getHeaders());
 };
-// export const getTechFeeByType = (appointmentType) => {
-//   const url = `${API_URL}/api/lab_technician_fees/get_fees`;
-//   return axios.get(url, getHeaders());
-// };
 
 export const rescheduleDoctorAppointment = async (
   appointmentId,
@@ -82,10 +78,20 @@ export const getAvailableSlots = async (doctorId, labTechnicianId, date) => {
   return Array.isArray(response.data) ? response.data : [];
 };
 
-export const rescheduleLabAppointment = async (
+export const rescheduleTechnicianAppointment = async (
   appointmentId,
   appointmentData
 ) => {
   const url = `${API_URL}/api/lab_technician_appointments/${appointmentId}/reschedule_lab_appointment/`;
-  return axios.put(url, appointmentData,getHeaders());
+  return axios.put(url, appointmentData, getHeaders());
+};
+
+export const bookTechnicianAppointment = async (payload) => {
+  const url = `${API_URL}/api/lab_technician_appointments/book_appointment/`;
+  return axios.post(url, payload, getHeaders());
+};
+
+export const cancelTechnicianAppointment = async (appointmentId) => {
+  const url = `${API_URL}/api/lab_appointments/${appointmentId}/cancel_appointment/`;
+  return axios.post(url, getHeaders());
 };

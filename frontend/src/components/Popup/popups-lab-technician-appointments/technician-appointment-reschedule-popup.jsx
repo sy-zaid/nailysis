@@ -9,25 +9,32 @@ import { handleInputChange, handleSelectChange } from "../../../utils/utils.js";
 import {
   getAvailableLabTests,
   getAvailableSlots,
-  rescheduleLabAppointment,
+  rescheduleTechnicianAppointment,
 } from "../../../api/appointmentsApi.js";
 
 const PopupRescheduleTechnicianAppointment = ({
   onClose,
   appointmentDetails,
 }) => {
+  // TOKENS & USER INFORMATION
+  const token = localStorage.getItem("access");
+  
+  // POPUPS & NAVIGATION
   const [popupTrigger, setPopupTrigger] = useState(true);
 
-  const token = localStorage.getItem("access");
-
-  const [patient, setPatient] = useState([]); // Initialize patient state
+  // IMPORTANT DATA
+  const [patient, setPatient] = useState([]);
   const [specializations, setSpecializations] = useState([]);
+  const [labTechnicians, setLabTechnicians] = useState([]);
+  const [availableSlots, setAvailableSlots] = useState([]);
+  const [availableLabTests, setAvailableLabTests] = useState([]);
 
+  // APPOINTMENT FORM STATE
   const [formData, setFormData] = useState({
     user_id: "",
     specialization: "",
-    labTechnicianId:"",
-    slotId:"",
+    labTechnicianId: "",
+    slotId: "",
     requestedLabTests: [],
     fee: "0.00",
     patientName: appointmentDetails.patient.user.patient_name || "",
@@ -39,7 +46,48 @@ const PopupRescheduleTechnicianAppointment = ({
     appointmentType: appointmentDetails.appointmentType || "",
   });
 
-  const [labTechnicians, setLabTechnicians] = useState([]);
+  //  HANDLERS (Event & Input Handlers)
+  const onInputChange = handleInputChange(setFormData);
+  const onSelectChange = handleSelectChange(setFormData);
+
+  const handleRescheduleAppointment = async (e) => {
+    e.preventDefault();
+    const payload = {
+      lab_technician_id: formData.labTechnicianId,
+      slot_id: formData.slotId,
+      requested_lab_tests: formData.requestedLabTests,
+      fee: formData.fee,
+    };
+    try {
+      console.log("Sending this to update", payload);
+      await rescheduleTechnicianAppointment(
+        appointmentDetails.appointment_id,
+        payload
+      );
+      alert("Appointment Rescheduled Successfully");
+    } catch (error) {
+      alert("Failed to reschedule appointment");
+      console.error(error);
+    }
+  };
+
+  // ----- MAIN LOGIC FUNCTIONS (API Calls, Data Processing)
+  const fetchAvailableSlots = async (technicianId, appointmentDate) => {
+    try {
+      console.log("Fetching slots for:", technicianId, appointmentDate);
+      const response = await getAvailableSlots(
+        null,
+        technicianId,
+        appointmentDate
+      );
+      console.log("Fetched slots:", response);
+      setAvailableSlots(response);
+    } catch (error) {
+      console.error("Failed to fetch available slots", error);
+    }
+  };
+
+  // ----- USE-EFFECTS (Data Fetching, Side Effects)
 
   // Fetch lab technicians based on selected specialization
   useEffect(() => {
@@ -51,18 +99,17 @@ const PopupRescheduleTechnicianAppointment = ({
             { headers: { Authorization: `Bearer ${token}` } }
           );
           console.log("Response", response.data);
-          const formattedLabTechnicians = response.data.map((tech) => ({
-            id: tech.user.user_id,
-            name: `${tech.user.first_name} ${tech.user.last_name}`,
-          }));
-          console.log("fetch lab technician", formattedLabTechnicians);
-          setLabTechnicians(formattedLabTechnicians);
+          setLabTechnicians(
+            response.data.map((tech) => ({
+              id: tech.user.user_id,
+              name: `${tech.user.first_name} ${tech.user.last_name}`,
+            }))
+          );
         } catch (error) {
           console.error("Failed to fetch lab technicians", error);
         }
       }
     };
-
     fetchLabTechnicians();
   }, [formData.specialization, token]);
 
@@ -81,52 +128,27 @@ const PopupRescheduleTechnicianAppointment = ({
         console.error("Failed to fetch specializations", error);
       }
     };
-
     fetchSpecializations();
   }, [token]);
 
-  const handleRescheduleAppointment = async (e) => {
-    e.preventDefault();
-
-    const payload = {
-      lab_technician_id: formData.labTechnicianId,
-      slot_id:formData.slotId,
-      requested_lab_tests:formData.requestedLabTests,
-      fee:formData.fee,
-    };
-
-    try {
-      console.log("Sending this to update", payload);
-      const response = await rescheduleLabAppointment(appointmentDetails.appointment_id,payload)
-      alert("Appointment Rescheduled Successfully");
-      
-    } catch (error) {
-      alert("Failed to reschedule appointment");
-      console.error(error);
-    }
-  };
-  const onInputChange = handleInputChange(setFormData);
-  const onSelectChange = handleSelectChange(setFormData);
-  const [availableSlots, setAvailableSlots] = useState([]);
-  const [availableLabTests, setAvailableLabTests] = useState([]);
-
-  // Fetch available tests on component mount
+  // Fetch available lab tests on component mount
   useEffect(() => {
     const fetchLabTests = async () => {
       try {
-        const response = await getAvailableLabTests(); // Replace with your actual API endpoint
-        const transformedData = response.data.map((test) => ({
-          value: test.id, // This id is also sent to formData
-          label: test.label + " | " + test.price + " PKR", // Set label + price for a test
-        }));
-        setAvailableLabTests(transformedData);
+        const response = await getAvailableLabTests();
+        setAvailableLabTests(
+          response.data.map((test) => ({
+            value: test.id,
+            label: `${test.label} | ${test.price} PKR`,
+          }))
+        );
       } catch (error) {
         console.error("Error fetching lab tests:", error);
       }
     };
-
     fetchLabTests();
   }, []);
+
   // Fetch Available Slots On Chosen Date
   useEffect(() => {
     if (formData.labTechnicianId && formData.appointmentDate) {
@@ -134,20 +156,6 @@ const PopupRescheduleTechnicianAppointment = ({
     }
   }, [formData.labTechnicianId, formData.appointmentDate]);
 
-  const fetchAvailableSlots = async (technicianId, appointmentDate) => {
-    try {
-      console.log("Fetching slots for:", technicianId, appointmentDate);
-      const response = await getAvailableSlots(
-        null,
-        technicianId,
-        appointmentDate
-      );
-      console.log("Fetched slots:", response);
-      setAvailableSlots(response);
-    } catch (error) {
-      console.error("Failed to fetch available slots", error);
-    }
-  };
   return (
     <Popup
       trigger={popupTrigger}
