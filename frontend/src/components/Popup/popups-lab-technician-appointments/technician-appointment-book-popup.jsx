@@ -7,6 +7,7 @@ import axios from "axios";
 import usePatientData from "../../../useCurrentUserData.jsx";
 import {
   calculateAge,
+  calculateTotalFee,
   handleInputChange,
   handleSelectChange,
 } from "../../../utils/utils.js";
@@ -18,18 +19,25 @@ import {
 } from "../../../api/appointmentsApi.js";
 
 const PopupBookTechnicianAppointment = ({ onClose }) => {
+  // ----- TOKENS AND USER INFORMATION
+  const token = localStorage.getItem("access");
+  const curUserRole = localStorage.getItem("role");
+  const { data: curUser, isLoading, isError, error } = usePatientData(); // Fetch patient data
+
+  // ----- POPUPS & NAVIGATION
   const [popupTrigger, setPopupTrigger] = useState(true);
   const navigate = useNavigate();
+
+  // ----- IMPORTANT DATA
   const [appointments, setAppointments] = useState([]);
   const [availableSlots, setAvailableSlots] = useState([]);
   const [specializations, setSpecializations] = useState([]);
   const [labTechnicians, setLabTechnicians] = useState([]);
   const [availableLabTests, setAvailableLabTests] = useState([]);
   const [availableTestPrices, setAvailableTestPrices] = useState([]);
-  const token = localStorage.getItem("access");
-  const curUserRole = localStorage.getItem("role");
-  const { data: curUser, isLoading, isError, error } = usePatientData(); // Fetch patient data
-  // State for appointment details
+  const [patient, setPatient] = useState([]);
+
+  // ----- APPOINTMENT FORM STATE
   const [formData, setFormData] = useState({
     labTechnicianId: "",
     appointmentDate: "",
@@ -46,8 +54,75 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
     email: "",
   });
 
-  const [patient, setPatient] = useState([]); // Initialize patient state
+  // ----- HANDLERS
+  const onInputChange = handleInputChange(setFormData);
+  const handleTestSelection = (selectedTests) => {
+    const totalFee = calculateTotalFee(selectedTests, availableTestPrices);
+    setFormData((prevData) => ({
+      ...prevData,
+      requestedLabTests: selectedTests,
+      fee: totalFee,
+    }));
+  };
+  // Handles sending payload to backend and booking appointment
+  const handleBookAppointment = async (e) => {
+    e.preventDefault();
+    // Transform requestedLabTests to an array of test IDs
+    const requestedLabTestIds = formData.requestedLabTests.map(
+      (test) => test.value
+    );
+    const payload = {
+      lab_technician_id: formData.labTechnicianId,
+      slot_id: formData.slotId,
+      requested_lab_tests: requestedLabTestIds,
+      specialization: formData.specialization,
+      fee: formData.fee,
+      notes: formData.notes,
+      patient_first_name:
+        patient?.first_name || formData.patientFirstName || "",
+      patient_last_name: patient?.last_name || formData.patientLast || "",
+      patient_age: patient?.age || formData.date_of_birth || "",
+      patient_gender: patient?.gender || formData.gender || "",
+      patient_phone: patient?.phone || formData.phone || "",
+      patient_email: patient?.email || formData.email || "",
+    };
 
+    try {
+      const response = await axios.post(
+        "http://127.0.0.1:8000/api/lab_technician_appointments/book_appointment/",
+        payload,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      alert("Appointment Booked Successfully");
+      setAppointments([...appointments, response.data]);
+      console.log("Sending this to book:", payload);
+      navigate("");
+    } catch (error) {
+      alert("Failed to book appointment");
+      console.log("Sending this to book:", payload);
+      console.error(error);
+    }
+  };
+
+  // ----- MAIN LOGIC FUNCTIONS
+  const fetchAvailableSlots = async (technicianId, appointmentDate) => {
+    try {
+      console.log("Fetching slots for:", technicianId, appointmentDate);
+      const response = await getAvailableSlots(
+        null,
+        technicianId,
+        appointmentDate
+      );
+      console.log("Fetched slots:", response);
+      setAvailableSlots(response);
+    } catch (error) {
+      console.error("Failed to fetch available slots", error);
+    }
+  };
+
+  // ----- USE-EFFECTS
   useEffect(() => {
     if (curUserRole == "patient" && curUser && curUser.length > 0) {
       setPatient([curUser[0].patient.user, curUser[0].patient]); // Set patient data if available
@@ -58,9 +133,6 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
       console.log("No patient data available");
     }
   }, [curUser]); // Triggered whenever `curUser` changes
-
-  const onSelectChange = handleSelectChange(setFormData);
-  const onInputChange = handleInputChange(setFormData);
 
   // Fetch available tests on component mount
   useEffect(() => {
@@ -122,48 +194,7 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
     fetchlabTechnicians();
   }, [formData.specialization, token]);
 
-  const handleBookAppointment = async (e) => {
-    e.preventDefault();
-    // Transform requestedLabTests to an array of test IDs
-    const requestedLabTestIds = formData.requestedLabTests.map(
-      (test) => test.value
-    );
-    const payload = {
-      lab_technician_id: formData.labTechnicianId,
-      slot_id: formData.slotId,
-      requested_lab_tests: requestedLabTestIds,
-      specialization: formData.specialization,
-      fee: formData.fee,
-      notes: formData.notes,
-      patient_first_name:
-        patient?.first_name || formData.patientFirstName || "",
-      patient_last_name: patient?.last_name || formData.patientLast || "",
-      patient_age: patient?.age || formData.date_of_birth || "",
-      patient_gender: patient?.gender || formData.gender || "",
-      patient_phone: patient?.phone || formData.phone || "",
-      patient_email: patient?.email || formData.email || "",
-    };
-
-    try {
-      const response = await axios.post(
-        "http://127.0.0.1:8000/api/lab_technician_appointments/book_appointment/",
-        payload,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      alert("Appointment Booked Successfully");
-      setAppointments([...appointments, response.data]);
-      console.log("Sending this to book:", payload);
-      navigate("");
-    } catch (error) {
-      alert("Failed to book appointment");
-      console.log("Sending this to book:", payload);
-      console.error(error);
-    }
-  };
-
-  // Fetch Available Slots On Chosen Date
+  // Fetch available slots on chosen date
   useEffect(() => {
     console.log("Updated Technician ID:", formData.labTechnicianId);
     console.log("Updated Appointment Date:", formData.appointmentDate);
@@ -171,39 +202,7 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
       fetchAvailableSlots(formData.labTechnicianId, formData.appointmentDate);
     }
   }, [formData.labTechnicianId, formData.appointmentDate]);
-
-  const fetchAvailableSlots = async (technicianId, appointmentDate) => {
-    try {
-      console.log("Fetching slots for:", technicianId, appointmentDate);
-      const response = await getAvailableSlots(
-        null,
-        technicianId,
-        appointmentDate
-      );
-      console.log("Fetched slots:", response);
-      setAvailableSlots(response);
-    } catch (error) {
-      console.error("Failed to fetch available slots", error);
-    }
-  };
-
-  const calculateTotalFee = (selectedTests) => {
-    const total = selectedTests.reduce((sum, test) => {
-      const testPrice =
-        availableTestPrices.find((t) => t.id === test.value)?.price || 0;
-      return sum + parseFloat(testPrice);
-    }, 0);
-    return total.toFixed(2);
-  };
-
-  const handleTestSelection = (selectedTests) => {
-    const totalFee = calculateTotalFee(selectedTests);
-    setFormData((prevData) => ({
-      ...prevData,
-      requestedLabTests: selectedTests,
-      fee: totalFee,
-    }));
-  };
+  
 
   return (
     <Popup

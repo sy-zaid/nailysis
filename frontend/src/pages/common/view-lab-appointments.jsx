@@ -26,7 +26,7 @@ const AppointmentTechnician = () => {
   const token = getAccessToken();
   const { data: curUser, isLoading, error } = useCurrentUserData(); // Use Logged-in user data from cache.
 
-  // POPUPS & MENUS
+  // POPUPS & NAVIGATION
   const [showPopup, setShowPopup] = useState(false);
   const [popupContent, setPopupContent] = useState(null); // State to track which popup to show
   const [menuOpen, setMenuOpen] = useState(null);
@@ -34,7 +34,7 @@ const AppointmentTechnician = () => {
   // IMPORTANT DATA
   const [appointments, setAppointments] = useState([]);
 
-  // FECTH LAB APPOINTMENTS ON COMPONENT MOUNT
+  // Fetch lab appointments on component mount
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
@@ -51,7 +51,7 @@ const AppointmentTechnician = () => {
     }
   }, [showPopup, token]);
 
-  // HANDLE THE ACTION WHEN AN ITEM IS CLICKED IN THE ACTION MENU
+  // Handles the action when an item is clicked in the action menu
   const handleActionClick = (action, appointmentId) => {
     console.log(`Action: ${action} on Appointment ID: ${appointmentId}`);
     setMenuOpen(null); // Close the menu after action

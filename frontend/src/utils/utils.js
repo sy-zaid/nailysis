@@ -308,3 +308,18 @@ export const handleClosePopup = (setShowPopup, setPopupContent) => {
 export const handleOpenPopup = (setShowPopup) => {
   setShowPopup(true);
 };
+
+/**
+ * Calculates the total fee for selected lab tests based on available test prices.
+ * @param {Array} selectedTests - List of selected lab tests.
+ * @param {Array} availableTestPrices - List of available lab tests with their prices.
+ * @returns {string} The total fee as a string with two decimal places.
+ */
+export const calculateTotalFee = (selectedTests, availableTestPrices) => {
+  const total = selectedTests.reduce((sum, test) => {
+    const testPrice =
+      availableTestPrices.find((t) => t.id === test.value)?.price || 0;
+    return sum + parseFloat(testPrice);
+  }, 0);
+  return total.toFixed(2);
+};
