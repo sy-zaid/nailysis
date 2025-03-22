@@ -71,20 +71,23 @@ class Appointment(models.Model):
         self.status = "No-Show"
         self.save()
         
-    
     def mark_completed(self):
-        """Mark appointment as Completed when the consultation is done"""
-        self.status = "Completed"
-        # Ensure slot_date and slot_time are combined correctly
-        self.appointment_date = self.time_slot.slot_date
-        self.checkin_time = self.time_slot.start_time
-        self.checkout_time = now()
-        
-        # Delete the associated time slot
-        self.time_slot.delete()
-        # Remove reference to prevent accessing a deleted object
-        self.time_slot = None 
-        self.save()
+        """Mark appointment as Completed when the consultation is done."""
+        if self.status != "Completed":
+            self.status = "Completed"
+
+            if self.time_slot:  # Check if time slot exists before using it
+                self.appointment_date = self.time_slot.slot_date
+                self.checkin_time = self.time_slot.start_time
+                self.checkout_time = now()
+                
+                # Delete the associated time slot
+                self.time_slot.delete()
+                self.time_slot = None  # Remove reference to prevent accessing a deleted object
+            
+            self.save()
+            return True
+        return False
         
     def cancel_appointment(self):
         """Cancels the appointment."""
@@ -98,7 +101,7 @@ class Appointment(models.Model):
             self.time_slot = None  # Remove association
             self.save()
 
-    def complete_appointment(self,ehr_data):
+    def complete_appointment_with_ehr(self,ehr_data):
         
         """Handle the creation of EHR when appointment is Completed."""
         if self.status != 'Completed':  # Ensure appointment is not already completed

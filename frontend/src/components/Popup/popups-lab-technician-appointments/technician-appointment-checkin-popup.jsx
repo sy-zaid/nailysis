@@ -2,10 +2,10 @@ import React from "react";
 import styles from "./technician-appointment-checkin-popup.module.css";
 import Popup from "../Popup";
 import { useState, useEffect } from "react";
-import { calculateAge } from "../../../utils/utils";
+import { calculateAge, handleClosePopup } from "../../../utils/utils";
+import { completeTechnicianAppointment } from "../../../api/appointmentsApi";
 
 const TechnicianAppointmentCheckinPopup = ({ onClose, appointmentDetails }) => {
-  console.log("GOT THIS TO START", appointmentDetails);
   // State variables
   const [timer, setTimer] = useState(0); // Keeps track of elapsed time in seconds
   const [isConsultationStarted, setIsConsultationStarted] = useState(false); // Tracks whether consultation has started
@@ -17,6 +17,18 @@ const TechnicianAppointmentCheckinPopup = ({ onClose, appointmentDetails }) => {
     const minutes = String(Math.floor((time % 3600) / 60)).padStart(2, "0");
     const seconds = String(time % 60).padStart(2, "0");
     return `${hours}:${minutes}:${seconds}`;
+  };
+
+  // ----- HANDLERS
+  // Handles the completion of appointment
+  const handleCompleteAppointment = async (appointmentId) => {
+    try {
+      const response = await completeTechnicianAppointment(appointmentId);
+      alert("Successfully marked as completed");
+    } catch (error) {
+      console.log(error);
+    }
+    handleClosePopup(onClose);
   };
 
   // Function to start the timer when consultation begins
@@ -279,7 +291,13 @@ const TechnicianAppointmentCheckinPopup = ({ onClose, appointmentDetails }) => {
                 Confirm Patient
               </button>
             ) : (
-              <button className={styles.addButton} onClick={stopTimer}>
+              <button
+                className={styles.addButton}
+                onClick={() => {
+                  stopTimer();
+                  handleCompleteAppointment(appointmentDetails.appointment_id);
+                }}
+              >
                 Complete Appointment
               </button>
             )}

@@ -274,18 +274,19 @@ const AppointmentTechnician = () => {
                       {menuOpen === row.appointment_id && (
                         <div className={styles.menu}>
                           <ul>
-                            {curUser[0].role === "lab_technician" && (
-                              <li
-                                onClick={() => {
-                                  handleActionClick(
-                                    "Action Start Appointment",
-                                    row
-                                  );
-                                }}
-                              >
-                                Start Appointment
-                              </li>
-                            )}
+                            {curUser[0].role === "lab_technician" &&
+                              row.status !== "Completed" && (
+                                <li
+                                  onClick={() => {
+                                    handleActionClick(
+                                      "Action Start Appointment",
+                                      row
+                                    );
+                                  }}
+                                >
+                                  Start Appointment
+                                </li>
+                              )}
 
                             {(curUser[0].role === "patient" ||
                               curUser[0].role === "lab_technician") && (

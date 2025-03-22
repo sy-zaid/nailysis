@@ -78,7 +78,7 @@ const AppointmentLabAdmin = () => {
           const response = await axios.post(
             `${
               import.meta.env.VITE_API_URL
-            }/api/lab_appointments/${appointmentId}/cancel_appointment/`,
+            }/api/technician_appointments/${appointmentId}/cancel_appointment/`,
             { action },
             {
               headers: {
