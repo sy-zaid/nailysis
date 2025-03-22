@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from appointments.models import Appointment, DoctorAppointment, TechnicianAppointment, DoctorAppointmentFee, LabTechnicianAppointmentFee,CancellationRequest
+from appointments.models import Appointment, DoctorAppointment, TechnicianAppointment, DoctorAppointmentFee,CancellationRequest
 from users.models import Doctor,LabTechnician
 from users.serializers import PatientSerializer, DoctorSerializer, LabTechnicianSerializer
 from ehr.models import EHR,MedicalHistory

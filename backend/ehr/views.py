@@ -11,7 +11,7 @@ import json
 
 from appointments.models import (
     Appointment, DoctorAppointment, TechnicianAppointment, 
-    DoctorAppointmentFee, LabTechnicianAppointmentFee, CancellationRequest
+    DoctorAppointmentFee, CancellationRequest
 )
 from appointments.serializers import (
     AppointmentSerializer, DoctorAppointmentSerializer, 

@@ -24,6 +24,9 @@ from users.urls import urlpatterns as users_urls
 
 from ehr.urls import urlpatterns as ehr_urls
 from ehr.urls import router as ehr_router
+
+from labs.urls import urlpatterns as labs_urls
+from labs.urls import router as labs_router
 # Define URL patterns
 urlpatterns = [
     path("admin/", admin.site.urls),  # Django admin panel for managing users, models, etc.
@@ -54,6 +57,10 @@ urlpatterns = [
     # EHR API endpoints
     path("api/", include(ehr_router.urls)),  # Registers viewsets using Django REST Framework's router
     *ehr_urls,   # Additional ehr-related URLs
+    
+    # LABS API endpoints
+    path("api/", include(labs_router.urls)),  # Registers viewsets using Django REST Framework's router
+    *labs_urls,   # Additional labs-related URLs
 ]
 from django.conf import settings
 from django.conf.urls.static import static

@@ -171,7 +171,7 @@ const AppointmentClinicAdmin = ( onClose ) => {
                   <th>Date & Time</th>
                   <th>Status</th>
                   <th>Fee</th>
-                  <th>Booking Date</th>
+                  
                   <th>Additional Notes</th>
                 </tr>
               </thead>
@@ -210,8 +210,7 @@ const AppointmentClinicAdmin = ( onClose ) => {
                     <td>{row.fee ? `PKR ${row.fee}` : "Not available"}</td>{" "}
                     {/* Fee */}
                     <td>{row.booking_date || "Not available"}</td>{" "}
-                    {/* Booking Date */}
-                    <td>{row.notes || "No additional notes"}</td>{" "}
+                   
                     {/* Additional Notes */}
                     <td>
                       <button

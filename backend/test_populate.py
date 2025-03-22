@@ -1,51 +1,48 @@
-import django
-import os
+import random
+from faker import Faker
 from datetime import datetime, timedelta
-from django.utils.timezone import make_aware
-
-# Set up Django environment
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "your_project.settings")
-django.setup()
-
+from users.models import  Doctor, LabTechnician  # Update with your actual app name
 from appointments.models import TimeSlot
-from users.models import Doctor
 
-# Configuration: Define slots to add
-DOCTOR_ID = "DOC001"  # Change to match a real doctor in your DB
-START_DATE = datetime.today().date()  # Start adding slots from today
-DAYS_TO_ADD = 7  # Generate slots for 7 days
-TIME_INTERVALS = [("09:00", "09:30"), ("10:00", "10:30"), ("11:00", "11:30")]  # Customize slot times
+fake = Faker()
 
-def add_time_slots():
-    """
-    Adds time slots for a specific doctor over multiple days.
-    """
-    try:
-        doctor = Doctor.objects.get(user_id=DOCTOR_ID)  # Ensure the doctor exists
-    except Doctor.DoesNotExist:
-        print(f"Doctor with ID {DOCTOR_ID} not found!")
+def generate_dummy_time_slots(num_slots=10):
+    """Generate and insert dummy TimeSlot records."""
+    
+    doctors = list(Doctor.objects.all())  # Fetch available doctors
+    lab_technicians = list(LabTechnician.objects.filter(user_id="LT001"))  # Fetch available lab technicians
+    
+    if not doctors and not lab_technicians:
+        print("No doctors or lab technicians found. Add some first!")
         return
-
+    
     created_slots = []
 
-    for day_offset in range(DAYS_TO_ADD):
-        slot_date = START_DATE + timedelta(days=day_offset)
+    for _ in range(num_slots):
+        slot_date = fake.date_between(start_date="today", end_date="+30d")  # Random future date
+        start_hour = random.randint(8, 17)  # Clinic open hours (8 AM - 5 PM)
+        start_time = datetime.strptime(f"{start_hour}:00", "%H:%M").time()
+        end_time = (datetime.combine(datetime.today(), start_time) + timedelta(hours=1)).time()  # 1-hour slots
+        
+        is_booked = fake.boolean(chance_of_getting_true=30)  # 30% chance of being booked
 
-        for start_time, end_time in TIME_INTERVALS:
-            start_time = make_aware(datetime.strptime(f"{slot_date} {start_time}", "%Y-%m-%d %H:%M"))
-            end_time = make_aware(datetime.strptime(f"{slot_date} {end_time}", "%Y-%m-%d %H:%M"))
+        assigned_doctor = random.choice(doctors) if doctors and random.choice([True, False]) else None
+        assigned_lab_tech = random.choice(lab_technicians) if lab_technicians and not assigned_doctor else None
 
-            slot, created = TimeSlot.objects.get_or_create(
-                doctor=doctor,
-                slot_date=slot_date,
-                start_time=start_time,
-                end_time=end_time,
-                defaults={"is_booked": False},
-            )
-            if created:
-                created_slots.append(slot)
+        time_slot = TimeSlot.objects.create(
+            doctor=assigned_doctor,
+            lab_technician=assigned_lab_tech,
+            slot_date=slot_date,
+            start_time=start_time,
+            end_time=end_time,
+            is_booked=is_booked
+        )
 
-    print(f"✅ Added {len(created_slots)} time slots successfully!")
+        created_slots.append(time_slot)
 
-# Run the script
-add_time_slots()
+    print(f"✅ {len(created_slots)} dummy time slots added successfully!")
+
+# Run the function to insert dummy data
+generate_dummy_time_slots(400)  # Generates 15 random slots
+
+
