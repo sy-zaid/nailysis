@@ -1,18 +1,21 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import styles from "../../components/CSS Files/PatientAppointment.module.css";
+import styles from "../common/all-pages-styles.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import Header from "../../components/Dashboard/Header/Header";
 import Sidebar from "../../components/Dashboard/Sidebar/Sidebar";
 
-
+ 
 const DiagnosticResults = (props) => {
+  // ----- POPUPS & NAVIGATION
   const [popupVisible, setPopupVisible] = useState(false);
   const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
   const popupRef = useRef(null);
 
+  // ----- IMPORTANT DATA
   const [activeButton, setActiveButton] = useState(0); 
 
+  // ----- SAMPLE DATA
   const data = [
     {
         id: 1,
@@ -37,9 +40,11 @@ const DiagnosticResults = (props) => {
     },
   ];
 
+  // ----- HANDLERS
   const handleFilterClick = (index) => {
     setActiveButton(index); // Set the active button when clicked
   };
+
 
   const getStatusClass = (status) => {
     switch (status) {
@@ -61,15 +66,9 @@ const DiagnosticResults = (props) => {
     setPopupVisible(!popupVisible);
   };
 
-  const downloadAsPDF = () => {
-    alert("Downloading as PDF...");
-  };
+  // ----- USE-EFFECTS
 
-  const sendToPrinter = () => {
-    alert("Sending to Printer...");
-  };
-
-  // Close popup when clicking outside
+  // Close popup when clicking outside 
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (popupRef.current && !popupRef.current.contains(event.target)) {
@@ -126,7 +125,7 @@ const DiagnosticResults = (props) => {
             <p>50 completed, 4 pending</p>
             
             <button className={styles.addButton}>
-                Book New Test
+              <i className='bx bx-plus-circle'></i> Book New Test
             </button>
 
           </div>
@@ -147,48 +146,51 @@ const DiagnosticResults = (props) => {
             </div>
             <hr />
             <br />
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  <th>
-                    <input type="checkbox" />
-                  </th>
-                  <th>#</th>
-                  <th >Test Date</th>
-                  <th>Test Type</th>
-                  <th>Technician</th>
-                  <th>Test Result</th>
-                  <th>Comments</th>
-                  <th>Status</th>
-                  <th> </th>
-                  <th> </th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.map((row) => (
-                  <tr key={row.id}>
-                    <td>
+
+            <div className={styles.tableWrapper}>
+              <table className={styles.table}>
+                <thead>
+                  <tr>
+                    <th>
                       <input type="checkbox" />
-                    </td>
-                    <td data-label="#">{row.id}</td>
-                    <td data-label="Test Date">{row.testDate}</td>
-                    <td data-label="Test Type">{row.testType}</td>
-                    <td data-label="Technician">{row.technician}</td>
-                    <td data-label="Test Result">{row.testResult}</td>
-                    <td data-label="Comments">{row.comments}</td>
-                    <td data-label="Status" className={getStatusClass(row.status)}>{row.status}</td>
-                    <td data-label="Actions"><button className={styles.shareBtn}>{row.shareReportBtn}</button></td>
-                    <td style={{ position: "relative" }}>
-                      <i
-                        className="bx bx-dots-vertical-rounded"
-                        style={{ cursor: "pointer" }}
-                        onClick={togglePopup}
-                      ></i>
-                    </td>
+                    </th>
+                    <th>#</th>
+                    <th >Test Date</th>
+                    <th>Test Type</th>
+                    <th>Technician</th>
+                    <th>Test Result</th>
+                    <th>Comments</th>
+                    <th>Status</th>
+                    <th>Share</th>
+                    <th>Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {data.map((row) => (
+                    <tr key={row.id}>
+                      <td>
+                        <input type="checkbox" />
+                      </td>
+                      <td data-label="#">{row.id}</td>
+                      <td data-label="Test Date">{row.testDate}</td>
+                      <td data-label="Test Type">{row.testType}</td>
+                      <td data-label="Technician">{row.technician}</td>
+                      <td data-label="Test Result">{row.testResult}</td>
+                      <td data-label="Comments">{row.comments}</td>
+                      <td data-label="Status" className={getStatusClass(row.status)}>{row.status}</td>
+                      <td data-label="Actions"><button className={styles.shareBtn}>{row.shareReportBtn}</button></td>
+                      <td style={{ position: "relative" }}>
+                        <i
+                          className="bx bx-dots-vertical-rounded"
+                          style={{ cursor: "pointer" }}
+                          onClick={togglePopup}
+                        ></i>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
           
         </div>
@@ -210,10 +212,10 @@ const DiagnosticResults = (props) => {
             zIndex: 1000,
           }}
         >
-          <p style={{ margin: "5px 0", cursor: "pointer" }} onClick={downloadAsPDF}>
+          <p style={{ margin: "5px 0", cursor: "pointer" }}>
             📄 Download as PDF
           </p>
-          <p style={{ margin: "5px 0", cursor: "pointer" }} onClick={sendToPrinter}>
+          <p style={{ margin: "5px 0", cursor: "pointer" }}>
             🖨️ Send to Printer
           </p>
         </div>

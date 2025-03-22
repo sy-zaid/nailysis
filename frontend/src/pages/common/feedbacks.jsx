@@ -79,7 +79,7 @@ const SendFeedback = () => {
       case "Pending":
         return styles.pending;
       default:
-        return {};
+        return styles.defaultColor;
     }    
   }
 
@@ -191,7 +191,7 @@ const SendFeedback = () => {
               {/* Show 'Submit New Feedback' for patients, doctors, and lab technicians */}
               {(curUserRole === "patient" || curUserRole === "doctor" || curUserRole === "lab_technician") && (
               <button className={styles.addButton} onClick={() => handleActionClick("Submit Feedback")}>
-                Submit New Feedback
+                <i className='bx bx-plus-circle'></i> Submit New Feedback
               </button>
               )}
 

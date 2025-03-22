@@ -1,25 +1,24 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import styles from "../../components/CSS Files/PatientAppointment.module.css";
+import styles from "../common/all-pages-styles.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import Header from "../../components/Dashboard/Header/Header";
 import Sidebar from "../../components/Dashboard/Sidebar/Sidebar";
 import Popup from "../../components/Popup/Popup.jsx";
+import PopupInvoiceDetails from '../../components/Popup/invoice-details-popup.jsx';
 
 
 const InvoiceManagement = (props) => {
+  // ----- POPUPS & NAVIGATION
   const [popupVisible, setPopupVisible] = useState(false);
   const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
   const popupRef = useRef(null);
+  const [invoiceDetailsPopup, setinvoiceDetailsPopup] = useState(false);
 
+  // ----- IMPORTANT DATA
   const [activeButton, setActiveButton] = useState(0); 
 
-  const [invoiceDetailsPopup, setinvoiceDetailsPopup] = useState(false);
-  
-  const handleTableEntryClick = () => {
-      setinvoiceDetailsPopup(true);
-  };
-
+  // ----- SAMPLE DATA
   const data = [
     {
         id: 1,
@@ -46,6 +45,16 @@ const InvoiceManagement = (props) => {
     },
   ];
 
+  // ----- HANDLERS
+  const handleOpenInvoicePopup = () => {
+    setinvoiceDetailsPopup(true);
+    setPopupVisible(false);
+  };
+
+  const handleCloseInvoiceDetails = () => {
+    setinvoiceDetailsPopup(false);
+  };
+
   const getStatusClass = (status) => {
     switch (status) {
       case "Paid":
@@ -64,8 +73,8 @@ const InvoiceManagement = (props) => {
   const togglePopup = (event) => {
     const iconRect = event.target.getBoundingClientRect();
     setPopupPosition({
-      top: iconRect.top + window.scrollY + iconRect.height + 5, // Adjust for scroll position
-      left: iconRect.left + window.scrollX, // Adjust for horizontal scroll
+      top: iconRect.top + window.scrollY + iconRect.height - 30, // Adjust for scroll position
+      left: iconRect.left + window.scrollX - 75, // Adjust for horizontal scroll
     });
     setPopupVisible(!popupVisible);
   };
@@ -75,7 +84,7 @@ const InvoiceManagement = (props) => {
     setPopupVisible(false); // Hide popup after clicking
   };
 
-  // Close popup when clicking outside
+  // ----- USE-EFFECTS
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (popupRef.current && !popupRef.current.contains(event.target)) {
@@ -92,101 +101,11 @@ const InvoiceManagement = (props) => {
     
     <div className={styles.pageContainer}>
 
-
-    {/* Invoice Details Popup */}
-    <Popup trigger={invoiceDetailsPopup} setTrigger={setinvoiceDetailsPopup}>
-        <div className={styles.formContainer}>
-          <div className={styles.header}>
-            <h2>Invoice Details For Patient: John Doe (Invoice ID: 12345)</h2>
-          </div>
-
-          <h5 className={styles.subhead}>
-            Detailed view for the invoice number #123456.
-          </h5>
-          <hr />
-
-          <p className={styles.newSubHeading}>
-            <span className={styles.key}> Viewed By: </span>
-            <span className={styles.locationValue}>Clinic Admin</span>
-            <span className={styles.secKey}> Status: </span>
-            <span className={getStatusClass("Paid")}>Paid</span>
-          </p>
-
-          <p className={styles.newSubHeading}>
-            <span className={styles.key}> Issuance Date & Time: </span>
-            <span className={styles.locationValue}>10/10/2024 09:30 AM</span>
-          </p>
-
-            <div className={styles.formSection}>
-              <br />
-                    <h3>Invoice Details</h3>
-                    <div className={styles.newFormGroup}>
-                      <div>
-                        <label>Invoice Number</label>
-                        <p className={styles.subHeading}>123456</p>
-                      </div>
-                      <div>
-                        <label>Doctor Name</label>
-                        <p className={styles.subHeading}>John Doe</p>
-                      </div>
-                      <div>
-                        <label>Service Type</label>
-                        <p className={styles.subHeading}>Consultation</p>
-                      </div>
-                      <div>
-                        <label>Date & Time of Service</label>
-                        <p className={styles.subHeading}>12/9/2024 05:30 PM</p>
-                      </div>
-                      <div>
-                        <label>Paid Amount</label>
-                        <p className={styles.subHeading}>RS/- 4000</p>
-                      </div>
-
-                      <div>
-                        <label>Pending Amount</label>
-                        <p className={styles.subHeading}>RS/- 1000</p>
-                      </div>
-
-                      <div>
-                        <label>Service Fee</label>
-                        <p className={styles.subHeading}>RS/- 5000</p>
-                      </div>
-                    </div>
-            </div>
-
-            <div className={styles.formSection}>
-                    <h3>Change Summary</h3>
-                    <div className={styles.documentFormGroup}>
-                      <div>
-                        <p className={styles.subHeading}>Payment of PKR 5000 received for Invoice ID "INV-98765"</p>
-                      </div>
-                    
-                    </div>
-            </div>
-
-
-            <div className={styles.formSection}>
-                    <h3>Comments/Reason</h3>
-                    <div className={styles.documentFormGroup}>
-                      <div>
-                        <p className={styles.subHeading}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Neque provident commodi, sapiente, totam veritatis odio ad sequi eius quod inventore dicta saepe. Nisi, accusamus.</p>
-                      </div>
-                    
-                    </div>
-            </div>
-
-          <div className={styles.newActions}>
-            <button className={styles.addButton}>
-              Download as PDF File
-            </button>
-            <button className={styles.addButton}>
-              Send to Printer
-            </button>
-          </div>
-        </div>
-    </Popup>
-
-
+      <PopupInvoiceDetails
+        invoiceDetailsPopup={invoiceDetailsPopup} 
+        setinvoiceDetailsPopup={setinvoiceDetailsPopup} 
+        onProceed={handleCloseInvoiceDetails}
+      />
 
       <div className={styles.pageTop}>
         <Navbar />
@@ -226,7 +145,7 @@ const InvoiceManagement = (props) => {
             <p>50 paid, 4 pending</p>
             
             <button className={styles.addButton}>
-                Add New Invoice
+              <i className='bx bx-plus-circle'></i> Add New Invoice
             </button>
 
           </div>
@@ -248,50 +167,52 @@ const InvoiceManagement = (props) => {
             <hr />
             <br />
 
-            <table className={styles.table}>
-              <thead>
-              <tr>
-                  <th>
-                    <input type="checkbox" />
-                  </th>
-                  <th>#</th>
-                  <th >Invoice No.</th>
-                  <th>Doctor Name</th>
-                  <th>Service Type</th>
-                  <th>Date and Time of Service</th>
-                  <th>Total Amount</th>
-                  <th>Paid Amount</th>
-                  <th>Pending Amount</th>
-                  <th>Payment Status</th>
-                  <th> </th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.map((row) => (
-                  <tr key={row.id}>
-                  <td>
-                    <input type="checkbox" />
-                  </td>
-                  <td>{row.id}</td>
-                  <td>{row.invoiceNo}</td>
-                  <td>{row.doctorName}</td>
-                  <td>{row.serviceType}</td>
-                  <td>{row.serviceDateTime}</td>
-                  <td>{row.totalAmount}</td>
-                  <td>{row.paidAmount}</td>
-                  <td>{row.pendingAmount}</td>
-                  <td className={getStatusClass(row.paymentStatus)}>{row.paymentStatus}</td>
-                  <td style={{ position: "relative" }}>
-                      <i
-                        className="bx bx-dots-vertical-rounded"
-                        style={{ cursor: "pointer" }}
-                        onClick={togglePopup}
-                      ></i>
+            <div className={styles.tableWrapper}>
+              <table className={styles.table}>
+                <thead>
+                <tr>
+                    <th>
+                      <input type="checkbox" />
+                    </th>
+                    <th>#</th>
+                    <th >Invoice No.</th>
+                    <th>Doctor Name</th>
+                    <th>Service Type</th>
+                    <th>Date and Time of Service</th>
+                    <th>Total Amount</th>
+                    <th>Paid Amount</th>
+                    <th>Pending Amount</th>
+                    <th>Payment Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.map((row) => (
+                    <tr key={row.id}>
+                    <td>
+                      <input type="checkbox" />
                     </td>
-                </tr>
-                ))}
-              </tbody>
-            </table>
+                    <td>{row.id}</td>
+                    <td>{row.invoiceNo}</td>
+                    <td>{row.doctorName}</td>
+                    <td>{row.serviceType}</td>
+                    <td>{row.serviceDateTime}</td>
+                    <td>{row.totalAmount}</td>
+                    <td>{row.paidAmount}</td>
+                    <td>{row.pendingAmount}</td>
+                    <td className={getStatusClass(row.paymentStatus)}>{row.paymentStatus}</td>
+                    <td style={{ position: "relative" }}>
+                        <i
+                          className="bx bx-dots-vertical-rounded"
+                          style={{ cursor: "pointer" }}
+                          onClick={togglePopup}
+                        ></i>
+                      </td>
+                  </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
@@ -310,9 +231,10 @@ const InvoiceManagement = (props) => {
             padding: "0",
             borderRadius: "10px",
             zIndex: 1000,
+            width: "150px",
           }}
         >
-          <p style={{ margin: "5px 0", cursor: "pointer" }} onClick={handleTableEntryClick}>
+          <p style={{ margin: "5px 0", cursor: "pointer" }} onClick={handleOpenInvoicePopup}>
             👁️ View Details
           </p>
           <p style={{ margin: "5px 0", cursor: "pointer" }}>
@@ -333,4 +255,4 @@ const InvoiceManagement = (props) => {
   );
 };
 
-export default InvoiceManagement;
+export default InvoiceManagement; 

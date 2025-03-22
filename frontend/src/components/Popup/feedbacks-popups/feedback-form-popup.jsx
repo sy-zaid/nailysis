@@ -20,7 +20,7 @@ const SubmitFeedback = ({ onClose }) => {
     
     <Popup trigger={popupTrigger} setTrigger={setPopupTrigger} onClose={onClose}>
 
-      <div className={styles.formContainer}>
+      <div className={styles.formContainer} style={{ marginTop: "-12%" }}>
 
         <div className={styles.headerSection}>
 
@@ -35,9 +35,9 @@ const SubmitFeedback = ({ onClose }) => {
 
         <div className={styles.popupBottom}>
           
-          <label className={styles.feedbackLabel}>Select a Category</label>
+          <label className={styles.submitFeedbackLabel}>Select a Category</label>
           <select
-          style={{  }}
+          style={{ marginLeft: "23px" }}
             onChange={(e) => setCategory(e.target.value)}
           >
             <option value="Service Issue">Service Issue</option>
@@ -45,7 +45,7 @@ const SubmitFeedback = ({ onClose }) => {
             <option value="Billing Issue">Billing Issue</option>
           </select>
 
-          <label className={styles.feedbackLabel} style={{ marginLeft: "-67.5%" }}>Enter Feedback</label>
+          <label className={styles.submitFeedbackLabel}>Enter Feedback</label>
           <textarea
             placeholder="Write your feedback here..." 
             onChange={(e) => setMessage(e.target.value)}

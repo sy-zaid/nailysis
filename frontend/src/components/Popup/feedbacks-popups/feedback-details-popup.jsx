@@ -61,7 +61,7 @@ const FeedbackDetails = ({ onClose }) => {
   return (
     <Popup trigger={popupTrigger} setTrigger={setPopupTrigger} onClose={onClose}>
 
-      <div className={styles.formContainer} style={{ marginTop: "-2%" }}>
+      <div className={styles.formContainer}>
 
         <div className={styles.headerSection}>
 
@@ -83,13 +83,12 @@ const FeedbackDetails = ({ onClose }) => {
 
             <span className={styles.key} style={{margin: "0 0 0 20px"}}> <i class='bx bx-calendar-check' ></i> Date Responded: </span>
             <span className={styles.locationValue}>10/10/2024 09:30 AM</span>
-
         </p>
 
         <div className={styles.popupBottom}>
 
           <div className={styles.formSection}>
-                    <h3><i className="fa-solid fa-circle fa-2xs" style={{color: "#007bff", marginRight: "10px"}}></i> Feedback Submitted By</h3>
+                    <h3><i className="fa-solid fa-circle fa-2xs"></i> Feedback Submitted By</h3>
                     <div className={styles.newFormGroup}>
                       <div>
                         <label>Patient ID</label>
@@ -123,7 +122,7 @@ const FeedbackDetails = ({ onClose }) => {
           <hr />
 
           <div className={styles.formSection}>
-              <h3><i className="fa-solid fa-circle fa-2xs" style={{color: "#007bff", marginRight: "10px"}}></i> Comments/Feedback</h3>
+              <h3><i className="fa-solid fa-circle fa-2xs"></i> Comments/Feedback</h3>
               <div>
                 <div>
                   <textarea defaultValue="Very good technician" disabled></textarea>
@@ -134,7 +133,7 @@ const FeedbackDetails = ({ onClose }) => {
           <hr />
 
           <div className={styles.formSection}>
-              <h3><i className="fa-solid fa-circle fa-2xs" style={{color: "#007bff", marginRight: "10px"}}></i> Response By Clinic Admin/Lab Admin</h3>
+              <h3><i className="fa-solid fa-circle fa-2xs"></i> Response By Clinic Admin/Lab Admin</h3>
               <div>
                 <div>
                   <textarea defaultValue="Thank You!" disabled></textarea>
