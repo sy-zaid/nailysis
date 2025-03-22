@@ -202,6 +202,7 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
         slot_id = request.data.get('slot_id')
         appointment_type = request.data.get('appointment_type')
         fee = request.data.get('fee')
+        notes = request.data.get('notes')
         patient_email = request.data.get("patient_email")
 
         user = self.request.user
@@ -234,7 +235,8 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
             doctor=doctor,
             time_slot = time_slot,
             appointment_type=appointment_type,
-            fee=fee
+            fee=fee,
+            notes = notes
         )
         if time_slot.is_booked == False:
             time_slot.is_booked = True
@@ -446,8 +448,8 @@ class LabTechnicianAppointmentViewset(viewsets.ModelViewSet):
         return TechnicianAppointment.objects.none()
     
 
-    @action(detail=False, methods=['post'], url_path='book_lab_appointment')
-    def book_lab_appointment(self, request):
+    @action(detail=False, methods=['post'], url_path='book_appointment')
+    def book_appointment(self, request):
         """
         Book a new lab appointment.
         """
@@ -458,6 +460,7 @@ class LabTechnicianAppointmentViewset(viewsets.ModelViewSet):
         requested_lab_tests = request.data.get('requested_lab_tests')
         slot_id = request.data.get('slot_id')
         fee = request.data.get('fee')
+        notes = request.data.get('notes')
         
         lab_technician = get_object_or_404(LabTechnician, user_id=lab_technician_id)
         time_slot = get_object_or_404(TimeSlot,id=slot_id)
@@ -486,7 +489,8 @@ class LabTechnicianAppointmentViewset(viewsets.ModelViewSet):
             patient=patient,
             lab_technician=lab_technician,
             time_slot = time_slot,
-            fee=fee
+            fee=fee,
+            notes=notes
         )
         
         # Retrieve the selected LabTestType records using the requested IDs
@@ -813,6 +817,15 @@ class TimeSlotViewSet(viewsets.ModelViewSet):
         while current_date <= end_date:
             day_name = calendar.day_name[current_date.weekday()]  # Get day name (e.g., 'Monday')
             if day_name in working_days:  # Only create slots for working days
+
+                # 🔹 Delete previous slots for this date before creating new ones
+                TimeSlot.objects.filter(
+                    slot_date=current_date,
+                    doctor=user_instance if doctor_id else None,
+                    lab_technician=user_instance if lab_tech_id else None,
+                ).delete()
+
+                # 🔹 Create new slots
                 for slot in time_slots:
                     slots_to_create.append(TimeSlot(
                         doctor=user_instance if doctor_id else None,
@@ -822,6 +835,7 @@ class TimeSlotViewSet(viewsets.ModelViewSet):
                         end_time=slot["end_time"],
                         is_booked=False
                     ))
+
             current_date += timedelta(days=1)  # Move to the next day
 
         # Bulk create time slots
@@ -830,3 +844,4 @@ class TimeSlotViewSet(viewsets.ModelViewSet):
             return Response({"message": "Slots created successfully"}, status=status.HTTP_201_CREATED)
         else:
             return Response({"message": "No slots created, check working days"}, status=status.HTTP_400_BAD_REQUEST)
+

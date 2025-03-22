@@ -40,6 +40,7 @@ const BookDoctorAppointmentPopup = ({ onClose }) => {
     gender: "",
     phone: "",
     email: "",
+    notes: "",
   });
   useEffect(() => {
     if (curUserRole == "patient" && curUser && curUser.length > 0) {
@@ -123,6 +124,7 @@ const BookDoctorAppointmentPopup = ({ onClose }) => {
       slot_id: formData.slotId,
       appointment_type: formData.appointmentType,
       specialization: formData.specialization,
+      notes: formData.notes,
       fee: formData.fee,
       patient_first_name:
         patient?.first_name || formData.patientFirstName || "",
@@ -171,7 +173,11 @@ const BookDoctorAppointmentPopup = ({ onClose }) => {
   };
 
   return (
-    <Popup trigger={popupTrigger} setTrigger={setPopupTrigger} onClose={onClose}>
+    <Popup
+      trigger={popupTrigger}
+      setTrigger={setPopupTrigger}
+      onClose={onClose}
+    >
       <div className={styles.formContainer}>
         <div className={styles.header}>
           <h2>Schedule Your Appointment</h2>
@@ -359,6 +365,16 @@ const BookDoctorAppointmentPopup = ({ onClose }) => {
                 </option>
               ))}
             </select>
+          </div>
+          <div>
+            <label>Additional Notes</label>
+            <input
+              type="text"
+              name="notes"
+              value={formData.notes}
+              onChange={onInputChange}
+              placeholder={"Enter notes"}
+            />
           </div>
 
           <div className={styles.formGroup}>

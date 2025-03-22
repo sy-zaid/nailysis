@@ -2,28 +2,39 @@ import React, { useEffect, useState } from "react";
 import styles from "../../components/CSS Files/PatientAppointment.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import AppointmentDetailsPopup from "../../components/Popup/popups-doctor-appointments/doctor-appointment-details-popup";
-import { useNavigate } from "react-router-dom";
-import api from "../../api";
+
 import CancellationRequestForm from "../lab-technician/cancellation-request-form"; // Import CancellationRequestForm
 import PopupManageSlotsLabTechnician from "../../components/Popup/popups-lab-technician-appointments/manage-slots-lab-technician-popup";
 import TechnicianAppointmentCheckinPopup from "../../components/Popup/popups-lab-technician-appointments/technician-appointment-checkin-popup";
 import TechnicianAppointmentReschedulePopup from "../../components/Popup/popups-lab-technician-appointments/technician-appointment-reschedule-popup";
+
+import useCurrentUserData from "../../useCurrentUserData";
+import { getLabTechnicianAppointments } from "../../api/appointmentsApi";
+
+// UTILS.JS FUNCTIONS
 import {
   getAccessToken,
   handleOpenPopup,
   handleClosePopup,
+  getStatusClass,
+  toggleActionMenu,
 } from "../../utils/utils";
-import useCurrentUserData from "../../useCurrentUserData";
-import { getLabTechnicianAppointments } from "../../api/appointmentsApi";
+import PopupBookTechnicianAppointment from "../../components/Popup/popups-lab-technician-appointments/technician-appointment-book-popup";
 
 const AppointmentTechnician = () => {
-  const [appointments, setAppointments] = useState([]);
+  // TOKENS AND USER INFORMATION
   const token = getAccessToken();
   const { data: curUser, isLoading, error } = useCurrentUserData(); // Use Logged-in user data from cache.
 
+  // POPUPS & MENUS
   const [showPopup, setShowPopup] = useState(false);
   const [popupContent, setPopupContent] = useState(null); // State to track which popup to show
+  const [menuOpen, setMenuOpen] = useState(null);
 
+  // IMPORTANT DATA
+  const [appointments, setAppointments] = useState([]);
+
+  // FECTH LAB APPOINTMENTS ON COMPONENT MOUNT
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
@@ -35,35 +46,17 @@ const AppointmentTechnician = () => {
       }
     };
     if (!showPopup) {
-      // ✅ Fetch only when popup is closed
+      // Fetch only when popup is closed
       fetchAppointments();
     }
-  }, [showPopup]);
+  }, [showPopup, token]);
 
-  const getStatusClass = (status) => {
-    switch (status) {
-      case "Consulted":
-        return styles.consulted;
-      case "Cancelled":
-        return styles.cancelled;
-      default:
-        return styles.scheduled;
-    }
-  };
-
-  const [menuOpen, setMenuOpen] = useState(null);
-
-  // Function to toggle the menu for a specific appointment
-  const toggleMenu = (appointmentId) => {
-    setMenuOpen(menuOpen === appointmentId ? null : appointmentId);
-  };
-
-  // Handle the action when an item is clicked in the menu
+  // HANDLE THE ACTION WHEN AN ITEM IS CLICKED IN THE ACTION MENU
   const handleActionClick = (action, appointmentId) => {
     console.log(`Action: ${action} on Appointment ID: ${appointmentId}`);
     setMenuOpen(null); // Close the menu after action
 
-    if (action === "Cancel") {
+    if (action === "Button Cancellation Request") {
       setPopupContent(
         <CancellationRequestForm
           appointmentId={appointmentId}
@@ -72,7 +65,25 @@ const AppointmentTechnician = () => {
       );
       setShowPopup(true); // Show the Cancellation Request Form popup
     } else if (action === "Start Appointment") {
-      setPopupContent(<TechnicianAppointmentCheckinPopup />);
+      setPopupContent(
+        <TechnicianAppointmentCheckinPopup
+          onClose={() => handleClosePopup(setShowPopup, setPopupContent)}
+        />
+      );
+      setShowPopup(true);
+    } else if (action === "Button Manage Availability") {
+      setPopupContent(
+        <PopupManageSlotsLabTechnician
+          onClose={() => handleClosePopup(setShowPopup, setPopupContent)}
+        />
+      );
+      setShowPopup(true);
+    } else if (action === "Button Book New Appointment") {
+      setPopupContent(
+        <PopupBookTechnicianAppointment
+          onClose={() => handleClosePopup(setShowPopup, setPopupContent)}
+        />
+      );
       setShowPopup(true);
     } else if (action === "Reschedule") {
       setPopupContent(
@@ -106,15 +117,29 @@ const AppointmentTechnician = () => {
             </div>
 
             <div className={styles.appointmentButtons}>
-              <button
-                onClick={() => {
-                  handleActionClick("Manage Availability");
-                }}
-                className={styles.addButton}
-              >
-                Manage Availability
-              </button>
-              <button className={styles.addButton}>Cancel Appointment</button>
+              {curUser[0].role === "lab_technician" && (
+                <button
+                  onClick={() => {
+                    handleActionClick("Button Manage Availability");
+                  }}
+                  className={styles.addButton}
+                >
+                  Manage Availability
+                </button>
+              )}
+              {(curUser[0].role === "patient" ||
+                curUser[0].role === "lab_admin") && (
+                <button
+                  className={styles.addButton}
+                  onClick={() => {
+                    handleActionClick("Button Book New Appointment");
+                  }}
+                >
+                  {curUser[0].role === "patient"
+                    ? "Book Lab Appointment"
+                    : "New Lab Appointment"}
+                </button>
+              )}
             </div>
           </div>
 
@@ -167,8 +192,7 @@ const AppointmentTechnician = () => {
                       <td>{row.patient?.gender || "N/A"}</td>
                     )}
                     <td>
-                      {row.time_slot?.slot_date} | {row.time_slot?.start_time} -{" "}
-                      {row.time_slot?.end_time}
+                      {row.appointment_date} | {row.checkin_time}
                     </td>
                     <td>
                       <ul>
@@ -194,18 +218,29 @@ const AppointmentTechnician = () => {
                     <td>{row.notes || "No additional notes"}</td>
 
                     <td
-                      className={getStatusClass(row.test_orders[0].test_status)}
+                      className={getStatusClass(
+                        row.test_orders?.[0]?.test_status || "",
+                        styles
+                      )}
                     >
-                      {row.test_orders[0].test_status}
+                      {row.test_orders?.[0]?.test_status || " "}
                     </td>
-                    <td className={getStatusClass(row.status)}>{row.status}</td>
-                    <td className={getStatusClass(row.status)}>
-                      {row.test_orders[0].results_available ? "Yes" : "No"}
+                    <td className={getStatusClass(row.status, styles)}>
+                      {row.status}
+                    </td>
+                    <td className={getStatusClass(row.status, styles)}>
+                      {row.test_orders[0]?.results_available ? "Yes" : "No"}
                     </td>
                     {/* ------------------------- ACTION BUTTONS -------------------------*/}
                     <td>
                       <button
-                        onClick={() => toggleMenu(row.appointment_id)}
+                        onClick={() =>
+                          toggleActionMenu(
+                            row.appointment_id,
+                            menuOpen,
+                            setMenuOpen
+                          )
+                        }
                         className={styles.moreActionsBtn}
                       >
                         <img
@@ -236,7 +271,7 @@ const AppointmentTechnician = () => {
                               <li
                                 onClick={() => {
                                   handleActionClick(
-                                    "Cancel",
+                                    "Button Cancellation Request",
                                     row.appointment_id
                                   );
                                 }}

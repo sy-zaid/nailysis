@@ -49,10 +49,10 @@ export const getDocFeeByType = (appointmentType) => {
   const url = `${API_URL}/api/doctor_fees/get_fees`;
   return axios.get(url, getHeaders());
 };
-export const getTechFeeByType = (appointmentType) => {
-  const url = `${API_URL}/api/lab_technician_fees/get_fees`;
-  return axios.get(url, getHeaders());
-};
+// export const getTechFeeByType = (appointmentType) => {
+//   const url = `${API_URL}/api/lab_technician_fees/get_fees`;
+//   return axios.get(url, getHeaders());
+// };
 
 export const rescheduleDoctorAppointment = async (
   appointmentId,

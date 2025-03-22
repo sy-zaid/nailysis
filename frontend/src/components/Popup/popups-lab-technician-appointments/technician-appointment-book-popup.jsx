@@ -5,11 +5,14 @@ import Popup from "../Popup.jsx";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import usePatientData from "../../../useCurrentUserData.jsx";
-import { calculateAge, handleInputChange, handleSelectChange } from "../../../utils/utils.js";
+import {
+  calculateAge,
+  handleInputChange,
+  handleSelectChange,
+} from "../../../utils/utils.js";
 import {
   getAvailableLabTests,
   getAvailableSlots,
-  getTechFeeByType,
   getTechnicianFromSpecialization,
   getTechnicianSpecializations,
 } from "../../../api/appointmentsApi.js";
@@ -22,6 +25,7 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
   const [specializations, setSpecializations] = useState([]);
   const [labTechnicians, setLabTechnicians] = useState([]);
   const [availableLabTests, setAvailableLabTests] = useState([]);
+  const [availableTestPrices, setAvailableTestPrices] = useState([]);
   const token = localStorage.getItem("access");
   const curUserRole = localStorage.getItem("role");
   const { data: curUser, isLoading, isError, error } = usePatientData(); // Fetch patient data
@@ -33,6 +37,7 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
     specialization: "",
     requestedLabTests: [],
     fee: "0.00",
+    notes: "",
     patientFirstName: "",
     patientLastName: "",
     date_of_birth: "",
@@ -41,9 +46,8 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
     email: "",
   });
 
-  console.log("CURRUSER", curUser);
   const [patient, setPatient] = useState([]); // Initialize patient state
-  
+
   useEffect(() => {
     if (curUserRole == "patient" && curUser && curUser.length > 0) {
       setPatient([curUser[0].patient.user, curUser[0].patient]); // Set patient data if available
@@ -54,9 +58,10 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
       console.log("No patient data available");
     }
   }, [curUser]); // Triggered whenever `curUser` changes
-  
-  const onSelectChange = handleSelectChange(setFormData)
+
+  const onSelectChange = handleSelectChange(setFormData);
   const onInputChange = handleInputChange(setFormData);
+
   // Fetch available tests on component mount
   useEffect(() => {
     const fetchLabTests = async () => {
@@ -67,6 +72,12 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
           label: test.label + " | " + test.price + " PKR", // Set label + price for a test
         }));
         setAvailableLabTests(transformedData);
+        const prices = response.data.map((test) => ({
+          id: test.id,
+          price: test.price,
+        }));
+        setAvailableTestPrices(prices);
+        console.log("AVTP", availableTestPrices);
       } catch (error) {
         console.error("Error fetching lab tests:", error);
       }
@@ -111,38 +122,16 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
     fetchlabTechnicians();
   }, [formData.specialization, token]);
 
-  // Fetch fee based on appointment type
-  useEffect(() => {
-    const fetchFee = async () => {
-      if (formData.labTestType) {
-        try {
-          const response = await getTechFeeByType(formData.LabTestType);
-
-          const filteredFee = response.data.find(
-            (item) => item.lab_test_type === formData.labTestType
-          );
-          setFormData((prev) => ({
-            ...prev,
-            fee: filteredFee ? filteredFee.fee : null,
-          }));
-        } catch (error) {
-          console.error("Failed to fetch fees", error);
-        }
-      }
-    };
-
-    fetchFee();
-  }, [formData.labTestType, token]);
-
   const handleBookAppointment = async (e) => {
     e.preventDefault();
 
-    const appointmentData = {
+    const payload = {
       lab_technician_id: formData.labTechnicianId,
       slot_id: formData.slotId,
       requested_lab_tests: formData.requestedLabTests,
       specialization: formData.specialization,
       fee: formData.fee,
+      notes: formData.notes,
       patient_first_name:
         patient?.first_name || formData.patientFirstName || "",
       patient_last_name: patient?.last_name || formData.patientLast || "",
@@ -154,19 +143,19 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
 
     try {
       const response = await axios.post(
-        "http://127.0.0.1:8000/api/lab_technician_appointments/book_lab_appointment/",
-        appointmentData,
+        "http://127.0.0.1:8000/api/lab_technician_appointments/book_appointment/",
+        payload,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
       alert("Appointment Booked Successfully");
       setAppointments([...appointments, response.data]);
-      console.log("Sending this to book:", appointmentData);
+      console.log("Sending this to book:", payload);
       navigate("");
     } catch (error) {
       alert("Failed to book appointment");
-      console.log("Sending this to book:", appointmentData);
+      console.log("Sending this to book:", payload);
       console.error(error);
     }
   };
@@ -193,6 +182,25 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
     } catch (error) {
       console.error("Failed to fetch available slots", error);
     }
+  };
+
+  useEffect(() => {
+    const total = formData.requestedLabTests?.reduce((sum, test) => {
+      const testPrice =
+        availableTestPrices.find((t) => t.id === test.value)?.price || 0;
+      return sum + parseFloat(testPrice);
+    }, 0);
+    setFormData((prevData) => ({ ...prevData, fee: total.toFixed(2) }));
+  }, [formData.requestedLabTests, availableTestPrices]);
+
+  const updateFee = (selectedTests) => {
+    const total = selectedTests.reduce((sum, test) => {
+      const testPrice =
+        availableTestPrices.find((t) => t.id === test.value)?.price || 0;
+      return sum + parseFloat(testPrice);
+    }, 0);
+
+    setFormData((prevData) => ({ ...prevData, fee: total.toFixed(2) }));
   };
 
   return (
@@ -369,7 +377,7 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
               </option>
               {availableSlots.map((slot, index) => (
                 <option key={index} value={slot.id}>
-                  {slot.slot_id} - {slot.end_time}
+                  {slot.slot_id} - {slot.start_time} to {slot.end_time}
                 </option>
               ))}
             </select>
@@ -382,9 +390,10 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
                 isMulti
                 options={availableLabTests}
                 placeholder="Select required lab tests"
-                onChange={(selected) =>
-                  onSelectChange("requestedLabTests", selected)
-                }
+                onChange={(selected) => {
+                  updateFee(selected);
+                  onSelectChange("requestedLabTests", selected);
+                }}
                 styles={{
                   control: (base) => ({
                     ...base,
@@ -393,7 +402,6 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
                     borderRadius: "none",
                     padding: "0",
                     outline: "none",
-
                     width: "80%",
                   }),
                   option: (base, state) => ({
@@ -412,9 +420,25 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
             </div>
           </div>
 
+          <div>
+            <label>Additional Notes</label>
+            <input
+              type="text"
+              name="notes"
+              value={formData.notes}
+              onChange={onInputChange}
+              placeholder={"Enter notes"}
+            />
+          </div>
+
           <div className={styles.formGroup}>
-            <label>Fee</label>
-            <p className={styles.subHeading}>RS/- {formData.fee}</p>
+            <label>Calculated Fee (PKR)</label>
+            <input
+              type="text"
+              value={formData.fee}
+              readOnly
+              className={styles.feeInput}
+            />
           </div>
 
           {/* Payment Details */}

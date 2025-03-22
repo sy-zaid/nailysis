@@ -54,6 +54,18 @@ class Appointment(models.Model):
     checkout_time = models.TimeField(null=True,blank=True)
     time_slot = models.OneToOneField(TimeSlot, on_delete=models.SET_NULL, null=True, blank=True)
     
+    def save(self, *args, **kwargs):
+        if self.time_slot:  # Ensure time_slot is not None
+            self.appointment_date = self.time_slot.slot_date
+            self.checkin_time = self.time_slot.start_time
+
+            # If the appointment is completed, set checkout time
+            if self.status == "Completed":
+                self.checkout_time = self.time_slot.end_time
+
+        super().save(*args, **kwargs)  # Ensure the object is actually saved
+        
+    
     def mark_no_show(self):
         """Mark appointment as No-show if patient doesn’t arrive"""
         self.status = "No-Show"
