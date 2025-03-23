@@ -1,4 +1,9 @@
 // You can add more functions below for reuse
+
+/**
+ * Predefined medical conditions options for react-select.
+ * @constant {Array<Object>}
+ */
 export const medicalConditionsOptions = [
   { value: "Diabetes", label: "Diabetes" },
   { value: "Hypertension", label: "Hypertension" },
@@ -8,6 +13,7 @@ export const medicalConditionsOptions = [
 
 /**
  * Predefined category options for react-select.
+ * @constant {Array<Object>}
  */
 export const categoryOptions = [
   { value: "Chronic", label: "Chronic" },
@@ -18,6 +24,7 @@ export const categoryOptions = [
 
 /**
  * Predefined diagnosis options for react-select.
+ * @constant {Array<Object>}
  */
 export const diagnosesOptions = [
   { value: "Anemia", label: "Anemia" },
@@ -28,6 +35,7 @@ export const diagnosesOptions = [
 
 /**
  * Predefined current medications options for react-select.
+ * @constant {Array<Object>}
  */
 export const currentMedicationsOptions = [
   { value: "Metformin", label: "Metformin" },
@@ -36,6 +44,10 @@ export const currentMedicationsOptions = [
   { value: "Atorvastatin", label: "Atorvastatin" },
 ];
 
+/**
+ * Predefined visit purposes.
+ * @constant {Array<string>}
+ */
 export const visitPurposes = [
   "Consultation",
   "Follow-up",
@@ -44,15 +56,45 @@ export const visitPurposes = [
   "Prescription Refill",
 ];
 
-export const technicianVisitPurposes = [
-  "Complete Blood Count (CBC)",
-    "Basic Metabolic Panel (BMP)",
-    "Hemoglobin A1c (HbA1c)",
-    "Testosterone Test",
-    "PCR Test",
-    "BRCA Gene Test",
+/**
+ * Predefined test types for laboratory testing.
+ * @constant {Array<Object>}
+ */
+export const testTypes = [
+  { value: "CBC", label: "Complete Blood Count (CBC)" },
+  { value: "BloodSugar", label: "Blood Sugar Test" },
+  { value: "HbA1c", label: "HbA1c (Diabetes Test)" },
+  {
+    value: "LipidProfile",
+    label: "Lipid Profile (Cholesterol Test)",
+  },
+  {
+    value: "Thyroid",
+    label: "Thyroid Function Test (T3, T4, TSH)",
+  },
 ];
 
+/**
+ * Returns the corresponding CSS class for a given status.
+ * @param {string} status - The appointment status.
+ * @param {Object} styles - The styles object containing class names.
+ * @returns {string} The appropriate CSS class.
+ */
+export const getStatusClass = (status, styles) => {
+  switch (status) {
+    case "Consulted":
+      return styles.consulted;
+    case "Cancelled":
+      return styles.cancelled;
+    default:
+      return styles.scheduled;
+  }
+};
+
+/**
+ * Retrieves the access token from local storage.
+ * @returns {string|null} The access token or null if not found.
+ */
 export const getAccessToken = () => {
   return localStorage.getItem("access");
 };
@@ -69,10 +111,19 @@ export const getHeaders = () => {
   };
 };
 
+/**
+ * Retrieves the user role from local storage.
+ * @returns {string|null} The user role or null if not found.
+ */
 export const getRole = () => {
   return localStorage.getItem("role");
 };
 
+/**
+ * Calculates age based on the provided date of birth.
+ * @param {string} dob - The date of birth in YYYY-MM-DD format.
+ * @returns {number} The calculated age.
+ */
 export const calculateAge = (dob) => {
   const birthDate = new Date(dob);
   const today = new Date();
@@ -88,7 +139,11 @@ export const calculateAge = (dob) => {
   }
   return age;
 };
-
+/**
+ * Handles selection changes for multi-select dropdowns.
+ * @param {Function} setData - State setter function for updating data.
+ * @returns {Function} Function to handle selection change.
+ */
 export const handleSelectChange = (setData) => (name, selectedOptions) => {
   setData((prevData) => ({
     ...prevData,
@@ -96,27 +151,40 @@ export const handleSelectChange = (setData) => (name, selectedOptions) => {
   }));
 };
 
+/**
+ * Handles input field changes.
+ * @param {Function} setData - State setter function for updating input data.
+ * @returns {Function} Function to handle input change.
+ */
 export const handleInputChange = (setData) => (e) => {
   const { name, value } = e.target;
   setData((prev) => ({ ...prev, [name]: value }));
 };
 
+/**
+ * Formats EHR (Electronic Health Record) data for UI display.
+ * @param {Object|Array} response - API response containing EHR records.
+ * @param {string} type - Type of EHR processing ("ehr_ws" or "ehr_create").
+ * @returns {Array<Object>} Formatted EHR records.
+ */
 export const formatEhrRecords = (response, type) => {
   if (!response) {
     console.error("formatEhrRecords received undefined data");
     return [];
   }
-  let ehrArray;
-  if (type === "ehr_ws") {
-    // Ensure ehrData is always an array
-    ehrArray = Array.isArray(response) ? response : [response];
-  } else if (type === "ehr_create") {
-    ehrArray = response;
-  }
+
+  let ehrArray =
+    type === "ehr_ws"
+      ? Array.isArray(response)
+        ? response
+        : [response]
+      : response;
+
   console.log("CONVERTING THIS:", ehrArray);
+
   return ehrArray.map((record) => ({
     id: record.id,
-    patient_id: record.patient?.user?.user_id || "Unknown", // Patient ID
+    patient_id: record.patient?.user?.user_id || "Unknown",
     patient_name: `${record.patient?.user?.first_name || "Null"} ${
       record.patient?.user?.last_name || "Null"
     }`,
@@ -153,15 +221,18 @@ export const formatEhrRecords = (response, type) => {
   }));
 };
 
+/**
+ * Formats Medical History records for UI display.
+ * @param {Object} response - API response containing medical history records.
+ * @returns {Array<Object>} Formatted medical history records.
+ */
 export const formatMedicalHistoryRecords = (response) => {
   if (!response) {
-    console.log("formatMedicalHistoryRecords received undefined data");
+    console.error("formatMedicalHistoryRecords received undefined data");
+    return [];
   }
 
-  let medicalHistoryArray;
-  medicalHistoryArray = response;
-
-  return medicalHistoryArray.data.map((record) => ({
+  return response.data.map((record) => ({
     id: record.id,
     patient_id: `${record.patient?.user?.user_id || "Null"}`,
     patient_name: `${record.patient?.user?.first_name || "Null"} ${
@@ -195,6 +266,12 @@ export const formatMedicalHistoryRecords = (response) => {
       : "N/A",
   }));
 };
+
+/**
+ * Prepares EHR payload for API submission.
+ * @param {Object} ehrData - EHR data to be sent to the backend.
+ * @returns {Object} Processed payload where arrays are stringified.
+ */
 export const preparePayload = (ehrData) => {
   return Object.fromEntries(
     Object.entries(ehrData).map(([key, value]) => [
@@ -204,14 +281,45 @@ export const preparePayload = (ehrData) => {
   );
 };
 
+/**
+ * Toggles the action menu visibility for a specific record.
+ * @param {string} recordId - ID of the record.
+ * @param {string|null} menuOpen - Currently open menu ID.
+ * @param {Function} setMenuOpen - Function to update menu state.
+ */
 export const toggleActionMenu = (recordId, menuOpen, setMenuOpen) => {
   setMenuOpen(menuOpen === recordId ? null : recordId);
 };
 
-export const handleClosePopup = () => {
+/**
+ * Closes the popup and resets its content.
+ * @param {Function} setShowPopup - Function to control popup visibility.
+ * @param {Function} setPopupContent - Function to set popup content.
+ */
+export const handleClosePopup = (setShowPopup, setPopupContent) => {
   setShowPopup(false);
+  setPopupContent(null);
 };
 
-export const handleOpenPopup = () => {
+/**
+ * Opens the popup.
+ * @param {Function} setShowPopup - Function to control popup visibility.
+ */
+export const handleOpenPopup = (setShowPopup) => {
   setShowPopup(true);
+};
+
+/**
+ * Calculates the total fee for selected lab tests based on available test prices.
+ * @param {Array} selectedTests - List of selected lab tests.
+ * @param {Array} availableTestPrices - List of available lab tests with their prices.
+ * @returns {string} The total fee as a string with two decimal places.
+ */
+export const calculateTotalFee = (selectedTests, availableTestPrices) => {
+  const total = selectedTests.reduce((sum, test) => {
+    const testPrice =
+      availableTestPrices.find((t) => t.id === test.value)?.price || 0;
+    return sum + parseFloat(testPrice);
+  }, 0);
+  return total.toFixed(2);
 };

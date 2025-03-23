@@ -3,7 +3,16 @@ import axios from "axios";
 import { getHeaders } from "../utils/utils";
 const API_URL = import.meta.env.VITE_API_URL;
 
-export const getAppointments = async () => api.get("/api/appointments/");
+export const getLabTechnicianAppointments = async () => {
+  const url = `${API_URL}/api/lab_technician_appointments/`;
+  return axios.get(url, getHeaders());
+};
+
+export const getAvailableLabTests = async () => {
+  const url = `${API_URL}/api/test_types/`;
+  return axios.get(url, getHeaders());
+};
+
 export const bookAppointment = (appointmentData) => {
   const url = `${API_URL}/api/doctor_appointments/book_appointment/`;
   return axios.post(url, appointmentData, getHeaders());
@@ -40,10 +49,6 @@ export const getDocFeeByType = (appointmentType) => {
   const url = `${API_URL}/api/doctor_fees/get_fees`;
   return axios.get(url, getHeaders());
 };
-export const getTechFeeByType = (appointmentType) => {
-  const url = `${API_URL}/api/lab_technician_fees/get_fees`;
-  return axios.get(url, getHeaders());
-};
 
 export const rescheduleDoctorAppointment = async (
   appointmentId,
@@ -53,10 +58,7 @@ export const rescheduleDoctorAppointment = async (
   return axios.put(url, appointmentData, getHeaders());
 };
 
-export const saveAndCompleteDoctorAppointment = async (
-  appointmentId,
-  ehrData
-) => {
+export const saveCompleteDoctorAppointment = async (appointmentId, ehrData) => {
   const url = `${API_URL}/api/doctor_appointments/${appointmentId}/save_and_complete/`;
   return axios.post(url, ehrData, getHeaders());
 };
@@ -74,4 +76,22 @@ export const getAvailableSlots = async (doctorId, labTechnicianId, date) => {
 
   const response = await axios.get(url, getHeaders());
   return Array.isArray(response.data) ? response.data : [];
+};
+
+export const rescheduleTechnicianAppointment = async (
+  appointmentId,
+  appointmentData
+) => {
+  const url = `${API_URL}/api/lab_technician_appointments/${appointmentId}/reschedule_lab_appointment/`;
+  return axios.put(url, appointmentData, getHeaders());
+};
+
+export const bookTechnicianAppointment = async (payload) => {
+  const url = `${API_URL}/api/lab_technician_appointments/book_appointment/`;
+  return axios.post(url, payload, getHeaders());
+};
+
+export const cancelTechnicianAppointment = async (appointmentId) => {
+  const url = `${API_URL}/api/lab_appointments/${appointmentId}/cancel_appointment/`;
+  return axios.post(url, getHeaders());
 };

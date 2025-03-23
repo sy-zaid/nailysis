@@ -95,7 +95,7 @@ const SubmitFeedback = ({ onClose }) => {
 
     <Popup trigger={popupTrigger} setTrigger={setPopupTrigger} onClose={onClose}>
 
-      <div className={styles.formContainer}>
+      <div className={styles.formContainer} style={{ marginTop: "-12%" }}>
 
         <div className={styles.headerSection}>
 
@@ -109,13 +109,13 @@ const SubmitFeedback = ({ onClose }) => {
         <hr />
 
         <div className={styles.popupBottom}>
-
-          <label>Select a Category</label>
+          
+          <label className={styles.submitFeedbackLabel}>Select a Category</label>
           <select
-            name="category"
-            value={formData.category}
-            onChange={onInputChange}
-            style={{}}
+          style={{ marginLeft: "23px" }}
+              name="category"
+              value={formData.category}
+              onChange={onInputChange}
           >
             <option value="">Select Category</option>
             {categories.map((spec, index) => (
@@ -124,7 +124,8 @@ const SubmitFeedback = ({ onClose }) => {
               </option>
             ))}
           </select>
-          <label style={{ marginLeft: "-67.5%" }}>Enter Feedback</label>
+
+          <label className={styles.submitFeedbackLabel}>Enter Feedback</label>
           <textarea
             name="description"
             placeholder="Write your feedback here..."

@@ -1,14 +1,17 @@
 import { Link } from "react-router-dom"; // ✅ Import Link properly
 import React from "react";
-import PopupFeedbackForm from "../../components/Popup/feedbacks-popups/popup-feedback-form";
-import PopupFeedbackResponse from "../../components/Popup/feedbacks-popups/popup-feedback-response";
-import { useState, useEffect } from "react";
+import PopupFeedbackForm from "../../components/Popup/feedbacks-popups/feedback-form-popup.jsx";
+import PopupFeedbackResponse from "../../components/Popup/feedbacks-popups/feedback-response-popup.jsx";
+import PopupFeedbackDetails from "../../components/Popup/feedbacks-popups/feedback-details-popup.jsx";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { handleOpenPopup, handleClosePopup } from "../../utils/utils";
 import Header from "../../components/Dashboard/Header/Header.jsx";
 import styles from "./feedbacks.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
+import { getRole } from "../../utils/utils";
+
 
 const API_BASE_URL = "http://localhost:8000/api/feedbacks"; // Update with actual API URL
 
@@ -19,6 +22,7 @@ const SendFeedback = () => {
   const [popupContent, setPopupContent] = useState(); // Store popup content
   const [showPopup, setShowPopup] = useState(false); // Track popup visibility
   const [selectedRecords, setSelectedRecords] = useState([]);
+  const curUserRole = getRole(); // Get current user role
 
   const [activeButton, setActiveButton] = useState(0);
   
@@ -49,29 +53,121 @@ const SendFeedback = () => {
   };
   
 
+  const [popupVisible, setPopupVisible] = useState(false);
+  const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
+  const popupRef = useRef(null);
+
+  // Static feedback data (2 sample rows)
+  const data = [
+    {
+        id: 1,
+        feedbackID: "123456",
+        feedbackBy: "John",
+        role: "patient",
+        dateAndTimeofFeedback: "10/10/2024 09:30 AM",
+        category: "Service Issues",
+        feedbackComments: "Lorem Ipsum è un testo segnaposto utilizzato nel settore ...",
+        response: "xyz lorem ipsum",
+        respondedBy: "CA/LA",
+        status: "Resolved",
+    },
+
+    {
+        id: 2,
+        feedbackID: "123456",
+        feedbackBy: "Doe",
+        role: "patient",
+        dateAndTimeofFeedback: "10/10/2024 09:30 AM",
+        category: "Technical Issues",
+        feedbackComments: "Lorem Ipsum è un testo segnaposto utilizzato nel settore ...",
+        response: "N/a",
+        respondedBy: "N/a",
+        status: "Pending",
+    },
+    {
+      id: 3,
+      feedbackID: "123456",
+      feedbackBy: "John",
+      role: "doctor",
+      dateAndTimeofFeedback: "10/10/2024 09:30 AM",
+      category: "Technical Issues",
+      feedbackComments: "Lorem Ipsum è un testo segnaposto utilizzato nel settore ...",
+      response: "N/a",
+      respondedBy: "N/a",
+      status: "Pending",
+  },
+  ];
+
+
+  const getStatusClass = (status) => {
+    switch (status) {
+      case "Resolved":
+        return styles.resolved;
+      case "In Progress":
+        return styles.inProgress;
+      case "Pending":
+        return styles.pending;
+      default:
+        return styles.defaultColor;
+    }    
+  }
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (popupRef.current && !popupRef.current.contains(event.target)) {
+        setPopupVisible(false);
+      }
+    };
+  
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   const handleFilterClick = (index) => {
     setActiveButton(index); // Set the active button when clicked
   };
+  
 
   useEffect(() => {
     fetchFeedbacks(); // ✅ Call the function to fetch feedbacks
   }, []);
 
+  const handleClosePopup = () => {
+    setShowPopup(false); // Hide the popup when closing
+    onClose();
+  };
+
+  const togglePopup = (event) => {
+    const iconRect = event.target.getBoundingClientRect();
+    setPopupPosition({
+      top: iconRect.top + window.scrollY + iconRect.height + 5, // Adjust for scroll position
+      left: iconRect.left + window.scrollX - 95, // Adjust for horizontal scroll
+    });
+    setPopupVisible(!popupVisible);
+  };
+
   const handleActionClick = (action, recordDetails) => {
     console.log(`Performing ${action} on`, recordDetails);
-    setMenuOpen(null, menuOpen, setMenuOpen); // Close action menu
-
+    setPopupVisible(false); // Close popup after clicking any action
+  
     if (action === "Submit Clinic Feedback") {
       setPopupContent(<PopupFeedbackForm onClose={handleClosePopup} />);
       setShowPopup(true);
     } if (action === "Submit Lab Feedback") {
       setPopupContent(<PopupFeedbackForm onClose={handleClosePopup} />);
       setShowPopup(true);
+    } if (action === "View Feedback Details") {
+      setPopupContent(<PopupFeedbackDetails onClose={handleClosePopup} />);
+      setShowPopup(true);
     } else if (action === "Respond To Feedback") {
       setPopupContent(<PopupFeedbackResponse onClose={handleClosePopup} />);
       setShowPopup(true);
-    }
+    } 
   };
+  
+
   return (
     <div className="p-5">
       {showPopup && popupContent}
@@ -86,57 +182,70 @@ const SendFeedback = () => {
         {/* Page Header */}
         <div className={styles.pageTop}>
           <Header
-            mainHeading={'Feedbacks'}
-            subHeading={'View and manage your Feedbacks'}
+            mainHeading={'Feedback Management'}
+            subHeading={'Here you can view and manage all the feedbacks'}
           />
         </div>
 
 
-        <div className={styles.mainContent}>
-
-          <div className={styles.appointmentsContainer}>
-
-            {/* Filter buttons with dynamic active state */}
-            <div className={styles.filters}>
-              <button
-                className={`${styles.filterButton} ${activeButton === 0 ? styles.active : ''}`}
-                onClick={() => handleFilterClick(0)}
-              >
-                All
-              </button>
-              <button
-                className={`${styles.filterButton} ${activeButton === 1 ? styles.active : ''}`}
-                onClick={() => handleFilterClick(1)}
-              >
-                Filter 1
-              </button>
-              <button
-                className={`${styles.filterButton} ${activeButton === 2 ? styles.active : ''}`}
-                onClick={() => handleFilterClick(2)}
-              >
-                Filter 2
-              </button>
-              <button
-                className={`${styles.filterButton} ${activeButton === 3 ? styles.active : ''}`}
-                onClick={() => handleFilterClick(3)}
-              >
-                Filter 3
-              </button>
-
-              {/* <p>Total Records: {filteredRecords.length}</p> */}
-              <p>Total Records: 50</p>
+      <div className={styles.mainContent}>
+        
+        <div className={styles.appointmentsContainer}>
+          
+          {/* Filter buttons with dynamic active state */}
+          <div className={styles.filters}>
+            <button
+              className={`${styles.filterButton} ${activeButton === 0 ? styles.active : ''}`}
+              onClick={() => handleFilterClick(0)}
+            >
+              All
+            </button>
+            <button
+              className={`${styles.filterButton} ${activeButton === 1 ? styles.active : ''}`}
+              onClick={() => handleFilterClick(1)}
+            >
+              Patients
+            </button>
+            <button
+              className={`${styles.filterButton} ${activeButton === 2 ? styles.active : ''}`}
+              onClick={() => handleFilterClick(2)}
+            >
+              Doctors
+            </button>
+            <button
+              className={`${styles.filterButton} ${activeButton === 3 ? styles.active : ''}`}
+              onClick={() => handleFilterClick(3)}
+            >
+              Technician
+            </button>
+                   
+            {/* <p>Total Records: {filteredRecords.length}</p> */}
+            <p>Total Records: 45</p>
 
               <div className={styles.appointmentButtons}>
-                <button className={styles.addButton} onClick={() => handleActionClick("Submit Clinic Feedback")}>
-                  Submit Clinic Feedback
+                
+              {/* Show 'Submit New Feedback' for patients, doctors, and lab technicians */}
+{(curUserRole === "patient" || curUserRole === "doctor" || curUserRole === "lab_technician") && (
+  <>
+    <button className={styles.addButton} onClick={() => handleActionClick("Submit Clinic Feedback")}>
+      <i className="bx bx-plus-circle"></i> Submit Clinic Feedback
+    </button>
+    
+    <button className={styles.addButton} onClick={() => handleActionClick("Submit Lab Feedback")}>
+      Submit Lab Feedback
+    </button>
+  </>
+)}
+
+
+              {/* Show 'Respond To Feedback' for lab admins and clinic admins */}
+              {(curUserRole === "lab_admin" || curUserRole === "clinic_admin") && (
+              <button className={styles.addButton}>
+                  <i className='bx bx-plus-circle'></i> Request New Feedback
                 </button>
-                <button className={styles.addButton} onClick={() => handleActionClick("Submit Lab Feedback")}>
-                  Submit Lab Feedback
-                </button>
-                <button className={styles.addButton} onClick={() => handleActionClick("Respond To Feedback")}>
-                  Respond To Feedback
-                </button>
-              </div>
+                )}
+
+            </div>
             </div>
 
 
@@ -178,6 +287,10 @@ const SendFeedback = () => {
                         <input type="checkbox" />
                       </th>
                       <th>ID</th>
+                      <th>Feedback By</th>
+                    {(curUserRole === "lab_admin" || curUserRole === "clinic_admin") && (
+                      <th>Role</th>
+                    )}
                       <th>Submitted at</th>
                       <th>Category</th>
                       <th>Description</th>
@@ -227,9 +340,43 @@ const SendFeedback = () => {
 
         </div>
 
-      </div>
+      {/* Popup */}
+      {popupVisible && (
+        <div
+          ref={popupRef}
+          style={{
+            position: "absolute",
+            top: popupPosition.top,
+            left: popupPosition.left,
+            background: "white",
+            border: "1px solid #ccc",
+            boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+            padding: "10px",
+            borderRadius: "10px",
+            fontSize: "14px",
+            zIndex: 1000,
+          }}
+        >
+          
+          <p style={{ margin: "10px 0", cursor: "pointer" }} onClick={() => handleActionClick("View Feedback Details")}> 
+            <i className="fa-solid fa-repeat" style={{margin: "0 5px 0 0"}}></i> View Details
+          </p>
 
-    </div>
+          <p style={{ margin: "10px 0", cursor: "pointer" }} onClick={() => handleActionClick("Respond To Feedback")}>
+            <i className="fa-regular fa-file-pdf" style={{margin: "0 5px 0 0"}}></i> Edit Feedback
+          </p>
+          
+          <p style={{ margin: "10px 0", cursor: "pointer" }}>
+            <i className="fa-regular fa-circle-xmark" style={{ color: "red", margin: "0 5px 0 0"}}></i> Delete Feedback
+          </p>
+          
+
+          </div>
+      )}
+
+  </div>
+
+
   );
 };
 

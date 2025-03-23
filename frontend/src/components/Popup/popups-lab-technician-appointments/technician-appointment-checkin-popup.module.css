@@ -326,11 +326,11 @@
   }
 
   input[type="date"] {
-    padding: 7px !important;
+    padding: 10px;
   }
 
 
-  input[type="text"] {
+  input[type="text"], select, input[type="date"]  {
     cursor: auto;
     padding-left: 0 !important;
   }

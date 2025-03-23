@@ -4,7 +4,7 @@ import Popup from "../Popup.jsx";
 import useCurrentUserData from "../../../useCurrentUserData.jsx";
 import { getHeaders } from "../../../utils/utils.js";
 
-const ManageSlotsPopup = () => {
+const ManageSlotsPopup = ({onClose}) => {
   const [popupTrigger, setPopupTrigger] = useState(true);
   const { data: curUser } = useCurrentUserData();
   const [user, setUser] = useState();

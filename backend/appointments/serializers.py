@@ -10,10 +10,10 @@ These serializers ensure proper data validation and transformation for API inter
 """
 
 from rest_framework import serializers
-from appointments.models import Appointment, DoctorAppointment,TimeSlot, TechnicianAppointment, DoctorAppointmentFee, LabTechnicianAppointmentFee,CancellationRequest
+from appointments.models import Appointment, DoctorAppointment,TimeSlot, TechnicianAppointment, DoctorAppointmentFee,CancellationRequest
 from users.models import Doctor,LabTechnician
 from users.serializers import PatientSerializer, DoctorSerializer, LabTechnicianSerializer
-
+from labs.serializers import LabTestOrderSerializer
 
 class AppointmentSerializer(serializers.ModelSerializer):
     """
@@ -81,10 +81,7 @@ class DoctorAppointmentSerializer(serializers.ModelSerializer):
         )
 
 
-class LabTechnicianFeeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = LabTechnicianAppointmentFee
-        fields = "__all__"
+
 
 class TechnicianAppointmentSerializer(serializers.ModelSerializer):
     """
@@ -96,6 +93,8 @@ class TechnicianAppointmentSerializer(serializers.ModelSerializer):
     """
     patient = PatientSerializer()
     lab_technician = LabTechnicianSerializer()
+    time_slot = TimeSlotSerializer(read_only = True)
+    test_orders = LabTestOrderSerializer(many=True, read_only=True)  # Fix: Removed incorrect `source='testorder_set'`
 
     class Meta:
         model = TechnicianAppointment

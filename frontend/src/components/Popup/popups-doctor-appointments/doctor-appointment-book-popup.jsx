@@ -40,6 +40,7 @@ const BookDoctorAppointmentPopup = ({ onClose }) => {
     gender: "",
     phone: "",
     email: "",
+    notes: "",
   });
   useEffect(() => {
     if (curUserRole == "patient" && curUser && curUser.length > 0) {
@@ -123,6 +124,7 @@ const BookDoctorAppointmentPopup = ({ onClose }) => {
       slot_id: formData.slotId,
       appointment_type: formData.appointmentType,
       specialization: formData.specialization,
+      notes: formData.notes,
       fee: formData.fee,
       patient_first_name:
         patient?.first_name || formData.patientFirstName || "",
@@ -171,7 +173,11 @@ const BookDoctorAppointmentPopup = ({ onClose }) => {
   };
 
   return (
-    <Popup trigger={popupTrigger} setTrigger={setPopupTrigger} onClose={onClose}>
+    <Popup
+      trigger={popupTrigger}
+      setTrigger={setPopupTrigger}
+      onClose={onClose}
+    >
       <div className={styles.formContainer}>
         <div className={styles.header}>
           <h2>Schedule Your Appointment</h2>
@@ -182,10 +188,12 @@ const BookDoctorAppointmentPopup = ({ onClose }) => {
         </h5>
         <hr />
 
-        <form onSubmit={(e) => e.preventDefault()}>
+          <form onSubmit={(e) => e.preventDefault()}>
+
+          <div className={styles.popupBottom}>
           {/* Patient Information */}
           <div className={styles.formSection}>
-            <h3>Patient Information</h3>
+          <h3><i className="fa-solid fa-circle fa-2xs" style={{color: "#007bff", marginRight: "10px"}}></i> Patient Information</h3>
             <div className={styles.formGroup}>
               <div>
                 <label>First Name</label>
@@ -260,6 +268,7 @@ const BookDoctorAppointmentPopup = ({ onClose }) => {
                       : "Enter phone number"
                   }
                   disabled={curUserRole === "patient"}
+                  style={{ height: "20px" }}
                 />
               </div>
               <div>
@@ -280,95 +289,117 @@ const BookDoctorAppointmentPopup = ({ onClose }) => {
             </div>
           </div>
 
+          <hr />
+
           {/* Appointment Details */}
+          <div className={styles.formSection}>
+          <h3><i className="fa-solid fa-circle fa-2xs" style={{color: "#007bff", marginRight: "10px"}}></i> Appointment Details</h3>
+                      
           <div className={styles.formGroup}>
-            <label>Specialization</label>
-            <select
-              name="specialization"
-              value={formData.specialization}
-              onChange={onInputChange}
-            >
-              <option value="">Select Specialization</option>
-              {specializations.map((spec, index) => (
-                <option key={index} value={spec}>
-                  {spec}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className={styles.formGroup}>
-            <label>Doctor</label>
-            <select
-              name="doctorId"
-              value={formData.doctorId}
-              onChange={onInputChange}
-            >
-              <option value="">Select Doctor</option>
-              {doctors.length > 0 ? (
-                doctors.map((doctor) => (
-                  <option key={doctor.id} value={doctor.id}>
-                    {doctor.name}
+            <div>
+              <label>Specialization</label>
+              <select
+                name="specialization"
+                value={formData.specialization}
+                onChange={onInputChange}
+              >
+                <option value="">Select Specialization</option>
+                {specializations.map((spec, index) => (
+                  <option key={index} value={spec}>
+                    {spec}
                   </option>
-                ))
-              ) : (
-                <option disabled>Loading doctors...</option>
-              )}
-            </select>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label>Doctor</label>
+              <select
+                name="doctorId"
+                value={formData.doctorId}
+                onChange={onInputChange}
+              >
+                <option value="">Select Doctor</option>
+                {doctors.length > 0 ? (
+                  doctors.map((doctor) => (
+                    <option key={doctor.id} value={doctor.id}>
+                      {doctor.name}
+                    </option>
+                  ))
+                ) : (
+                  <option disabled>Loading doctors...</option>
+                )}
+              </select>
+            </div>
+
+            <div>
+              <label>Date & Time</label>
+              <input
+                type="date"
+                name="appointmentDate"
+                value={formData.appointmentDate}
+                onChange={onInputChange}
+              />
+            </div>
+
+            {/* Available Slots Selection */}
+            <div>
+              <label>Available Slots</label>
+              <select
+                name="slotId"
+                value={formData.slotId}
+                onChange={onInputChange}
+                disabled={availableSlots.length === 0}
+              >
+                <option value="">
+                  {availableSlots.length ? "Select a Slot" : "No slots available"}
+                </option>
+                {availableSlots.map((slot, index) => (
+                  <option key={index} value={slot.id}>
+                    {slot.slot_id} - {slot.end_time}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label>Visit Purpose</label>
+              <select
+                name="appointmentType"
+                value={formData.appointmentType}
+                onChange={onInputChange}
+              >
+                {visitPurposes.map((purpose, index) => (
+                  <option key={index} value={purpose}>
+                    {purpose}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label>Fee</label>
+              <p className={styles.subHeading}>RS/- {formData.fee}</p>
+            </div>
           </div>
 
-          <div className={styles.formGroup}>
-            <label>Date & Time</label>
+          </div>
+          <div>
+            <label>Additional Notes</label>
             <input
-              type="date"
-              name="appointmentDate"
-              value={formData.appointmentDate}
+              type="text"
+              name="notes"
+              value={formData.notes}
               onChange={onInputChange}
+              placeholder={"Enter notes"}
             />
           </div>
-          {/* Available Slots Selection */}
-          <div className={styles.formGroup}>
-            <label>Available Slots</label>
-            <select
-              name="slotId"
-              value={formData.slotId}
-              onChange={onInputChange}
-              disabled={availableSlots.length === 0}
-            >
-              <option value="">
-                {availableSlots.length ? "Select a Slot" : "No slots available"}
-              </option>
-              {availableSlots.map((slot, index) => (
-                <option key={index} value={slot.id}>
-                  {slot.slot_id} - {slot.end_time}
-                </option>
-              ))}
-            </select>
-          </div>
 
-          <div className={styles.formGroup}>
-            <label>Visit Purpose</label>
-            <select
-              name="appointmentType"
-              value={formData.appointmentType}
-              onChange={onInputChange}
-            >
-              {visitPurposes.map((purpose, index) => (
-                <option key={index} value={purpose}>
-                  {purpose}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className={styles.formGroup}>
-            <label>Fee</label>
-            <p className={styles.subHeading}>RS/- {formData.fee}</p>
-          </div>
+          <hr />
 
           {/* Payment Details */}
           <div className={styles.formSection}>
-            <h3>Payment Details</h3>
+          <h3><i className="fa-solid fa-circle fa-2xs" style={{color: "#007bff", marginRight: "10px"}}></i> Payment Details</h3>
             <div className={styles.formGroup}>
               <div>
                 <label>Discount Code</label>
@@ -392,12 +423,13 @@ const BookDoctorAppointmentPopup = ({ onClose }) => {
               Cancel
             </button>
             <button
-              className={styles.confirmButton}
+              className={styles.addButton}
               type="submit"
               onClick={handleBookAppointment}
             >
               Continue to Next Step
             </button>
+          </div>
           </div>
         </form>
       </div>

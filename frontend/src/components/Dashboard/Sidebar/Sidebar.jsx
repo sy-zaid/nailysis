@@ -102,7 +102,8 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
         icon: "icon-appointments-black.jpg",
         label: "Appointments",
         subItems: [
-          { label: "View Appointments" },
+          { label: "View Clinic Appointments" },
+          { label: "View Lab Appointments" },
           { label: "Appointments History" },
           { label: "Cancellation Requests" },
         ],
