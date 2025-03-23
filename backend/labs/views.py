@@ -7,13 +7,23 @@ from rest_framework.decorators import action
 
 
 from .models import LabTestType,LabTestOrder,LabTestResult
-from .serializers import LabTestTypeSerailzer
+from .serializers import LabTestTypeSerializer,LabTestOrderSerializer
 
 class LabTestTypeModelViewSet(viewsets.ModelViewSet):
     queryset = LabTestType.objects.all()
-    serializer_class = LabTestTypeSerailzer
+    serializer_class = LabTestTypeSerializer
     permission_classes = [permissions.AllowAny]
     
     def get_queryset(self):
         return LabTestType.objects.all()
+
+class LabTestOrderModelViewSet(viewsets.ModelViewSet):
+    queryset = LabTestOrder.objects.all()
+    serializer_class = LabTestOrderSerializer
+    permission_classes = [permissions.AllowAny]
+    
+    def get_queryset(self):
+        return LabTestOrder.objects.all()
+    
+
     
