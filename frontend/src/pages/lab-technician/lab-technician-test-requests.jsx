@@ -197,7 +197,7 @@ const TestRequests = (props) => {
                   <th>Price</th>
                   <th>Payment</th>
                   <th>Status</th>
-                  <th> </th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>

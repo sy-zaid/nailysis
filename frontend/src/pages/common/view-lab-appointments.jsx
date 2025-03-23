@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import styles from "../../components/CSS Files/PatientAppointment.module.css";
+import styles from "../common/all-pages-styles.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
+import Header from "../../components/Dashboard/Header/Header";
 import AppointmentDetailsPopup from "../../components/Popup/popups-doctor-appointments/doctor-appointment-details-popup";
 
 import CancellationRequestForm from "../lab-technician/cancellation-request-form"; // Import CancellationRequestForm
@@ -19,7 +20,7 @@ import {
   getAccessToken,
   handleOpenPopup,
   handleClosePopup,
-  getStatusClass,
+  getStatusClass, 
   toggleActionMenu,
 } from "../../utils/utils";
 import PopupBookTechnicianAppointment from "../../components/Popup/popups-lab-technician-appointments/technician-appointment-book-popup";
@@ -36,8 +37,13 @@ const AppointmentTechnician = () => {
 
   // ----- IMPORTANT DATA
   const [appointments, setAppointments] = useState([]);
+  const [activeButton, setActiveButton] = useState(0); 
 
   // ----- HANDLERS
+  const handleFilterClick = (index) => {
+    setActiveButton(index); // Set the active button when clicked
+  };
+
   // Handles the action when an item is clicked in the action menu
   const handleActionClick = (action, appointmentId) => {
     console.log(`Action: ${action} on Appointment ID: ${appointmentId}`);
@@ -123,21 +129,43 @@ const AppointmentTechnician = () => {
       {showPopup && popupContent}{" "}
       <div className={styles.pageTop}>
         <Navbar />
-        <h1>Appointments</h1>
-        <p>Here you can view and manage all the booked appointments</p>
+        <Header 
+            mainHeading={'Appointments'}
+            subHeading={'Here you can view and manage all the booked appointments'}
+        />
       </div>
+
       <div className={styles.mainContent}>
+        
         <div className={styles.appointmentsContainer}>
           <div className={styles.filters}>
-            <div className={styles.filterTabs}>
-              <button className={styles.filterButton}>All</button>
-              <button className={styles.filterButton}>Upcoming</button>
-              <button className={styles.filterButton}>Consulted</button>
-              <button className={styles.filterButton}>Cancelled</button>
-              <p className={styles.statusSummary}>50 completed, 4 upcoming</p>
-            </div>
+            <button
+              className={`${styles.filterButton} ${activeButton === 0 ? styles.active : ''}`}
+              onClick={() => handleFilterClick(0)}
+            >
+              All
+            </button>
+            <button
+              className={`${styles.filterButton} ${activeButton === 1 ? styles.active : ''}`}
+              onClick={() => handleFilterClick(1)}
+            >
+              Pending
+            </button>
+            <button
+              className={`${styles.filterButton} ${activeButton === 2 ? styles.active : ''}`}
+              onClick={() => handleFilterClick(2)}
+            >
+              Completed
+            </button>
+            <button
+              className={`${styles.filterButton} ${activeButton === 3 ? styles.active : ''}`}
+              onClick={() => handleFilterClick(3)}
+            >
+              Cancelled
+            </button>
+            <p>50 completed, 4 pending</p>
+          
 
-            <div className={styles.appointmentButtons}>
               {curUser[0].role === "lab_technician" && (
                 <button
                   onClick={() => {
@@ -161,175 +189,193 @@ const AppointmentTechnician = () => {
                     : "New Lab Appointment"}
                 </button>
               )}
-            </div>
           </div>
 
           <div className={styles.tableContainer}>
-            <table
-              className={styles.table}
-              style={{ borderCollapse: "collapse" }}
-            >
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Appointment ID</th>
+            <div className={styles.controls}>
+              <select className={styles.bulkAction}>
+                <option>Bulk Action: Delete</option>
+              </select>
+              <select className={styles.sortBy}>
+                <option>Sort By: Ordered Today</option>
+              </select>
+              <input
+                className={styles.search}
+                type="text"
+                placeholder="Search By Patient Name" 
+              /> 
+            </div>
 
-                  {curUser[0].role !== "patient" && <th>Patient Name</th>}
-                  {curUser[0].role !== "patient" && <th>Gender</th>}
+            <hr />
+            <br />
 
-                  <th>Date & Time</th>
-                  <th>Requested Tests</th>
+            <div className={styles.tableWrapper}>
+              <table
+                className={styles.table}
+              >
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Appointment ID</th>
 
-                  {curUser[0].role !== "lab_technician" && (
-                    <th>Technician Name</th>
-                  )}
-                  {curUser[0].role !== "lab_technician" && (
-                    <th>Specialization</th>
-                  )}
+                    {curUser[0].role !== "patient" && <th>Patient Name</th>}
+                    {curUser[0].role !== "patient" && <th>Gender</th>}
 
-                  <th>Fee</th>
-                  <th>Additional Notes</th>
-                  <th>Test Status</th>
-                  <th>Appointment Status</th>
-                  <th>Results Available</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {appointments.map((row, index) => (
-                  <tr
-                    key={row.appointment_id}
-                    style={{ borderBottom: "1px solid #ddd" }}
-                  >
-                    <td>{index + 1}</td>
-                    <td>{row.appointment_id}</td>
-                    {curUser[0].role !== "patient" && (
-                      <td>
-                        {row.patient?.user?.first_name || "No first name"}{" "}
-                        {row.patient?.user?.last_name || "No last name"}
-                      </td>
-                    )}
-                    {curUser[0].role !== "patient" && (
-                      <td>{row.patient?.gender || "N/A"}</td>
-                    )}
-                    <td>
-                      {row.appointment_date} | {row.checkin_time}
-                    </td>
-                    <td>
-                      <ul>
-                        {row.test_orders.length > 0 &&
-                          row.test_orders[0].test_types.map((test) => (
-                            <li key={test.id}>{test.label}</li>
-                          ))}
-                      </ul>
-                    </td>
+                    <th>Date & Time</th>
+                    <th>Requested Tests</th>
 
                     {curUser[0].role !== "lab_technician" && (
-                      <td>
-                        {row.lab_technician?.user?.first_name || "N/A"}{" "}
-                        {row.lab_technician?.user?.last_name || "N/A"}
-                      </td>
+                      <th>Technician Name</th>
                     )}
-
                     {curUser[0].role !== "lab_technician" && (
-                      <td>{row.lab_technician?.specialization || "N/A"}</td>
+                      <th>Specialization</th>
                     )}
-                    <td>{row.fee}</td>
 
-                    <td>{row.notes || "No additional notes"}</td>
-
-                    <td
-                      className={getStatusClass(
-                        row.test_orders?.[0]?.test_status || "",
-                        styles
-                      )}
-                    >
-                      {row.test_orders?.[0]?.test_status || " "}
-                    </td>
-                    <td className={getStatusClass(row.status, styles)}>
-                      {row.status}
-                    </td>
-                    <td className={getStatusClass(row.status, styles)}>
-                      {row.test_orders[0]?.results_available ? "Yes" : "No"}
-                    </td>
-                    {/* ------------------------- ACTION BUTTONS -------------------------*/}
-                    <td>
-                      <button
-                        onClick={() =>
-                          toggleActionMenu(
-                            row.appointment_id,
-                            menuOpen,
-                            setMenuOpen
-                          )
-                        }
-                        className={styles.moreActionsBtn}
-                      >
-                        <img
-                          src="/icon-three-dots.png"
-                          alt="More Actions"
-                          className={styles.moreActionsIcon}
-                        />
-                      </button>
-
-                      {menuOpen === row.appointment_id && (
-                        <div className={styles.menu}>
-                          <ul>
-                            {curUser[0].role === "lab_technician" && (
-                              <li
-                                onClick={() => {
-                                  handleActionClick(
-                                    "Action Start Appointment",
-                                    row
-                                  );
-                                }}
-                              >
-                                Start Appointment
-                              </li>
-                            )}
-
-                            {(curUser[0].role === "patient" ||
-                              curUser[0].role === "lab_technician") && (
-                              <li
-                                onClick={() => {
-                                  handleActionClick(
-                                    "Button Cancellation Request",
-                                    row.appointment_id
-                                  );
-                                }}
-                              >
-                                Request Cancellation
-                              </li>
-                            )}
-
-                            {curUser[0].role === "lab_admin" && (
-                              <li
-                                onClick={() =>
-                                  handleActionClick("Reschedule", row)
-                                }
-                              >
-                                Reschedule
-                              </li>
-                            )}
-                            {curUser[0].role === "lab_admin" && (
-                              <li
-                                onClick={() =>
-                                  handleActionClick(
-                                    "Action Cancel Appointment",
-                                    row.appointment_id
-                                  )
-                                }
-                              >
-                                Cancel Appointment
-                              </li>
-                            )}
-                          </ul>
-                        </div>
-                      )}
-                    </td>
+                    <th>Fee</th>
+                    <th>Additional Notes</th>
+                    <th>Test Status</th>
+                    <th>Appointment Status</th>
+                    <th>Results Available</th>
+                    <th>Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+
+                <tbody>
+                  {appointments.map((row, index) => (
+                    <tr
+                      key={row.appointment_id}
+                      style={{ borderBottom: "1px solid #ddd" }}
+                    >
+                      <td>{index + 1}</td>
+                      <td>{row.appointment_id}</td>
+                      {curUser[0].role !== "patient" && (
+                        <td>
+                          {row.patient?.user?.first_name || "No first name"}{" "}
+                          {row.patient?.user?.last_name || "No last name"}
+                        </td>
+                      )}
+                      {curUser[0].role !== "patient" && (
+                        <td>{row.patient?.gender || "N/A"}</td>
+                      )}
+                      <td>
+                        {row.appointment_date} | {row.checkin_time}
+                      </td>
+                      <td>
+                        <ul>
+                          {row.test_orders.length > 0 &&
+                            row.test_orders[0].test_types.map((test) => (
+                              <li key={test.id}>{test.label}</li>
+                            ))}
+                        </ul>
+                      </td>
+
+                      {curUser[0].role !== "lab_technician" && (
+                        <td>
+                          {row.lab_technician?.user?.first_name || "N/A"}{" "}
+                          {row.lab_technician?.user?.last_name || "N/A"}
+                        </td>
+                      )}
+
+                      {curUser[0].role !== "lab_technician" && (
+                        <td>{row.lab_technician?.specialization || "N/A"}</td>
+                      )}
+                      <td>{row.fee}</td>
+
+                      <td>{row.notes || "No additional notes"}</td>
+
+                      <td
+                        className={getStatusClass(
+                          row.test_orders?.[0]?.test_status || "",
+                          styles
+                        )}
+                      >
+                        {row.test_orders?.[0]?.test_status || " "}
+                      </td>
+                      <td className={getStatusClass(row.status, styles)}>
+                        {row.status}
+                      </td>
+                      <td className={getStatusClass(row.status, styles)}>
+                        {row.test_orders[0]?.results_available ? "Yes" : "No"}
+                      </td>
+                      {/* ------------------------- ACTION BUTTONS -------------------------*/}
+                      <td>
+                        <button
+                          onClick={() =>
+                            toggleActionMenu(
+                              row.appointment_id,
+                              menuOpen,
+                              setMenuOpen
+                            )
+                          }
+                          className={styles.moreActionsBtn}
+                        >
+                          <img
+                            src="/icon-three-dots.png"
+                            alt="More Actions"
+                            className={styles.moreActionsIcon}
+                          />
+                        </button>
+
+                        {menuOpen === row.appointment_id && (
+                          <div className={styles.menu}>
+                            <ul>
+                              {curUser[0].role === "lab_technician" && (
+                                <li
+                                  onClick={() => {
+                                    handleActionClick(
+                                      "Action Start Appointment",
+                                      row
+                                    );
+                                  }}
+                                >
+                                  Start Appointment
+                                </li>
+                              )}
+
+                              {(curUser[0].role === "patient" ||
+                                curUser[0].role === "lab_technician") && (
+                                <li
+                                  onClick={() => {
+                                    handleActionClick(
+                                      "Button Cancellation Request",
+                                      row.appointment_id
+                                    );
+                                  }}
+                                >
+                                  Request Cancellation
+                                </li>
+                              )}
+
+                              {curUser[0].role === "lab_admin" && (
+                                <li
+                                  onClick={() =>
+                                    handleActionClick("Reschedule", row)
+                                  }
+                                >
+                                  Reschedule
+                                </li>
+                              )}
+                              {curUser[0].role === "lab_admin" && (
+                                <li
+                                  onClick={() =>
+                                    handleActionClick(
+                                      "Action Cancel Appointment",
+                                      row.appointment_id
+                                    )
+                                  }
+                                >
+                                  Cancel Appointment
+                                </li>
+                              )}
+                            </ul>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>

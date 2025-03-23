@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Select from "react-select";
-import styles from "./technician-appointment-book-popup.module.css";
+import styles from "../all-popups-styles.module.css";
 import Popup from "../Popup.jsx";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -205,13 +205,14 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
       onClose={onClose}
     >
       <div className={styles.formContainer}>
-        <div className={styles.titleSection}>
-          <h2>Schedule Your Appointment</h2>
+
+        <div className={styles.headerSection}>
+          <div className={styles.titleSection}>
+            <h2 style={{ marginLeft: "20px" }}>Schedule Your Appointment</h2> 
+            <p style={{ marginLeft: "20px" }}>Choose your customized appointment timings and other details</p>
+          </div>
         </div>
 
-        <h5 className={styles.subhead}>
-          Choose your customized appointment timings and other details
-        </h5>
         <hr />
 
         <form onSubmit={(e) => e.preventDefault()}>
@@ -219,8 +220,8 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
           <div className={styles.popupBottom}>
           {/* Patient Information */}
           <div className={styles.formSection}>
-            <h3><i className="fa-solid fa-circle fa-2xs" style={{color: "#007bff", marginRight: "10px"}}></i> Patient Information</h3>
-            <div className={styles.formGroup}>
+            <h3><i className="fa-solid fa-circle fa-2xs"></i> Patient Information</h3>
+            <div className={styles.newFormGroup}>
               <div>
                 <label>First Name</label>
                 <input
@@ -281,7 +282,7 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
                   disabled={curUserRole === "patient"}
                 />
               </div>
-              <div>
+              <div className={styles.phoneField}>
                 <label>Phone Number</label>
                 <input
                   type="tel"
@@ -319,7 +320,7 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
 
           {/* Appointment Details */}
           <div className={styles.formSection}>
-            <h3><i className="fa-solid fa-circle fa-2xs" style={{color: "#007bff", marginRight: "10px"}}></i> Appointment Details</h3>
+            <h3><i className="fa-solid fa-circle fa-2xs"></i> Appointment Details</h3>
             
             <div className={styles.formGroup}>
               <div>
@@ -358,43 +359,44 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
                 </select>
               </div>
 
-          <div className={styles.formGroup}>
-            <label>Date & Time</label>
-            <input
-              type="date"
-              name="appointmentDate"
-              value={formData.appointmentDate}
-              onChange={onInputChange}
-            />
-          </div>
-          {/* Available Slots Selection */}
-          <div className={styles.formGroup}>
-            <label>Available Slots</label>
-            <select
-              name="slotId"
-              value={formData.slotId}
-              onChange={onInputChange}
-              disabled={availableSlots.length === 0}
-            >
-              <option value="">
-                {availableSlots.length ? "Select a Slot" : "No slots available"}
-              </option>
-              {availableSlots.map((slot, index) => (
-                <option key={index} value={slot.id}>
-                  {slot.slot_id} - {slot.start_time} to {slot.end_time}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className={styles.formGroup}>
-            <div className={styles.infoLabel}>Required Lab Tests</div>
             <div>
+              <label>Date & Time</label>
+              <input
+                type="date"
+                name="appointmentDate"
+                value={formData.appointmentDate}
+                onChange={onInputChange}
+              />
+            </div>
+
+            {/* Available Slots Selection */}
+            <div>
+              <label>Available Slots</label>
+              <select
+                name="slotId"
+                value={formData.slotId}
+                onChange={onInputChange}
+                disabled={availableSlots.length === 0}
+              >
+                <option value="">
+                  {availableSlots.length ? "Select a Slot" : "No slots available"}
+                </option>
+                {availableSlots.map((slot, index) => (
+                  <option key={index} value={slot.id}>
+                    {slot.slot_id} - {slot.start_time} to {slot.end_time}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <div className={styles.infoLabel}>Required Lab Tests</div>
+              <div>
               <Select
                 isMulti
                 options={availableLabTests}
                 placeholder="Select required lab tests"
-                onChange={handleTestSelection} // Use handleTestSelection here
+                onChange={handleTestSelection}
                 styles={{
                   control: (base) => ({
                     ...base,
@@ -404,48 +406,62 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
                     padding: "0",
                     outline: "none",
                     width: "80%",
+                    fontSize: "14px",
                   }),
                   option: (base, state) => ({
                     ...base,
                     color: state.isSelected ? "white" : "black",
                     cursor: "pointer",
                     outline: "none",
-                    padding: "5px",
+                    fontSize: "14px",
                   }),
                   menu: (base) => ({
                     ...base,
                     width: "80%",
+                    fontSize: "14px",
                   }),
+                  dropdownIndicator: (base) => ({
+                    ...base,
+                    transform: "scale(0.9)",
+                  }),
+                  indicatorSeparator: () => ({ display: "none" }), // Hide vertical separator
                 }}
               />
+
+              </div>
+            
+
+            <div className={styles.additionalNotes}>
+              <label>Additional Notes</label>
+              <input
+                type="text"
+                name="notes"
+                value={formData.notes}
+                onChange={onInputChange}
+                placeholder={"Enter notes"}
+              />
             </div>
-          </div>
+            </div>
 
-          <div>
-            <label>Additional Notes</label>
-            <input
-              type="text"
-              name="notes"
-              value={formData.notes}
-              onChange={onInputChange}
-              placeholder={"Enter notes"}
-            />
+            <div>
+              <label>Calculated Fee (PKR)</label>
+              <input
+                type="text"
+                value={formData.fee}
+                readOnly
+                className={styles.feeInput}
+              />
+            </div>
+          
           </div>
-
-          <div className={styles.formGroup}>
-            <label>Calculated Fee (PKR)</label>
-            <input
-              type="text"
-              value={formData.fee}
-              readOnly
-              className={styles.feeInput}
-            />
           </div>
+        
+        <hr />
 
         {/* Payment Details */}
         <div className={styles.formSection}>
-            <h3><i className="fa-solid fa-circle fa-2xs" style={{color: "#007bff", marginRight: "10px"}}></i> Payment Details</h3>
-            <div className={styles.formGroup}>
+            <h3><i className="fa-solid fa-circle fa-2xs"></i> Payment Details</h3>
+            <div className={styles.newFormGroup}>
               <div>
                 <label>Discount Code</label>
                 <select>
@@ -461,7 +477,7 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
                 <p className={styles.subHeading}>RS/- 5.0</p>
               </div>
             </div>
-          </div>
+        </div>
 
           <div className={styles.actions}>
             <button className={styles.cancelButton} onClick={onClose}>
@@ -475,8 +491,7 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
               Continue to Next Step
             </button>
           </div>
-          </div>
-          </div>
+
           </div>
         </form>
 
