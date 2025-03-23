@@ -1,0 +1,8 @@
+import axios from "axios";
+const API_URL = import.meta.env.VITE_API_URL;
+import { getAccessToken, getHeaders } from "../utils/utils";
+
+export const getTestOrders = async () => {
+  const url = `${API_URL}/api/test_orders/`;
+  return axios.get(url, getHeaders());
+};

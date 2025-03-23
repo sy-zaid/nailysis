@@ -213,7 +213,13 @@ const AppointmentTechnician = () => {
                       <td>{row.patient?.gender || "N/A"}</td>
                     )}
                     <td>
-                      {row.appointment_date} | {row.checkin_time}
+                      {row?.checkin_datetime
+                        ? `${new Date(
+                            row.checkin_datetime
+                          ).toLocaleDateString()} | ${new Date(
+                            row.checkin_datetime
+                          ).toLocaleTimeString()}`
+                        : "N/A"}
                     </td>
                     <td>
                       <ul>

@@ -28,7 +28,7 @@ const TechnicianAppointmentCheckinPopup = ({ onClose, appointmentDetails }) => {
     } catch (error) {
       console.log(error);
     }
-    handleClosePopup(onClose);
+    handleClosePopup(onClose); // Closes popup as soon as completed
   };
 
   // Function to start the timer when consultation begins
@@ -201,8 +201,8 @@ const TechnicianAppointmentCheckinPopup = ({ onClose, appointmentDetails }) => {
               <div>
                 <label>Date & Time</label>
                 <p className={styles.subHeading}>
-                  {appointmentDetails?.appointment_date}{" "}
-                  {appointmentDetails?.checkin_time}{" "}
+                  
+                  {appointmentDetails?.checkin_datetime}{" "}
                 </p>
               </div>
             </div>
