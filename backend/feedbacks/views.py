@@ -13,7 +13,7 @@ class FeedbackViewSet(viewsets.ModelViewSet):
     # queryset = Feedback.objects.all().order_by('-submitted_at')
     queryset = Feedback.objects.all()
     serializer_class = FeedbackSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         """
@@ -24,27 +24,26 @@ class FeedbackViewSet(viewsets.ModelViewSet):
         - Clinic Admins see all clinic feedbacks.
         - Lab Admins see all lab feedbacks.
         """
-        return Feedback.objects.all()
         user = self.request.user
 
         if user.role == "patient":
             try:
-                patient = Patient.objects.get(user=user)
-                return Feedback.objects.filter(patient=patient)
+                patient = CustomUser.objects.get(user_id=user.user_id)
+                return Feedback.objects.filter(user_id=patient)
             except Patient.DoesNotExist:
                 return Feedback.objects.none()
 
         elif user.role == "doctor":
             try:
-                doctor = Doctor.objects.get(user=user)
-                return Feedback.objects.filter(doctor=doctor)
+                doctor = CustomUser.objects.get(user_id=user.user_id)
+                return Feedback.objects.filter(user_id=doctor)
             except Doctor.DoesNotExist:
                 return Feedback.objects.none()
             
         elif user.role == "lab_technician":
             try:
-                lab_technician = LabTechnician.objects.get(user=user)
-                return Feedback.objects.filter(lab_technician=lab_technician)
+                lab_technician = CustomUser.objects.get(user_id=user.user_id)
+                return Feedback.objects.filter(user_id=lab_technician)
             except LabTechnician.DoesNotExist:
                 return Feedback.objects.none()  
 
