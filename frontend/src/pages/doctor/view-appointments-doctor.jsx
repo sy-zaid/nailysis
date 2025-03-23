@@ -70,10 +70,8 @@ const AppointmentDoctor = () => {
   };
 
   // Handle the action when an item is clicked in the menu
-  const handleActionClick = (action, appointment) => {
-    console.log(
-      `Action: ${action} on Appointment ID: ${appointment.appointment_id}`
-    );
+  const handleActionClick = (action, appointmentId) => {
+    console.log(`Action: ${action} on Appointment ID: ${appointmentId}`);
     setMenuOpen(null); // Close the menu after action
 
     if (action === "Cancel") {
@@ -93,9 +91,7 @@ const AppointmentDoctor = () => {
       );
       setShowPopup(true);
     } else if (action === "Manage Availability") {
-      setPopupContent(<PopupManageSlotsDoctor
-        onClose={handleClosePopup}
-      />);
+      setPopupContent(<PopupManageSlotsDoctor onClose={handleClosePopup} />);
       setShowPopup(true);
     }
   };
@@ -104,7 +100,6 @@ const AppointmentDoctor = () => {
     <div className={styles.pageContainer}>
       {showPopup && popupContent}{" "}
       {/* Render the correct popup based on the action */}
-
       <div className={styles.pageTop}>
         <Navbar />
         <h1>Appointments</h1>

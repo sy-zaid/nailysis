@@ -3,8 +3,9 @@ import axios from "axios";
 import Popup from "../Popup.jsx";
 import useCurrentUserData from "../../../useCurrentUserData.jsx";
 import { getHeaders } from "../../../utils/utils.js";
+import styles from "./manage-slots-popup.module.css";
 
-const ManageSlotsPopup = ( {onClose} ) => {
+const ManageSlotsPopup = ({ onClose }) => {
   const [popupTrigger, setPopupTrigger] = useState(true);
   const { data: curUser } = useCurrentUserData();
   const [user, setUser] = useState();
@@ -132,83 +133,112 @@ const ManageSlotsPopup = ( {onClose} ) => {
   };
 
   return (
-    <Popup trigger={popupTrigger} setTrigger={setPopupTrigger} onClose={onClose}>
-      <div>
+    <Popup
+      trigger={popupTrigger}
+      setTrigger={setPopupTrigger}
+      onClose={onClose}
+    >
+      <div className={styles.modalContent}>
+        <button className={styles.closeButton} onClick={onClose}>
+          ✖
+        </button>
         <h2>Manage Availability</h2>
-        <form onSubmit={handleSubmit}>
-          <label>Select Month:</label>
-          <input
-            type="month"
-            value={month}
-            onChange={(e) => setMonth(e.target.value)}
-            required
-          />
-
-          <label>Select Consulting Days:</label>
-          <div>
-            {daysOfWeek.map((day) => (
-              <button
-                type="button"
-                key={day}
-                onClick={() => toggleDaySelection(day)}
-                style={{
-                  margin: "5px",
-                  padding: "5px 10px",
-                  backgroundColor: weekdays.includes(day) ? "green" : "gray",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "5px",
-                  cursor: "pointer",
-                }}
-              >
-                {day}
-              </button>
-            ))}
+        <form onSubmit={handleSubmit} className={styles.form}>
+          <div className={styles.formGroup}>
+            <label>Select Month:</label>
+            <input
+              type="month"
+              value={month}
+              onChange={(e) => setMonth(e.target.value)}
+              required
+              className={styles.formInput}
+            />
           </div>
 
-          <label>Start Time:</label>
-          <input
-            type="time"
-            value={startTime}
-            onChange={(e) => setStartTime(e.target.value)}
-            required
-          />
+          <div className={styles.formGroup}>
+            <label>Select Consulting Days:</label>
+            <div className={styles.daysContainer}>
+              {daysOfWeek.map((day) => (
+                <button
+                  type="button"
+                  key={day}
+                  onClick={() => toggleDaySelection(day)}
+                  className={`${styles.dayButton} ${
+                    weekdays.includes(day) ? styles.dayActive : ""
+                  }`}
+                >
+                  {day}
+                </button>
+              ))}
+            </div>
+          </div>
 
-          <label>End Time:</label>
-          <input
-            type="time"
-            value={endTime}
-            onChange={(e) => setEndTime(e.target.value)}
-            required
-          />
+          <div className={styles.timeControls}>
+            <div className={styles.formGroup}>
+              <label>Start Time:</label>
+              <input
+                type="time"
+                value={startTime}
+                onChange={(e) => setStartTime(e.target.value)}
+                required
+                className={styles.formInput}
+              />
+            </div>
 
-          <label>Slot Duration (Minutes):</label>
-          <input
-            type="number"
-            value={slotDuration}
-            onChange={(e) => setSlotDuration(e.target.value)}
-            min="5"
-            required
-          />
+            <div className={styles.formGroup}>
+              <label>End Time:</label>
+              <input
+                type="time"
+                value={endTime}
+                onChange={(e) => setEndTime(e.target.value)}
+                required
+                className={styles.formInput}
+              />
+            </div>
 
-          <button type="button" onClick={generateSlots}>
-            Generate Slots
-          </button>
+            <div className={styles.formGroup}>
+              <label>Slot Duration (Minutes):</label>
+              <input
+                type="number"
+                value={slotDuration}
+                onChange={(e) => setSlotDuration(e.target.value)}
+                min="5"
+                required
+                className={styles.formInput}
+              />
+            </div>
+          </div>
+
+          <div className={styles.generateButtonWrap}>
+            <button
+              type="button"
+              onClick={generateSlots}
+              className={styles.generateButton}
+            >
+              Generate Slots
+            </button>
+          </div>
 
           {calculatedSlots.length > 0 && (
-            <div>
+            <div className={styles.slotsContainer}>
               <h3>Generated Slots:</h3>
-              <ul>
+              <ul className={styles.slotsList}>
                 {calculatedSlots.map((slot, index) => (
-                  <li key={index}>
-                    {slot.date} - {slot.start_time} to {slot.end_time}
+                  <li key={index} className={styles.slotItem}>
+                    {slot.start_time} to {slot.end_time}
                   </li>
                 ))}
               </ul>
             </div>
           )}
 
-          <button type="submit">Save Availability</button>
+          {calculatedSlots.length > 0 && (
+            <div className={styles.buttonWrap}>
+              <button type="submit" className={styles.submitButton}>
+                Save Availability
+              </button>
+            </div>
+          )}
         </form>
       </div>
     </Popup>
