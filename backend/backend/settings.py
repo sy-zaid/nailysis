@@ -68,8 +68,8 @@ INSTALLED_APPS = [
     'users',
     'appointments',
     'ehr',
-    'feedbacks'  
-     'labs',
+    'feedbacks', 
+    'labs',
     
 ]
 
