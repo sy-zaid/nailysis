@@ -2,8 +2,10 @@ import React from "react";
 import styles from "./technician-appointment-checkin-popup.module.css";
 import Popup from "../Popup";
 import { useState, useEffect } from "react";
+import { calculateAge } from "../../../utils/utils";
 
-const StartTechnicianAppointmentPopup = ({onClose}) => {
+const TechnicianAppointmentCheckinPopup = ({ onClose, appointmentDetails }) => {
+  console.log("GOT THIS TO START", appointmentDetails);
   // State variables
   const [timer, setTimer] = useState(0); // Keeps track of elapsed time in seconds
   const [isConsultationStarted, setIsConsultationStarted] = useState(false); // Tracks whether consultation has started
@@ -63,7 +65,11 @@ const StartTechnicianAppointmentPopup = ({onClose}) => {
   }, [popupTrigger]); // Runs when the popup state changes
 
   return (
-    <Popup trigger={popupTrigger} setTrigger={setPopupTrigger} onClose={onClose}>
+    <Popup
+      trigger={popupTrigger}
+      setTrigger={setPopupTrigger}
+      onClose={onClose}
+    >
       <div className={styles.formContainer}>
         <div className={styles.tophead}>
           <div className={styles.header}>
@@ -117,28 +123,40 @@ const StartTechnicianAppointmentPopup = ({onClose}) => {
             <div className={styles.newFormGroup}>
               <div>
                 <label>First Name</label>
-                <p className={styles.subHeading}>John</p>
+                <p className={styles.subHeading}>
+                  {appointmentDetails.patient?.user?.first_name}
+                </p>
               </div>
               <div>
                 <label>Last Name</label>
-                <p className={styles.subHeading}>Doe</p>
+                <p className={styles.subHeading}>
+                  {appointmentDetails.patient?.user?.last_name}
+                </p>
               </div>
               <div>
                 <label>Age</label>
-                <p className={styles.subHeading}>32</p>
+                <p className={styles.subHeading}>
+                  {calculateAge(appointmentDetails.patient?.date_of_birth)}
+                </p>
               </div>
               <div>
                 <label>Gender</label>
-                <p className={styles.subHeading}>Male</p>
+                <p className={styles.subHeading}>
+                  {appointmentDetails.patient?.gender}
+                </p>
               </div>
               <div>
                 <label>Phone Number</label>
-                <p className={styles.subHeading}>+92 12345678</p>
+                <p className={styles.subHeading}>
+                  {appointmentDetails.patient?.user?.phone || "N/A"}
+                </p>
               </div>
 
               <div>
                 <label>Email Address</label>
-                <p className={styles.subHeading}>patient@gmail.com</p>
+                <p className={styles.subHeading}>
+                  {appointmentDetails.patient?.user?.email}
+                </p>
               </div>
             </div>
           </div>
@@ -156,16 +174,24 @@ const StartTechnicianAppointmentPopup = ({onClose}) => {
             <div className={styles.newFormGroup}>
               <div>
                 <label>Specialization</label>
-                <p className={styles.subHeading}>Technician </p>
+                <p className={styles.subHeading}>
+                  {appointmentDetails.lab_technician?.specialization}{" "}
+                </p>
               </div>
               <div>
                 <label>Technician</label>
-                <p className={styles.subHeading}>Tech. Jane Doe </p>
+                <p className={styles.subHeading}>
+                  Tech. {appointmentDetails.lab_technician?.user?.first_name}{" "}
+                  {appointmentDetails.lab_technician?.user?.last_name}{" "}
+                </p>
               </div>
 
               <div>
                 <label>Date & Time</label>
-                <p className={styles.subHeading}>10/10/2024 09:30 AM </p>
+                <p className={styles.subHeading}>
+                  {appointmentDetails?.appointment_date}{" "}
+                  {appointmentDetails?.checkin_time}{" "}
+                </p>
               </div>
             </div>
           </div>
@@ -179,11 +205,9 @@ const StartTechnicianAppointmentPopup = ({onClose}) => {
             </h3>
             <div className={styles.documentFormGroup}>
               <div>
-                <textarea
-                  style={{ border: "none" }}
-                  defaultValue="Lorem ipsum dolor sit amet consectetur adipisicing elit"
-                  disabled
-                ></textarea>
+                <textarea style={{ border: "none" }} disabled>
+                  {appointmentDetails?.notes || "N/A"}
+                </textarea>
               </div>
             </div>
           </div>
@@ -200,23 +224,17 @@ const StartTechnicianAppointmentPopup = ({onClose}) => {
               Requested Test Details
             </h3>
             <div style={{ marginLeft: "25px" }}>
-              <div className={styles.testType}>
-                <span style={{ marginLeft: "25px" }}>Test Type 1 </span>
-                <span className={styles.testTypeBorder}></span>
-                <span style={{ marginRight: "45px" }}>RS/- 2000</span>
-              </div>
-
-              <div className={styles.testType}>
-                <span style={{ marginLeft: "25px" }}>Test Type 2</span>
-                <span className={styles.testTypeBorder}></span>
-                <span style={{ marginRight: "45px" }}>RS/- 3500</span>
-              </div>
-
-              <div className={styles.testType}>
-                <span style={{ marginLeft: "25px" }}>Test Type 3</span>
-                <span className={styles.testTypeBorder}></span>
-                <span style={{ marginRight: "45px" }}>RS/- 2500</span>
-              </div>
+              {appointmentDetails.test_orders[0]?.test_types.map(
+                (test, index) => (
+                  <div key={test.id} className={styles.testType}>
+                    <span style={{ marginLeft: "25px" }}>{test.label}</span>
+                    <span className={styles.testTypeBorder}></span>
+                    <span style={{ marginRight: "45px" }}>
+                      RS/- {test.price}
+                    </span>
+                  </div>
+                )
+              )}
 
               <hr
                 style={{
@@ -231,7 +249,11 @@ const StartTechnicianAppointmentPopup = ({onClose}) => {
                   Subtotal
                 </span>
                 <span style={{ marginRight: "45px", fontWeight: "bold" }}>
-                  RS/- 8000
+                  RS/-{" "}
+                  {appointmentDetails.test_orders[0]?.test_types.reduce(
+                    (sum, test) => sum + parseFloat(test.price),
+                    0
+                  )}
                 </span>
               </div>
 
@@ -268,4 +290,4 @@ const StartTechnicianAppointmentPopup = ({onClose}) => {
   );
 };
 
-export default StartTechnicianAppointmentPopup;
+export default TechnicianAppointmentCheckinPopup;

@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import styles from "../../components/CSS Files/PatientAppointment.module.css";
+import styles from "../common/all-pages-styles.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import Header from "../../components/Dashboard/Header/Header";
 import Sidebar from "../../components/Dashboard/Sidebar/Sidebar";
@@ -9,6 +9,7 @@ import Sidebar from "../../components/Dashboard/Sidebar/Sidebar";
 const PaymentHistory = (props) => {
   const [activeButton, setActiveButton] = useState(0); 
 
+  // ----- SAMPLE DATA
   const data = [
     {
         id: 1,
@@ -35,6 +36,7 @@ const PaymentHistory = (props) => {
       },
   ];
 
+  // ----- HANDLERS
   const handleFilterClick = (index) => {
     setActiveButton(index); // Set the active button when clicked
   };
@@ -65,7 +67,7 @@ const PaymentHistory = (props) => {
 
         <div className={styles.appointmentsContainer}>
           <div className={styles.filters}>
-          <button
+            <button
               className={`${styles.filterButton} ${activeButton === 0 ? styles.active : ''}`}
               onClick={() => handleFilterClick(0)}
             >
@@ -92,7 +94,7 @@ const PaymentHistory = (props) => {
             <p>50 paid, 4 pending</p>
             
             <button className={styles.addButton}>
-                Book New Appointment
+              <i className='bx bx-plus-circle'></i> Book New Appointment
             </button>
 
           </div>
@@ -114,44 +116,47 @@ const PaymentHistory = (props) => {
             <hr />
             <br />
 
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  <th>
-                    <input type="checkbox" />
-                  </th>
-                  <th>#</th>
-                  <th >Invoice No.</th>
-                  <th>Doctor Name</th>
-                  <th>Service Type</th>
-                  <th>Payment Date and Time</th>
-                  <th>Due Date</th>
-                  <th>Pending Amount</th>
-                  <th>Total Amount</th>
-                  <th>Payment Status</th>
-                  <th> </th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.map((row) => (
-                  <tr key={row.id}>
-                    <td>
+            <div className={styles.tableWrapper}>
+
+              <table className={styles.table}>
+                <thead>
+                  <tr>
+                    <th>
                       <input type="checkbox" />
-                    </td>
-                    <td>{row.id}</td>
-                    <td>{row.invoiceNo}</td>
-                    <td>{row.doctorName}</td>
-                    <td>{row.serviceType}</td>
-                    <td>{row.paymentDateTime}</td>
-                    <td>{row.dueDate}</td>
-                    <td>{row.pendingAmount}</td>
-                    <td>{row.totalAmount}</td>
-                    <td className={getStatusClass(row.paymentStatus)}>{row.paymentStatus}</td>
-                    <td><i class='bx bx-dots-vertical-rounded'></i></td>
+                    </th>
+                    <th>#</th>
+                    <th >Invoice No.</th>
+                    <th>Doctor Name</th>
+                    <th>Service Type</th>
+                    <th>Payment Date and Time</th>
+                    <th>Due Date</th>
+                    <th>Pending Amount</th>
+                    <th>Total Amount</th>
+                    <th>Payment Status</th>
+                    <th> </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {data.map((row) => (
+                    <tr key={row.id}>
+                      <td>
+                        <input type="checkbox" />
+                      </td>
+                      <td>{row.id}</td>
+                      <td>{row.invoiceNo}</td>
+                      <td>{row.doctorName}</td>
+                      <td>{row.serviceType}</td>
+                      <td>{row.paymentDateTime}</td>
+                      <td>{row.dueDate}</td>
+                      <td>{row.pendingAmount}</td>
+                      <td>{row.totalAmount}</td>
+                      <td className={getStatusClass(row.paymentStatus)}>{row.paymentStatus}</td>
+                      <td><i class='bx bx-dots-vertical-rounded'></i></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>

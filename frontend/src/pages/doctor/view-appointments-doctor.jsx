@@ -8,6 +8,9 @@ import CancellationRequestForm from "./cancellation-request-form"; // Import Can
 import CheckinDoctorAppointmentPopup from "../../components/Popup/popups-doctor-appointments/doctor-appointment-checkin-popup";
 import PopupManageSlotsDoctor from "../../components/Popup/popups-doctor-appointments/manage-slots-doctor-popup";
 
+// UTILS.JS FUNCTIONS
+import { getStatusClass } from "../../utils/utils";
+
 const AppointmentDoctor = () => {
   const navigate = useNavigate();
   const [appointments, setAppointments] = useState([]);
@@ -44,16 +47,7 @@ const AppointmentDoctor = () => {
     fetchAppointments();
   }, [token, navigate]);
 
-  const getStatusClass = (status) => {
-    switch (status) {
-      case "Consulted":
-        return styles.consulted;
-      case "Cancelled":
-        return styles.cancelled;
-      default:
-        return styles.scheduled;
-    }
-  };
+  
 
   const handleAddAppointment = () => {
     navigate("/add-appointment");
@@ -61,7 +55,7 @@ const AppointmentDoctor = () => {
 
   const handleClosePopup = () => {
     setShowPopup(false); // Hide the popup when closing
-    onClose();
+    
   };
 
   // Function to toggle the menu for a specific appointment
@@ -163,7 +157,7 @@ const AppointmentDoctor = () => {
                       {row.time_slot?.slot_date} | {row.time_slot?.start_time} -{" "}
                       {row.time_slot?.end_time}
                     </td>
-                    <td className={getStatusClass(row.status)}>{row.status}</td>
+                    <td className={getStatusClass(row.status,styles)}>{row.status}</td>
                     <td>{row.notes || "No additional notes"}</td>
                     <td>
                       <button

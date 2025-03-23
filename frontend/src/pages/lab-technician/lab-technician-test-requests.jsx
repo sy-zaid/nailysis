@@ -114,7 +114,7 @@ const TestRequests = (props) => {
         setselectreportTypePopup={setselectreportTypePopup} 
         onProceed={handleCloseSelectReportAndOpenTestDetails}
       />
-
+ 
       <PopupTestDetails 
         testDetailsPopup={testDetailsPopup}
         setTestDetailsPopup={setTestDetailsPopup} 

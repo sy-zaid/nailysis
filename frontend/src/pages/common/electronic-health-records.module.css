@@ -99,7 +99,7 @@
 .table th {
   color: #374151;
   font-weight: 500;
-  text-align: left;
+  text-align: center;
   padding: 12px 16px;
   border-bottom: 1px solid #e5e7eb;
   white-space: nowrap;
@@ -116,6 +116,7 @@
 
 .table td {
   padding: 12px 16px;
+  text-align: center;
   /* border-bottom: 1px solid #E5E7EB; */
 }
 

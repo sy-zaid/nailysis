@@ -19,13 +19,14 @@ from rest_framework.decorators import action
 
 from .models import (
     Appointment, DoctorAppointment, TechnicianAppointment,
-    DoctorAppointmentFee, LabTechnicianAppointmentFee, CancellationRequest,TimeSlot
+    DoctorAppointmentFee, CancellationRequest,TimeSlot
 )
 from .serializers import (
     AppointmentSerializer, DoctorAppointmentSerializer, TimeSlotSerializer,
-    TechnicianAppointmentSerializer, DoctorFeeSerializer, LabTechnicianFeeSerializer, CancellationRequestSerializer
+    TechnicianAppointmentSerializer, DoctorFeeSerializer, CancellationRequestSerializer
 )   
 from users.models import Patient, Doctor, ClinicAdmin, CustomUser, LabTechnician, LabAdmin
+from labs.models import LabTestOrder,LabTestType
 from datetime import datetime, timedelta
 import calendar
 
@@ -201,6 +202,7 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
         slot_id = request.data.get('slot_id')
         appointment_type = request.data.get('appointment_type')
         fee = request.data.get('fee')
+        notes = request.data.get('notes')
         patient_email = request.data.get("patient_email")
 
         user = self.request.user
@@ -233,7 +235,8 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
             doctor=doctor,
             time_slot = time_slot,
             appointment_type=appointment_type,
-            fee=fee
+            fee=fee,
+            notes = notes
         )
         if time_slot.is_booked == False:
             time_slot.is_booked = True
@@ -375,6 +378,7 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
         current_medications = request.data.get("current_medications", "[]")
         immunization_records = request.data.get("immunization_records", "[]")
         diagnoses = request.data.get("diagnoses", "[]")
+        recommended_lab_test = request.data.get("recommended_lab_test", "[]")
 
         # Ensure these fields are properly converted to lists
         if isinstance(medical_conditions, str):
@@ -383,6 +387,8 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
             current_medications = json.loads(current_medications)
         if isinstance(immunization_records, str):
             immunization_records = json.loads(immunization_records)
+        if isinstance(recommended_lab_test, str):
+            recommended_lab_test = json.loads(recommended_lab_test)
         if isinstance(diagnoses, str):
             diagnoses = json.loads(diagnoses)
 
@@ -390,8 +396,8 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
         family_history = request.data.get("family_history", "")
         category = request.data.get("category", "General")
 
-        ehr_data = [category, medical_conditions, current_medications, immunization_records, diagnoses, comments, family_history]
-        
+        ehr_data = [category, medical_conditions, current_medications, immunization_records, diagnoses, comments, family_history,recommended_lab_test]
+        print("EHRDATA",ehr_data)
         try:
             appointment = DoctorAppointment.objects.get(pk=pk)
             appointment.complete_appointment(ehr_data=ehr_data)
@@ -404,7 +410,6 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
                 {"error": "No matching appointment found."},
                 status=status.HTTP_404_NOT_FOUND
             )
-    
         
 class LabTechnicianAppointmentViewset(viewsets.ModelViewSet):
     """
@@ -443,8 +448,8 @@ class LabTechnicianAppointmentViewset(viewsets.ModelViewSet):
         return TechnicianAppointment.objects.none()
     
 
-    @action(detail=False, methods=['post'], url_path='book_lab_appointment')
-    def book_lab_appointment(self, request):
+    @action(detail=False, methods=['post'], url_path='book_appointment')
+    def book_appointment(self, request):
         """
         Book a new lab appointment.
         """
@@ -452,9 +457,10 @@ class LabTechnicianAppointmentViewset(viewsets.ModelViewSet):
 
         lab_technician_id = request.data.get('lab_technician_id')
         patient_email = request.data.get('patient_email')
-        lab_test_type = request.data.get('lab_test_type')
+        requested_lab_tests = request.data.get('requested_lab_tests')
         slot_id = request.data.get('slot_id')
         fee = request.data.get('fee')
+        notes = request.data.get('notes')
         
         lab_technician = get_object_or_404(LabTechnician, user_id=lab_technician_id)
         time_slot = get_object_or_404(TimeSlot,id=slot_id)
@@ -483,9 +489,20 @@ class LabTechnicianAppointmentViewset(viewsets.ModelViewSet):
             patient=patient,
             lab_technician=lab_technician,
             time_slot = time_slot,
-            lab_test_type=lab_test_type,
-            fee=fee
+            fee=fee,
+            notes=notes
         )
+        
+        # Retrieve the selected LabTestType records using the requested IDs
+        selected_tests = LabTestType.objects.filter(id__in=requested_lab_tests)
+
+        # Create a LabTestOrder and link it to the TechnicianAppointment
+        lab_test_order = LabTestOrder.objects.create(
+            lab_technician_appointment=lab_technician_appointment
+        )
+
+        # Associate the selected LabTestType records with the order in a JUNCTION TABLE
+        lab_test_order.test_types.set(selected_tests)  # ManyToMany field
         
         if time_slot.is_booked == False:
             time_slot.is_booked = True
@@ -533,36 +550,100 @@ class LabTechnicianAppointmentViewset(viewsets.ModelViewSet):
         appointment.save()
         return Response({"message":"Cancellation request sent successfully","request_id":cancellation_request.id},status=status.HTTP_201_CREATED)    
 
-    @action(detail=True,methods=["post"],url_path='reschedule_lab_appointment')
+    @action(detail=True, methods=["put"], url_path='reschedule_lab_appointment')
     def reschedule_lab_appointment(self, request, pk=None):
-        lab_appointment = get_object_or_404(TechnicianAppointment, pk=pk)
-        patient = get_object_or_404(Patient, pk=pk)
-        lab_technician_id = request.data.get("user_id")
-    
-
-class LabTechnicianFeeViewset(viewsets.ModelViewSet):
-    """
-    API endpoint to manage lab technician appointment fees.
-
-    Provides:
-    - List of all lab technician appointment fees
-    - Standard CRUD operations
-    """
-    queryset = LabTechnicianAppointmentFee.objects.all()
-    serializer_class = LabTechnicianFeeSerializer
-    permission_classes = [permissions.AllowAny]
-
-    @action(detail=False, methods=['get'], url_path='get_fees')
-    def get_fees(self, request):
         """
-        Retrieve all appointment fees for display.
+        Reschedules a lab appointment by reallocating the time slot, updating details,
+        and ensuring test orders are reset.
+        """
+        try:
+            print("REQUESTS DATA TO RESC",request.data)
+            lab_technician_appointment = get_object_or_404(TechnicianAppointment, appointment_id=pk)  # Appointment to be rescheduled
+            
+            lab_technician_id = request.data.get('lab_technician_id')
+            requested_lab_tests = request.data.get('requested_lab_tests', [])
+            slot_id = request.data.get('slot_id')
+            fee = request.data.get('fee')
+            
+            # Validate Inputs
+            if not slot_id:
+                return Response({"error": "Time slot ID is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+            if not lab_technician_id:
+                return Response({"error": "Lab technician ID is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Fetch Lab Technician and Time Slot
+            lab_technician = get_object_or_404(LabTechnician, user_id=lab_technician_id)
+            time_slot = get_object_or_404(TimeSlot, id=slot_id)
+
+            # Check for conflicts with Doctor Appointments
+            conflict_exists = DoctorAppointment.objects.filter(
+                patient=lab_technician_appointment.patient,
+                time_slot__start_time=time_slot.start_time
+            ).exists()
+
+            if conflict_exists:
+                return Response(
+                    {"error": "A doctor appointment exists at this time slot."},
+                    status=status.HTTP_409_CONFLICT
+                )
+
+            # Reschedule Time Slot
+            if not lab_technician_appointment.reschedule_time_slot(slot_id):
+                return Response(
+                    {"error": "Rescheduling failed. The slot might be unavailable."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            # Update Lab Technician and Fee
+            lab_technician_appointment.lab_technician = lab_technician
+            lab_technician_appointment.fee = fee
+            lab_technician_appointment.save()
+
+            # Delete Previous LabTestOrder
+            LabTestOrder.objects.filter(lab_technician_appointment=lab_technician_appointment).delete()
+
+            # Retrieve the selected LabTestType records using the requested IDs
+            selected_tests = LabTestType.objects.filter(id__in=requested_lab_tests)
+
+            # Create a New LabTestOrder
+            lab_test_order = LabTestOrder.objects.create(
+                lab_technician_appointment=lab_technician_appointment
+            )
+            lab_test_order.test_types.set(selected_tests)  # ManyToMany field
+
+            return Response({
+                "message": "Lab appointment rescheduled successfully",
+                "appointment_id": lab_technician_appointment.appointment_id
+            })
+
+        except Exception as e:
+            return Response({"error": f"An error occurred: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+# class LabTechnicianFeeViewset(viewsets.ModelViewSet):
+#     """
+#     API endpoint to manage lab technician appointment fees.
+
+#     Provides:
+#     - List of all lab technician appointment fees
+#     - Standard CRUD operations
+#     """
+#     queryset = LabTechnicianAppointmentFee.objects.all()
+#     serializer_class = LabTechnicianFeeSerializer
+#     permission_classes = [permissions.AllowAny]
+
+#     @action(detail=False, methods=['get'], url_path='get_fees')
+#     def get_fees(self, request):
+#         """
+#         Retrieve all appointment fees for display.
         
-        Returns:
-            JSON response containing the list of doctor fees.
-        """
-        fees = LabTechnicianAppointmentFee.objects.all()
-        serializer = self.get_serializer(fees, many=True)
-        return Response(serializer.data)
+#         Returns:
+#             JSON response containing the list of doctor fees.
+#         """
+#         fees = LabTechnicianAppointmentFee.objects.all()
+#         serializer = self.get_serializer(fees, many=True)
+#         return Response(serializer.data)
 
 class DocAppointCancellationViewSet(viewsets.ModelViewSet):
     """
@@ -736,6 +817,15 @@ class TimeSlotViewSet(viewsets.ModelViewSet):
         while current_date <= end_date:
             day_name = calendar.day_name[current_date.weekday()]  # Get day name (e.g., 'Monday')
             if day_name in working_days:  # Only create slots for working days
+
+                # 🔹 Delete previous slots for this date before creating new ones
+                TimeSlot.objects.filter(
+                    slot_date=current_date,
+                    doctor=user_instance if doctor_id else None,
+                    lab_technician=user_instance if lab_tech_id else None,
+                ).delete()
+
+                # 🔹 Create new slots
                 for slot in time_slots:
                     slots_to_create.append(TimeSlot(
                         doctor=user_instance if doctor_id else None,
@@ -745,6 +835,7 @@ class TimeSlotViewSet(viewsets.ModelViewSet):
                         end_time=slot["end_time"],
                         is_booked=False
                     ))
+
             current_date += timedelta(days=1)  # Move to the next day
 
         # Bulk create time slots
@@ -753,3 +844,4 @@ class TimeSlotViewSet(viewsets.ModelViewSet):
             return Response({"message": "Slots created successfully"}, status=status.HTTP_201_CREATED)
         else:
             return Response({"message": "No slots created, check working days"}, status=status.HTTP_400_BAD_REQUEST)
+

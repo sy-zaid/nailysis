@@ -2,8 +2,9 @@ import random
 from datetime import datetime, timedelta
 from faker import Faker
 from users.models import CustomUser, Patient, Doctor, LabTechnician,ClinicAdmin,LabAdmin
-from appointments.models import DoctorAppointment, TechnicianAppointment, LabTechnicianAppointmentFee, DoctorAppointmentFee
+from appointments.models import DoctorAppointment, TechnicianAppointment, DoctorAppointmentFee
 from ehr.models import EHR
+from labs.models import LabTestType
 from django.utils import timezone
 from appointments.models import DoctorAppointmentFee
 
@@ -27,21 +28,6 @@ APPOINTMENT_FEES = {
     "Emergency Visit": 2000.00,
     "Prescription Refill": 800.00,
 }
-
-# def create_dummy_users(num_users, role,password):
-#     users = []
-#     for _ in range(num_users):
-#         email = f"{role}{fake.unique.random_number(digits=3)}@example.com"
-#         user = CustomUser.objects.create_user(
-#             email=email,
-#             first_name=fake.first_name(),
-#             last_name=fake.last_name(),
-#             password=password,
-#             role=role,
-#         )
-#         users.append(user)
-#     return users
-
 
 def create_superadmin():
     email = "admin@gmail.com"
@@ -162,7 +148,6 @@ def populate_doctor_appointment_fees():
         else:
             print(f"Updated: {appointment_type} with new fee {fee} PKR")
 
-
 # Generate dummy EHR records separately
 def generate_dummy_ehr_records(num_records, patients, doctors):
     for _ in range(num_records):
@@ -188,11 +173,6 @@ def generate_dummy_ehr_records(num_records, patients, doctors):
         print(f"EHR record created for {patient.user.first_name}, consulted by Dr. {doctor.user.first_name}")
 
 
-
-
-
-
-
 def generate_dummy_lab_appointments(num_appointments, patients, lab_technicians):
     LAB_TEST_TYPES = [
         "Complete Blood Count (CBC)", "Basic Metabolic Panel (BMP)", "Hemoglobin A1c (HbA1c)", "Testosterone Test",
@@ -215,10 +195,7 @@ def generate_dummy_lab_appointments(num_appointments, patients, lab_technicians)
             fee=fee,
         )
 
-
-
 # Generate dummy clinic_admin
-
 def create_dummy_clinic_admin():
     email = f"clinic_admin0@example.com"
     
@@ -247,6 +224,45 @@ def populate_lab_appointment_fees():
         LabTechnicianAppointmentFee.objects.update_or_create(
             lab_test_type=lab_test_type, defaults={"fee": fee}
         )
+        
+
+
+def populate_lab_test_types():
+    """
+    Populates the LabTestType model with predefined test types.
+    """
+    test_types = [
+        {"name": "CBC", "label": "Complete Blood Count (CBC)", "category": "Blood Test", "price": 500.00},
+        {"name": "BloodSugar", "label": "Blood Sugar Test", "category": "Blood Test", "price": 300.00},
+        {"name": "HbA1c", "label": "HbA1c (Diabetes Test)", "category": "Blood Test", "price": 700.00},
+        {"name": "LipidProfile", "label": "Lipid Profile (Cholesterol Test)", "category": "Blood Test", "price": 1000.00},
+        {"name": "Thyroid", "label": "Thyroid Function Test (T3, T4, TSH)", "category": "Blood Test", "price": 1200.00},
+        {"name": "UrineTest", "label": "Urine Analysis", "category": "Urine Test", "price": 400.00},
+        {"name": "LiverFunction", "label": "Liver Function Test (LFT)", "category": "Blood Test", "price": 1500.00},
+        {"name": "KidneyFunction", "label": "Kidney Function Test (KFT)", "category": "Blood Test", "price": 1300.00},
+        {"name": "Electrolytes", "label": "Electrolyte Panel", "category": "Blood Test", "price": 800.00},
+        {"name": "CRP", "label": "C-Reactive Protein (CRP) Test", "category": "Blood Test", "price": 600.00},
+        {"name": "VitaminD", "label": "Vitamin D Test", "category": "Blood Test", "price": 1100.00},
+        {"name": "VitaminB12", "label": "Vitamin B12 Test", "category": "Blood Test", "price": 950.00},
+        {"name": "IronPanel", "label": "Iron Panel (Ferritin, TIBC)", "category": "Blood Test", "price": 1250.00},
+        {"name": "GeneticTest", "label": "Genetic Testing", "category": "Genetic Test", "price": 5000.00},
+    ]
+
+    for test in test_types:
+        obj, created = LabTestType.objects.get_or_create(
+            name=test["name"],
+            defaults={
+                "label": test["label"],
+                "category": test["category"],
+                "price": test["price"]
+            }
+        )
+        if created:
+            print(f"Added: {obj.label} ({obj.category}) - Rs. {obj.price}")
+        else:
+            print(f"Already exists: {obj.label}")
+
+populate_lab_test_types()
 
 
 # Create dummy data of everything
@@ -262,10 +278,10 @@ lab_technicians = create_dummy_lab_technicians(num_lab_technicians)
 clinic_admin = create_dummy_clinic_admin()
 
 # Run the function
-generate_dummy_appointments(num_appointments, patients, doctors)
+# generate_dummy_appointments(num_appointments, patients, doctors)
 generate_dummy_ehr_records(num_ehr_records, patients, doctors)
 populate_doctor_appointment_fees()
-populate_lab_appointment_fees()
-generate_dummy_lab_appointments(num_lab_appointments, patients, lab_technicians)
+# populate_lab_appointment_fees()
+# generate_dummy_lab_appointments(num_lab_appointments, patients, lab_technicians)
 
 create_superadmin()

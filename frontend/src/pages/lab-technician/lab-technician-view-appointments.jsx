@@ -4,7 +4,7 @@ import styles from "../../components/CSS Files/LabTechnician.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar.jsx";
 import Header from "../../components/Dashboard/Header/Header.jsx";
 import Sidebar from "../../components/Dashboard/Sidebar/Sidebar.jsx";
-import StartTechnicianAppointmentPopup from "../../components/Popup/popups-lab-technician-appointments/technician-appointment-checkin-popup.jsx";
+import TechnicianAppointmentCheckinPopup from "../../components/Popup/popups-lab-technician-appointments/technician-appointment-checkin-popup.jsx";
 
 const ViewAppointments = (props) => {
   const [popupVisible, setPopupVisible] = useState(false);
@@ -16,7 +16,8 @@ const ViewAppointments = (props) => {
   const [activeButton, setActiveButton] = useState(0); 
 
   const [startConsultationPopup, setstartConsultationPopup] = useState(false);
-    
+  
+  
 
     {/* Function to handle all popup item clicks and close the popup */}
     const handlePopupItemClick = (callback) => {
@@ -114,7 +115,7 @@ const ViewAppointments = (props) => {
     
     <div className={styles.pageContainer}>
 
-      <StartTechnicianAppointmentPopup 
+      <TechnicianAppointmentCheckinPopup 
         startConsultationPopup={startConsultationPopup} 
         setstartConsultationPopup={setstartConsultationPopup} 
       />
@@ -131,7 +132,7 @@ const ViewAppointments = (props) => {
 
         <div className={styles.appointmentsContainer}>
           <div className={styles.filters}>
-          <button
+            <button
               className={`${styles.filterButton} ${activeButton === 0 ? styles.active : ''}`}
               onClick={() => handleFilterClick(0)}
             >
