@@ -59,46 +59,42 @@ class FeedbackViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
+    @action(detail=False, methods=['get'], url_path='categories')
+    def fetch_categories(self, request):
+        categories = [choice[0] for choice in Feedback.CATEGORY_CHOICES]  # Extract category names
+        return Response({"categories": categories})
+    
     @action(detail=False, methods=['post'], url_path='submit_feedback')
     def submit_feedback(self, request):
         """
-        Submit a new feedback.
+        API to submit feedback.
+        Only Patients, Doctors, and Lab Technicians can submit feedback.
         """
         auth_users = ['patient', 'doctor', 'lab_technician']
-        # un_auth_users = ['clinic_admin', 'lab_admin']
-        user = self.request.user
+        user = request.user
 
-
-        # if user == pat, doc, lab_tech then will show submit feedback
+        # ✅ Check if user is allowed
         if user.role not in auth_users:
-            return Response({"message": "You are not authorised to submit feedback",}) 
+            return Response({"message": "You are not authorized to submit feedback"}, status=403)
 
-        print(request.data)
+        # ✅ Extract data from request
         category = request.data.get('category')
-        date_submitted = request.data.get('date_submitted')
         description = request.data.get('description')
-        status = request.data.get('status')
         is_clinic_feedback = request.data.get('is_clinic_feedback')
 
-        # Handling user information
-        if user.role == "patient":
-            patient = get_object_or_404(Patient, user=request.user)
-        elif user.role == "doctor":
-            patient = get_object_or_404(Doctor, user=request.user)
-        elif user.role == "lab_technician":
-            patient = get_object_or_404(LabTechnician, user=request.user)    
+        if not category or not description:
+            return Response({"message": "Category and description are required."}, status=400)
 
+        # ✅ Save feedback
         feedback = Feedback.objects.create(
-            patient=patient,
+            user=request.user,
             category=category,
-            date_submitted=date_submitted,
             description=description,
-            status=status,
-            is_clinic_feedback=is_clinic_feedback   
+            is_clinic_feedback=is_clinic_feedback
         )
 
-        return Response({"message": "Feedback submitted successfully",
-                         "feedback_id": feedback.id})
+        return Response({"message": "Feedback submitted successfully", 
+                         "feedback_id": feedback.id}, status=201)
 
 
     @action(detail=True, methods=['post'])
