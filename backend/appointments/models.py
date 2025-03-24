@@ -27,7 +27,7 @@ class Appointment(models.Model):
     Attributes:
         appointment_id (int): Unique identifier for the appointment.
         patient (ForeignKey): Reference to the patient associated with the appointment.
-        appointment_date (date): Date of the appointment.
+        
         start_time (time): Start Time of the appointment.
         end_time (time): End Time of the appointment.
         status (str): Current status of the appointment (Scheduled, Completed, Cancelled, Rescheduled).
@@ -49,19 +49,20 @@ class Appointment(models.Model):
     notes = models.TextField(blank=True, null=True)
     
     # THESE ARE FOR SAVING APPOINTMENT DETAILS AFTER COMPLETION/DELETING TIMESLOT RECORD.
-    appointment_date = models.DateField(null=True,blank=True)
-    checkin_time = models.TimeField(null=True,blank=True)
-    checkout_time = models.TimeField(null=True,blank=True)
+    checkin_datetime = models.DateTimeField(null=True, blank=True)
+    checkout_datetime = models.DateTimeField(null=True, blank=True)
+
     time_slot = models.OneToOneField(TimeSlot, on_delete=models.SET_NULL, null=True, blank=True)
     
     def save(self, *args, **kwargs):
         if self.time_slot:  # Ensure time_slot is not None
-            self.appointment_date = self.time_slot.slot_date
-            self.checkin_time = self.time_slot.start_time
+            
+            # Combine date and time to create check-in datetime
+            self.checkin_datetime = datetime.combine(self.time_slot.slot_date, self.time_slot.start_time)
 
             # If the appointment is completed, set checkout time
             if self.status == "Completed":
-                self.checkout_time = self.time_slot.end_time
+                self.checkout_datetime = self.time_slot.end_time
 
         super().save(*args, **kwargs)  # Ensure the object is actually saved
         
@@ -71,20 +72,24 @@ class Appointment(models.Model):
         self.status = "No-Show"
         self.save()
         
-    
     def mark_completed(self):
-        """Mark appointment as Completed when the consultation is done"""
-        self.status = "Completed"
-        # Ensure slot_date and slot_time are combined correctly
-        self.appointment_date = self.time_slot.slot_date
-        self.checkin_time = self.time_slot.start_time
-        self.checkout_time = now()
-        
-        # Delete the associated time slot
-        self.time_slot.delete()
-        # Remove reference to prevent accessing a deleted object
-        self.time_slot = None 
-        self.save()
+        """Mark appointment as Completed when the consultation is done."""
+        if self.status != "Completed":
+            self.status = "Completed"
+
+            if self.time_slot:  # Check if time slot exists before using it
+                
+                # Combine date and time to create check-in datetime
+                self.checkin_datetime = datetime.combine(self.time_slot.slot_date, self.time_slot.start_time)
+                self.checkout_datetime = now()
+                
+                # Delete the associated time slot
+                self.time_slot.delete()
+                self.time_slot = None  # Remove reference to prevent accessing a deleted object
+            
+            self.save()
+            return True
+        return False
         
     def cancel_appointment(self):
         """Cancels the appointment."""
@@ -98,7 +103,7 @@ class Appointment(models.Model):
             self.time_slot = None  # Remove association
             self.save()
 
-    def complete_appointment(self,ehr_data):
+    def complete_appointment_with_ehr(self,ehr_data):
         
         """Handle the creation of EHR when appointment is Completed."""
         if self.status != 'Completed':  # Ensure appointment is not already completed
@@ -284,10 +289,6 @@ class TechnicianAppointment(Appointment):
             self.fee = self.lab_tests.aggregate(total=models.Sum('price'))['total'] or 0
             self.save()
         return self.fee
-
-    # def save(self,*args,**kwargs):
-    #     self.fee = self.calculate_fee()
-    #     super().save(*args,**kwargs)
         
     def __str__(self):
         """
@@ -296,13 +297,8 @@ class TechnicianAppointment(Appointment):
         Returns:
             str: Readable format showing the appointment ID and technician.
         """
-        return f"Lab Appointment #{self.id} - Technician: {self.lab_technician}"
+        return f"Lab Appointment #{self.appointment_id} - Technician: {self.lab_technician}"
 
-   
-# from django.db import models
-# from django.contrib.auth import get_user_model
-
-# User = get_user_model()
 
 class CancellationRequest(models.Model):
     STATUS_CHOICES = [

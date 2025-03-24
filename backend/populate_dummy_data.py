@@ -173,7 +173,7 @@ def generate_dummy_ehr_records(num_records, patients, doctors):
         print(f"EHR record created for {patient.user.first_name}, consulted by Dr. {doctor.user.first_name}")
 
 
-def generate_dummy_lab_appointments(num_appointments, patients, lab_technicians):
+def generate_dummy_technician_appointments(num_appointments, patients, lab_technicians):
     LAB_TEST_TYPES = [
         "Complete Blood Count (CBC)", "Basic Metabolic Panel (BMP)", "Hemoglobin A1c (HbA1c)", "Testosterone Test",
         "PCR Test", "BRCA Gene Test"
@@ -219,7 +219,7 @@ def create_dummy_clinic_admin():
 
 # POPULATING LAB APPOINTMENTS FEE MODEL
 # Insert or update lab technician appointment fees
-def populate_lab_appointment_fees():
+def populate_technician_appointment_fees():
     for lab_test_type, fee in LAB_TEST_FEES.items():
         LabTechnicianAppointmentFee.objects.update_or_create(
             lab_test_type=lab_test_type, defaults={"fee": fee}
@@ -270,7 +270,7 @@ num_patients = 5
 num_doctors = 2
 num_appointments = 5
 num_ehr_records = 7  # Independent number of EHR records
-num_lab_appointments = 10
+num_technician_appointments = 10
 num_lab_technicians = 3
 patients = create_dummy_patients(num_patients)
 doctors = create_dummy_doctors(num_doctors)
@@ -281,7 +281,7 @@ clinic_admin = create_dummy_clinic_admin()
 # generate_dummy_appointments(num_appointments, patients, doctors)
 generate_dummy_ehr_records(num_ehr_records, patients, doctors)
 populate_doctor_appointment_fees()
-# populate_lab_appointment_fees()
+# populate_technician_appointment_fees()
 # generate_dummy_lab_appointments(num_lab_appointments, patients, lab_technicians)
 
 create_superadmin()

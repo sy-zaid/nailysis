@@ -240,34 +240,40 @@ const AppointmentTechnician = () => {
                   </tr>
                 </thead>
 
-                <tbody>
-                  {appointments.map((row, index) => (
-                    <tr
-                      key={row.appointment_id}
-                      style={{ borderBottom: "1px solid #ddd" }}
-                    >
-                      <td>{index + 1}</td>
-                      <td>{row.appointment_id}</td>
-                      {curUser[0].role !== "patient" && (
-                        <td>
-                          {row.patient?.user?.first_name || "No first name"}{" "}
-                          {row.patient?.user?.last_name || "No last name"}
-                        </td>
-                      )}
-                      {curUser[0].role !== "patient" && (
-                        <td>{row.patient?.gender || "N/A"}</td>
-                      )}
+              <tbody>
+                {appointments.map((row, index) => (
+                  <tr
+                    key={row.appointment_id}
+                    style={{ borderBottom: "1px solid #ddd" }}
+                  >
+                    <td>{index + 1}</td>
+                    <td>{row.appointment_id}</td>
+                    {curUser[0].role !== "patient" && (
                       <td>
-                        {row.appointment_date} | {row.checkin_time}
+                        {row.patient?.user?.first_name || "No first name"}{" "}
+                        {row.patient?.user?.last_name || "No last name"}
                       </td>
-                      <td>
-                        <ul>
-                          {row.test_orders.length > 0 &&
-                            row.test_orders[0].test_types.map((test) => (
-                              <li key={test.id}>{test.label}</li>
-                            ))}
-                        </ul>
-                      </td>
+                    )}
+                    {curUser[0].role !== "patient" && (
+                      <td>{row.patient?.gender || "N/A"}</td>
+                    )}
+                    <td>
+                      {row?.checkin_datetime
+                        ? `${new Date(
+                            row.checkin_datetime
+                          ).toLocaleDateString()} | ${new Date(
+                            row.checkin_datetime
+                          ).toLocaleTimeString()}`
+                        : "N/A"}
+                    </td>
+                    <td>
+                      <ul>
+                        {row.test_orders.length > 0 &&
+                          row.test_orders[0].test_types.map((test) => (
+                            <li key={test.id}>{test.label}</li>
+                          ))}
+                      </ul>
+                    </td>
 
                       {curUser[0].role !== "lab_technician" && (
                         <td>
@@ -316,10 +322,11 @@ const AppointmentTechnician = () => {
                           />
                         </button>
 
-                        {menuOpen === row.appointment_id && (
-                          <div className={styles.menu}>
-                            <ul>
-                              {curUser[0].role === "lab_technician" && (
+                      {menuOpen === row.appointment_id && (
+                        <div className={styles.menu}>
+                          <ul>
+                            {curUser[0].role === "lab_technician" &&
+                              row.status !== "Completed" && (
                                 <li
                                   onClick={() => {
                                     handleActionClick(
