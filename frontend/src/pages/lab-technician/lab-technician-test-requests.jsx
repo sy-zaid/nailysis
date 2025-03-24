@@ -217,6 +217,7 @@ const TestOrders = ({ props }) => {
                   <th>Requested On</th>
                   <th>Collected On</th>
                   <th>Total Price</th>
+                  <th>Appointment Status</th>
                   <th>Test Status</th>
                   <th>Results Available</th>
                 </tr>
@@ -238,24 +239,30 @@ const TestOrders = ({ props }) => {
                     <td data-label="Requested Tests">
                       {row.test_types.map((test) => test.label).join(", ")}
                     </td>
-                    <td data-label="Request Date">
+                    <td data-label="Requested On">
                       {new Date(row.created_at).toLocaleDateString()} |{" "}
                       {new Date(row.created_at).toLocaleTimeString()}
                     </td>
-                    <td data-label="Request Date">
+                    <td data-label="Collected On">
                       {row?.lab_technician_appointment?.checkout_datetime
                         ? `${new Date(
                             row.lab_technician_appointment.checkout_datetime
                           ).toLocaleDateString()} | ${new Date(
                             row.lab_technician_appointment.checkout_datetime
                           ).toLocaleTimeString()}`
-                        : "Pending"}
+                        : "Not collected yet"}
                     </td>
 
                     <td data-label="Price">
                       {row.lab_technician_appointment?.fee}
                     </td>
 
+                    <td
+                      data-label="Status"
+                      className={getStatusClass(row.test_status)}
+                    >
+                      {row.lab_technician_appointment.status}
+                    </td>
                     <td
                       data-label="Status"
                       className={getStatusClass(row.test_status)}

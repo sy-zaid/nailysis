@@ -80,7 +80,7 @@ class LabTestOrder(models.Model):
     results_available = models.BooleanField(default=False)
     
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    # updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"{self.test_type.name} - {self.test_status} ({self.appointment})"

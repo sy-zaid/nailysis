@@ -25,6 +25,7 @@ class LabTestOrderSerializer(serializers.ModelSerializer):
                 "patient_name": appointment.patient.user.first_name + " " + appointment.patient.user.last_name,  # Example
                 "technician_name": appointment.lab_technician.user.first_name + " " + appointment.lab_technician.user.last_name,  # Example
                 "checkout_datetime": appointment.checkout_datetime,
+                "status": appointment.status,
                 "fee": appointment.fee,
             }
         return None
