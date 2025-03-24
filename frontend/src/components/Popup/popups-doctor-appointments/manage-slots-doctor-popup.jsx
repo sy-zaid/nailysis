@@ -139,9 +139,6 @@ const ManageSlotsPopup = ({ onClose }) => {
       onClose={onClose}
     >
       <div className={styles.modalContent}>
-        <button className={styles.closeButton} onClick={onClose}>
-          ✖
-        </button>
         <h2>Manage Availability</h2>
         <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.formGroup}>

@@ -21,6 +21,7 @@ import ViewTechnicianAppointments from "./pages/common/view-lab-appointments";
 import PlaceholderComponent from "./components/PlaceholderComponent"; // Placeholder for missing views
 import BillingHistory from "./pages/admin-clinic/billing-history";
 import GenerateInvoice from "./pages/admin-clinic/invoice";
+import CancellationRequest from "./pages/admin-clinic/appointment-cancellation-request";
 
 // FEEDBACKS
 import Feedbacks from "./pages/common/feedbacks";
@@ -64,6 +65,8 @@ export const renderClinicAdminContent = (view) => {
       return <Feedbacks name="Feedbacks" />;
     case "Test Requests":
       return <PlaceholderComponent name="Test Requests" />;
+    case "Cancellation Requests":
+      return <CancellationRequest name="Cancellation Requests" />;
     default:
       return <ClinicAdminDashboard />;
   }

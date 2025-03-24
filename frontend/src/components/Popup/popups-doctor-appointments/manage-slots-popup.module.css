@@ -4,11 +4,12 @@
   background: #fff;
   padding: 20px;
   border-radius: 8px;
-  width: 80%;
+  width: 90%;
   max-width: 800px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   position: relative;
   animation: fadeIn 0.3s ease-in-out;
+  height: 100vh;
 }
 
 @keyframes fadeIn {
