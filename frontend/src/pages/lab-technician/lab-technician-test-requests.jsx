@@ -7,6 +7,8 @@ import PopupSelectReportType from "../../components/Popup/popup-select-report-ty
 import PopupTestDetails from "../../components/Popup/popup-test-details";
 import { getTestOrders } from "../../api/labsApi";
 
+import { handleClosePopup, handleOpenPopup } from "../../utils/utils";
+
 const TestOrders = ({ props }) => {
   const [popupVisible, setPopupVisible] = useState(false);
   const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
@@ -20,6 +22,7 @@ const TestOrders = ({ props }) => {
   // ------------------------- ZAID'S WORK (OTHER THINGS NEEDS TO BE REVISED) ------------------------- //
   const [testOrders, setTestOrders] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
+  const [popupContent, setPopupContent] = useState();
   const token = localStorage.getItem("access");
   // Get test requests on component mount
   useEffect(() => {
@@ -37,6 +40,23 @@ const TestOrders = ({ props }) => {
     // }
   }, [token]);
   console.log("TEST REQUESTS RESPONSSE", testOrders);
+
+  const handleActionClick = (action, testRequestId) => {
+    console.log(`Performing ${action} on ID:${testRequestId}`);
+
+    if (action === "Add New Test") {
+      // setselectreportTypePopup(true); // Ensure this state is updated
+      setPopupContent(
+        <PopupSelectReportType
+          selectreportTypePopup={selectreportTypePopup}
+          setselectreportTypePopup={setselectreportTypePopup}
+          onProceed={handleCloseSelectReportAndOpenTestDetails}
+          onClose={handleClosePopup}
+        />
+      );
+      setShowPopup(true);
+    }
+  };
   // ------------------------ END OF ZAID'S WORK -------------------------- //
 
   const handleAddNewTest = () => {
@@ -51,36 +71,6 @@ const TestOrders = ({ props }) => {
   const handleCloseTestDetailsPopup = () => {
     setTestDetailsPopup(false);
   };
-
-  const data = [
-    {
-      id: 1,
-      testID: "123456",
-      patientName: "John",
-      doctorName: "Dr. Carl",
-      testType: "Urinalysis",
-      requestDate: "11/11/2024",
-      collectedOn: "11/11/2024",
-      priority: "Urgent",
-      price: "PKR. 500",
-      payment: "Bank Al Habib",
-      status: "Completed",
-    },
-
-    {
-      id: 2,
-      testID: "123456",
-      patientName: "Doe",
-      doctorName: "Dr. Carl",
-      testType: "CBC",
-      requestDate: "11/11/2024",
-      collectedOn: "Pending",
-      priority: "STAT",
-      price: "PKR. 500",
-      payment: "Bank Al Habib",
-      status: "Cancelled",
-    },
-  ];
 
   const handleFilterClick = (index) => {
     setActiveButton(index); // Set the active button when clicked
@@ -127,16 +117,12 @@ const TestOrders = ({ props }) => {
 
   return (
     <div className={styles.pageContainer}>
-      <PopupSelectReportType
-        selectreportTypePopup={selectreportTypePopup}
-        setselectreportTypePopup={setselectreportTypePopup}
-        onProceed={handleCloseSelectReportAndOpenTestDetails}
-      />
-
       <PopupTestDetails
         testDetailsPopup={testDetailsPopup}
         setTestDetailsPopup={setTestDetailsPopup}
       />
+
+      {showPopup && popupContent}
 
       <div className={styles.pageTop}>
         <Navbar />
@@ -182,7 +168,10 @@ const TestOrders = ({ props }) => {
             </button>
             <p>50 completed, 4 pending</p>
 
-            <button className={styles.addButton} onClick={handleAddNewTest}>
+            <button
+              className={styles.addButton}
+              onClick={() => handleActionClick("Add New Test")}
+            >
               <i className="bx bx-plus-circle"></i> Add New Test
             </button>
           </div>
