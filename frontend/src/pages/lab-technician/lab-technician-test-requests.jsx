@@ -3,7 +3,7 @@ import styles from "../../components/CSS Files/LabTechnician.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import Header from "../../components/Dashboard/Header/Header";
 import Sidebar from "../../components/Dashboard/Sidebar/Sidebar";
-import PopupSelectReportType from "../../components/Popup/popup-select-report-type";
+import PopupSelectTestOrder from "../../components/Popup/popup-select-report-type";
 import PopupTestDetails from "../../components/Popup/popup-test-details";
 import { getTestOrders } from "../../api/labsApi";
 
@@ -17,12 +17,12 @@ const TestOrders = ({ props }) => {
   const [activeButton, setActiveButton] = useState(0);
 
   const [testDetailsPopup, setTestDetailsPopup] = useState(false);
-  const [selectreportTypePopup, setselectreportTypePopup] = useState(false);
 
   // ------------------------- ZAID'S WORK (OTHER THINGS NEEDS TO BE REVISED) ------------------------- //
   const [testOrders, setTestOrders] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
   const [popupContent, setPopupContent] = useState();
+  const [showTestDetailsPopup, setShowTestDetailsPopup] = useState(false);
   const token = localStorage.getItem("access");
   // Get test requests on component mount
   useEffect(() => {
@@ -45,32 +45,19 @@ const TestOrders = ({ props }) => {
     console.log(`Performing ${action} on ID:${testRequestId}`);
 
     if (action === "Add New Test") {
-      // setselectreportTypePopup(true); // Ensure this state is updated
       setPopupContent(
-        <PopupSelectReportType
-          selectreportTypePopup={selectreportTypePopup}
-          setselectreportTypePopup={setselectreportTypePopup}
-          onProceed={handleCloseSelectReportAndOpenTestDetails}
-          onClose={handleClosePopup}
+        <PopupSelectTestOrder
+          onClose={() => setShowPopup(false)}
+          setInnerPopup={() => {
+            setShowPopup(false);
+            setShowTestDetailsPopup(true);
+          }}
         />
       );
       setShowPopup(true);
     }
   };
   // ------------------------ END OF ZAID'S WORK -------------------------- //
-
-  const handleAddNewTest = () => {
-    setselectreportTypePopup(true);
-  };
-
-  const handleCloseSelectReportAndOpenTestDetails = () => {
-    setTestDetailsPopup(true);
-    setselectreportTypePopup(false);
-  };
-
-  const handleCloseTestDetailsPopup = () => {
-    setTestDetailsPopup(false);
-  };
 
   const handleFilterClick = (index) => {
     setActiveButton(index); // Set the active button when clicked
@@ -117,12 +104,10 @@ const TestOrders = ({ props }) => {
 
   return (
     <div className={styles.pageContainer}>
-      <PopupTestDetails
-        testDetailsPopup={testDetailsPopup}
-        setTestDetailsPopup={setTestDetailsPopup}
-      />
-
       {showPopup && popupContent}
+      {showTestDetailsPopup && (
+        <PopupTestDetails onClose={() => setShowTestDetailsPopup(false)} />
+      )}
 
       <div className={styles.pageTop}>
         <Navbar />

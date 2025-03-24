@@ -3,9 +3,9 @@ import styles from "./popup-select-report-type.module.css";
 import Popup from "./Popup";
 import { useState, useEffect  } from "react";
 
-const PopupSelectReportType = ({ onClose,selectreportTypePopup, setselectreportTypePopup, onProceed }) => {
+const PopupSelectTestOrder = ({ onClose, setInnerPopup }) => {
     const [popupTrigger, setPopupTrigger] = useState(true);
-    if (!selectreportTypePopup) return null;
+    // if (!selectreportTypePopup) return null;
     
     // Function to determine the CSS class based on status
     const getStatusClass = (status) => {
@@ -27,7 +27,7 @@ const PopupSelectReportType = ({ onClose,selectreportTypePopup, setselectreportT
 
     return (
 
-    <Popup trigger={popupTrigger} setTrigger={setPopupTrigger}>
+    <Popup trigger={popupTrigger} setTrigger={setPopupTrigger} onClose={onClose}>
         <div className={styles.formContainer}>
           
           <div className={styles.tophead}>
@@ -111,9 +111,9 @@ const PopupSelectReportType = ({ onClose,selectreportTypePopup, setselectreportT
                     <button 
                         className={styles.addButton} style={{marginRight: "45px"}}
                         onClick={() => {
-                            setselectreportTypePopup(false); // Close this popup
-                            onProceed();      // Call function to open next popup
-                          }}
+                          onClose(); // Close this popup
+                          setInnerPopup(true); // Open the next popup
+                      }}
                     >
                         Add Record
                     </button>
@@ -154,4 +154,4 @@ const PopupSelectReportType = ({ onClose,selectreportTypePopup, setselectreportT
   );
 };
 
-export default PopupSelectReportType;
+export default PopupSelectTestOrder;
