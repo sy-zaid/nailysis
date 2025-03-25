@@ -2,7 +2,11 @@ import React from "react";
 import styles from "./technician-appointment-checkin-popup.module.css";
 import Popup from "../Popup";
 import { useState, useEffect } from "react";
-import { calculateAge, handleClosePopup } from "../../../utils/utils";
+import {
+  calculateAge,
+  handleClosePopup,
+  convertDjangoDateTime,
+} from "../../../utils/utils";
 import { completeTechnicianAppointment } from "../../../api/appointmentsApi";
 
 const TechnicianAppointmentCheckinPopup = ({ onClose, appointmentDetails }) => {
@@ -201,14 +205,12 @@ const TechnicianAppointmentCheckinPopup = ({ onClose, appointmentDetails }) => {
               <div>
                 <label>Date & Time</label>
                 <p className={styles.subHeading}>
-                  
-                  {appointmentDetails?.checkin_datetime}{" "}
+                  {convertDjangoDateTime(appointmentDetails?.checkin_datetime)}
                 </p>
               </div>
             </div>
           </div>
 
-          {/* {isConsultationStarted && ( */}
           <div className={styles.commentsFormSection}>
             <h3
               style={{ color: "#737070", marginLeft: "25px", fontSize: "16px" }}
@@ -223,7 +225,6 @@ const TechnicianAppointmentCheckinPopup = ({ onClose, appointmentDetails }) => {
               </div>
             </div>
           </div>
-          {/* )} */}
 
           <hr />
 

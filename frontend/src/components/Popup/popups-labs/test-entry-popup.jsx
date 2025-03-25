@@ -1,9 +1,9 @@
 import React from "react";
-import styles from "../CSS Files/LabTechnician.module.css";
-import Popup from "./Popup";
+import styles from "../../CSS Files/LabTechnician.module.css";
+import Popup from "../Popup";
 import { useState } from "react";
 
-const PopupTestDetails = ({ onClose }) => {
+const TestEntryPopup = ({ onClose }) => {
   // if (!testDetailsPopup) return null
   const [popupTrigger, setPopupTrigger] = useState(true);
   const testParameters = {
@@ -361,4 +361,4 @@ const PopupTestDetails = ({ onClose }) => {
   );
 };
 
-export default PopupTestDetails;
+export default TestEntryPopup;

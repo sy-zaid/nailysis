@@ -27,5 +27,6 @@ class LabTestOrderSerializer(serializers.ModelSerializer):
                 "checkout_datetime": appointment.checkout_datetime,
                 "status": appointment.status,
                 "fee": appointment.fee,
+                "notes": appointment.notes,
             }
         return None

@@ -323,3 +323,16 @@ export const calculateTotalFee = (selectedTests, availableTestPrices) => {
   }, 0);
   return total.toFixed(2);
 };
+
+/**
+ * Converts a Django datetime string into a formatted date and time string.
+ * @param {string} djangoDate - The Django datetime string.
+ * @returns {string} The formatted date and time string, or "Invalid Date" if input is null/undefined.
+ */
+export const convertDjangoDateTime = (djangoDate) => {
+  if (!djangoDate) return "Invalid Date"; // Handles undefined/null values
+
+  const dateObj = new Date(djangoDate); // Convert string to Date object
+
+  return `${dateObj.toLocaleDateString()} | ${dateObj.toLocaleTimeString()}`;
+};
