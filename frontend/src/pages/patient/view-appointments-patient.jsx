@@ -29,8 +29,7 @@ const AppointmentPatients = () => {
   const [selectAll, setSelectAll] = useState(false);
   const [selectedAppointments, setSelectedAppointments] = useState({});
 
-
-
+  
   // ----- HANDLERS
   const handleOpenDoctorPopup = () => {
     setShowDoctorPopup(true); // Show the popup when button is clicked

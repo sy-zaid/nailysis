@@ -22,6 +22,7 @@ import {
   handleClosePopup,
   getStatusClass, 
   toggleActionMenu,
+  getResultsClass,
 } from "../../utils/utils";
 import PopupBookTechnicianAppointment from "../../components/Popup/popups-lab-technician-appointments/technician-appointment-book-popup";
 
@@ -37,12 +38,94 @@ const AppointmentTechnician = () => {
 
   // ----- IMPORTANT DATA
   const [appointments, setAppointments] = useState([]);
-  const [activeButton, setActiveButton] = useState(0); 
+
+  // Filtering, Searching, Sorting State
+  const [filteredAppointments, setFilteredAppointments] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeFilter, setActiveFilter] = useState("All");  
+  const [sortOption, setSortOption] = useState("none");
+
+  const [totalRecords, setTotalRecords] = useState(0);
+  const [scheduledCount, setScheduledCount] = useState(0);
+
+  // Checkboxes State
+  const [selectAll, setSelectAll] = useState(false);
+  const [selectedAppointments, setSelectedAppointments] = useState([]);
+
 
   // ----- HANDLERS
-  const handleFilterClick = (index) => {
-    setActiveButton(index); // Set the active button when clicked
+
+  // Filtering Logic
+  const handleFilterClick = (filter) => {
+    setActiveFilter(filter);
+  
+    let filteredData = appointments;
+  
+    if (filter === "Scheduled Appointments") {
+      filteredData = appointments.filter(app => app.status === "Scheduled");
+    } else if (filter === "Pending Tests") {
+      filteredData = appointments.filter(app => app.test_orders[0]?.test_status === "Pending");
+    } else if (filter === "Today") {
+      const today = new Date().toISOString().split("T")[0]; // Get today's date in YYYY-MM-DD
+      filteredData = appointments.filter(app => 
+        new Date(app.checkin_datetime).toISOString().split("T")[0] === today
+      );
+    }
+  
+    setFilteredAppointments(filteredData);
   };
+
+  // Search Logic
+  const handleSearch = (e) => {
+    const query = e.target.value.toLowerCase();
+    setSearchQuery(query);
+  
+    const filteredData = appointments.filter((app) => {
+      // Get all searchable fields as a single lowercase string
+      const patientName = `${app.patient?.user?.first_name || ""} ${app.patient?.user?.last_name || ""}`.toLowerCase();
+      const appointmentId = app.appointment_id?.toString().toLowerCase();
+      const gender = app.patient?.gender?.toLowerCase() || "";
+      const dateTime = new Date(app.checkin_datetime).toLocaleString().toLowerCase();
+      const fee = app.fee?.toString().toLowerCase() || "";
+      const testStatus = app.test_orders[0]?.test_status?.toLowerCase() || "";
+      const appointmentStatus = app.status?.toLowerCase() || "";
+      const technicianName = `${app.lab_technician?.user?.first_name || ""} ${app.lab_technician?.user?.last_name || ""}`.toLowerCase();
+      const specialization = app.lab_technician?.specialization?.toLowerCase() || "";
+      const resultsAvailable = app.test_orders[0]?.results_available ? "yes" : "no";
+      const requestedTests = app.test_orders.flatMap(order => order.test_types.map(test => test.label)).join(" ").toLowerCase();
+      const additionalNotes = app.notes?.toLowerCase() || "";
+
+      
+      // Convert all fields into one searchable string
+      const searchableText = `${patientName} ${appointmentId} ${gender} ${dateTime} ${fee} ${testStatus} ${appointmentStatus} ${technicianName} ${specialization} ${resultsAvailable} ${requestedTests} ${additionalNotes}`;
+
+      return searchableText.includes(query);
+    });
+  
+    setFilteredAppointments(filteredData);
+  };
+  
+
+  // Sorting Logic
+  const handleSortChange = (e) => {
+    const selectedSort = e.target.value;
+    setSortOption(selectedSort);
+  
+    let sortedData = [...filteredAppointments]; // Work on a copy of filteredAppointments
+  
+    if (selectedSort === "fee-asc") {
+      sortedData.sort((a, b) => a.fee - b.fee);
+    } else if (selectedSort === "fee-desc") {
+      sortedData.sort((a, b) => b.fee - a.fee);
+    } else if (selectedSort === "date-asc") {
+      sortedData.sort((a, b) => new Date(a.checkin_datetime) - new Date(b.checkin_datetime));
+    } else if (selectedSort === "date-desc") {
+      sortedData.sort((a, b) => new Date(b.checkin_datetime) - new Date(a.checkin_datetime));
+    }
+  
+    setFilteredAppointments(sortedData);
+  };
+  
 
   // Handles the action when an item is clicked in the action menu
   const handleActionClick = (action, appointmentId) => {
@@ -66,7 +149,7 @@ const AppointmentTechnician = () => {
           );
           const response = await cancelTechnicianAppointment(appointmentId);
           alert(response.data.message);
-          fetchAppointments();
+          setAppointments();
         } catch (err) {
           console.log("Failed cancellation request.");
         }
@@ -105,6 +188,7 @@ const AppointmentTechnician = () => {
     }
   };
 
+
   // ----- USE EFFECTS
   // Fetch lab appointments on component mount
   useEffect(() => {
@@ -123,6 +207,32 @@ const AppointmentTechnician = () => {
     }
   }, [showPopup, token]);
 
+
+  // Update Total Records and Scheduled Count
+  useEffect(() => {
+    setTotalRecords(filteredAppointments.length);
+    setScheduledCount(filteredAppointments.filter(app => app.status === "Scheduled").length);
+  }, [filteredAppointments]);
+
+
+  // Sort Appointments Based on Selected Criteria
+  useEffect(() => {
+    let sortedData = [...appointments];
+  
+    if (sortOption === "fee-asc") {
+      sortedData.sort((a, b) => a.fee - b.fee);
+    } else if (sortOption === "fee-desc") {
+      sortedData.sort((a, b) => b.fee - a.fee);
+    } else if (sortOption === "date-asc") {
+      sortedData.sort((a, b) => new Date(a.checkin_datetime) - new Date(b.checkin_datetime));
+    } else if (sortOption === "date-desc") {
+      sortedData.sort((a, b) => new Date(b.checkin_datetime) - new Date(a.checkin_datetime));
+    }
+  
+    setFilteredAppointments(sortedData);
+  }, [appointments, sortOption]);
+  
+
   return (
     <div className={styles.pageContainer}>
       {/* Render the correct popup based on the action */}
@@ -139,32 +249,17 @@ const AppointmentTechnician = () => {
         
         <div className={styles.appointmentsContainer}>
           <div className={styles.filters}>
-            <button
-              className={`${styles.filterButton} ${activeButton === 0 ? styles.active : ''}`}
-              onClick={() => handleFilterClick(0)}
-            >
-              All
-            </button>
-            <button
-              className={`${styles.filterButton} ${activeButton === 1 ? styles.active : ''}`}
-              onClick={() => handleFilterClick(1)}
-            >
-              Pending
-            </button>
-            <button
-              className={`${styles.filterButton} ${activeButton === 2 ? styles.active : ''}`}
-              onClick={() => handleFilterClick(2)}
-            >
-              Completed
-            </button>
-            <button
-              className={`${styles.filterButton} ${activeButton === 3 ? styles.active : ''}`}
-              onClick={() => handleFilterClick(3)}
-            >
-              Cancelled
-            </button>
-            <p>50 completed, 4 pending</p>
-          
+            {["All", "Scheduled Appointments", "Pending Tests", "Today"].map((filter, index) => (
+              <button
+                key={index}
+                className={`${styles.filterButton} ${activeFilter === filter ? styles.active : ''}`}
+                onClick={() => handleFilterClick(filter)}
+              >
+                {filter}
+              </button>
+            ))}
+
+            <p>Total Records: {totalRecords} | Scheduled: {scheduledCount}</p>
 
               {curUser[0].role === "lab_technician" && (
                 <button
@@ -196,14 +291,22 @@ const AppointmentTechnician = () => {
               <select className={styles.bulkAction}>
                 <option>Bulk Action: Delete</option>
               </select>
-              <select className={styles.sortBy}>
-                <option>Sort By: Ordered Today</option>
+              
+              <select className={styles.sortBy} onChange={handleSortChange} value={sortOption}>
+                <option value="none">Sort By: None</option>
+                <option value="fee-asc">Fee (Low to High)</option>
+                <option value="fee-desc">Fee (High to Low)</option>
+                <option value="date-asc">Appointment Date (Oldest First)</option>
+                <option value="date-desc">Appointment Date (Latest First)</option>
               </select>
+
               <input
                 className={styles.search}
                 type="text"
-                placeholder="Search By Patient Name" 
-              /> 
+                placeholder="Search"
+                value={searchQuery}
+                onChange={handleSearch}
+              />
             </div>
 
             <hr />
@@ -215,7 +318,20 @@ const AppointmentTechnician = () => {
               >
                 <thead>
                   <tr>
-                    <th>#</th>
+                    <th>
+                      <input
+                        type="checkbox"
+                        checked={selectAll}
+                        onChange={(e) => {
+                          setSelectAll(e.target.checked);
+                          if (e.target.checked) {
+                            setSelectedAppointments(filteredAppointments.map((app) => app.appointment_id));
+                          } else {
+                            setSelectedAppointments([]);
+                          }
+                        }}
+                      />
+                    </th>
                     <th>Appointment ID</th>
 
                     {curUser[0].role !== "patient" && <th>Patient Name</th>}
@@ -241,12 +357,24 @@ const AppointmentTechnician = () => {
                 </thead>
 
               <tbody>
-                {appointments.map((row, index) => (
+                {filteredAppointments.map((row, index) => (
                   <tr
                     key={row.appointment_id}
-                    style={{ borderBottom: "1px solid #ddd" }}
                   >
-                    <td>{index + 1}</td>
+                    <td>
+                      <input
+                        type="checkbox"
+                        checked={selectedAppointments.includes(row.appointment_id)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedAppointments([...selectedAppointments, row.appointment_id]);
+                          } else {
+                            setSelectedAppointments(selectedAppointments.filter((id) => id !== row.appointment_id));
+                          }
+                        }}
+                      />
+                    </td>
+
                     <td>{row.appointment_id}</td>
                     {curUser[0].role !== "patient" && (
                       <td>
@@ -267,12 +395,9 @@ const AppointmentTechnician = () => {
                         : "N/A"}
                     </td>
                     <td>
-                      <ul>
-                        {row.test_orders.length > 0 &&
-                          row.test_orders[0].test_types.map((test) => (
-                            <li key={test.id}>{test.label}</li>
-                          ))}
-                      </ul>
+                      {row.test_orders.length > 0
+                        ? row.test_orders[0].test_types.map(test => test.label).join(", ")
+                        : "N/A"}
                     </td>
 
                       {curUser[0].role !== "lab_technician" && (
@@ -297,13 +422,19 @@ const AppointmentTechnician = () => {
                       >
                         {row.test_orders?.[0]?.test_status || " "}
                       </td>
+
                       <td className={getStatusClass(row.status, styles)}>
                         {row.status}
                       </td>
-                      <td className={getStatusClass(row.status, styles)}>
-                        {row.test_orders[0]?.results_available ? "Yes" : "No"}
+
+                      <td>
+                        <span className={getResultsClass(row.test_orders[0]?.results_available, styles)}>
+                          {row.test_orders[0]?.results_available ? "Yes" : "No"}
+                        </span>
                       </td>
+
                       {/* ------------------------- ACTION BUTTONS -------------------------*/}
+                      
                       <td>
                         <button
                           onClick={() =>

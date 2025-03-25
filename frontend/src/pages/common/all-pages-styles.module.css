@@ -245,6 +245,10 @@ table {
     color: orange;
 }
 
+.inProgress {
+    color: #007bff;
+}
+
 
 /* ---------- Buttons ---------- */
 
