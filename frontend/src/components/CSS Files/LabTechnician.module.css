@@ -552,8 +552,8 @@
     align-items: center;
     margin-bottom: 20px;
   }
-
-  .patientSelect, input[type="date"], input[type="text"] {
+ 
+  .patientSelect, .inputDateField, .inputTextField {
     border: n0one;
     border-bottom: 2px solid #0067FF;
     background: transparent;
@@ -569,17 +569,17 @@
     width: 100% !important;
   }
 
-  input[type="date"] {
+  .inputDateField {
     padding: 7px !important;
   }
 
 
-  input[type="text"] {
+  .inputTextField {
     cursor: auto;
     padding-left: 0 !important;
   }
 
-  textarea {
+  .textareaField {
     outline: none;
     font-size: 16px;
     padding: 0 !important;

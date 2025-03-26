@@ -307,7 +307,7 @@
     width: 97.5%;
     align-items: center;
     margin-bottom: 10px;
-  }
+  } 
 
   .selectFormSection {
     display: flex;
@@ -316,33 +316,7 @@
     margin-bottom: 20px;
   }
 
-  select, input[type="date"], input[type="text"] {
-    border: none;
-    border-bottom: 2px solid #0067FF;
-    background: transparent;
-    outline: none;
-    cursor: pointer;
-    margin-bottom: 20px;
-    padding: 10px !important;
-    width: 80% !important;
-    display: block;
-  }
-
-  .selectFormSection select {
-    width: 100% !important;
-  }
-
-  input[type="date"] {
-    padding: 10px;
-  }
-
-
-  input[type="text"], select, input[type="date"]  {
-    cursor: auto;
-    padding-left: 0 !important;
-  }
-
-  textarea {
+  .textAreaField {
     outline: none;
     font-size: 16px;
     padding: 0 ;

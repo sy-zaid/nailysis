@@ -202,7 +202,7 @@ const TechnicianAppointmentCheckinPopup = ({ onClose, appointmentDetails }) => {
             </h3>
             <div className={styles.documentFormGroup}>
               <div>
-                <textarea style={{ border: "none" }} disabled>
+                <textarea className={styles.textAreaField} style={{ border: "none" }} disabled>
                   {appointmentDetails?.notes || "N/A"}
                 </textarea>
               </div>

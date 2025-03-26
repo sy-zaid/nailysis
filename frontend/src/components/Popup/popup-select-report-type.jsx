@@ -41,9 +41,9 @@ const PopupSelectReportType = ({ onClose,selectreportTypePopup, setselectreportT
                 <div style={{ display: "flex", justifyContent: "center" }}>
                     <div>
                         <label>Change Patient</label>
-                            <select>
+                            <select className={styles.selectField}>
                                 <option>ID: 123456 | Mr. John Doe</option>
-                            </select>
+                            </select> 
                     </div>
             </div>
             </div>
