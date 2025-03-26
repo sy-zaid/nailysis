@@ -112,11 +112,11 @@ class FeedbackViewSet(viewsets.ModelViewSet):
         auth_users = ['patient', 'doctor', 'lab_technician']
         user = request.user
 
-        # ✅ Check if user is allowed
+        #  Check if user is allowed
         if user.role not in auth_users:
             return Response({"message": "You are not authorized to submit feedback"}, status=403)
 
-        # ✅ Extract data from request
+        #  Extract data from request
         category = request.data.get('category')
         description = request.data.get('description')
         is_clinic_feedback = request.data.get('is_clinic_feedback')
@@ -124,7 +124,7 @@ class FeedbackViewSet(viewsets.ModelViewSet):
         if not category or not description:
             return Response({"message": "Category and description are required."}, status=400)
 
-        # ✅ Save feedback
+        #  Save feedback
         feedback = Feedback.objects.create(
             user=request.user,
             category=category,
@@ -146,15 +146,15 @@ class FeedbackViewSet(viewsets.ModelViewSet):
         feedback = self.get_object()
         user = request.user
 
-        # ✅ Clinic Admins can resolve only clinic feedback
+        #  Clinic Admins can resolve only clinic feedback
         if user.role == "clinic_admin" and not feedback.is_clinic_feedback:
             return Response({"message": "You are not authorized to resolve lab feedback."}, status=status.HTTP_403_FORBIDDEN)
 
-        # ✅ Lab Admins can resolve only lab feedback
+        #  Lab Admins can resolve only lab feedback
         elif user.role == "lab_admin" and feedback.is_clinic_feedback:
             return Response({"message": "You are not authorized to resolve clinic feedback."}, status=status.HTTP_403_FORBIDDEN)
 
-        # ✅ Mark feedback as resolved
+        #  Mark feedback as resolved
         feedback.status = "Resolved"
         feedback.save()
 
@@ -171,16 +171,16 @@ class FeedbackViewSet(viewsets.ModelViewSet):
         feedback = self.get_object()
         user = request.user
     
-        # ✅ Patients, Doctors, and Lab Technicians can delete only their own feedback
+        #  Patients, Doctors, and Lab Technicians can delete only their own feedback
         if user.role in ["patient", "doctor", "lab_technician"]:
             if feedback.user != user:
                 return Response({"message": "You can only delete your own feedback."}, status=status.HTTP_403_FORBIDDEN)
     
-        # ✅ Clinic Admins can delete only clinic-related feedback
+        #  Clinic Admins can delete only clinic-related feedback
         elif user.role == "clinic_admin" and not feedback.is_clinic_feedback:
             return Response({"message": "You are not authorized to delete lab feedback."}, status=status.HTTP_403_FORBIDDEN)
     
-        # ✅ Lab Admins can delete only lab-related feedback
+        #  Lab Admins can delete only lab-related feedback
         elif user.role == "lab_admin" and feedback.is_clinic_feedback:
             return Response({"message": "You are not authorized to delete clinic feedback."}, status=status.HTTP_403_FORBIDDEN)
     
@@ -218,23 +218,23 @@ class FeedbackResponseViewSet(viewsets.ModelViewSet):
         user = request.user  # Get the logged-in user
         feedback = self.get_object()  # Get the feedback object from the request
 
-        # ✅ Check if the user is an admin
+        #  Check if the user is an admin
         if user.role not in ["clinic_admin", "lab_admin"]:
             return Response({"message": "You are not authorized to respond to feedback."}, status=status.HTTP_403_FORBIDDEN)
 
-        # ✅ Clinic Admin can only respond to clinic feedback
+        #  Clinic Admin can only respond to clinic feedback
         if user.role == "clinic_admin" and not feedback.is_clinic_feedback:
             return Response({"message": "You are not allowed to respond to lab feedback."}, status=status.HTTP_403_FORBIDDEN)
 
-        # ✅ Lab Admin can only respond to lab feedback
+        #  Lab Admin can only respond to lab feedback
         if user.role == "lab_admin" and feedback.is_clinic_feedback:
             return Response({"message": "You are not allowed to respond to clinic feedback."}, status=status.HTTP_403_FORBIDDEN)
 
-        # ✅ Extract response data from request
+        #  Extract response data from request
         response_text = request.data.get('description', '').strip()  # Can be empty
         new_status = request.data.get('status', feedback.status)  # Default to existing status
 
-        # ✅ Update or create Feedback Response
+        #  Update or create Feedback Response
         feedback_response, created = FeedbackResponse.objects.update_or_create(
         feedback=feedback,
         defaults={
@@ -243,7 +243,7 @@ class FeedbackResponseViewSet(viewsets.ModelViewSet):
             }
         )
 
-        # ✅ Update Feedback Status (Pending/Resolved)
+        #  Update Feedback Status (Pending/Resolved)
         feedback.status = new_status
         feedback.save()
 

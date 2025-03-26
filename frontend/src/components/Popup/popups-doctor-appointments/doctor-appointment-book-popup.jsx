@@ -384,7 +384,7 @@ const BookDoctorAppointmentPopup = ({ onClose }) => {
           </div>
 
           </div>
-          <div>
+          <div className={styles.additionalNotes}>
             <label>Additional Notes</label>
             <input
               type="text"

@@ -59,7 +59,7 @@ export const rescheduleDoctorAppointment = async (
 };
 
 export const saveCompleteDoctorAppointment = async (appointmentId, ehrData) => {
-  const url = `${API_URL}/api/doctor_appointments/${appointmentId}/save_and_complete/`;
+  const url = `${API_URL}/api/doctor_appointments/${appointmentId}/complete_appointment_with_ehr/`;
   return axios.post(url, ehrData, getHeaders());
 };
 
@@ -82,7 +82,7 @@ export const rescheduleTechnicianAppointment = async (
   appointmentId,
   appointmentData
 ) => {
-  const url = `${API_URL}/api/lab_technician_appointments/${appointmentId}/reschedule_lab_appointment/`;
+  const url = `${API_URL}/api/lab_technician_appointments/${appointmentId}/reschedule_technician_appointment/`;
   return axios.put(url, appointmentData, getHeaders());
 };
 
@@ -92,6 +92,11 @@ export const bookTechnicianAppointment = async (payload) => {
 };
 
 export const cancelTechnicianAppointment = async (appointmentId) => {
-  const url = `${API_URL}/api/lab_appointments/${appointmentId}/cancel_appointment/`;
+  const url = `${API_URL}/api/lab_technician_appointments/${appointmentId}/cancel_appointment/`;
   return axios.post(url, getHeaders());
+};
+
+export const completeTechnicianAppointment = async (appointmentId) => {
+  const url = `${API_URL}/api/lab_technician_appointments/${appointmentId}/complete_appointment/`;
+  return axios.post(url, {},getHeaders());
 };

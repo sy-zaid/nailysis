@@ -83,12 +83,25 @@ export const testTypes = [
 export const getStatusClass = (status, styles) => {
   switch (status) {
     case "Consulted":
+    case "Completed":
       return styles.consulted;
     case "Cancelled":
+    case "No":
       return styles.cancelled;
-    default:
+    case "Pending":
+    case "Scheduled":
       return styles.scheduled;
+    case "Rescheduled":
+      return styles.inProgress;
+    default:
+      return {};
   }
+};
+
+export const getResultsClass = (value, styles) => {
+  if (value === true) return styles.consulted; // Apply "Yes" color
+  if (value === false) return styles.cancelled; // Apply "No" color
+  return ""; // Default (no color)
 };
 
 /**

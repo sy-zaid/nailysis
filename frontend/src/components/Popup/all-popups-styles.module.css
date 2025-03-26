@@ -6,6 +6,7 @@
   max-width: 1100px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   position: relative;
+  height: 95vh;
   max-height: 95vh;
   overflow-y: hidden;
   top: -2%;
@@ -34,7 +35,7 @@
 
 
 .popupBottom {
-  max-height: 60vh;
+  max-height: 72vh;
   overflow-y: auto;
   scroll-behavior: smooth;
   overflow-x: hidden;
@@ -43,6 +44,7 @@
 }
 
 .formSection {
+  display: block;
   margin: 30px 0 30px 0;
 }
 
@@ -56,6 +58,7 @@
   grid-template-columns: repeat(2, 1fr);
   width: 100%;
   margin-left: 26px;
+  row-gap: 10px;
 }
 
 .newFormGroup {
@@ -64,6 +67,7 @@
   width: 100%;
   /* gap: 10px; */
   margin-left: 26px;
+  row-gap: 10px;
 }
 
 .documentFormGroup div {
@@ -162,6 +166,7 @@ textarea::placeholder {
   margin: 40px 0 10px -66%;
 }
 
+
 /* Buttons */
 
 /* Action buttons for the form */
@@ -202,4 +207,12 @@ textarea::placeholder {
 
 .cancelButton:hover {
   background-color: #b12937;
+}
+
+.additionalNotes {
+  margin-top: 18px;
+}
+
+.phoneField {
+  margin-top: 6px;
 }

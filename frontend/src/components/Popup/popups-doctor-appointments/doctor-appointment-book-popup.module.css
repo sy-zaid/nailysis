@@ -33,7 +33,7 @@
 
 
 .popupBottom {
-  max-height: 75vh;
+  max-height: 72vh;
   overflow-y: auto;
   scroll-behavior: smooth;
   overflow-x: hidden;
@@ -124,4 +124,8 @@
 
 .addButton:hover {
 background-color: #0056b3;
+}
+
+.additionalNotes {
+  margin-left: 26px;
 }

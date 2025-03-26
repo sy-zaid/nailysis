@@ -126,7 +126,7 @@
 }
 
 .tableContainer {
-    width: 100%;
+    width: 71vw;
     background-color: white;
     padding: 20px;
     border-radius: 20px;
@@ -167,9 +167,8 @@
 }
 
 .tableWrapper {
-  width: 100%;
   overflow-x: auto;
-  max-width: 68vw;
+  max-width: 100%;
 }
 
 .table {
