@@ -202,3 +202,21 @@ textarea::placeholder {
 .cancelButton:hover {
   background-color: #b12937;
 }
+
+/* ---------- Status Styles ---------- */
+
+.consulted {
+  color: green;
+}
+
+.cancelled {
+  color: red;
+}
+
+.scheduled {
+  color: orange;
+}
+
+.inProgress {
+  color: #007bff;
+}

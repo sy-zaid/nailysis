@@ -33,17 +33,23 @@
     background-color: #0056b3;
   }
   
-  .consulted {
-    color: green;
-  }
-  
-  .cancelled {
-    color: red;
-  }
-  
-  .scheduled {
-    color: orange;
-  }
+/* ---------- Status Styles ---------- */
+
+.consulted {
+  color: green;
+}
+
+.cancelled {
+  color: red;
+}
+
+.scheduled {
+  color: orange;
+}
+
+.inProgress {
+  color: #007bff;
+}
   
   
   /* New Styles for Modal Popup */

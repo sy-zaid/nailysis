@@ -2,28 +2,11 @@ import React from "react";
 import styles from "./popup-select-report-type.module.css";
 import Popup from "./Popup";
 import { useState, useEffect  } from "react";
+import { getStatusClass } from "../../utils/utils";
 
 const PopupSelectReportType = ({ onClose,selectreportTypePopup, setselectreportTypePopup, onProceed }) => {
     const [popupTrigger, setPopupTrigger] = useState(true);
     if (!selectreportTypePopup) return null;
-    
-    // Function to determine the CSS class based on status
-    const getStatusClass = (status) => {
-        switch (status) {
-          case "Completed":
-            return styles.consulted;
-          case "Cancelled":
-            return styles.cancelled;
-          case "Scheduled":
-            return styles.scheduled;
-          case "Pending":
-            return styles.scheduled;
-          case "Urgent":
-            return styles.cancelled;
-          default:
-            return {};
-        }    
-    }
 
     return (
 
@@ -48,7 +31,7 @@ const PopupSelectReportType = ({ onClose,selectreportTypePopup, setselectreportT
         <div className={styles.popupBottom}>
           <p className={styles.newSubHeading}>
             <span className={styles.key}> <i className="fa-solid fa-circle-notch"></i> Status: </span>
-            <span className={getStatusClass("Pending")}>Pending</span>
+            <span className={getStatusClass("Pending", styles)}>Pending</span>
             <span className={styles.key} style={{margin: "0 0 0 50px"}}> <i className="fa-solid fa-location-dot"></i> Location: </span>
             <span className={styles.locationValue}>Lifeline Hospital, North Nazimabad</span>
           </p>

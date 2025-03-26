@@ -5,6 +5,8 @@ import Navbar from "../../components/Dashboard/Navbar/Navbar.jsx";
 import Header from "../../components/Dashboard/Header/Header.jsx";
 import Sidebar from "../../components/Dashboard/Sidebar/Sidebar.jsx";
 import TechnicianAppointmentCheckinPopup from "../../components/Popup/popups-lab-technician-appointments/technician-appointment-checkin-popup.jsx";
+import { getStatusClass } from '../../utils/utils.js';
+
 
 const ViewAppointments = (props) => {
   const [popupVisible, setPopupVisible] = useState(false);
@@ -77,16 +79,6 @@ const ViewAppointments = (props) => {
     setActiveButton(index); // Set the active button when clicked
   };
 
-  const getStatusClass = (status) => {
-    switch (status) {
-      case "Consulted":
-        return styles.consulted;
-      case "Cancelled":
-        return styles.cancelled;
-      default:
-        return styles.scheduled;
-        }
-    }
   
   const togglePopup = (event, status) => {
     const iconRect = event.target.getBoundingClientRect();
@@ -218,7 +210,7 @@ const ViewAppointments = (props) => {
                     <td data-label="Phone">{row.phone}</td>
                     <td data-label="Appointment Date & Time">{row.appointmentDateTime}</td>
                     <td data-label="Purpose">{row.purpose}</td>
-                    <td data-label="Scheduled Appointments" className={getStatusClass(row.scheduledAppointments)}>{row.scheduledAppointments}</td>
+                    <td data-label="Scheduled Appointments" className={getStatusClass(row.scheduledAppointments, styles)}>{row.scheduledAppointments}</td>
                  
                     <td style={{ position: "relative" }}>
                       <i

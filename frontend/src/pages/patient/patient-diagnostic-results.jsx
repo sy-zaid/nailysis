@@ -4,6 +4,7 @@ import styles from "../common/all-pages-styles.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import Header from "../../components/Dashboard/Header/Header";
 import Sidebar from "../../components/Dashboard/Sidebar/Sidebar";
+import { getStatusClass } from '../../utils/utils';
 
  
 const DiagnosticResults = (props) => {
@@ -45,17 +46,6 @@ const DiagnosticResults = (props) => {
     setActiveButton(index); // Set the active button when clicked
   };
 
-
-  const getStatusClass = (status) => {
-    switch (status) {
-      case "Completed":
-        return styles.consulted;
-      case "Cancelled":
-        return styles.cancelled;
-      default:
-        return styles.scheduled;
-    }
-  }
   
   const togglePopup = (event) => {
     const iconRect = event.target.getBoundingClientRect();
@@ -177,7 +167,7 @@ const DiagnosticResults = (props) => {
                       <td data-label="Technician">{row.technician}</td>
                       <td data-label="Test Result">{row.testResult}</td>
                       <td data-label="Comments">{row.comments}</td>
-                      <td data-label="Status" className={getStatusClass(row.status)}>{row.status}</td>
+                      <td data-label="Status" className={getStatusClass(row.status, styles)}>{row.status}</td>
                       <td data-label="Actions"><button className={styles.shareBtn}>{row.shareReportBtn}</button></td>
                       <td style={{ position: "relative" }}>
                         <i

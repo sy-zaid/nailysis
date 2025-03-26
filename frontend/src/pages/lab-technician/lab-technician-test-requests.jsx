@@ -6,6 +6,7 @@ import Sidebar from "../../components/Dashboard/Sidebar/Sidebar";
 import PopupSelectReportType from "../../components/Popup/popup-select-report-type";
 import PopupTestDetails from "../../components/Popup/popup-test-details";
 import { getTestOrders } from "../../api/labsApi";
+import { getStatusClass } from "../../utils/utils";
 
 import { handleClosePopup, handleOpenPopup } from "../../utils/utils";
 
@@ -74,23 +75,6 @@ const TestOrders = ({ props }) => {
 
   const handleFilterClick = (index) => {
     setActiveButton(index); // Set the active button when clicked
-  };
-
-  const getStatusClass = (status) => {
-    switch (status) {
-      case "Completed":
-        return styles.consulted;
-      case "Cancelled":
-        return styles.cancelled;
-      case "Scheduled":
-        return styles.scheduled;
-      case "Pending":
-        return styles.scheduled;
-      case "Urgent":
-        return styles.cancelled;
-      default:
-        return {};
-    }
   };
 
   const togglePopup = (event) => {
@@ -248,19 +232,19 @@ const TestOrders = ({ props }) => {
 
                     <td
                       data-label="Status"
-                      className={getStatusClass(row.test_status)}
+                      className={getStatusClass(row.test_status, styles)}
                     >
                       {row.lab_technician_appointment.status}
                     </td>
                     <td
                       data-label="Status"
-                      className={getStatusClass(row.test_status)}
+                      className={getStatusClass(row.test_status, styles)}
                     >
                       {row.test_status}
                     </td>
                     <td
                       data-label="Status"
-                      className={getStatusClass(row.test_status)}
+                      className={getStatusClass(row.test_status, styles)}
                     >
                       {row.results_available ? "Yes" : "No"}
                     </td>

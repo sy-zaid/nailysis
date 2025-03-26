@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "../../components/CSS Files/Appointment.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
+import { getStatusClass } from "../../utils/utils";
 
 const Appointment = () => {
   const navigate = useNavigate();
@@ -126,16 +127,6 @@ const Appointment = () => {
     },
   ];
 
-  const getStatusClass = (status) => {
-    switch (status) {
-      case "Consulted":
-        return styles.consulted;
-      case "Cancelled":
-        return styles.cancelled;
-      default:
-        return styles.scheduled;
-    }
-  };
 
   return (
     <div className={styles.pageContainer}>
@@ -180,7 +171,7 @@ const Appointment = () => {
                     <td className={styles.phoneColumn}>{row.phone}</td>
                     <td>{row.dateTime}</td>
                     <td>{row.testType}</td>
-                    <td className={getStatusClass(row.status)}>{row.status}</td>
+                    <td className={getStatusClass(row.status, styles)}>{row.status}</td>
                     <td
                       className={styles.optionContainer}
                       style={{ position: "relative" }}

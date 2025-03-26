@@ -225,25 +225,39 @@ const SendFeedback = () => {
               <div className={styles.appointmentButtons}>
 
                 {/* Show 'Submit New Feedback' for patients, doctors, and lab technicians */}
-                {(curUserRole === "patient" || curUserRole === "doctor" || curUserRole === "lab_technician") && (
+                {(curUserRole === "patient") && (
                   <>
-                    <button className={styles.addButton} onClick={() => handleActionClick("Submit Clinic Feedback")}>
-                      <i className="bx bx-plus-circle"></i> Submit Clinic Feedback
-                    </button>
+                    <div className={styles.appointmentButtons}>
 
-                    <button className={styles.addButton} onClick={() => handleActionClick("Submit Lab Feedback")}>
-                      Submit Lab Feedback
+                      <button className={styles.addButton} onClick={() => handleActionClick("Submit Lab Feedback")}>
+                        <i className='bx bx-plus-circle'></i> Submit Lab Feedback
+                      </button>
+
+                      <button className={styles.addButton} onClick={() => handleActionClick("Submit Clinic Feedback")}>
+                        <i className="bx bx-plus-circle"></i> Submit Clinic Feedback
+                      </button>
+
+                    </div>
+                  </>
+                )}
+
+                {(curUserRole === "doctor") && (
+                  <>
+                    <button className={styles.addButton}  onClick={() => handleActionClick("Submit Clinic Feedback")}>
+                      <i className='bx bx-plus-circle'></i> Submit Clinic Feedback
                     </button>
                   </>
                 )}
 
-
-                {/* Show 'Respond To Feedback' for lab admins and clinic admins */}
-                {(curUserRole === "lab_admin" || curUserRole === "clinic_admin") && (
-                  <button className={styles.addButton}>
-                    <i className='bx bx-plus-circle'></i> Request New Feedback
-                  </button>
+                {(curUserRole === "lab_technician") && (
+                  <>
+                    <button className={styles.addButton}  onClick={() => handleActionClick("Submit Lab Feedback")}>
+                      <i className='bx bx-plus-circle'></i> Submit Lab Feedback
+                    </button>
+                  </>
                 )}
+
+                
 
               </div>
             </div>
@@ -288,13 +302,14 @@ const SendFeedback = () => {
                       </th>
                       <th>ID</th>
                       <th>Feedback By</th>
-                      {(curUserRole === "lab_admin" || curUserRole === "clinic_admin") && (
+                      {/* {(curUserRole === "lab_admin" || curUserRole === "clinic_admin") && (
                         <th>Role</th>
-                      )}
+                      )} */}
                       <th>Submitted at</th>
                       <th>Category</th>
                       <th>Description</th>
                       <th>Status</th>
+                      <th>Response</th>
                       <th>Action</th>
                     </tr>
                   </thead>
@@ -317,10 +332,13 @@ const SendFeedback = () => {
                           <td>{f.category}</td>
                           <td>{f.description}</td>
                           <td>{f.status}</td>
-                          <td>
-                            <Link to={`/feedback/${f.id}`} className="text-blue-500">
-                              View
-                            </Link>
+                          <td>Lorem ipsum dolor sit amet consectetur adipisicing elit.</td>
+                          <td style={{ position: "relative" }}>
+                            <i
+                              className="bx bx-dots-vertical-rounded"
+                              style={{ cursor: "pointer"}}
+                              onClick={togglePopup}
+                            ></i>
                           </td>
                         </tr>
                       ))
@@ -364,14 +382,23 @@ const SendFeedback = () => {
               <i className="fa-solid fa-repeat" style={{ margin: "0 5px 0 0" }}></i> View Details
             </p>
 
+            {(curUserRole === "lab_admin" || curUserRole === "clinic_admin") && (
             <p style={{ margin: "10px 0", cursor: "pointer" }} onClick={() => handleActionClick("Respond To Feedback")}>
-              <i className="fa-regular fa-file-pdf" style={{ margin: "0 5px 0 0" }}></i> Edit Feedback
+              <i className="fa-regular fa-file-pdf" style={{ margin: "0 5px 0 0" }}></i> View and Respond
             </p>
+            )} 
 
+            {(curUserRole === "lab_admin" || curUserRole === "clinic_admin") && (
+            <p style={{ margin: "10px 0", cursor: "pointer" }}>
+              <i className="fa-regular fa-file-pdf" style={{ margin: "0 5px 0 0" }}></i> Update Status
+            </p>
+            )}
+
+            {(curUserRole === "lab_admin" || curUserRole === "clinic_admin") && (
             <p style={{ margin: "10px 0", cursor: "pointer" }}>
               <i className="fa-regular fa-circle-xmark" style={{ color: "red", margin: "0 5px 0 0" }}></i> Delete Feedback
             </p>
-
+            )}
 
           </div>
         )}

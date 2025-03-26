@@ -152,17 +152,6 @@ const AppointmentPatients = () => {
     setPopupVisible(!popupVisible);
   };
 
-  const getStatusClass = (status) => {
-    switch (status) {
-      case "Consulted":
-        return styles.consulted;
-      case "Cancelled":
-        return styles.cancelled;
-      default:
-        return styles.scheduled;
-    } 
-  };
-
   
   // ----- USE-EFFECTS
   useEffect(() => {

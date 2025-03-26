@@ -4,6 +4,7 @@ import Popup from "../Popup";
 import { useState, useEffect } from "react";
 import { calculateAge, handleClosePopup } from "../../../utils/utils";
 import { completeTechnicianAppointment } from "../../../api/appointmentsApi";
+import { getStatusClass } from "../../../utils/utils";
 
 const TechnicianAppointmentCheckinPopup = ({ onClose, appointmentDetails }) => {
   // State variables
@@ -11,6 +12,7 @@ const TechnicianAppointmentCheckinPopup = ({ onClose, appointmentDetails }) => {
   const [isConsultationStarted, setIsConsultationStarted] = useState(false); // Tracks whether consultation has started
   const [intervalId, setIntervalId] = useState(null); // Stores the timer's interval ID to control it
   const [popupTrigger, setPopupTrigger] = useState(true);
+  const [status, setStatus] = useState("Pending");
   // Function to format time in HH:MM:SS format
   const formatTime = (time) => {
     const hours = String(Math.floor(time / 3600)).padStart(2, "0");
@@ -46,23 +48,6 @@ const TechnicianAppointmentCheckinPopup = ({ onClose, appointmentDetails }) => {
     setIntervalId(null);
   };
 
-  // Function to determine the CSS class based on status
-  const getStatusClass = (status) => {
-    switch (status) {
-      case "Completed":
-        return styles.consulted;
-      case "Cancelled":
-        return styles.cancelled;
-      case "Scheduled":
-        return styles.scheduled;
-      case "Pending":
-        return styles.scheduled;
-      case "Urgent":
-        return styles.cancelled;
-      default:
-        return {};
-    }
-  };
 
   // useEffect to reset timer and state when popup opens
   useEffect(() => {
@@ -113,7 +98,7 @@ const TechnicianAppointmentCheckinPopup = ({ onClose, appointmentDetails }) => {
               {" "}
               <i className="fa-solid fa-circle-notch"></i> Status:{" "}
             </span>
-            <span className={getStatusClass("Pending")}>Pending</span>
+            <span className={getStatusClass(status, styles)}>Pending</span>
             <span className={styles.key} style={{ margin: "0 0 0 50px" }}>
               {" "}
               <i className="fa-solid fa-location-dot"></i> Location:{" "}

@@ -212,18 +212,23 @@
   }
   
  
-  
-  .consulted {
-    color: green;
-  }
-  
-  .cancelled {
-    color: red;
-  }
-  
-  .scheduled {
-    color: orange;
-  }
+/* ---------- Status Styles ---------- */
+
+.consulted {
+  color: green;
+}
+
+.cancelled {
+  color: red;
+}
+
+.scheduled {
+  color: orange;
+}
+
+.inProgress {
+  color: #007bff;
+}
   
   
   /* Responsive Styles for table*/

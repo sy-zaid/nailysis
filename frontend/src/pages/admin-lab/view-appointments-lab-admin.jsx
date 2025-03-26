@@ -8,6 +8,7 @@ import DeleteAppointmentPopup from "../../components/Popup/popups-doctor-appoint
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import api from "../../api";
+import { getStatusClass } from "../../utils/utils";
 
 const AppointmentLabAdmin = () => {
   const navigate = useNavigate();
@@ -39,17 +40,6 @@ const AppointmentLabAdmin = () => {
 
     fetchAppointments();
   }, [token, navigate]);
-
-  const getStatusClass = (status) => {
-    switch (status) {
-      case "Completed":
-        return styles.completed;
-      case "Cancelled":
-        return styles.cancelled;
-      default:
-        return styles.scheduled;
-    }
-  };
 
   const [showPopup, setShowPopup] = useState(false);
   const handleOpenPopup = () => {
@@ -179,7 +169,7 @@ const AppointmentLabAdmin = () => {
                     <td>
                       {row.checkin_datetime}
                     </td>
-                    <td className={getStatusClass(row.status)}>{row.status}</td>
+                    <td className={getStatusClass(row.status, styles)}>{row.status}</td>
                     <td>{row.fee ? `PKR ${row.fee}` : "Not available"}</td>
                     <td>{row.booking_date || "Not available"}</td>
                     <td>{row.notes || "No additional notes"}</td>

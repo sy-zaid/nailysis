@@ -2,6 +2,7 @@ import React from "react";
 import styles from "../CSS Files/LabTechnician.module.css";
 import Popup from "./Popup";
 import { useState } from "react";
+import { getStatusClass } from "../../utils/utils";
 
 const PopupTestDetails = ({ testDetailsPopup, setTestDetailsPopup }) => {
     if (!testDetailsPopup) return null
@@ -60,24 +61,6 @@ const PopupTestDetails = ({ testDetailsPopup, setTestDetailsPopup }) => {
             prevEntries.length > 1 ? prevEntries.filter((_, i) => i !== index) : prevEntries
         );
     };
-
-    // Returns the correct CSS styling based on the test status
-    const getStatusClass = (status) => {
-        switch (status) {
-          case "Completed":
-            return styles.consulted;
-          case "Cancelled":
-            return styles.cancelled;
-          case "Scheduled":
-            return styles.scheduled;
-          case "Pending":
-            return styles.scheduled;
-          case "Urgent":
-            return styles.cancelled;
-          default:
-            return {};
-        }    
-    }
       
 
     return (
@@ -105,7 +88,7 @@ const PopupTestDetails = ({ testDetailsPopup, setTestDetailsPopup }) => {
                 <span className={styles.key}> Viewed By: </span>
                 <span className={styles.locationValue}>Tech. Jane Doe</span>
                 <span className={styles.secKey}> Status: </span>
-                <span className={getStatusClass("Pending")}>In-Progress</span>
+                <span className={getStatusClass("Pending", styles)}>In-Progress</span>
             </p>
             
             <p className={styles.newSubHeading}>
@@ -148,7 +131,7 @@ const PopupTestDetails = ({ testDetailsPopup, setTestDetailsPopup }) => {
 
                         <div>
                             <label>Status</label>
-                            <select className={`${styles.patientSelect} ${getStatusClass("Completed")}`}>
+                            <select className={`${styles.patientSelect} ${getStatusClass("Completed", styles)}`}>
                                 <option>Completed</option>
                             </select>
                         </div>

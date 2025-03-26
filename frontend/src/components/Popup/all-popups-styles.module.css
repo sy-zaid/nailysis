@@ -216,3 +216,23 @@ textarea::placeholder {
 .phoneField {
   margin-top: 6px;
 }
+
+
+/* ---------- Status Styles ---------- */
+
+.consulted {
+  color: green;
+}
+
+.cancelled {
+  color: red;
+}
+
+.scheduled {
+  color: orange;
+}
+
+.inProgress {
+  color: #007bff;
+}
+

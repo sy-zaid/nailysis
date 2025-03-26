@@ -82,16 +82,25 @@ export const testTypes = [
  */
 export const getStatusClass = (status, styles) => {
   switch (status) {
+    // Green
     case "Consulted":
     case "Completed":
+    case "Resolved":
+    case "Paid":
       return styles.consulted;
+    // Red 
     case "Cancelled":
     case "No":
+    case "Urgent":
+    case "Overdue":
       return styles.cancelled;
     case "Pending":
+    // Yellow
     case "Scheduled":
       return styles.scheduled;
+    // Blue
     case "Rescheduled":
+    case "In Progress":
       return styles.inProgress;
     default:
       return {};
