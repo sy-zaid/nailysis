@@ -6,3 +6,8 @@ export const getTestOrders = async () => {
   const url = `${API_URL}/api/test_orders/`;
   return axios.get(url, getHeaders());
 };
+
+export const saveTestResults = async (payload) => {
+  const url = `${API_URL}/api/test_results/save_results/`;
+  return axios.post(url, payload, getHeaders());
+};

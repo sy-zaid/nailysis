@@ -129,7 +129,7 @@ class LabTestResult(models.Model):
     # Example: {"Glucose": "Negative", "Protein": "Positive"}
 
     # Text-based results (e.g., pathologist's notes, imaging descriptions)
-    text_results = models.TextField(null=True, blank=True)
+    comments = models.TextField(null=True, blank=True)
 
     # File upload for Imaging & Pathology Reports
     result_file = models.FileField(upload_to='lab_results/', null=True, blank=True)
@@ -141,15 +141,15 @@ class LabTestResult(models.Model):
     def __str__(self):
         return f"Results for Order {self.test_order.id}"
 
-    def save(self, *args, **kwargs):
-        """
-        Ensure JSON fields are properly formatted before saving.
-        """
-        if isinstance(self.numeric_results, dict):
-            self.numeric_results = json.dumps(self.numeric_results)
-        if isinstance(self.boolean_results, dict):
-            self.boolean_results = json.dumps(self.boolean_results)
-        super().save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     """
+    #     Ensure JSON fields are properly formatted before saving.
+    #     """
+    #     if isinstance(self.numeric_results, dict):
+    #         self.numeric_results = json.dumps(self.numeric_results)
+    #     if isinstance(self.boolean_results, dict):
+    #         self.boolean_results = json.dumps(self.boolean_results)
+    #     super().save(*args, **kwargs)
     
     
     

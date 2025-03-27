@@ -13,6 +13,7 @@ import {
   handleInputChange,
 } from "../../../utils/utils";
 import useCurrentUserData from "../../../useCurrentUserData";
+import { saveTestResults } from "../../../api/labsApi";
 
 const BloodTestEntryPopup = ({ onClose, testDetails, testOrderDetails }) => {
   console.log("GOT THIS TEST TO WORK", testDetails, testOrderDetails);
@@ -25,15 +26,21 @@ const BloodTestEntryPopup = ({ onClose, testDetails, testOrderDetails }) => {
     { parameter: "WBC", result: "" },
     { parameter: "Platelets", result: "" },
   ]);
-  const [formData, setFormData] = useState({
-    comments: "",
-    testEntries: testEntries,
-    technician_id: curUser[0]?.user_id,
-    license_number: curUser[0]?.lab_technician?.license_number,
-  });
+
+  // Add this useEffect to sync testEntries with formData
   useEffect(() => {
-    console.log(formData);
-  }, [formData.comments]);
+    if (testEntries && Array.isArray(testEntries)) {
+      setFormData((prev) => ({
+        ...prev,
+        test_entries: formatTestEntries({ testEntries, bloodTestParameters }),
+      }));
+    }
+  }, [testEntries]); // This will update formData when testEntries changes
+
+  const [formData, setFormData] = useState({
+    test_entries: [],
+    comments: "",
+  });
 
   // Returns the correct CSS styling based on the test status
   const getStatusClass = (status) => {
@@ -53,8 +60,26 @@ const BloodTestEntryPopup = ({ onClose, testDetails, testOrderDetails }) => {
     }
   };
   const onInputChange = handleInputChange(setFormData);
+
+  const handleSaveResults = async (e) => {
+    e.preventDefault();
+
+    const payload = {
+      test_order_id: testOrderDetails.id,
+      technician_id: curUser[0]?.user_id,
+      test_entries: formData.test_entries,
+      comments: formData.comments,
+    };
+    console.clear();
+    try {
+      console.log("SENDING THIS TO SAVE RESUTLS", payload);
+      const response = await saveTestResults(payload);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   useEffect(() => {
-    if (!testEntries || !Array.isArray(testEntries)) return; // 🛠️ Prevent errors
+    if (!testEntries || !Array.isArray(testEntries)) return; //  Prevent errors
     console.log(
       "TEST ENTRIES FORMATTING:",
       formatTestEntries({ testEntries, bloodTestParameters })
@@ -343,7 +368,7 @@ const BloodTestEntryPopup = ({ onClose, testDetails, testOrderDetails }) => {
             <button className={styles.addButton}>
               <i className="fa-regular fa-file-pdf"></i> Download PDF
             </button>
-            <button className={styles.addButton}>
+            <button className={styles.addButton} onClick={handleSaveResults}>
               <i className="fa-regular fa-floppy-disk"></i> Save Results
             </button>
           </div>

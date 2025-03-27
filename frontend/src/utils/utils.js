@@ -455,7 +455,7 @@ export const formatTestEntries = ({ testEntries, bloodTestParameters }) => {
       unit: bloodTestParameters[entry.parameter]?.unit || "", // Handle undefined case
       range: bloodTestParameters[entry.parameter]?.normalRange || "", // Handle undefined case
     };
-    return acc; // 🛠️ Important: Return accumulator!
+    return acc; //  Important: Return accumulator!
   }, {});
 };
 
