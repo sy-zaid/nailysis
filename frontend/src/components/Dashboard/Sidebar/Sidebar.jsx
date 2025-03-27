@@ -330,11 +330,17 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
                 src={item.profile_picture || "profile-pic.jpg"}
                 alt="Profile"
               />
-              <h2>
+              <h2 className={styles.profileInfo}>
                 {item.first_name} {item.last_name}
                 <br />
                 <span>{item.email}</span>
               </h2>
+              
+              {/* Links (hidden by default, shown on hover) */}
+              <div className={styles.hiddenLinks}>
+                <a href="/edit-profile" className={styles.profileLink}>Edit Profile</a>
+                <a href="/logout" className={styles.profileLink}>Logout</a>
+              </div>
               {/* </div> */}
             </div>
           ))}
