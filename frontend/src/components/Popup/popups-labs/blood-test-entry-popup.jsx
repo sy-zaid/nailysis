@@ -1,67 +1,39 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styles from "../../CSS Files/LabTechnician.module.css";
 import Popup from "../Popup";
 import { useState } from "react";
+import {
+  formatTestEntries,
+  bloodTestParameters,
+  convertDjangoDateTime,
+  handleParameterChange,
+  handleResultChange,
+  handleAddParameter,
+  handleRemoveParameter,
+  handleInputChange,
+} from "../../../utils/utils";
+import useCurrentUserData from "../../../useCurrentUserData";
 
-const TestEntryPopup = ({ onClose }) => {
+const BloodTestEntryPopup = ({ onClose, testDetails, testOrderDetails }) => {
+  console.log("GOT THIS TEST TO WORK", testDetails, testOrderDetails);
   // if (!testDetailsPopup) return null
   const [popupTrigger, setPopupTrigger] = useState(true);
-  const testParameters = {
-    Hemoglobin: {
-      normalRange: "13.5 - 17.5",
-      unit: "g/dL",
-    },
-    WBC: {
-      normalRange: "4,500 - 11,000",
-      unit: "cells/mcL",
-    },
-    Platelets: {
-      normalRange: "150,000 - 450,000",
-      unit: "platelets/mcL",
-    },
-  };
-
+  const { data: curUser, isLoading, isError, error } = useCurrentUserData();
+  console.log(curUser[0]);
   const [testEntries, setTestEntries] = useState([
     { parameter: "Hemoglobin", result: "" },
     { parameter: "WBC", result: "" },
     { parameter: "Platelets", result: "" },
-    { parameter: "Hemoglobin", result: "" },
   ]);
-
-  // Changes the test type (e.g., Hemoglobin, WBC) for a specific test entry when the user selects a different option.
-  const handleParameterChange = (index, newParameter) => {
-    setTestEntries((prevEntries) =>
-      prevEntries.map((entry, i) =>
-        i === index ? { ...entry, parameter: newParameter } : entry
-      )
-    );
-  };
-
-  // Updates the test result for a specific entry when the user types a new value.
-  const handleResultChange = (index, newResult) => {
-    setTestEntries((prevEntries) =>
-      prevEntries.map((entry, i) =>
-        i === index ? { ...entry, result: newResult } : entry
-      )
-    );
-  };
-
-  //  Adds a new test entry with "Hemoglobin" as the default test type.
-  const handleAddParameter = () => {
-    setTestEntries((prevEntries) => [
-      ...prevEntries,
-      { parameter: "Hemoglobin", result: "" }, // Default new parameter
-    ]);
-  };
-
-  // Deletes a test entry unless there is only one left, ensuring at least one remains.
-  const handleRemoveParameter = (index) => {
-    setTestEntries((prevEntries) =>
-      prevEntries.length > 1
-        ? prevEntries.filter((_, i) => i !== index)
-        : prevEntries
-    );
-  };
+  const [formData, setFormData] = useState({
+    comments: "",
+    testEntries: testEntries,
+    technician_id: curUser[0]?.user_id,
+    license_number: curUser[0]?.lab_technician?.license_number,
+  });
+  useEffect(() => {
+    console.log(formData);
+  }, [formData.comments]);
 
   // Returns the correct CSS styling based on the test status
   const getStatusClass = (status) => {
@@ -80,6 +52,14 @@ const TestEntryPopup = ({ onClose }) => {
         return {};
     }
   };
+  const onInputChange = handleInputChange(setFormData);
+  useEffect(() => {
+    if (!testEntries || !Array.isArray(testEntries)) return; // 🛠️ Prevent errors
+    console.log(
+      "TEST ENTRIES FORMATTING:",
+      formatTestEntries({ testEntries, bloodTestParameters })
+    );
+  }, [testEntries, bloodTestParameters]);
 
   return (
     <Popup
@@ -90,15 +70,14 @@ const TestEntryPopup = ({ onClose }) => {
       <div className={styles.formContainer}>
         <div className={styles.tophead}>
           <div className={styles.header}>
-            <h2>
-              Enter Test Details For Patient: John Doe (Patient ID: 12345)
-            </h2>
+            <h2>Enter Test Details For Patient </h2>
           </div>
 
           <div className={styles.subhead}>
             <h5 style={{ margin: "10px 0" }}>
-              Enter the patient's test details to proceed with documentation and
-              results.
+              Manage and generate lab test reports with ease. Technicians can
+              edit reports until finalized, ensuring accuracy before they become
+              downloadable PDFs for patients and doctors.
             </h5>
           </div>
           <hr />
@@ -106,15 +85,19 @@ const TestEntryPopup = ({ onClose }) => {
 
         <div className={styles.popupBottom}>
           <p className={styles.newSubHeading}>
-            <span className={styles.key}> Viewed By: </span>
-            <span className={styles.locationValue}>Tech. Jane Doe</span>
+            <span className={styles.key}>Patient Name: </span>
+            <span className={styles.locationValue}>
+              {testOrderDetails?.lab_technician_appointment?.patient_name}
+            </span>
             <span className={styles.secKey}> Status: </span>
             <span className={getStatusClass("Pending")}>In-Progress</span>
           </p>
 
           <p className={styles.newSubHeading}>
-            <span className={styles.key}> Issuance Date & Time: </span>
-            <span className={styles.locationValue}>10/10/2024 09:30 AM</span>
+            <span className={styles.key}>Appointment Date & Time: </span>
+            <span className={styles.locationValue}>
+              {convertDjangoDateTime(testOrderDetails?.created_at)}
+            </span>
           </p>
 
           <hr style={{ margin: "20px 0 0 0" }} />
@@ -129,47 +112,40 @@ const TestEntryPopup = ({ onClose }) => {
               Test Details
             </h3>
             <div className={styles.newFormGroup}>
-              <div>
+              {/* <div>
                 <label>Report ID</label>
                 <p className={styles.subHeading}>123456</p>
-              </div>
+              </div> */}
 
               <div>
                 <label>Technician</label>
-                <p className={styles.subHeading}>John Doe</p>
+                <p className={styles.subHeading}>
+                  Tech.{" "}
+                  {
+                    testOrderDetails?.lab_technician_appointment
+                      ?.technician_name
+                  }
+                </p>
               </div>
 
               <div>
-                <label>Blood Type</label>
-                <p className={styles.subHeading}>Blood Test</p>
+                <label>Test Name</label>
+                <p className={styles.subHeading}>{testDetails?.label}</p>
               </div>
 
               <div>
-                <label>Sample Type</label>
-                <select className={styles.patientSelect}>
-                  <option>Blood</option>
-                </select>
+                <label>Test Category</label>
+                <p className={styles.subHeading}>{testDetails?.category}</p>
               </div>
 
               <div>
                 <label>Date & Time of Test</label>
-                <p className={styles.subHeading}>12/9/2024 05:30 PM</p>
-              </div>
-
-              <div>
-                <label>Status</label>
-                <select
-                  className={`${styles.patientSelect} ${getStatusClass(
-                    "Completed"
-                  )}`}
-                >
-                  <option>Completed</option>
-                </select>
-              </div>
-
-              <div>
-                <label>Test Fee</label>
-                <p className={styles.subHeading}>RS/- 5000</p>
+                <p className={styles.subHeading}>
+                  {convertDjangoDateTime(
+                    testOrderDetails?.lab_technician_appointment
+                      ?.checkout_datetime
+                  )}
+                </p>
               </div>
             </div>
           </div>
@@ -184,7 +160,7 @@ const TestEntryPopup = ({ onClose }) => {
               ></i>{" "}
               Test Result Entry
             </h3>
-
+            {/* // Inside your component: */}
             {testEntries.map((entry, index) => (
               <div key={index} className={styles.testParamFormGroup}>
                 <div>
@@ -193,10 +169,14 @@ const TestEntryPopup = ({ onClose }) => {
                     className={styles.patientSelect}
                     value={entry.parameter}
                     onChange={(e) =>
-                      handleParameterChange(index, e.target.value)
+                      handleParameterChange(
+                        setTestEntries,
+                        index,
+                        e.target.value
+                      )
                     }
                   >
-                    {Object.keys(testParameters).map((param) => (
+                    {Object.keys(bloodTestParameters).map((param) => (
                       <option key={param} value={param}>
                         {param}
                       </option>
@@ -206,11 +186,7 @@ const TestEntryPopup = ({ onClose }) => {
 
                 <div>
                   <label>Normal Range</label>
-                  <select>
-                    <option>
-                      {testParameters[entry.parameter].normalRange}
-                    </option>
-                  </select>
+                  <p>{bloodTestParameters[entry.parameter].normalRange}/</p>
                 </div>
 
                 <div>
@@ -219,22 +195,22 @@ const TestEntryPopup = ({ onClose }) => {
                     type="text"
                     placeholder="Enter result"
                     value={entry.result}
-                    onChange={(e) => handleResultChange(index, e.target.value)}
+                    onChange={(e) =>
+                      handleResultChange(setTestEntries, index, e.target.value)
+                    }
                   />
                 </div>
 
                 <div>
                   <label>Units</label>
-                  <select>
-                    <option>{testParameters[entry.parameter].unit}</option>
-                  </select>
+                  <p>{bloodTestParameters[entry.parameter].unit}</p>
                 </div>
 
                 {/* Remove Button */}
                 <div>
                   <button
                     className={styles.cancelButton}
-                    onClick={() => handleRemoveParameter(index)}
+                    onClick={() => handleRemoveParameter(setTestEntries, index)}
                     style={{ marginTop: "20px" }}
                   >
                     <i className="fa-solid fa-xmark"></i>
@@ -242,7 +218,6 @@ const TestEntryPopup = ({ onClose }) => {
                 </div>
               </div>
             ))}
-
             <div
               style={{
                 display: "flex",
@@ -252,13 +227,12 @@ const TestEntryPopup = ({ onClose }) => {
             >
               <button
                 className={styles.addButton}
-                onClick={handleAddParameter}
+                onClick={() => handleAddParameter(setTestEntries)}
                 style={{ zIndex: "100" }}
               >
                 <i className="bx bx-plus-circle"></i> Add More Parameters
               </button>
             </div>
-
             <hr
               style={{
                 borderColor: "#007bff",
@@ -282,7 +256,10 @@ const TestEntryPopup = ({ onClose }) => {
               <div>
                 <textarea
                   style={{ borderBottom: "2px solid #0067FF" }}
-                  defaultValue="Lorem ipsum dolor sit amet consectetur adipisicing elit"
+                  placeholder="Enter your comments for this test report"
+                  name="comments"
+                  value={formData.comments}
+                  onChange={onInputChange}
                 ></textarea>
               </div>
             </div>
@@ -303,7 +280,11 @@ const TestEntryPopup = ({ onClose }) => {
               <div>
                 <p style={{ color: "#737070", fontWeight: "600" }}>Consent</p>
                 <p style={{ fontStyle: "italic", fontSize: "14px" }}>
-                  Tech. Naeem Iqbal
+                  Tech.{" "}
+                  {
+                    testOrderDetails?.lab_technician_appointment
+                      ?.technician_name
+                  }
                 </p>
                 <p
                   style={{
@@ -312,15 +293,26 @@ const TestEntryPopup = ({ onClose }) => {
                     fontSize: "14px",
                   }}
                 >
-                  MBBS, FCPS
+                  {"Specialization: "}
+                  {curUser[0].lab_technician?.specialization}
+                </p>
+                <p
+                  style={{
+                    fontStyle: "italic",
+                    color: "#737070",
+                    fontSize: "14px",
+                  }}
+                >
+                  {"License Number: "}
+                  {formData.license_number}
                 </p>
               </div>
               <div>
                 <p style={{ color: "#737070", fontWeight: "600" }}>
-                  Date of Verification
+                  Date of Test Submission
                 </p>
                 <p style={{ fontStyle: "italic", fontSize: "14px" }}>
-                  12/09/2024
+                  {new Date().toLocaleDateString()}
                 </p>
               </div>
             </div>
@@ -361,4 +353,4 @@ const TestEntryPopup = ({ onClose }) => {
   );
 };
 
-export default TestEntryPopup;
+export default BloodTestEntryPopup;

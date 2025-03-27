@@ -4,7 +4,7 @@ import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import Header from "../../components/Dashboard/Header/Header";
 import Sidebar from "../../components/Dashboard/Sidebar/Sidebar";
 import PopupSelectTestOrder from "../../components/Popup/popups-labs/select-test-order-popup";
-import TestEntryPopup from "../../components/Popup/popups-labs/test-entry-popup";
+// import BloodTestEntryPopup from "../../components/Popup/popups-labs/blood-blood-test-entry-popup";
 import { getTestOrders } from "../../api/labsApi";
 
 import {
@@ -30,7 +30,7 @@ const TestOrders = ({ props }) => {
   const { data: curUser, isLoading, error } = useCurrentUserData();
   const [showPopup, setShowPopup] = useState(false);
   const [popupContent, setPopupContent] = useState();
-  const [showTestEntryPopup, setShowTestEntryPopup] = useState(false);
+  
   const token = localStorage.getItem("access");
   // Get test requests on component mount
   useEffect(() => {
@@ -56,9 +56,7 @@ const TestOrders = ({ props }) => {
       setPopupContent(
         <PopupSelectTestOrder
           onClose={() => setShowPopup(false)}
-          setInnerPopup={() => {
-            setShowTestEntryPopup(true);
-          }}
+          
           testOrderDetails={testOrderDetails}
         />
       );
@@ -113,9 +111,7 @@ const TestOrders = ({ props }) => {
   return (
     <div className={styles.pageContainer}>
       {showPopup && popupContent}
-      {showTestEntryPopup && (
-        <TestEntryPopup onClose={() => setShowTestEntryPopup(false)} />
-      )}
+      
 
       <div className={styles.pageTop}>
         <Navbar />

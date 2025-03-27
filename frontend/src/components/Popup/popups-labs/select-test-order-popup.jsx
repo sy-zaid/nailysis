@@ -3,9 +3,45 @@ import styles from "./select-test-order-popup.module.css";
 import Popup from "../Popup";
 import { useState, useEffect } from "react";
 import { convertDjangoDateTime } from "../../../utils/utils";
+import BloodTestEntryPopup from "./blood-test-entry-popup";
+import UrineTestEntryPopup from "./urine-test-entry-popup";
 
-const PopupSelectTestOrder = ({ onClose, setInnerPopup, testOrderDetails }) => {
+const PopupSelectTestOrder = ({ onClose, testOrderDetails }) => {
   const [popupTrigger, setPopupTrigger] = useState(true);
+  const [popupContent, setPopupContent] = useState(null);
+  const [showInnerPopup, setShowInnerPopup] = useState(false);
+
+  const test_categories = {
+    "Blood Test": (testDetails, testOrderDetails) => (
+      <BloodTestEntryPopup
+        testDetails={testDetails}
+        testOrderDetails={testOrderDetails}
+        onClose={() => setShowInnerPopup(false)}
+      ></BloodTestEntryPopup>
+    ),
+
+    "Urine Test": (testDetails, testOrderDetails) => (
+      <UrineTestEntryPopup
+        testDetails={testDetails}
+        testOrderDetails={testOrderDetails}
+        onClose={() => setShowInnerPopup(false)}
+      />
+    ),
+    "Imaging Test": (testDetails, testOrderDetails) => (
+      <UrineTestEntryPopup
+        testDetails={testDetails}
+        testOrderDetails={testOrderDetails}
+        onClose={() => setShowInnerPopup(false)}
+      />
+    ),
+    "Pathology Report": (testDetails, testOrderDetails) => (
+      <UrineTestEntryPopup
+        testDetails={testDetails}
+        testOrderDetails={testOrderDetails}
+        onClose={() => setShowInnerPopup(false)}
+      />
+    ),
+  };
   // if (!selectreportTypePopup) return null;
   console.log("GOT THIS TO PROCESS", testOrderDetails);
   // Function to determine the CSS class based on status
@@ -26,12 +62,20 @@ const PopupSelectTestOrder = ({ onClose, setInnerPopup, testOrderDetails }) => {
     }
   };
 
+  const setInnerPopup = (testDetails) => {
+    setPopupContent(
+      test_categories[testDetails.category](testDetails, testOrderDetails)
+    );
+    setShowInnerPopup(true);
+  };
+
   return (
     <Popup
       trigger={popupTrigger}
       setTrigger={setPopupTrigger}
       onClose={onClose}
     >
+      {showInnerPopup && popupContent}
       <div className={styles.formContainer}>
         <div className={styles.tophead}>
           <div className={styles.header}>
@@ -170,8 +214,8 @@ const PopupSelectTestOrder = ({ onClose, setInnerPopup, testOrderDetails }) => {
                     className={styles.addButton}
                     style={{ marginRight: "45px" }}
                     onClick={() => {
-                      onClose(); // Close this popup
-                      setInnerPopup(true); // Open the next popup
+                      // onClose(); // Close this popup
+                      setInnerPopup(test); // Open the next popup
                     }}
                   >
                     Add Record

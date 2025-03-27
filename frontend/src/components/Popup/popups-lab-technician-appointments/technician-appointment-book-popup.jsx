@@ -23,7 +23,7 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
   // ----- TOKENS AND USER INFORMATION
   const token = localStorage.getItem("access");
   const curUserRole = localStorage.getItem("role");
-  const { data: curUser, isLoading, isError, error } = usePatientData(); // Fetch patient data
+  const { data: curUser, isLoading, isError, error } = usePatientData(); // Fetch user data
 
   // ----- POPUPS & NAVIGATION
   const [popupTrigger, setPopupTrigger] = useState(true);

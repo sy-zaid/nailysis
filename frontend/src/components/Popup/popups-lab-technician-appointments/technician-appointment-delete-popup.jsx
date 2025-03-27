@@ -10,7 +10,7 @@ const PopupDeleteTechnicianAppointment = ({ onClose, appointmentDetails }) => {
   const navigate = useNavigate();
   const token = localStorage.getItem("access");
 
-  const { data: curUser, isLoading, isError, error } = usePatientData(); // Fetch patient data
+  const { data: curUser, isLoading, isError, error } = usePatientData(); // Fetch user data
   const [patient, setPatient] = useState([]); // Initialize patient state
 
   useEffect(() => {

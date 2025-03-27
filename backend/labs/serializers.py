@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import LabTestType, LabTestOrder
+from .models import LabTestType, LabTestOrder,LabTestResult
 
 class LabTestTypeSerializer(serializers.ModelSerializer):
     class Meta:
@@ -30,3 +30,10 @@ class LabTestOrderSerializer(serializers.ModelSerializer):
                 "notes": appointment.notes,
             }
         return None
+
+class LabTestResultSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = LabTestResult
+        fields =  "__all__"
+        

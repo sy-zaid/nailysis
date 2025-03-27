@@ -43,7 +43,7 @@ const ElectronicHealthRecord = () => {
   const [records, setRecords] = useState([]); // Store EHR records
   const curUserRole = getRole(); // Get current user role
 
-  const { data: curUser } = useCurrentUserData(); // Fetch patient data;
+  const { data: curUser } = useCurrentUserData(); // Fetch user data;
 
   const [activeButton, setActiveButton] = useState(0); // Tracks which filter button is active 
   const [filteredRecords, setFilteredRecords] = useState([]); // Stores the records after applying filters and search queries.
