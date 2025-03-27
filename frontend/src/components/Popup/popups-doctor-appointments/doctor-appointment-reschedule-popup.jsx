@@ -19,7 +19,7 @@ import {
 const RescheduleAppointmentPopup = ({ onClose, appointmentDetails }) => {
   const [popupTrigger, setPopupTrigger] = useState(true);
   const token = getAccessToken();
-  const { data: curUser, isLoading, isError, error } = useCurrentUserData(); // Fetch patient data
+  const { data: curUser, isLoading, isError, error } = useCurrentUserData(); // Fetch user data
   const [patient, setPatient] = useState([]); // Initialize patient state
   const [specializations, setSpecializations] = useState([]);
 

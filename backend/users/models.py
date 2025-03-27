@@ -162,7 +162,7 @@ class LabAdmin(models.Model):
     emergency_contact = models.CharField(max_length=20)
     
 class LabTechnician(models.Model):
-    user = models.OneToOneField(CustomUser,on_delete=models.CASCADE,primary_key=True, to_field="user_id")
+    user = models.OneToOneField(CustomUser,on_delete=models.CASCADE,primary_key=True, to_field="user_id",related_name="lab_technician")
     license_number = models.CharField(max_length=50,unique=True)
     specialization = models.CharField(max_length=255)
     years_of_experience = models.PositiveIntegerField()

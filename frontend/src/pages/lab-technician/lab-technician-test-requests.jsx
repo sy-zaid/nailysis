@@ -3,12 +3,18 @@ import styles from "../../components/CSS Files/LabTechnician.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import Header from "../../components/Dashboard/Header/Header";
 import Sidebar from "../../components/Dashboard/Sidebar/Sidebar";
-import PopupSelectReportType from "../../components/Popup/popup-select-report-type";
-import PopupTestDetails from "../../components/Popup/popup-test-details";
+import PopupSelectTestOrder from "../../components/Popup/popups-labs/select-test-order-popup";
+// import BloodTestEntryPopup from "../../components/Popup/popups-labs/blood-blood-test-entry-popup";
 import { getTestOrders } from "../../api/labsApi";
 import { getStatusClass } from "../../utils/utils";
 
-import { handleClosePopup, handleOpenPopup } from "../../utils/utils";
+import {
+  convertDjangoDateTime,
+  handleClosePopup,
+  handleOpenPopup,
+  toggleActionMenu,
+} from "../../utils/utils";
+import useCurrentUserData from "../../useCurrentUserData";
 
 const TestOrders = ({ props }) => {
   const [popupVisible, setPopupVisible] = useState(false);
@@ -18,12 +24,14 @@ const TestOrders = ({ props }) => {
   const [activeButton, setActiveButton] = useState(0);
 
   const [testDetailsPopup, setTestDetailsPopup] = useState(false);
-  const [selectreportTypePopup, setselectreportTypePopup] = useState(false);
 
   // ------------------------- ZAID'S WORK (OTHER THINGS NEEDS TO BE REVISED) ------------------------- //
   const [testOrders, setTestOrders] = useState([]);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const { data: curUser, isLoading, error } = useCurrentUserData();
   const [showPopup, setShowPopup] = useState(false);
   const [popupContent, setPopupContent] = useState();
+  
   const token = localStorage.getItem("access");
   // Get test requests on component mount
   useEffect(() => {
@@ -42,36 +50,21 @@ const TestOrders = ({ props }) => {
   }, [token]);
   console.log("TEST REQUESTS RESPONSSE", testOrders);
 
-  const handleActionClick = (action, testRequestId) => {
-    console.log(`Performing ${action} on ID:${testRequestId}`);
+  const handleActionClick = (action, testOrderDetails) => {
+    console.log(`Performing ${action} on ID:${testOrderDetails}`);
 
-    if (action === "Add New Test") {
-      // setselectreportTypePopup(true); // Ensure this state is updated
+    if (action === "Process Test Order") {
       setPopupContent(
-        <PopupSelectReportType
-          selectreportTypePopup={selectreportTypePopup}
-          setselectreportTypePopup={setselectreportTypePopup}
-          onProceed={handleCloseSelectReportAndOpenTestDetails}
-          onClose={handleClosePopup}
+        <PopupSelectTestOrder
+          onClose={() => setShowPopup(false)}
+          
+          testOrderDetails={testOrderDetails}
         />
       );
       setShowPopup(true);
     }
   };
   // ------------------------ END OF ZAID'S WORK -------------------------- //
-
-  const handleAddNewTest = () => {
-    setselectreportTypePopup(true);
-  };
-
-  const handleCloseSelectReportAndOpenTestDetails = () => {
-    setTestDetailsPopup(true);
-    setselectreportTypePopup(false);
-  };
-
-  const handleCloseTestDetailsPopup = () => {
-    setTestDetailsPopup(false);
-  };
 
   const handleFilterClick = (index) => {
     setActiveButton(index); // Set the active button when clicked
@@ -101,12 +94,8 @@ const TestOrders = ({ props }) => {
 
   return (
     <div className={styles.pageContainer}>
-      <PopupTestDetails
-        testDetailsPopup={testDetailsPopup}
-        setTestDetailsPopup={setTestDetailsPopup}
-      />
-
       {showPopup && popupContent}
+      
 
       <div className={styles.pageTop}>
         <Navbar />
@@ -151,13 +140,6 @@ const TestOrders = ({ props }) => {
               Cancelled
             </button>
             <p>50 completed, 4 pending</p>
-
-            <button
-              className={styles.addButton}
-              onClick={() => handleActionClick("Add New Test")}
-            >
-              <i className="bx bx-plus-circle"></i> Add New Test
-            </button>
           </div>
 
           <div className={styles.tableContainer}>
@@ -213,16 +195,13 @@ const TestOrders = ({ props }) => {
                       {row.test_types.map((test) => test.label).join(", ")}
                     </td>
                     <td data-label="Requested On">
-                      {new Date(row.created_at).toLocaleDateString()} |{" "}
-                      {new Date(row.created_at).toLocaleTimeString()}
+                      {convertDjangoDateTime(row.created_at)}
                     </td>
                     <td data-label="Collected On">
                       {row?.lab_technician_appointment?.checkout_datetime
-                        ? `${new Date(
+                        ? convertDjangoDateTime(
                             row.lab_technician_appointment.checkout_datetime
-                          ).toLocaleDateString()} | ${new Date(
-                            row.lab_technician_appointment.checkout_datetime
-                          ).toLocaleTimeString()}`
+                          )
                         : "Not collected yet"}
                     </td>
 
@@ -254,6 +233,117 @@ const TestOrders = ({ props }) => {
                         style={{ cursor: "pointer" }}
                         onClick={togglePopup}
                       ></i>
+                    </td>
+                    {/* ------------------------- ACTION BUTTONS -------------------------*/}
+                    <td>
+                      <button
+                        onClick={() =>
+                          toggleActionMenu(row.id, menuOpen, setMenuOpen)
+                        }
+                        className={styles.moreActionsBtn}
+                      >
+                        <img
+                          src="/icon-three-dots.png"
+                          alt="More Actions"
+                          className={styles.moreActionsIcon}
+                        />
+                      </button>
+
+                      {menuOpen === row.id && (
+                        <div className={styles.menu}>
+                          <ul>
+                            <li
+                              onClick={() =>
+                                handleActionClick("Process Test Order", row)
+                              }
+                            >
+                              <i className="fa-solid fa-repeat"></i> Process
+                              Test Order
+                            </li>
+                            <li
+                              onClick={() =>
+                                handleActionClick("Edit Details", row)
+                              }
+                            >
+                              <i className="fa-solid fa-pen"></i> Edit Details
+                            </li>
+                            <li
+                              onClick={() => handleActionClick("Delete", row)}
+                            >
+                              <i
+                                className="fa-regular fa-circle-xmark"
+                                style={{ color: "red" }}
+                              ></i>{" "}
+                              Delete
+                            </li>
+                            <li
+                              onClick={() =>
+                                handleActionClick("Download as PDF", row)
+                              }
+                            >
+                              <i className="fa-regular fa-file-pdf"></i>{" "}
+                              Download as PDF
+                            </li>
+                            <li
+                              onClick={() =>
+                                handleActionClick("Print Code", row)
+                              }
+                            >
+                              <i className="bx bx-qr-scan"></i> Print Code
+                            </li>
+
+                            {curUser[0].role === "lab_technician" &&
+                              row.status !== "Completed" && (
+                                <li
+                                  onClick={() =>
+                                    handleActionClick(
+                                      "Action Start Appointment",
+                                      row
+                                    )
+                                  }
+                                >
+                                  Start Appointment
+                                </li>
+                              )}
+
+                            {(curUser[0].role === "patient" ||
+                              curUser[0].role === "lab_technician") && (
+                              <li
+                                onClick={() =>
+                                  handleActionClick(
+                                    "Button Cancellation Request",
+                                    row.id
+                                  )
+                                }
+                              >
+                                Request Cancellation
+                              </li>
+                            )}
+
+                            {curUser[0].role === "lab_admin" && (
+                              <>
+                                <li
+                                  onClick={() =>
+                                    handleActionClick("Reschedule", row)
+                                  }
+                                >
+                                  Reschedule
+                                </li>
+                                <li
+                                  onClick={() =>
+                                    handleActionClick(
+                                      "Action Cancel Appointment",
+                                      row.id
+                                    )
+                                  }
+                                >
+                                  Cancel Appointment
+                                </li>
+                              </>
+                            )}
+                          </ul>
+                        </div>
+                      )}
                     </td>
                   </tr>
                 ))}

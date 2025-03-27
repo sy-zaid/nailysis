@@ -22,6 +22,7 @@ import {
   handleClosePopup,
   getStatusClass, 
   toggleActionMenu,
+  convertDjangoDateTime,
   getResultsClass,
 } from "../../utils/utils";
 import PopupBookTechnicianAppointment from "../../components/Popup/popups-lab-technician-appointments/technician-appointment-book-popup";
@@ -387,11 +388,7 @@ const AppointmentTechnician = () => {
                     )}
                     <td>
                       {row?.checkin_datetime
-                        ? `${new Date(
-                            row.checkin_datetime
-                          ).toLocaleDateString()} | ${new Date(
-                            row.checkin_datetime
-                          ).toLocaleTimeString()}`
+                        ? convertDjangoDateTime(row.checkin_datetime)
                         : "N/A"}
                     </td>
                     <td>

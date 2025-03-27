@@ -28,7 +28,7 @@ from .serializers import (
 from users.models import Patient, Doctor, ClinicAdmin, CustomUser, LabTechnician, LabAdmin
 from labs.models import LabTestOrder,LabTestType
 from datetime import datetime, timedelta
-import calendar
+import calendar,json
 
 class DoctorFeeViewset(viewsets.ModelViewSet):
     """
@@ -357,7 +357,7 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
         - 403 Forbidden: If the user is not a doctor.
         - 404 Not Found: If the appointment does not exist.
         """
-        import json
+        
 
         user = self.request.user
         if user.role != "doctor":
