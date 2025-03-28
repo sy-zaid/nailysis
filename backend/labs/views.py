@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
-
+from rest_framework.exceptions import PermissionDenied
 
 from .models import LabTestType,LabTestOrder,LabTestResult
 from .serializers import LabTestTypeSerializer,LabTestOrderSerializer,LabTestResultSerializer
@@ -25,6 +25,12 @@ class LabTestOrderModelViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.AllowAny]
     
     def get_queryset(self):
+        user = self.request.user
+        # if user.role not in ["lab_technician","lab_admin"]:
+        #     return Response({"error":"Not authorized to view test orders"})
+        test_order_id = self.request.query_params.get("id")
+        if test_order_id:
+            return LabTestOrder.objects.filter(id=test_order_id)
         return LabTestOrder.objects.all()
     
     
@@ -34,10 +40,20 @@ class LabTestResultModelViewSet(viewsets.ModelViewSet):
     serializer_class = LabTestResultSerializer
     permission_classes = [permissions.AllowAny]
 
-
+    def get_queryset(self):
+        # user = self.request.user
+        # if user.role not in ["lab_technician","lab_admin"]:
+        #     raise PermissionDenied("Not authorized to view test results.")
+        test_order_id = self.request.query_params.get("test_order_id")
+        # Return objects for test order if a test order id is given in API
+        if test_order_id:
+            return LabTestResult.objects.filter(test_order_id=test_order_id)
+        
+        return LabTestResult.objects.all()
+        
     @action(detail=False, methods=["post"], url_path="save_results")
     def save_results(self, request):
-        user = request.user
+        user = self.request.user
         
         # Ensure only lab technicians can create test results
         if user.role != "lab_technician":
@@ -60,10 +76,12 @@ class LabTestResultModelViewSet(viewsets.ModelViewSet):
             # Fetch related objects
             test_order = get_object_or_404(LabTestOrder, id=test_order_id)
             lab_technician = get_object_or_404(LabTechnician, user_id=technician_id)
+            test_type = get_object_or_404(LabTestType,id=2) # NEEDS TO BE CHANGED, TEMP
 
             # Create test result
             test_result = LabTestResult.objects.create(
                 test_order=test_order,
+                test_type=test_type,
                 numeric_results=test_entries,
                 comments=comments,
                 reviewed_by=lab_technician

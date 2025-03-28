@@ -91,7 +91,7 @@ class LabTestOrder(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.test_type.name} - {self.test_status} ({self.appointment})"
+        return f"{self.test_types.name} - {self.test_status} "
 class LabTestResult(models.Model):
     """
     Stores lab test results for various test types.
@@ -116,8 +116,11 @@ class LabTestResult(models.Model):
 
     """
 
-    test_order = models.OneToOneField(
-        'LabTestOrder', on_delete=models.CASCADE, related_name="test_result"
+    test_order = models.ForeignKey( 
+        LabTestOrder, on_delete=models.CASCADE, related_name="test_results"
+    )
+    test_type = models.ForeignKey(  # Link to specific test within the order
+        LabTestType, on_delete=models.CASCADE, related_name="test_results"
     )
 
     # JSON field for numeric results (e.g., Blood Test, Urine Test)
