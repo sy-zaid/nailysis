@@ -21,7 +21,7 @@ const BookDoctorAppointmentPopup = ({ onClose }) => {
   const [popupTrigger, setPopupTrigger] = useState(true);
   const token = getAccessToken();
   const curUserRole = getRole();
-  const { data: curUser, isLoading, isError, error } = useCurrentUserData(); // Fetch patient data
+  const { data: curUser, isLoading, isError, error } = useCurrentUserData(); // Fetch user data
   const [patient, setPatient] = useState([]); // Initialize patient state
   const [specializations, setSpecializations] = useState([]);
   const [doctors, setDoctors] = useState([]);
@@ -384,7 +384,7 @@ const BookDoctorAppointmentPopup = ({ onClose }) => {
           </div>
 
           </div>
-          <div>
+          <div className={styles.additionalNotes}>
             <label>Additional Notes</label>
             <input
               type="text"

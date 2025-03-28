@@ -1,88 +1,75 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from "react";
 import styles from "../../components/CSS Files/LabTechnician.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import Header from "../../components/Dashboard/Header/Header";
 import Sidebar from "../../components/Dashboard/Sidebar/Sidebar";
-import PopupSelectReportType from "../../components/Popup/popup-select-report-type";
-import PopupTestDetails from "../../components/Popup/popup-test-details";
+import PopupSelectTestOrder from "../../components/Popup/popups-labs/select-test-order-popup";
+// import BloodTestEntryPopup from "../../components/Popup/popups-labs/blood-blood-test-entry-popup";
+import { getTestOrders } from "../../api/labsApi";
+import { getStatusClass } from "../../utils/utils";
 
+import {
+  convertDjangoDateTime,
+  handleClosePopup,
+  handleOpenPopup,
+  toggleActionMenu,
+} from "../../utils/utils";
+import useCurrentUserData from "../../useCurrentUserData";
 
-const TestRequests = (props) => {
+const TestOrders = ({ props }) => {
   const [popupVisible, setPopupVisible] = useState(false);
   const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
   const popupRef = useRef(null);
 
-  const [activeButton, setActiveButton] = useState(0); 
+  const [activeButton, setActiveButton] = useState(0);
 
   const [testDetailsPopup, setTestDetailsPopup] = useState(false);
-  const [selectreportTypePopup, setselectreportTypePopup] = useState(false);
 
-  const handleAddNewTest = () => {
-    setselectreportTypePopup(true);
-  };
-
-  const handleCloseSelectReportAndOpenTestDetails = () => {
-    setTestDetailsPopup(true);
-    setselectreportTypePopup(false);
-  };
+  // ------------------------- ZAID'S WORK (OTHER THINGS NEEDS TO BE REVISED) ------------------------- //
+  const [testOrders, setTestOrders] = useState([]);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const { data: curUser, isLoading, error } = useCurrentUserData();
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupContent, setPopupContent] = useState();
   
-  const handleCloseTestDetailsPopup = () => {
-    setTestDetailsPopup(false);
+  const token = localStorage.getItem("access");
+  // Get test requests on component mount
+  useEffect(() => {
+    const fetchTestOrders = async () => {
+      try {
+        const response = await getTestOrders();
+        setTestOrders(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    // if (!showPopup) {
+    // Fetch only when popup is closed
+    fetchTestOrders();
+    // }
+  }, [token]);
+  console.log("TEST REQUESTS RESPONSSE", testOrders);
+
+  const handleActionClick = (action, testOrderDetails) => {
+    console.log(`Performing ${action} on ID:${testOrderDetails}`);
+
+    if (action === "Process Test Order") {
+      setPopupContent(
+        <PopupSelectTestOrder
+          onClose={() => setShowPopup(false)}
+          
+          testOrderDetails={testOrderDetails}
+        />
+      );
+      setShowPopup(true);
+    }
   };
-
-  const data = [
-    {
-        id: 1,
-        testID: "123456",
-        patientName: "John",
-        doctorName: "Dr. Carl",
-        testType: "Urinalysis",
-        requestDate: "11/11/2024",
-        collectedOn: "11/11/2024",
-        priority: "Urgent",
-        price: "PKR. 500",
-        payment: "Bank Al Habib",
-        status: "Completed"
-    },
-
-    {
-        id: 2,
-        testID: "123456",
-        patientName: "Doe",
-        doctorName: "Dr. Carl",
-        testType: "CBC",
-        requestDate: "11/11/2024",
-        collectedOn: "Pending",
-        priority: "STAT",
-        price: "PKR. 500",
-        payment: "Bank Al Habib",
-        status: "Cancelled"
-    },
-  ];
-
+  // ------------------------ END OF ZAID'S WORK -------------------------- //
 
   const handleFilterClick = (index) => {
     setActiveButton(index); // Set the active button when clicked
   };
 
-  const getStatusClass = (status) => {
-    switch (status) {
-      case "Completed":
-        return styles.consulted;
-      case "Cancelled":
-        return styles.cancelled;
-      case "Scheduled":
-        return styles.scheduled;
-      case "Pending":
-        return styles.scheduled;
-      case "Urgent":
-        return styles.cancelled;
-      default:
-        return {};
-    }
-
-  }
-  
   const togglePopup = (event) => {
     const iconRect = event.target.getBoundingClientRect();
     setPopupPosition({
@@ -106,64 +93,55 @@ const TestRequests = (props) => {
   }, []);
 
   return (
-     
     <div className={styles.pageContainer}>
-
-      <PopupSelectReportType 
-        selectreportTypePopup={selectreportTypePopup} 
-        setselectreportTypePopup={setselectreportTypePopup} 
-        onProceed={handleCloseSelectReportAndOpenTestDetails}
-      />
- 
-      <PopupTestDetails 
-        testDetailsPopup={testDetailsPopup}
-        setTestDetailsPopup={setTestDetailsPopup} 
-        />
-
+      {showPopup && popupContent}
+      
 
       <div className={styles.pageTop}>
         <Navbar />
-        <Header 
-            mainHeading={'Test Requests'}
-            subHeading={'Here are all the test requests from doctors'}
-          />
+        <Header
+          mainHeading={"Test Requests"}
+          subHeading={"Here are all the test requests from patients"}
+        />
       </div>
       <div className={styles.mainContent}>
-
         <div className={styles.appointmentsContainer}>
           <div className={styles.filters}>
-          <button
-              className={`${styles.filterButton} ${activeButton === 0 ? styles.active : ''}`}
+            <button
+              className={`${styles.filterButton} ${
+                activeButton === 0 ? styles.active : ""
+              }`}
               onClick={() => handleFilterClick(0)}
             >
               All
             </button>
             <button
-              className={`${styles.filterButton} ${activeButton === 1 ? styles.active : ''}`}
+              className={`${styles.filterButton} ${
+                activeButton === 1 ? styles.active : ""
+              }`}
               onClick={() => handleFilterClick(1)}
             >
               Pending
             </button>
             <button
-              className={`${styles.filterButton} ${activeButton === 2 ? styles.active : ''}`}
+              className={`${styles.filterButton} ${
+                activeButton === 2 ? styles.active : ""
+              }`}
               onClick={() => handleFilterClick(2)}
             >
               Completed
             </button>
             <button
-              className={`${styles.filterButton} ${activeButton === 3 ? styles.active : ''}`}
+              className={`${styles.filterButton} ${
+                activeButton === 3 ? styles.active : ""
+              }`}
               onClick={() => handleFilterClick(3)}
             >
               Cancelled
             </button>
             <p>50 completed, 4 pending</p>
-            
-            <button className={styles.addButton} onClick={handleAddNewTest}>
-              <i className='bx bx-plus-circle'></i> Add New Test
-            </button>
-
           </div>
-          
+
           <div className={styles.tableContainer}>
             <div className={styles.controls}>
               <select className={styles.bulkAction}>
@@ -175,8 +153,8 @@ const TestRequests = (props) => {
               <input
                 className={styles.search}
                 type="text"
-                placeholder="Search By Patient Name" 
-              /> 
+                placeholder="Search By Patient Name"
+              />
             </div>
             <hr />
             <br />
@@ -187,46 +165,186 @@ const TestRequests = (props) => {
                     <input type="checkbox" />
                   </th>
                   <th>#</th>
-                  <th >testID</th>
+                  <th>Order ID</th>
                   <th>Patient Name</th>
-                  <th>Doctor Name</th>
-                  <th>Test Type</th>
-                  <th>Request Date</th>
+                  <th>Technician Name</th>
+                  <th>Requested Tests</th>
+                  <th>Requested On</th>
                   <th>Collected On</th>
-                  <th>Priority</th>
-                  <th>Price</th>
-                  <th>Payment</th>
-                  <th>Status</th>
-                  <th> </th>
+                  <th>Total Price</th>
+                  <th>Appointment Status</th>
+                  <th>Test Status</th>
+                  <th>Results Available</th>
                 </tr>
               </thead>
               <tbody>
-                {data.map((row) => (
+                {testOrders.map((row, index) => (
                   <tr key={row.id}>
                     <td>
                       <input type="checkbox" />
                     </td>
-                    <td data-label="#">{row.id}</td>
-                    <td data-label="Test ID">{row.testID}</td>
-                    <td data-label="Patient Name">{row.patientName}</td>
-                    <td data-label="Doctor Name">{row.doctorName}</td>
-                    <td data-label="Test Type">{row.testType}</td>
-                    <td data-label="Request Date">{row.requestDate}</td>
-                    <td data-label="Collected On" className={getStatusClass(row.collectedOn)}>{row.collectedOn}</td>
-                    <td data-label="Priority" className={getStatusClass(row.priority)}>{row.priority}</td>
-                    <td data-label="Price">{row.price}</td>
-                    <td data-label="Payment">{row.payment}</td>
-                    
-                    <td data-label="Status" className={getStatusClass(row.status)}>{row.status}</td>
+                    <td data-label="#">{index + 1}</td>
+                    <td data-label="Order ID">{row.id}</td>
+                    <td data-label="Patient Name">
+                      {row.lab_technician_appointment?.patient_name}
+                    </td>
+                    <td data-label="Technician Name">
+                      {row.lab_technician_appointment?.technician_name}
+                    </td>
+                    <td data-label="Requested Tests">
+                      {row.test_types.map((test) => test.label).join(", ")}
+                    </td>
+                    <td data-label="Requested On">
+                      {convertDjangoDateTime(row.created_at)}
+                    </td>
+                    <td data-label="Collected On">
+                      {row?.lab_technician_appointment?.checkout_datetime
+                        ? convertDjangoDateTime(
+                            row.lab_technician_appointment.checkout_datetime
+                          )
+                        : "Not collected yet"}
+                    </td>
 
+                    <td data-label="Price">
+                      {row.lab_technician_appointment?.fee}
+                    </td>
+
+                    <td
+                      data-label="Status"
+                      className={getStatusClass(row.test_status, styles)}
+                    >
+                      {row.lab_technician_appointment.status}
+                    </td>
+                    <td
+                      data-label="Status"
+                      className={getStatusClass(row.test_status, styles)}
+                    >
+                      {row.test_status}
+                    </td>
+                    <td
+                      data-label="Status"
+                      className={getStatusClass(row.test_status, styles)}
+                    >
+                      {row.results_available ? "Yes" : "No"}
+                    </td>
                     <td style={{ position: "relative" }}>
                       <i
                         className="bx bx-dots-vertical-rounded"
-                        style={{ cursor: "pointer"}}
+                        style={{ cursor: "pointer" }}
                         onClick={togglePopup}
                       ></i>
                     </td>
-                    
+                    {/* ------------------------- ACTION BUTTONS -------------------------*/}
+                    <td>
+                      <button
+                        onClick={() =>
+                          toggleActionMenu(row.id, menuOpen, setMenuOpen)
+                        }
+                        className={styles.moreActionsBtn}
+                      >
+                        <img
+                          src="/icon-three-dots.png"
+                          alt="More Actions"
+                          className={styles.moreActionsIcon}
+                        />
+                      </button>
+
+                      {menuOpen === row.id && (
+                        <div className={styles.menu}>
+                          <ul>
+                            <li
+                              onClick={() =>
+                                handleActionClick("Process Test Order", row)
+                              }
+                            >
+                              <i className="fa-solid fa-repeat"></i> Process
+                              Test Order
+                            </li>
+                            <li
+                              onClick={() =>
+                                handleActionClick("Edit Details", row)
+                              }
+                            >
+                              <i className="fa-solid fa-pen"></i> Edit Details
+                            </li>
+                            <li
+                              onClick={() => handleActionClick("Delete", row)}
+                            >
+                              <i
+                                className="fa-regular fa-circle-xmark"
+                                style={{ color: "red" }}
+                              ></i>{" "}
+                              Delete
+                            </li>
+                            <li
+                              onClick={() =>
+                                handleActionClick("Download as PDF", row)
+                              }
+                            >
+                              <i className="fa-regular fa-file-pdf"></i>{" "}
+                              Download as PDF
+                            </li>
+                            <li
+                              onClick={() =>
+                                handleActionClick("Print Code", row)
+                              }
+                            >
+                              <i className="bx bx-qr-scan"></i> Print Code
+                            </li>
+
+                            {curUser[0].role === "lab_technician" &&
+                              row.status !== "Completed" && (
+                                <li
+                                  onClick={() =>
+                                    handleActionClick(
+                                      "Action Start Appointment",
+                                      row
+                                    )
+                                  }
+                                >
+                                  Start Appointment
+                                </li>
+                              )}
+
+                            {(curUser[0].role === "patient" ||
+                              curUser[0].role === "lab_technician") && (
+                              <li
+                                onClick={() =>
+                                  handleActionClick(
+                                    "Button Cancellation Request",
+                                    row.id
+                                  )
+                                }
+                              >
+                                Request Cancellation
+                              </li>
+                            )}
+
+                            {curUser[0].role === "lab_admin" && (
+                              <>
+                                <li
+                                  onClick={() =>
+                                    handleActionClick("Reschedule", row)
+                                  }
+                                >
+                                  Reschedule
+                                </li>
+                                <li
+                                  onClick={() =>
+                                    handleActionClick(
+                                      "Action Cancel Appointment",
+                                      row.id
+                                    )
+                                  }
+                                >
+                                  Cancel Appointment
+                                </li>
+                              </>
+                            )}
+                          </ul>
+                        </div>
+                      )}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -251,29 +369,39 @@ const TestRequests = (props) => {
             zIndex: 1000,
           }}
         >
-          <p
-            style={{ margin: "10px 0", cursor: "pointer" }}
-          >
-            <i className="fa-solid fa-repeat" style={{margin: "0 5px 0 0"}}></i> Change Priority
+          <p style={{ margin: "10px 0", cursor: "pointer" }}>
+            <i
+              className="fa-solid fa-repeat"
+              style={{ margin: "0 5px 0 0" }}
+            ></i>{" "}
+            Change Priority
           </p>
           <p style={{ margin: "10px 0", cursor: "pointer" }}>
-            <i className="fa-solid fa-pen" style={{margin: "0 5px 0 0"}}></i> Edit Details
+            <i className="fa-solid fa-pen" style={{ margin: "0 5px 0 0" }}></i>{" "}
+            Edit Details
           </p>
           <p style={{ margin: "10px 0", cursor: "pointer" }}>
-            <i className="fa-regular fa-circle-xmark" style={{ color: "red", margin: "0 5px 0 0"}}></i> Delete
+            <i
+              className="fa-regular fa-circle-xmark"
+              style={{ color: "red", margin: "0 5px 0 0" }}
+            ></i>{" "}
+            Delete
           </p>
           <p style={{ margin: "10px 0", cursor: "pointer" }}>
-            <i className="fa-regular fa-file-pdf" style={{margin: "0 5px 0 0"}}></i> Download as PDF
+            <i
+              className="fa-regular fa-file-pdf"
+              style={{ margin: "0 5px 0 0" }}
+            ></i>{" "}
+            Download as PDF
           </p>
           <p style={{ margin: "10px 0", cursor: "pointer" }}>
-            <i className="bx bx-qr-scan" style={{margin: "0 5px 0 0"}}></i> Print Code
+            <i className="bx bx-qr-scan" style={{ margin: "0 5px 0 0" }}></i>{" "}
+            Print Code
           </p>
-
         </div>
       )}
     </div>
-    
   );
 };
 
-export default TestRequests;
+export default TestOrders;

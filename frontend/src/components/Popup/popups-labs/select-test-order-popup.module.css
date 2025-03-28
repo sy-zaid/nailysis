@@ -33,17 +33,23 @@
     background-color: #0056b3;
   }
   
-  .consulted {
-    color: green;
-  }
-  
-  .cancelled {
-    color: red;
-  }
-  
-  .scheduled {
-    color: orange;
-  }
+/* ---------- Status Styles ---------- */
+
+.consulted {
+  color: green;
+}
+
+.cancelled {
+  color: red;
+}
+
+.scheduled {
+  color: orange;
+}
+
+.inProgress {
+  color: #007bff;
+}
   
   
   /* New Styles for Modal Popup */
@@ -121,39 +127,6 @@
   }
   
   
-  
-
-  input[type="checkbox"] {
-    appearance: none; /* Removes default styling */
-    border: none;
-    background-color: #B0D5FF; 
-    border-radius: 5px;
-    cursor: pointer;
-    position: relative;
-    width: 20px;
-    height: 20px;
-    padding: 0;
-  }
-  
-  input[type="checkbox"]:checked {
-    background-color: #0067FF; /* Blue when checked */
-    border-color: #0067FF
-  }
-  
-  input[type="checkbox"]::before {
-    content: "✔"; /* Checkmark */
-    font-size: 12px;
-    color: white;
-    display: none;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-  }
-  
-  input[type="checkbox"]:checked::before {
-    display: block; /* Show checkmark */
-  }
   
   
   .shareBtn {
@@ -308,7 +281,7 @@
     margin-bottom: 20px;
   }
 
-  select, input[type="date"], input[type="text"] {
+  .selectField {
     border: none;
     border-bottom: 2px solid #0067FF;
     background: transparent;
@@ -324,16 +297,6 @@
     width: 100% !important;
   }
 
-  input[type="date"] {
-    padding: 7px !important;
-  }
-
-
-  input[type="text"] {
-    cursor: auto;
-    padding-left: 0 !important;
-  }
-
   textarea {
     outline: none;
     font-size: 16px;
@@ -341,7 +304,6 @@
     height: 20px !important;
     border: none;
   }
-
 
   .formGroup {
     display: grid;
@@ -380,10 +342,6 @@
     display: flex;
     align-items: center;
     position: relative;
-  }
-
-  .verificationConfirmation input[type="checkbox"] {
-    position: absolute;
   }
 
   .verificationConfirmation span {
@@ -486,11 +444,6 @@
     align-items: center;
     position: relative;
     margin-top: 15px;
-  }
-
-  .testType input[type="checkbox"] {
-    position: absolute;
-    top: 0;
   }
 
   .testTypeBorder {

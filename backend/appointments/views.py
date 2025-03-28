@@ -28,7 +28,7 @@ from .serializers import (
 from users.models import Patient, Doctor, ClinicAdmin, CustomUser, LabTechnician, LabAdmin
 from labs.models import LabTestOrder,LabTestType
 from datetime import datetime, timedelta
-import calendar
+import calendar,json
 
 class DoctorFeeViewset(viewsets.ModelViewSet):
     """
@@ -125,13 +125,6 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
                 return DoctorAppointment.objects.none()
 
         return DoctorAppointment.objects.none()
-
-    # def perform_create(self, serializer):
-    #     """
-    #     Create a new doctor appointment.
-    #     Assumes the logged-in user is a patient.
-    #     """
-    #     serializer.save(patient=self.request.user)
 
     def perform_destroy(self, instance):
         """
@@ -344,8 +337,8 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
             status=status.HTTP_201_CREATED
         )
 
-    @action(detail=True, methods=['post'], url_path="save_and_complete")
-    def save_and_complete(self, request, pk=None):
+    @action(detail=True, methods=['post'], url_path="complete_appointment_with_ehr")
+    def complete_appointment_with_ehr(self, request, pk=None):
         """
         Mark an appointment as complete and save Electronic Health Record (EHR) data.
 
@@ -364,7 +357,7 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
         - 403 Forbidden: If the user is not a doctor.
         - 404 Not Found: If the appointment does not exist.
         """
-        import json
+        
 
         user = self.request.user
         if user.role != "doctor":
@@ -400,7 +393,7 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
         print("EHRDATA",ehr_data)
         try:
             appointment = DoctorAppointment.objects.get(pk=pk)
-            appointment.complete_appointment(ehr_data=ehr_data)
+            appointment.complete_appointment_with_ehr(ehr_data=ehr_data)
             return Response(
                 {"message": "EHR data successfully saved. Appointment marked as complete."},
                 status=status.HTTP_200_OK
@@ -417,7 +410,7 @@ class LabTechnicianAppointmentViewset(viewsets.ModelViewSet):
     """
     queryset = TechnicianAppointment.objects.all()
     serializer_class = TechnicianAppointmentSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         """
@@ -446,7 +439,6 @@ class LabTechnicianAppointmentViewset(viewsets.ModelViewSet):
                 return TechnicianAppointment.objects.none()
 
         return TechnicianAppointment.objects.none()
-    
 
     @action(detail=False, methods=['post'], url_path='book_appointment')
     def book_appointment(self, request):
@@ -550,8 +542,8 @@ class LabTechnicianAppointmentViewset(viewsets.ModelViewSet):
         appointment.save()
         return Response({"message":"Cancellation request sent successfully","request_id":cancellation_request.id},status=status.HTTP_201_CREATED)    
 
-    @action(detail=True, methods=["put"], url_path='reschedule_lab_appointment')
-    def reschedule_lab_appointment(self, request, pk=None):
+    @action(detail=True, methods=["put"], url_path='reschedule_technician_appointment')
+    def reschedule_technician_appointment(self, request, pk=None):
         """
         Reschedules a lab appointment by reallocating the time slot, updating details,
         and ensuring test orders are reset.
@@ -620,31 +612,27 @@ class LabTechnicianAppointmentViewset(viewsets.ModelViewSet):
         except Exception as e:
             return Response({"error": f"An error occurred: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-
-# class LabTechnicianFeeViewset(viewsets.ModelViewSet):
-#     """
-#     API endpoint to manage lab technician appointment fees.
-
-#     Provides:
-#     - List of all lab technician appointment fees
-#     - Standard CRUD operations
-#     """
-#     queryset = LabTechnicianAppointmentFee.objects.all()
-#     serializer_class = LabTechnicianFeeSerializer
-#     permission_classes = [permissions.AllowAny]
-
-#     @action(detail=False, methods=['get'], url_path='get_fees')
-#     def get_fees(self, request):
-#         """
-#         Retrieve all appointment fees for display.
+    @action(detail=True, methods=['post'], url_path="complete_appointment")
+    def complete_appointment(self, request, pk=None):
+        user = request.user
         
-#         Returns:
-#             JSON response containing the list of doctor fees.
-#         """
-#         fees = LabTechnicianAppointmentFee.objects.all()
-#         serializer = self.get_serializer(fees, many=True)
-#         return Response(serializer.data)
+        if user.role != "lab_technician":
+            return Response({"error": "Not authorized to complete a technician's appointment"}, status=status.HTTP_403_FORBIDDEN)
+        
+        appointment = get_object_or_404(TechnicianAppointment, pk=pk)
+        
+        if appointment.status == "Completed":
+            return Response({"error": "Appointment is already completed"}, status=status.HTTP_400_BAD_REQUEST)
 
+        success = appointment.mark_completed()
+        
+        if success:
+            return Response({"message": "Successfully completed appointment and deleted timeslot"}, status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "Could not complete the appointment"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        
+        
 class DocAppointCancellationViewSet(viewsets.ModelViewSet):
     """
     API endpoint for handling doctor appointment cancellation requests.

@@ -6,6 +6,7 @@ import Header from "../../components/Dashboard/Header/Header";
 import Sidebar from "../../components/Dashboard/Sidebar/Sidebar";
 import Popup from "../../components/Popup/Popup.jsx";
 import PopupInvoiceDetails from '../../components/Popup/invoice-details-popup.jsx';
+import { getStatusClass } from '../../utils/utils.js';
 
 
 const InvoiceManagement = (props) => {
@@ -54,17 +55,6 @@ const InvoiceManagement = (props) => {
   const handleCloseInvoiceDetails = () => {
     setinvoiceDetailsPopup(false);
   };
-
-  const getStatusClass = (status) => {
-    switch (status) {
-      case "Paid":
-        return styles.consulted;
-      case "Overdue":
-        return styles.cancelled;
-      default: // Pending
-        return styles.scheduled;
-    }
-  }
 
   const handleFilterClick = (index) => {
     setActiveButton(index); // Set the active button when clicked
@@ -200,7 +190,7 @@ const InvoiceManagement = (props) => {
                     <td>{row.totalAmount}</td>
                     <td>{row.paidAmount}</td>
                     <td>{row.pendingAmount}</td>
-                    <td className={getStatusClass(row.paymentStatus)}>{row.paymentStatus}</td>
+                    <td className={getStatusClass(row.paymentStatus, styles)}>{row.paymentStatus}</td>
                     <td style={{ position: "relative" }}>
                         <i
                           className="bx bx-dots-vertical-rounded"

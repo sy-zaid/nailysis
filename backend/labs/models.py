@@ -15,32 +15,40 @@ class LabTestType(models.Model):
     """
 
     CATEGORY_CHOICES = [
-        ("Blood Test", "Blood Test"),
-        ("Imaging", "Imaging"),
-        ("Biopsy", "Biopsy"),
-        ("Urine Test", "Urine Test"),
-        ("Genetic Test", "Genetic Test"),
-        ("Other", "Other"),
+    ("Blood Test", "Blood Test"),
+    ("Imaging Test", "Imaging Test"),
+    ("Pathology Report", "Pathology Report"),
+    ("Urine Test", "Urine Test"),
     ]
 
     TEST_CHOICES = [
-        ("CBC", "Complete Blood Count (CBC)"),
-        ("BloodSugar", "Blood Sugar Test"),
-        ("HbA1c", "HbA1c (Diabetes Test)"),
-        ("LipidProfile", "Lipid Profile (Cholesterol Test)"),
-        ("Thyroid", "Thyroid Function Test (T3, T4, TSH)"),
-        ("UrineTest", "Urine Analysis"),
-        ("LiverFunction", "Liver Function Test (LFT)"),
-        ("KidneyFunction", "Kidney Function Test (KFT)"),
-        ("Electrolytes", "Electrolyte Panel"),
-        ("CRP", "C-Reactive Protein (CRP) Test"),
-        ("VitaminD", "Vitamin D Test"),
-        ("VitaminB12", "Vitamin B12 Test"),
-        ("IronPanel", "Iron Panel (Ferritin, TIBC)"),
-        ("GeneticTest", "Genetic Testing"),
-        ("Other", "Other"),
-    ]
+    # Blood Tests
+    ("CBC", "Complete Blood Count (CBC)"),
+    ("BloodSugar", "Blood Sugar Test"),
+    ("HbA1c", "HbA1c (Diabetes Test)"),
+    ("LipidProfile", "Lipid Profile (Cholesterol Test)"),
+    ("Thyroid", "Thyroid Function Test (T3, T4, TSH)"),
+    ("LiverFunction", "Liver Function Test (LFT)"),
+    ("KidneyFunction", "Kidney Function Test (KFT)"),
+    ("Electrolytes", "Electrolyte Panel"),
+    ("CRP", "C-Reactive Protein (CRP) Test"),
+    ("VitaminD", "Vitamin D Test"),
+    ("VitaminB12", "Vitamin B12 Test"),
+    ("IronPanel", "Iron Panel (Ferritin, TIBC)"),
 
+    # Urine Tests
+    ("UrineTest", "Urine Analysis"),
+
+    # Imaging Tests
+    ("XRay", "X-Ray"),
+    ("MRI", "Magnetic Resonance Imaging (MRI)"),
+    ("CTScan", "Computed Tomography (CT) Scan"),
+    ("Ultrasound", "Ultrasound"),
+
+    # Pathology Reports
+    ("Biopsy", "Biopsy"),
+    ("Histopathology", "Histopathology"),
+    ]
     name = models.CharField(max_length=100, unique=True, choices=TEST_CHOICES)
     label = models.CharField(max_length=255) 
     description = models.TextField(null=True, blank=True)
@@ -86,25 +94,62 @@ class LabTestOrder(models.Model):
         return f"{self.test_type.name} - {self.test_status} ({self.appointment})"
 class LabTestResult(models.Model):
     """
-    Represents the results of a completed lab test.
-
-    Attributes:
-        test_order (OneToOneField): The associated test order.
-        result_details (TextField): The detailed results of the test.
-        reference_range (TextField): The normal range for the test (optional).
-        result_file (FileField): An optional file for scanned reports.
-        reviewed_by (ForeignKey): The technician who reviewed the results.
-        reviewed_at (DateTime): Timestamp when the result was finalized.
-    """
-    test_order = models.OneToOneField(LabTestOrder, on_delete=models.CASCADE, related_name="test_result")
-    result_details = models.TextField()
-    reference_range = models.TextField(null=True, blank=True)
-    result_file = models.FileField(upload_to='lab_results/', null=True, blank=True)
+    Stores lab test results for various test types.
+    - Blood tests → JSONField (e.g., Hemoglobin: 15.2 g/dL)
+    - Imaging/Pathology → File upload + Description
     
+    { API FORMAT FOR BLOOD TESTS
+    "test_order_id": 1,
+    "numeric_results": {
+        "Hemoglobin": {
+        "value": 15.2,
+        "unit": "g/dL",
+        "range": "13.5 - 17.5"
+        },
+        "WBC": {
+        "value": 5400,
+        "unit": "cells/mcL",
+        "range": "4,500 - 11,000"
+        }
+    }
+    }
+
+    """
+
+    test_order = models.OneToOneField(
+        'LabTestOrder', on_delete=models.CASCADE, related_name="test_result"
+    )
+
+    # JSON field for numeric results (e.g., Blood Test, Urine Test)
+    numeric_results = models.JSONField(null=True, blank=True)  
+    # Example: {"Hemoglobin": 13.5, "WBC": 7000, "pH": 6.0}
+
+    # JSON field for Positive/Negative results (e.g., Urine Test parameters)
+    boolean_results = models.JSONField(null=True, blank=True)  
+    # Example: {"Glucose": "Negative", "Protein": "Positive"}
+
+    # Text-based results (e.g., pathologist's notes, imaging descriptions)
+    comments = models.TextField(null=True, blank=True)
+
+    # File upload for Imaging & Pathology Reports
+    result_file = models.FileField(upload_to='lab_results/', null=True, blank=True)
+
+    # Metadata
     reviewed_by = models.ForeignKey(LabTechnician, on_delete=models.SET_NULL, null=True, blank=True)
     reviewed_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Results for {self.test_order.test_type.name}"
+        return f"Results for Order {self.test_order.id}"
 
+    # def save(self, *args, **kwargs):
+    #     """
+    #     Ensure JSON fields are properly formatted before saving.
+    #     """
+    #     if isinstance(self.numeric_results, dict):
+    #         self.numeric_results = json.dumps(self.numeric_results)
+    #     if isinstance(self.boolean_results, dict):
+    #         self.boolean_results = json.dumps(self.boolean_results)
+    #     super().save(*args, **kwargs)
+    
+    
     

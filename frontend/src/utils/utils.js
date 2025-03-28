@@ -1,4 +1,115 @@
-// You can add more functions below for reuse
+// You can add more constants or functions below for reuse
+
+export const bloodTestParameters = {
+  Hemoglobin: {
+    normalRange: "13.5 - 17.5",
+    unit: "g/dL",
+  },
+  WBC: {
+    normalRange: "4,500 - 11,000",
+    unit: "cells/mcL",
+  },
+  RBC: {
+    normalRange: "4.7 - 6.1",
+    unit: "million cells/mcL",
+  },
+  Hematocrit: {
+    normalRange: "38.3 - 48.6",
+    unit: "%",
+  },
+  Platelets: {
+    normalRange: "150,000 - 450,000",
+    unit: "platelets/mcL",
+  },
+  MCV: {
+    normalRange: "80 - 100",
+    unit: "fL",
+  },
+  MCH: {
+    normalRange: "27 - 33",
+    unit: "pg",
+  },
+  MCHC: {
+    normalRange: "32 - 36",
+    unit: "g/dL",
+  },
+  RDW: {
+    normalRange: "11.5 - 14.5",
+    unit: "%",
+  },
+  Neutrophils: {
+    normalRange: "40 - 60",
+    unit: "%",
+  },
+  Lymphocytes: {
+    normalRange: "20 - 40",
+    unit: "%",
+  },
+  Monocytes: {
+    normalRange: "2 - 8",
+    unit: "%",
+  },
+  Eosinophils: {
+    normalRange: "1 - 4",
+    unit: "%",
+  },
+  Basophils: {
+    normalRange: "0.5 - 1",
+    unit: "%",
+  },
+  ESR: {
+    normalRange: "0 - 20",
+    unit: "mm/hr",
+  },
+  CRP: {
+    normalRange: "< 10",
+    unit: "mg/L",
+  },
+  Glucose: {
+    normalRange: "70 - 99",
+    unit: "mg/dL",
+  },
+  Cholesterol: {
+    normalRange: "< 200",
+    unit: "mg/dL",
+  },
+  Triglycerides: {
+    normalRange: "< 150",
+    unit: "mg/dL",
+  },
+  LDL: {
+    normalRange: "< 100",
+    unit: "mg/dL",
+  },
+  HDL: {
+    normalRange: "> 40",
+    unit: "mg/dL",
+  },
+  ALT: {
+    normalRange: "7 - 56",
+    unit: "U/L",
+  },
+  AST: {
+    normalRange: "10 - 40",
+    unit: "U/L",
+  },
+  ALP: {
+    normalRange: "44 - 147",
+    unit: "U/L",
+  },
+  Bilirubin: {
+    normalRange: "0.1 - 1.2",
+    unit: "mg/dL",
+  },
+  Urea: {
+    normalRange: "7 - 20",
+    unit: "mg/dL",
+  },
+  Creatinine: {
+    normalRange: "0.6 - 1.3",
+    unit: "mg/dL",
+  },
+};
 
 /**
  * Predefined medical conditions options for react-select.
@@ -82,13 +193,35 @@ export const testTypes = [
  */
 export const getStatusClass = (status, styles) => {
   switch (status) {
+    // Green
     case "Consulted":
+    case "Completed":
+    case "Resolved":
+    case "Paid":
       return styles.consulted;
+    // Red 
     case "Cancelled":
+    case "No":
+    case "Urgent":
+    case "Overdue":
       return styles.cancelled;
-    default:
+    case "Pending":
+    // Yellow
+    case "Scheduled":
       return styles.scheduled;
+    // Blue
+    case "Rescheduled":
+    case "In Progress":
+      return styles.inProgress;
+    default:
+      return {};
   }
+};
+
+export const getResultsClass = (value, styles) => {
+  if (value === true) return styles.consulted; // Apply "Yes" color
+  if (value === false) return styles.cancelled; // Apply "No" color
+  return ""; // Default (no color)
 };
 
 /**
@@ -322,4 +455,60 @@ export const calculateTotalFee = (selectedTests, availableTestPrices) => {
     return sum + parseFloat(testPrice);
   }, 0);
   return total.toFixed(2);
+};
+
+/**
+ * Converts a Django datetime string into a formatted date and time string.
+ * @param {string} djangoDate - The Django datetime string.
+ * @returns {string} The formatted date and time string, or "Invalid Date" if input is null/undefined.
+ */
+export const convertDjangoDateTime = (djangoDate) => {
+  if (!djangoDate) return "Invalid Date"; // Handles undefined/null values
+
+  const dateObj = new Date(djangoDate); // Convert string to Date object
+
+  return `${dateObj.toLocaleDateString()} | ${dateObj.toLocaleTimeString()}`;
+};
+
+export const formatTestEntries = ({ testEntries, bloodTestParameters }) => {
+  return testEntries.reduce((acc, entry) => {
+    acc[entry.parameter] = {
+      value: parseFloat(entry.result), // Convert result to number
+      unit: bloodTestParameters[entry.parameter]?.unit || "", // Handle undefined case
+      range: bloodTestParameters[entry.parameter]?.normalRange || "", // Handle undefined case
+    };
+    return acc; //  Important: Return accumulator!
+  }, {});
+};
+
+
+export const handleParameterChange = (setTestEntries, index, newParameter) => {
+  setTestEntries((prevEntries) =>
+    prevEntries.map((entry, i) =>
+      i === index ? { ...entry, parameter: newParameter } : entry
+    )
+  );
+};
+
+export const handleResultChange = (setTestEntries, index, newResult) => {
+  setTestEntries((prevEntries) =>
+    prevEntries.map((entry, i) =>
+      i === index ? { ...entry, result: newResult } : entry
+    )
+  );
+};
+
+export const handleAddParameter = (setTestEntries) => {
+  setTestEntries((prevEntries) => [
+    ...prevEntries,
+    { parameter: "Hemoglobin", result: "" }, // Default new parameter
+  ]);
+};
+
+export const handleRemoveParameter = (setTestEntries, index) => {
+  setTestEntries((prevEntries) =>
+    prevEntries.length > 1
+      ? prevEntries.filter((_, i) => i !== index)
+      : prevEntries
+  );
 };

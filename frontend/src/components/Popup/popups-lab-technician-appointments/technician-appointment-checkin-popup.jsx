@@ -2,21 +2,39 @@ import React from "react";
 import styles from "./technician-appointment-checkin-popup.module.css";
 import Popup from "../Popup";
 import { useState, useEffect } from "react";
-import { calculateAge } from "../../../utils/utils";
+import {
+  calculateAge,
+  handleClosePopup,
+  convertDjangoDateTime,
+} from "../../../utils/utils";
+import { completeTechnicianAppointment } from "../../../api/appointmentsApi";
+import { getStatusClass } from "../../../utils/utils";
 
 const TechnicianAppointmentCheckinPopup = ({ onClose, appointmentDetails }) => {
-  console.log("GOT THIS TO START", appointmentDetails);
   // State variables
   const [timer, setTimer] = useState(0); // Keeps track of elapsed time in seconds
   const [isConsultationStarted, setIsConsultationStarted] = useState(false); // Tracks whether consultation has started
   const [intervalId, setIntervalId] = useState(null); // Stores the timer's interval ID to control it
   const [popupTrigger, setPopupTrigger] = useState(true);
+  const [status, setStatus] = useState("Pending");
   // Function to format time in HH:MM:SS format
   const formatTime = (time) => {
     const hours = String(Math.floor(time / 3600)).padStart(2, "0");
     const minutes = String(Math.floor((time % 3600) / 60)).padStart(2, "0");
     const seconds = String(time % 60).padStart(2, "0");
     return `${hours}:${minutes}:${seconds}`;
+  };
+
+  // ----- HANDLERS
+  // Handles the completion of appointment
+  const handleCompleteAppointment = async (appointmentId) => {
+    try {
+      const response = await completeTechnicianAppointment(appointmentId);
+      alert("Successfully marked as completed");
+    } catch (error) {
+      console.log(error);
+    }
+    handleClosePopup(onClose); // Closes popup as soon as completed
   };
 
   // Function to start the timer when consultation begins
@@ -34,23 +52,6 @@ const TechnicianAppointmentCheckinPopup = ({ onClose, appointmentDetails }) => {
     setIntervalId(null);
   };
 
-  // Function to determine the CSS class based on status
-  const getStatusClass = (status) => {
-    switch (status) {
-      case "Completed":
-        return styles.consulted;
-      case "Cancelled":
-        return styles.cancelled;
-      case "Scheduled":
-        return styles.scheduled;
-      case "Pending":
-        return styles.scheduled;
-      case "Urgent":
-        return styles.cancelled;
-      default:
-        return {};
-    }
-  };
 
   // useEffect to reset timer and state when popup opens
   useEffect(() => {
@@ -101,7 +102,7 @@ const TechnicianAppointmentCheckinPopup = ({ onClose, appointmentDetails }) => {
               {" "}
               <i className="fa-solid fa-circle-notch"></i> Status:{" "}
             </span>
-            <span className={getStatusClass("Pending")}>Pending</span>
+            <span className={getStatusClass(status, styles)}>Pending</span>
             <span className={styles.key} style={{ margin: "0 0 0 50px" }}>
               {" "}
               <i className="fa-solid fa-location-dot"></i> Location:{" "}
@@ -189,14 +190,12 @@ const TechnicianAppointmentCheckinPopup = ({ onClose, appointmentDetails }) => {
               <div>
                 <label>Date & Time</label>
                 <p className={styles.subHeading}>
-                  {appointmentDetails?.appointment_date}{" "}
-                  {appointmentDetails?.checkin_time}{" "}
+                  {convertDjangoDateTime(appointmentDetails?.checkin_datetime)}
                 </p>
               </div>
             </div>
           </div>
 
-          {/* {isConsultationStarted && ( */}
           <div className={styles.commentsFormSection}>
             <h3
               style={{ color: "#737070", marginLeft: "25px", fontSize: "16px" }}
@@ -205,13 +204,12 @@ const TechnicianAppointmentCheckinPopup = ({ onClose, appointmentDetails }) => {
             </h3>
             <div className={styles.documentFormGroup}>
               <div>
-                <textarea style={{ border: "none" }} disabled>
+                <textarea className={styles.textAreaField} style={{ border: "none" }} disabled>
                   {appointmentDetails?.notes || "N/A"}
                 </textarea>
               </div>
             </div>
           </div>
-          {/* )} */}
 
           <hr />
 
@@ -279,7 +277,13 @@ const TechnicianAppointmentCheckinPopup = ({ onClose, appointmentDetails }) => {
                 Confirm Patient
               </button>
             ) : (
-              <button className={styles.addButton} onClick={stopTimer}>
+              <button
+                className={styles.addButton}
+                onClick={() => {
+                  stopTimer();
+                  handleCompleteAppointment(appointmentDetails.appointment_id);
+                }}
+              >
                 Complete Appointment
               </button>
             )}

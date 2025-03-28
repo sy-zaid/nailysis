@@ -75,8 +75,8 @@ F:\Nailysis Application\frontend\src\components\Popup\popups-lab-technician-appo
 F:\Nailysis Application\frontend\src\components\Popup\popups-lab-technician-appointments\technician-ap...
 F:\Nailysis Application\frontend\src\components\Popup\popups-lab-technician-appointments\technician-ap...
 F:\Nailysis Application\frontend\src\components\Popup\popups-lab-technician-appointments\technician-ap...
-F:\Nailysis Application\frontend\src\components\Popup\popup-select-report-type.jsx                       
-F:\Nailysis Application\frontend\src\components\Popup\popup-select-report-type.module.css                
+F:\Nailysis Application\frontend\src\components\Popup\select-test-order-popup.jsx                       
+F:\Nailysis Application\frontend\src\components\Popup\select-test-order-popup.module.css                
 F:\Nailysis Application\frontend\src\components\Popup\popup-test-details.jsx                             
 F:\Nailysis Application\frontend\src\components\Popup\Popup.jsx                                          
 F:\Nailysis Application\frontend\src\components\Popup\Popup.module.css                                   

@@ -297,12 +297,14 @@
   padding: 3% 0% 0% 0%;
   justify-content: left;
   align-items: end;
+  position: relative; /* Ensure it is positioned */
+  z-index: 100;
 }
 
 .profSection {
   position: relative;
   width: 100%;
-  /* background-color: #181818; */
+  background-color: #fff;
   height: 100%;
   display: flex;
   flex-direction: row;
@@ -312,13 +314,14 @@
   border: 1px solid #cfcfcf;
   border-radius: 32px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1); /* Subtle shadow effect */
-
   transition: all 0.3s ease; /* Smooth transition effect */
 }
 
 .profSection:hover {
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0), 0 8px 16px rgba(0, 0, 0, 0.2); /* Darker shadow on hover */
-  transform: translateY(-5px); /* Lift effect on hover */
+  height: 240%;
+  transform: translateY(-70px);
+  z-index: 1000; /* Ensures it appears above section 3 */
 }
 
 .profSection img {
@@ -327,7 +330,9 @@
   border-radius: 32px;
 }
 
-.profSection h2 {
+
+
+.profileInfo {
   font-size: 0.95rem;
   color: #4e4e4e;
   font-weight: 700;
@@ -337,8 +342,58 @@
   gap: 0px;
 }
 
-.profSection > h2 > span {
+.profileInfo, .profSection img {
+  transition: transform 0.3s ease-in-out;
+}
+
+.profileInfo span {
   font-size: 0.8rem;
   color: #4e4e4e;
   font-weight: 400;
+}
+
+.profSection:hover .profileInfo {
+  transform: translateY(-30px); 
+}
+.profSection:hover img {
+  transform: translateY(-30px); /* Moves name, email, and image upwards */
+  margin-left: 15px;
+}
+
+.hiddenLinks {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  text-align: center;
+}
+
+.profSection:hover .hiddenLinks {
+  opacity: 1;
+}
+
+.hiddenLinks a:first-child {
+  display: block;
+  color: #007bff;
+  text-decoration: none;
+  font-weight: bold;
+  margin-top: 5px;
+}
+
+.hiddenLinks a:first-child:hover {
+  color: #0056b3;
+}
+
+.hiddenLinks a:last-child {
+  display: block;
+  color: #dc3545;
+  text-decoration: none;
+  font-weight: bold;
+  margin-top: 5px;
+}
+
+.hiddenLinks a:last-child:hover {
+  color: #b12937;
 }

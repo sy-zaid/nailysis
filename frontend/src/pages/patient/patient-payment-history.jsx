@@ -4,6 +4,7 @@ import styles from "../common/all-pages-styles.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import Header from "../../components/Dashboard/Header/Header";
 import Sidebar from "../../components/Dashboard/Sidebar/Sidebar";
+import { getStatusClass } from '../../utils/utils';
 
 
 const PaymentHistory = (props) => {
@@ -39,17 +40,6 @@ const PaymentHistory = (props) => {
   // ----- HANDLERS
   const handleFilterClick = (index) => {
     setActiveButton(index); // Set the active button when clicked
-  };
-
-  const getStatusClass = (status) => {
-    switch (status) {
-      case "Paid":
-        return styles.consulted;
-      case "Overdue":
-        return styles.cancelled;
-      default:
-        return styles.scheduled;
-    }
   };
 
   return (
@@ -150,7 +140,7 @@ const PaymentHistory = (props) => {
                       <td>{row.dueDate}</td>
                       <td>{row.pendingAmount}</td>
                       <td>{row.totalAmount}</td>
-                      <td className={getStatusClass(row.paymentStatus)}>{row.paymentStatus}</td>
+                      <td className={getStatusClass(row.paymentStatus, styles)}>{row.paymentStatus}</td>
                       <td><i class='bx bx-dots-vertical-rounded'></i></td>
                     </tr>
                   ))}
