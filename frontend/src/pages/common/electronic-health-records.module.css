@@ -82,13 +82,15 @@
 }
 
 .tableContainer {
-  overflow-x: auto;
-  padding: 16px;
-  border-radius: 12px;
+  background-color: white;
+  padding: 20px;
+  border-radius: 20px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+  width: 100%;
 }
 
 .table {
-  width: 100%;
+  width: max-content;
   border-collapse: separate;
   border-spacing: 0;
   font-size: 14px;

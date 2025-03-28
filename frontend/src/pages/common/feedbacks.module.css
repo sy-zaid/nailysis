@@ -36,6 +36,7 @@
   flex: 1;
   padding: 20px;
   background-color: #ffffff;
+  overflow-x: hidden;
 }
   
 .filters {
@@ -124,7 +125,7 @@
 }
 
 .tableContainer {
-    width: 71vw;
+    width: 100%;
     background-color: white;
     padding: 20px;
     border-radius: 20px;
@@ -165,12 +166,13 @@
 }
 
 .tableWrapper {
+  width: 100%;
   overflow-x: auto;
-  max-width: 100%;
 }
 
 .table {
-  width: 100%;
+  width: max-content;
+  min-width: 100%;
   border-collapse: separate;
   border-spacing: 0;
   font-size: 14px;

@@ -20,6 +20,10 @@
   margin-bottom: 15px;
 }
 
+.titleSection{
+  margin-left: 20px;
+}
+
 .titleSection h2 {
   font-size: 28px;
   font-weight: 600;
@@ -156,6 +160,18 @@ textarea {
   font-size: 16px;
   margin-left: 26px;
   scrollbar-width: none;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="date"]  {
+  outline: none;
+}
+
+.inputField {
+  padding-left: 0;
+  padding-top: 0;
 }
 
 textarea::placeholder {

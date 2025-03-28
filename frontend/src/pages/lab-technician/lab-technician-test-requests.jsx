@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import styles from "../../components/CSS Files/LabTechnician.module.css";
+import styles from "../common/all-pages-styles.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import Header from "../../components/Dashboard/Header/Header";
 import Sidebar from "../../components/Dashboard/Sidebar/Sidebar";
@@ -158,197 +158,199 @@ const TestOrders = ({ props }) => {
             </div>
             <hr />
             <br />
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  <th>
-                    <input type="checkbox" />
-                  </th>
-                  <th>#</th>
-                  <th>Order ID</th>
-                  <th>Patient Name</th>
-                  <th>Technician Name</th>
-                  <th>Requested Tests</th>
-                  <th>Requested On</th>
-                  <th>Collected On</th>
-                  <th>Total Price</th>
-                  <th>Appointment Status</th>
-                  <th>Test Status</th>
-                  <th>Results Available</th>
-                </tr>
-              </thead>
-              <tbody>
-                {testOrders.map((row, index) => (
-                  <tr key={row.id}>
-                    <td>
+            <div className={styles.tableWrapper}>
+              <table className={styles.table}>
+                <thead>
+                  <tr>
+                    <th>
                       <input type="checkbox" />
-                    </td>
-                    <td data-label="#">{index + 1}</td>
-                    <td data-label="Order ID">{row.id}</td>
-                    <td data-label="Patient Name">
-                      {row.lab_technician_appointment?.patient_name}
-                    </td>
-                    <td data-label="Technician Name">
-                      {row.lab_technician_appointment?.technician_name}
-                    </td>
-                    <td data-label="Requested Tests">
-                      {row.test_types.map((test) => test.label).join(", ")}
-                    </td>
-                    <td data-label="Requested On">
-                      {convertDjangoDateTime(row.created_at)}
-                    </td>
-                    <td data-label="Collected On">
-                      {row?.lab_technician_appointment?.checkout_datetime
-                        ? convertDjangoDateTime(
-                            row.lab_technician_appointment.checkout_datetime
-                          )
-                        : "Not collected yet"}
-                    </td>
+                    </th>
+                    <th>#</th>
+                    <th>Order ID</th>
+                    <th>Patient Name</th>
+                    <th>Technician Name</th>
+                    <th>Requested Tests</th>
+                    <th>Requested On</th>
+                    <th>Collected On</th>
+                    <th>Total Price</th>
+                    <th>Appointment Status</th>
+                    <th>Test Status</th>
+                    <th>Results Available</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {testOrders.map((row, index) => (
+                    <tr key={row.id}>
+                      <td>
+                        <input type="checkbox" />
+                      </td>
+                      <td data-label="#">{index + 1}</td>
+                      <td data-label="Order ID">{row.id}</td>
+                      <td data-label="Patient Name">
+                        {row.lab_technician_appointment?.patient_name}
+                      </td>
+                      <td data-label="Technician Name">
+                        {row.lab_technician_appointment?.technician_name}
+                      </td>
+                      <td data-label="Requested Tests">
+                        {row.test_types.map((test) => test.label).join(", ")}
+                      </td>
+                      <td data-label="Requested On">
+                        {convertDjangoDateTime(row.created_at)}
+                      </td>
+                      <td data-label="Collected On">
+                        {row?.lab_technician_appointment?.checkout_datetime
+                          ? convertDjangoDateTime(
+                              row.lab_technician_appointment.checkout_datetime
+                            )
+                          : "Not collected yet"}
+                      </td>
 
-                    <td data-label="Price">
-                      {row.lab_technician_appointment?.fee}
-                    </td>
+                      <td data-label="Price">
+                        {row.lab_technician_appointment?.fee}
+                      </td>
 
-                    <td
-                      data-label="Status"
-                      className={getStatusClass(row.test_status, styles)}
-                    >
-                      {row.lab_technician_appointment.status}
-                    </td>
-                    <td
-                      data-label="Status"
-                      className={getStatusClass(row.test_status, styles)}
-                    >
-                      {row.test_status}
-                    </td>
-                    <td
-                      data-label="Status"
-                      className={getStatusClass(row.test_status, styles)}
-                    >
-                      {row.results_available ? "Yes" : "No"}
-                    </td>
-                    <td style={{ position: "relative" }}>
-                      <i
-                        className="bx bx-dots-vertical-rounded"
-                        style={{ cursor: "pointer" }}
-                        onClick={togglePopup}
-                      ></i>
-                    </td>
-                    {/* ------------------------- ACTION BUTTONS -------------------------*/}
-                    <td>
-                      <button
-                        onClick={() =>
-                          toggleActionMenu(row.id, menuOpen, setMenuOpen)
-                        }
-                        className={styles.moreActionsBtn}
+                      <td
+                        data-label="Status"
+                        className={getStatusClass(row.test_status, styles)}
                       >
-                        <img
-                          src="/icon-three-dots.png"
-                          alt="More Actions"
-                          className={styles.moreActionsIcon}
-                        />
-                      </button>
+                        {row.lab_technician_appointment.status}
+                      </td>
+                      <td
+                        data-label="Status"
+                        className={getStatusClass(row.test_status, styles)}
+                      >
+                        {row.test_status}
+                      </td>
+                      <td
+                        data-label="Status"
+                        className={getStatusClass(row.test_status, styles)}
+                      >
+                        {row.results_available ? "Yes" : "No"}
+                      </td>
+                      <td style={{ position: "relative" }}>
+                        <i
+                          className="bx bx-dots-vertical-rounded"
+                          style={{ cursor: "pointer" }}
+                          onClick={togglePopup}
+                        ></i>
+                      </td>
+                      {/* ------------------------- ACTION BUTTONS -------------------------*/}
+                      <td>
+                        <button
+                          onClick={() =>
+                            toggleActionMenu(row.id, menuOpen, setMenuOpen)
+                          }
+                          className={styles.moreActionsBtn}
+                        >
+                          <img
+                            src="/icon-three-dots.png"
+                            alt="More Actions"
+                            className={styles.moreActionsIcon}
+                          />
+                        </button>
 
-                      {menuOpen === row.id && (
-                        <div className={styles.menu}>
-                          <ul>
-                            <li
-                              onClick={() =>
-                                handleActionClick("Process Test Order", row)
-                              }
-                            >
-                              <i className="fa-solid fa-repeat"></i> Process
-                              Test Order
-                            </li>
-                            <li
-                              onClick={() =>
-                                handleActionClick("Edit Details", row)
-                              }
-                            >
-                              <i className="fa-solid fa-pen"></i> Edit Details
-                            </li>
-                            <li
-                              onClick={() => handleActionClick("Delete", row)}
-                            >
-                              <i
-                                className="fa-regular fa-circle-xmark"
-                                style={{ color: "red" }}
-                              ></i>{" "}
-                              Delete
-                            </li>
-                            <li
-                              onClick={() =>
-                                handleActionClick("Download as PDF", row)
-                              }
-                            >
-                              <i className="fa-regular fa-file-pdf"></i>{" "}
-                              Download as PDF
-                            </li>
-                            <li
-                              onClick={() =>
-                                handleActionClick("Print Code", row)
-                              }
-                            >
-                              <i className="bx bx-qr-scan"></i> Print Code
-                            </li>
-
-                            {curUser[0].role === "lab_technician" &&
-                              row.status !== "Completed" && (
-                                <li
-                                  onClick={() =>
-                                    handleActionClick(
-                                      "Action Start Appointment",
-                                      row
-                                    )
-                                  }
-                                >
-                                  Start Appointment
-                                </li>
-                              )}
-
-                            {(curUser[0].role === "patient" ||
-                              curUser[0].role === "lab_technician") && (
+                        {menuOpen === row.id && (
+                          <div className={styles.menu}>
+                            <ul>
                               <li
                                 onClick={() =>
-                                  handleActionClick(
-                                    "Button Cancellation Request",
-                                    row.id
-                                  )
+                                  handleActionClick("Process Test Order", row)
                                 }
                               >
-                                Request Cancellation
+                                <i className="fa-solid fa-repeat"></i> Process
+                                Test Order
                               </li>
-                            )}
+                              <li
+                                onClick={() =>
+                                  handleActionClick("Edit Details", row)
+                                }
+                              >
+                                <i className="fa-solid fa-pen"></i> Edit Details
+                              </li>
+                              <li
+                                onClick={() => handleActionClick("Delete", row)}
+                              >
+                                <i
+                                  className="fa-regular fa-circle-xmark"
+                                  style={{ color: "red" }}
+                                ></i>{" "}
+                                Delete
+                              </li>
+                              <li
+                                onClick={() =>
+                                  handleActionClick("Download as PDF", row)
+                                }
+                              >
+                                <i className="fa-regular fa-file-pdf"></i>{" "}
+                                Download as PDF
+                              </li>
+                              <li
+                                onClick={() =>
+                                  handleActionClick("Print Code", row)
+                                }
+                              >
+                                <i className="bx bx-qr-scan"></i> Print Code
+                              </li>
 
-                            {curUser[0].role === "lab_admin" && (
-                              <>
-                                <li
-                                  onClick={() =>
-                                    handleActionClick("Reschedule", row)
-                                  }
-                                >
-                                  Reschedule
-                                </li>
+                              {curUser[0].role === "lab_technician" &&
+                                row.status !== "Completed" && (
+                                  <li
+                                    onClick={() =>
+                                      handleActionClick(
+                                        "Action Start Appointment",
+                                        row
+                                      )
+                                    }
+                                  >
+                                    Start Appointment
+                                  </li>
+                                )}
+
+                              {(curUser[0].role === "patient" ||
+                                curUser[0].role === "lab_technician") && (
                                 <li
                                   onClick={() =>
                                     handleActionClick(
-                                      "Action Cancel Appointment",
+                                      "Button Cancellation Request",
                                       row.id
                                     )
                                   }
                                 >
-                                  Cancel Appointment
+                                  Request Cancellation
                                 </li>
-                              </>
-                            )}
-                          </ul>
-                        </div>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                              )}
+
+                              {curUser[0].role === "lab_admin" && (
+                                <>
+                                  <li
+                                    onClick={() =>
+                                      handleActionClick("Reschedule", row)
+                                    }
+                                  >
+                                    Reschedule
+                                  </li>
+                                  <li
+                                    onClick={() =>
+                                      handleActionClick(
+                                        "Action Cancel Appointment",
+                                        row.id
+                                      )
+                                    }
+                                  >
+                                    Cancel Appointment
+                                  </li>
+                                </>
+                              )}
+                            </ul>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
