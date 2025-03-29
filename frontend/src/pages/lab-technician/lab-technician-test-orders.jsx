@@ -2,9 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import styles from "../../components/CSS Files/LabTechnician.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import Header from "../../components/Dashboard/Header/Header";
-import Sidebar from "../../components/Dashboard/Sidebar/Sidebar";
 import PopupSelectTestOrder from "../../components/Popup/popups-labs/select-test-order-popup";
-// import BloodTestEntryPopup from "../../components/Popup/popups-labs/blood-blood-test-entry-popup";
 import { getTestOrders } from "../../api/labsApi";
 import { getStatusClass } from "../../utils/utils";
 
@@ -16,40 +14,37 @@ import {
 } from "../../utils/utils";
 import useCurrentUserData from "../../useCurrentUserData";
 
-const TestOrders = ({ props }) => {
-  const [popupVisible, setPopupVisible] = useState(false);
-  const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
-  const popupRef = useRef(null);
-
-  const [activeButton, setActiveButton] = useState(0);
-
-  const [testDetailsPopup, setTestDetailsPopup] = useState(false);
-
-  // ------------------------- ZAID'S WORK (OTHER THINGS NEEDS TO BE REVISED) ------------------------- //
-  const [testOrders, setTestOrders] = useState([]);
-  const [menuOpen, setMenuOpen] = useState(false);
+const TestOrders = () => {
+  // ----- TOKENS & USER INFORMATION
   const { data: curUser, isLoading, error } = useCurrentUserData();
+  const token = localStorage.getItem("access");
+
+  // ----- POPUPS & NAVIGATION
+  const [menuOpen, setMenuOpen] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [popupContent, setPopupContent] = useState();
-  
-  const token = localStorage.getItem("access");
-  // Get test requests on component mount
-  useEffect(() => {
-    const fetchTestOrders = async () => {
-      try {
-        const response = await getTestOrders();
-        setTestOrders(response.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    // if (!showPopup) {
-    // Fetch only when popup is closed
-    fetchTestOrders();
-    // }
-  }, [token]);
+  const [activeButton, setActiveButton] = useState(0);
+  const actionMenuRef = useRef(null);
+
+  // ------------------------- ZAID'S WORK (OTHER THINGS NEEDS TO BE REVISED) ------------------------- //
+
+  // ----- IMPORTANT DATA
+  const [testOrders, setTestOrders] = useState([]);
+
   console.log("TEST REQUESTS RESPONSSE", testOrders);
 
+  // API CALLS, FUNCTIONS FOR DATA, AND MORE
+  // Fetch test orders to map the rows on table
+  const fetchTestOrders = async () => {
+    try {
+      const response = await getTestOrders();
+      setTestOrders(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // ----- HANDLERS
   const handleActionClick = (action, testOrderDetails) => {
     console.log(`Performing ${action} on ID:${testOrderDetails}`);
 
@@ -57,45 +52,53 @@ const TestOrders = ({ props }) => {
       setPopupContent(
         <PopupSelectTestOrder
           onClose={() => setShowPopup(false)}
-          
           testOrderDetails={testOrderDetails}
         />
       );
       setShowPopup(true);
     }
   };
-  // ------------------------ END OF ZAID'S WORK -------------------------- //
 
   const handleFilterClick = (index) => {
     setActiveButton(index); // Set the active button when clicked
   };
 
-  const togglePopup = (event) => {
-    const iconRect = event.target.getBoundingClientRect();
-    setPopupPosition({
-      top: iconRect.top + window.scrollY + iconRect.height + 5, // Adjust for scroll position
-      left: iconRect.left + window.scrollX - 95, // Adjust for horizontal scroll
-    });
-    setPopupVisible(!popupVisible);
+  const handleClickOutside = (event) => {
+    if (
+      actionMenuRef.current &&
+      !actionMenuRef.current.contains(event.target)
+    ) {
+      setMenuOpen(null); // Ensure state updates to close the menu
+    }
   };
 
-  // Close popup when clicking outside
+  // ----- USE EFFECTS
+
+  // Helps in closing action menu on mouse click (anywhere)
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (popupRef.current && !popupRef.current.contains(event.target)) {
-        setPopupVisible(false);
-      }
-    };
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // Get test requests on component mount
+  useEffect(() => {
+    if (!showPopup) {
+      // Fetch only when popup is closed
+      fetchTestOrders();
+    }
+  }, [token]);
+
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
+
+  if (error) {
+    return <p>Error fetching user data</p>;
+  }
 
   return (
     <div className={styles.pageContainer}>
       {showPopup && popupContent}
-      
 
       <div className={styles.pageTop}>
         <Navbar />
@@ -227,13 +230,7 @@ const TestOrders = ({ props }) => {
                     >
                       {row.results_available ? "Yes" : "No"}
                     </td>
-                    <td style={{ position: "relative" }}>
-                      <i
-                        className="bx bx-dots-vertical-rounded"
-                        style={{ cursor: "pointer" }}
-                        onClick={togglePopup}
-                      ></i>
-                    </td>
+
                     {/* ------------------------- ACTION BUTTONS -------------------------*/}
                     <td>
                       <button
@@ -250,7 +247,7 @@ const TestOrders = ({ props }) => {
                       </button>
 
                       {menuOpen === row.id && (
-                        <div className={styles.menu}>
+                        <div ref={actionMenuRef} className={styles.menu}>
                           <ul>
                             <li
                               onClick={() =>
@@ -352,54 +349,6 @@ const TestOrders = ({ props }) => {
           </div>
         </div>
       </div>
-
-      {/* Popup */}
-      {popupVisible && (
-        <div
-          ref={popupRef}
-          style={{
-            position: "absolute",
-            top: popupPosition.top,
-            left: popupPosition.left,
-            background: "white",
-            border: "1px solid #ccc",
-            boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
-            padding: "10px",
-            borderRadius: "10px",
-            zIndex: 1000,
-          }}
-        >
-          <p style={{ margin: "10px 0", cursor: "pointer" }}>
-            <i
-              className="fa-solid fa-repeat"
-              style={{ margin: "0 5px 0 0" }}
-            ></i>{" "}
-            Change Priority
-          </p>
-          <p style={{ margin: "10px 0", cursor: "pointer" }}>
-            <i className="fa-solid fa-pen" style={{ margin: "0 5px 0 0" }}></i>{" "}
-            Edit Details
-          </p>
-          <p style={{ margin: "10px 0", cursor: "pointer" }}>
-            <i
-              className="fa-regular fa-circle-xmark"
-              style={{ color: "red", margin: "0 5px 0 0" }}
-            ></i>{" "}
-            Delete
-          </p>
-          <p style={{ margin: "10px 0", cursor: "pointer" }}>
-            <i
-              className="fa-regular fa-file-pdf"
-              style={{ margin: "0 5px 0 0" }}
-            ></i>{" "}
-            Download as PDF
-          </p>
-          <p style={{ margin: "10px 0", cursor: "pointer" }}>
-            <i className="bx bx-qr-scan" style={{ margin: "0 5px 0 0" }}></i>{" "}
-            Print Code
-          </p>
-        </div>
-      )}
     </div>
   );
 };
