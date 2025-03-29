@@ -12,7 +12,7 @@ const getAuthHeaders = () => ({
 
 // Submit new Feedback
 export const submitFeedback = async (feedbackData) => {
-  const url = `${import.meta.env.VITE_API_URL}/api/feedbacks/submit_feedback/`; // ✅ Ensure correct API URL
+  const url = `${import.meta.env.VITE_API_URL}/api/feedbacks/submit_feedback/`; //  Ensure correct API URL
   return axios.post(url, feedbackData, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem("access")}`,

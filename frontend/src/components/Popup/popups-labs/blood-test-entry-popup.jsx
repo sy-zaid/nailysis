@@ -67,6 +67,7 @@ const BloodTestEntryPopup = ({ onClose, testDetails, testOrderDetails }) => {
 
     const payload = {
       test_order_id: testOrderDetails.id,
+      test_type_id: testDetails.id,
       technician_id: curUser[0]?.user_id,
       test_entries: formData.test_entries,
       comments: formData.comments,

@@ -5,11 +5,37 @@ import { useState, useEffect } from "react";
 import { convertDjangoDateTime } from "../../../utils/utils";
 import BloodTestEntryPopup from "./blood-test-entry-popup";
 import UrineTestEntryPopup from "./urine-test-entry-popup";
+import { finalizeTestOrder, getTestResults } from "../../../api/labsApi";
+import { toast } from "react-toastify";
 
 const PopupSelectTestOrder = ({ onClose, testOrderDetails }) => {
   const [popupTrigger, setPopupTrigger] = useState(true);
   const [popupContent, setPopupContent] = useState(null);
   const [showInnerPopup, setShowInnerPopup] = useState(false);
+  const [completedTests, setCompletedTests] = useState([]);
+
+  useEffect(() => {
+    const fetchTestResults = async () => {
+      try {
+        const response = await getTestResults(testOrderDetails.id);
+        console.log("Fetched Test Results:", response.data);
+        const tests = response.data.map((test) => ({
+          id: test.test_type,
+          result_status: test.result_status,
+        }));
+        console.log("Fetched Test Results:", tests);
+        setCompletedTests(tests);
+      } catch (error) {
+        console.error("Error fetching test results:", error);
+      }
+    };
+
+    fetchTestResults();
+  }, [testOrderDetails?.id]);
+
+  const checkExistingResults = (testTypeId, testResults) => {
+    return testResults.some((test) => test.id === testTypeId);
+  };
 
   const test_categories = {
     "Blood Test": (testDetails, testOrderDetails) => (
@@ -67,6 +93,45 @@ const PopupSelectTestOrder = ({ onClose, testOrderDetails }) => {
       test_categories[testDetails.category](testDetails, testOrderDetails)
     );
     setShowInnerPopup(true);
+  };
+
+  const handleFinalizeAndSubmit = async () => {
+    const payload = { test_order_id: testOrderDetails.id };
+
+    try {
+      const response = await finalizeTestOrder(payload);
+
+      if (response.status === 200) {
+        toast.success(" All test reports submitted to admin!", {
+          className: "custom-toast",
+        });
+      }
+    } catch (error) {
+      if (error.response) {
+        const { data, status } = error.response;
+
+        if (status === 403) {
+          toast.error("Not authorized to submit test reports", {
+            className: "custom-toast",
+          });
+        } else if (
+          status === 400 &&
+          data.message === "Some test results are missing!"
+        ) {
+          toast.error("Some test results are missing!", {
+            className: "custom-toast",
+          });
+        } else {
+          toast.error(`Error: ${data.message || "Something went wrong!"}`, {
+            className: "custom-toast",
+          });
+        }
+      } else {
+        toast.error("Network error! Please try again.", {
+          className: "custom-toast",
+        });
+      }
+    }
   };
 
   return (
@@ -210,16 +275,20 @@ const PopupSelectTestOrder = ({ onClose, testOrderDetails }) => {
                     {test.name} ({test.category})
                   </span>
                   <span className={styles.testTypeBorder}></span>
-                  <button
-                    className={styles.addButton}
-                    style={{ marginRight: "45px" }}
-                    onClick={() => {
-                      // onClose(); // Close this popup
-                      setInnerPopup(test); // Open the next popup
-                    }}
-                  >
-                    Add Record
-                  </button>
+                  {checkExistingResults(test.id, completedTests) ? (
+                    <>
+                      <p>Completed</p>
+                      <button className={styles.addButton}>Edit Record</button>
+                    </>
+                  ) : (
+                    <button
+                      className={styles.addButton}
+                      style={{ marginRight: "45px" }}
+                      onClick={() => setInnerPopup(test)}
+                    >
+                      Add Record
+                    </button>
+                  )}
                 </div>
               ))}
             </div>
@@ -235,7 +304,10 @@ const PopupSelectTestOrder = ({ onClose, testOrderDetails }) => {
             >
               Cancel
             </button>
-            <button className={styles.addButton}>
+            <button
+              className={styles.addButton}
+              onClick={() => handleFinalizeAndSubmit()}
+            >
               Finalize & Submit to Admin
             </button>
           </div>

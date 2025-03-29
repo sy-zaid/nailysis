@@ -3,7 +3,7 @@ from appointments.models import TechnicianAppointment
 from users.models import LabTechnician
 class LabTestType(models.Model):
     """
-    Represents a type of laboratory test.
+    Represents a type of laboratory test. ONLY 4 TYPES OF TESTS ARE AVAILABLE IN THE SYSTEM.
     
     Attributes:
         name (str): Short identifier for the test (e.g., "CBC", "LipidProfile").
@@ -61,98 +61,106 @@ class LabTestType(models.Model):
 
 class LabTestOrder(models.Model):
     """
-    Represents a lab test order, linking an appointment to multiple lab tests.
-    
+    Represents a lab test order, linking a technician's appointment to multiple lab tests.
+
+    - Each order is associated with a TechnicianAppointment.
+    - Supports multiple test types per order.
+    - Tracks test status and result availability.
+
     Attributes:
-        appointment (ForeignKey): The related TechnicianAppointment.
-        test_type (ForeignKey): The specific test being conducted.
-        test_status (str): Status of the test (Pending, In Progress, Completed, etc.).
-        results_available (bool): Indicates if the results are available.
-        assigned_technician (ForeignKey): Technician assigned to conduct the test.
+        lab_technician_appointment (ForeignKey): The related technician appointment.
+        test_types (ManyToManyField): The tests included in this order.
+        test_status (str): The current status of the test order.
+        results_available (bool): Whether all test results are available.
         created_at (DateTime): Timestamp for when the order was created.
         updated_at (DateTime): Timestamp for the last update.
     """
+
     TEST_STATUS_CHOICES = [
         ("Pending", "Pending"),
         ("In Progress", "In Progress"),
+        ("Review Required", "Review Required"),
         ("Completed", "Completed"),
         ("Canceled", "Canceled"),
     ]
-    
-    lab_technician_appointment = models.ForeignKey(TechnicianAppointment, on_delete=models.CASCADE, related_name="test_orders")
-    test_types = models.ManyToManyField(  # 🔹 Change ForeignKey to ManyToManyField
-        LabTestType, 
-        related_name="test_orders"
+
+    lab_technician_appointment = models.ForeignKey(
+        TechnicianAppointment, on_delete=models.CASCADE, related_name="test_orders"
+    )
+    test_types = models.ManyToManyField(
+        LabTestType, related_name="test_orders"
     )
     test_status = models.CharField(max_length=20, choices=TEST_STATUS_CHOICES, default="Pending")
     results_available = models.BooleanField(default=False)
-    
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.test_types.name} - {self.test_status} "
+        return f"Lab Test Order (ID: {self.id}) - Status: {self.test_status}"
+
+    def update_status(self, status):
+        """
+        Updates the status of the lab test order.
+        
+        Ensures the new status is valid before updating.
+        """
+        valid_statuses = [choice[0] for choice in self.TEST_STATUS_CHOICES]
+        if status not in valid_statuses:
+            raise ValueError(f"Invalid status '{status}'. Choose from {valid_statuses}")
+        
+        self.test_status = status
+        self.save()
+              
 class LabTestResult(models.Model):
     """
     Stores lab test results for various test types.
-    - Blood tests → JSONField (e.g., Hemoglobin: 15.2 g/dL)
-    - Imaging/Pathology → File upload + Description
-    
-    { API FORMAT FOR BLOOD TESTS
-    "test_order_id": 1,
-    "numeric_results": {
-        "Hemoglobin": {
-        "value": 15.2,
-        "unit": "g/dL",
-        "range": "13.5 - 17.5"
-        },
-        "WBC": {
-        "value": 5400,
-        "unit": "cells/mcL",
-        "range": "4,500 - 11,000"
+
+    - Blood tests: Stored as JSON (e.g., Hemoglobin: 15.2 g/dL)
+    - Imaging & Pathology: File upload with text-based descriptions
+    - Supports multiple result formats, including numeric values, boolean indicators, and textual comments.
+
+    Example API format for blood tests:
+    {
+        "test_order_id": 1,
+        "numeric_results": {
+            "Hemoglobin": {
+                "value": 15.2,
+                "unit": "g/dL",
+                "range": "13.5 - 17.5"
+            },
+            "WBC": {
+                "value": 5400,
+                "unit": "cells/mcL",
+                "range": "4,500 - 11,000"
+            }
         }
     }
-    }
-
     """
 
-    test_order = models.ForeignKey( 
+    test_order = models.ForeignKey(
         LabTestOrder, on_delete=models.CASCADE, related_name="test_results"
     )
-    test_type = models.ForeignKey(  # Link to specific test within the order
+    test_type = models.ForeignKey(
         LabTestType, on_delete=models.CASCADE, related_name="test_results"
     )
 
-    # JSON field for numeric results (e.g., Blood Test, Urine Test)
-    numeric_results = models.JSONField(null=True, blank=True)  
-    # Example: {"Hemoglobin": 13.5, "WBC": 7000, "pH": 6.0}
+    numeric_results = models.JSONField(null=True, blank=True)  # Stores numerical values for lab tests
+    boolean_results = models.JSONField(null=True, blank=True)  # Stores Positive/Negative test outcomes
+    comments = models.TextField(null=True, blank=True)  # Pathologist notes or imaging descriptions
+    result_file = models.FileField(upload_to="lab_results/", null=True, blank=True)  # Upload field for reports
 
-    # JSON field for Positive/Negative results (e.g., Urine Test parameters)
-    boolean_results = models.JSONField(null=True, blank=True)  
-    # Example: {"Glucose": "Negative", "Protein": "Positive"}
-
-    # Text-based results (e.g., pathologist's notes, imaging descriptions)
-    comments = models.TextField(null=True, blank=True)
-
-    # File upload for Imaging & Pathology Reports
-    result_file = models.FileField(upload_to='lab_results/', null=True, blank=True)
-
-    # Metadata
+    RESULT_STATUS_CHOICES = [
+        ("Pending", "Pending"),
+        ("Finalized", "Finalized"),
+        ("Review Required", "Review Required"),
+    ]
+    
     reviewed_by = models.ForeignKey(LabTechnician, on_delete=models.SET_NULL, null=True, blank=True)
     reviewed_at = models.DateTimeField(auto_now_add=True)
+    result_status = models.CharField(max_length=20, choices=RESULT_STATUS_CHOICES, default="Pending")
 
     def __str__(self):
         return f"Results for Order {self.test_order.id}"
-
-    # def save(self, *args, **kwargs):
-    #     """
-    #     Ensure JSON fields are properly formatted before saving.
-    #     """
-    #     if isinstance(self.numeric_results, dict):
-    #         self.numeric_results = json.dumps(self.numeric_results)
-    #     if isinstance(self.boolean_results, dict):
-    #         self.boolean_results = json.dumps(self.boolean_results)
-    #     super().save(*args, **kwargs)
-    
     
     
