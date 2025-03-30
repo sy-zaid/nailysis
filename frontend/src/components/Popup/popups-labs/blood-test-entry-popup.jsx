@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import styles from "../../CSS Files/LabTechnician.module.css";
 import Popup from "../Popup";
 import { useState } from "react";
+import { toast } from "react-toastify";
 import {
   formatTestEntries,
   bloodTestParameters,
@@ -66,6 +67,7 @@ const BloodTestEntryPopup = ({ onClose, testDetails, testOrderDetails }) => {
 
     const payload = {
       test_order_id: testOrderDetails.id,
+      test_type_id: testDetails.id,
       technician_id: curUser[0]?.user_id,
       test_entries: formData.test_entries,
       comments: formData.comments,
@@ -74,8 +76,16 @@ const BloodTestEntryPopup = ({ onClose, testDetails, testOrderDetails }) => {
     try {
       console.log("SENDING THIS TO SAVE RESUTLS", payload);
       const response = await saveTestResults(payload);
+      if (response.status === 201) {
+        toast.success("Successfully Created Test Result", {
+          className: "custom-toast",
+        });
+      }
     } catch (error) {
       console.log(error);
+      toast.error(`Error: ${error}`, {
+        className: "custom-toast",
+      });
     }
   };
   useEffect(() => {
@@ -185,7 +195,7 @@ const BloodTestEntryPopup = ({ onClose, testDetails, testOrderDetails }) => {
               ></i>{" "}
               Test Result Entry
             </h3>
-            {/* // Inside your component: */}
+            {/* // Inside component: */}
             {testEntries.map((entry, index) => (
               <div key={index} className={styles.testParamFormGroup}>
                 <div>
@@ -219,6 +229,7 @@ const BloodTestEntryPopup = ({ onClose, testDetails, testOrderDetails }) => {
                   <input
                     type="text"
                     placeholder="Enter result"
+                    required
                     value={entry.result}
                     onChange={(e) =>
                       handleResultChange(setTestEntries, index, e.target.value)
@@ -329,7 +340,7 @@ const BloodTestEntryPopup = ({ onClose, testDetails, testOrderDetails }) => {
                   }}
                 >
                   {"License Number: "}
-                  {formData.license_number}
+                  {curUser[0].lab_technician?.license_number}
                 </p>
               </div>
               <div>
