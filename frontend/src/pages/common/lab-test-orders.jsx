@@ -211,7 +211,6 @@ const TestOrders = () => {
                     <td data-label="Price">
                       {row.lab_technician_appointment?.fee}
                     </td>
-
                     <td
                       data-label="Status"
                       className={getStatusClass(row.test_status, styles)}
@@ -249,14 +248,16 @@ const TestOrders = () => {
                       {menuOpen === row.id && (
                         <div ref={actionMenuRef} className={styles.menu}>
                           <ul>
-                            <li
-                              onClick={() =>
-                                handleActionClick("Process Test Order", row)
-                              }
-                            >
-                              <i className="fa-solid fa-repeat"></i> Process
-                              Test Order
-                            </li>
+                            {row.lab_technician_appointment.status === "Completed" && (
+                              <li
+                                onClick={() =>
+                                  handleActionClick("Process Test Order", row)
+                                }
+                              >
+                                <i className="fa-solid fa-repeat"></i> Process
+                                Test Order
+                              </li>
+                            )}
                             <li
                               onClick={() =>
                                 handleActionClick("Edit Details", row)

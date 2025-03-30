@@ -2,7 +2,7 @@ import React from "react";
 import styles from "./select-test-order-popup.module.css";
 import Popup from "../Popup";
 import { useState, useEffect } from "react";
-import { convertDjangoDateTime } from "../../../utils/utils";
+import { calculateAge, convertDjangoDateTime } from "../../../utils/utils";
 import BloodTestEntryPopup from "./blood-test-entry-popup";
 import UrineTestEntryPopup from "./urine-test-entry-popup";
 import { finalizeTestOrder, getTestResults } from "../../../api/labsApi";
@@ -13,7 +13,7 @@ const PopupSelectTestOrder = ({ onClose, testOrderDetails }) => {
   const [popupContent, setPopupContent] = useState(null);
   const [showInnerPopup, setShowInnerPopup] = useState(false);
   const [completedTests, setCompletedTests] = useState([]);
-
+  console.log("TEST ORDER DETAILSSSS", testOrderDetails);
   useEffect(() => {
     const fetchTestResults = async () => {
       try {
@@ -33,8 +33,9 @@ const PopupSelectTestOrder = ({ onClose, testOrderDetails }) => {
     fetchTestResults();
   }, [testOrderDetails?.id]);
 
-  const checkExistingResults = (testTypeId, testResults) => {
-    return testResults.some((test) => test.id === testTypeId);
+  const getTestStatus = (testTypeId, testResults) => {
+    const test = testResults.find((t) => t.id === testTypeId);
+    return test ? test.result_status || "Complet" : "Pendi"; // Default to "Pending" if not found
   };
 
   const test_categories = {
@@ -165,7 +166,9 @@ const PopupSelectTestOrder = ({ onClose, testOrderDetails }) => {
               {" "}
               <i className="fa-solid fa-circle-notch"></i> Status:{" "}
             </span>
-            <span className={getStatusClass("Pending")}>Pending</span>
+            <span className={getStatusClass(testOrderDetails.test_status)}>
+              {testOrderDetails.test_status}
+            </span>
             <span className={styles.key} style={{ margin: "0 0 0 50px" }}>
               {" "}
               <i className="fa-solid fa-location-dot"></i> Location:{" "}
@@ -174,7 +177,7 @@ const PopupSelectTestOrder = ({ onClose, testOrderDetails }) => {
               Lifeline Hospital, North Nazimabad
             </span>
           </p>
-
+          {/* Patient Information */}
           <div className={styles.formSection}>
             <h3>
               <i
@@ -186,33 +189,62 @@ const PopupSelectTestOrder = ({ onClose, testOrderDetails }) => {
             <div className={styles.newFormGroup}>
               <div>
                 <label>Patient ID</label>
-                <p className={styles.subHeading}>123456</p>
+                <p className={styles.subHeading}>
+                  {
+                    testOrderDetails.lab_technician_appointment?.patient.user
+                      ?.user_id
+                  }
+                </p>
               </div>
               <div>
                 <label>Patient Name</label>
-                <p className={styles.subHeading}>Mr. John Doe</p>
+                <p className={styles.subHeading}>
+                  {
+                    testOrderDetails.lab_technician_appointment?.patient.user
+                      ?.first_name
+                  }{" "}
+                  {
+                    testOrderDetails.lab_technician_appointment?.patient.user
+                      ?.last_name
+                  }
+                </p>
               </div>
               <div>
                 <label>Age</label>
-                <p className={styles.subHeading}>32</p>
+                <p className={styles.subHeading}>
+                  {calculateAge(
+                    testOrderDetails.lab_technician_appointment?.patient
+                      .date_of_birth
+                  )}
+                </p>
               </div>
               <div>
                 <label>Gender</label>
-                <p className={styles.subHeading}>Male</p>
+                <p className={styles.subHeading}>
+                  {testOrderDetails.lab_technician_appointment?.patient?.gender}
+                </p>
               </div>
               <div>
                 <label>Phone Number</label>
-                <p className={styles.subHeading}>+92 12345678</p>
+                <p className={styles.subHeading}>
+                  {testOrderDetails.lab_technician_appointment?.patient?.user
+                    ?.phone || "N/A"}
+                </p>
               </div>
 
               <div>
                 <label>Email Address</label>
-                <p className={styles.subHeading}>patient@gmail.com</p>
+                <p className={styles.subHeading}>
+                  {
+                    testOrderDetails.lab_technician_appointment?.patient?.user
+                      ?.email
+                  }
+                </p>
               </div>
             </div>
           </div>
-
           <hr />
+          {/* Appointment Details */}
           <div className={styles.formSection}>
             <h3>
               <i
@@ -224,7 +256,10 @@ const PopupSelectTestOrder = ({ onClose, testOrderDetails }) => {
             <div className={styles.newFormGroup}>
               <div>
                 <label>Specialization</label>
-                <p className={styles.subHeading}>Technician</p>
+                <p className={styles.subHeading}>
+                  {testOrderDetails.lab_technician_appointment
+                    ?.technician_specialization || "Technician"}
+                </p>
               </div>
               <div>
                 <label>Technician Name</label>
@@ -245,7 +280,6 @@ const PopupSelectTestOrder = ({ onClose, testOrderDetails }) => {
               </div>
             </div>
           </div>
-
           <div className={styles.commentsFormSection}>
             <h3
               style={{ color: "#737070", marginLeft: "25px", fontSize: "16px" }}
@@ -260,6 +294,7 @@ const PopupSelectTestOrder = ({ onClose, testOrderDetails }) => {
               </div>
             </div>
           </div>
+          {/* Requested Test Details */}
           <div className={styles.formSection}>
             <h3>
               <i
@@ -269,34 +304,60 @@ const PopupSelectTestOrder = ({ onClose, testOrderDetails }) => {
               Requested Test Details
             </h3>
             <div style={{ marginLeft: "25px" }}>
-              {testOrderDetails?.test_types?.map((test, index) => (
-                <div key={test.id} className={styles.testType}>
-                  <span style={{ marginLeft: "25px" }}>
-                    {test.name} ({test.category})
-                  </span>
-                  <span className={styles.testTypeBorder}></span>
-                  {checkExistingResults(test.id, completedTests) ? (
-                    <>
-                      <p>Completed</p>
-                      <button className={styles.addButton}>Edit Record</button>
-                    </>
-                  ) : (
-                    <button
-                      className={styles.addButton}
-                      style={{ marginRight: "45px" }}
-                      onClick={() => setInnerPopup(test)}
-                    >
-                      Add Record
-                    </button>
-                  )}
-                </div>
-              ))}
+              {testOrderDetails?.test_types?.map((test, index) => {
+                const testStatus = getTestStatus(test.id, completedTests);
+
+                return (
+                  <div key={test.id} className={styles.testType}>
+                    <span style={{ marginLeft: "25px" }}>
+                      {test.name} ({test.category})
+                    </span>
+                    <span className={styles.testTypeBorder}></span>
+
+                    {testStatus === "Completed" ? (
+                      <>
+                        <p style={{ color: "green", fontWeight: "bold" }}>
+                          {testStatus}
+                        </p>
+                        <button className={styles.addButton}>
+                          Edit Record
+                        </button>
+                      </>
+                    ) : testStatus === "In Progress" ? (
+                      <>
+                        <p style={{ color: "orange", fontWeight: "bold" }}>
+                          {testStatus}
+                        </p>
+                        <button
+                          className={styles.addButton}
+                          style={{ marginRight: "45px" }}
+                          onClick={() => setInnerPopup(test)}
+                        >
+                          Update Record
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <p style={{ color: "red", fontWeight: "bold" }}>
+                          {testStatus}
+                        </p>
+                        <button
+                          className={styles.addButton}
+                          style={{ marginRight: "45px" }}
+                          onClick={() => setInnerPopup(test)}
+                        >
+                          Add Record
+                        </button>
+                      </>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
-
+          ;
           <br />
           <hr />
-
           <div className={styles.newActions}>
             <button
               className={styles.cancelButton}

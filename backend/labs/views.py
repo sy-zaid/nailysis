@@ -5,6 +5,9 @@ from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied
+from django.template.loader import render_to_string
+from django.http import HttpResponse
+from weasyprint import HTML
 
 from .models import LabTestType,LabTestOrder,LabTestResult
 from .serializers import LabTestTypeSerializer,LabTestOrderSerializer,LabTestResultSerializer
@@ -166,3 +169,30 @@ class LabTestResultModelViewSet(viewsets.ModelViewSet):
 
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    
+    @action(detail=True, methods=["get"], url_path="view_blood_report")
+    def view_lab_report_html(self, request, pk=None):
+        """
+        View the blood test report as an HTML page before generating the PDF.
+        """
+        lab_test_result = get_object_or_404(LabTestResult, pk=pk)
+
+        return render(request, 'labs/blood-test-report.html', {'lab_test_result': lab_test_result})
+
+
+    @action(detail=True, methods=["get"], url_path="generate_blood_report")
+    def generate_lab_report_pdf(self, request, pk=None):
+        """Generates a PDF report for a specific LabTestResult (by ID)."""
+        lab_test_result = get_object_or_404(LabTestResult, pk=pk)
+
+        # Render the template
+        html_content = render_to_string('labs/blood-test-report.html', {'lab_test_result': lab_test_result})
+
+        # Convert HTML to PDF
+        pdf_file = HTML(string=html_content).write_pdf()
+
+        # Return the PDF as a response
+        response = HttpResponse(pdf_file, content_type="application/pdf")
+        response["Content-Disposition"] = f'attachment; filename="Lab_Report_{pk}.pdf"'
+        return response
