@@ -104,7 +104,7 @@
   border-bottom: 1px solid #E5E7EB;
   white-space: nowrap;
   border: none;
-}
+} 
 
 .table th:first-child {
   border-top-left-radius: 8px;
@@ -141,29 +141,48 @@
   background-color: #F3F4F6;
 }
 
+/* Table More Options */
+.moreActionsBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.moreActionsIcon {
+  width: 20px;
+  height: 20px;
+}
+
 .menu {
   position: absolute;
-  right: 24px;
   background-color: white;
+  border: 1px solid #ddd;
   border-radius: 8px;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  z-index: 10;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  top: 100%; /* Adjust the positioning as needed */
+  right: 0;
+  min-width: 150px;
+  max-width: 220px;
 }
 
 .menu ul {
-  list-style: none;
+  list-style-type: none;
   margin: 0;
-  padding: 4px 0;
+  padding: 10px;
 }
 
-.menu li {
-  padding: 8px 16px;
-  cursor: pointer;
-  color: #374151;
+.menu ul li {
+  padding: 8px;
+  cursor: pointer; 
 }
 
-.menu li:hover {
-  background-color: #F3F4F6;
+.menu ul li:hover {
+  background-color: #f0f0f0;
+}
+
+.menu ul li i {
+    margin-right: 8px;
+    cursor: pointer; 
 }
 
 /* Add responsiveness */

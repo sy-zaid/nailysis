@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import styles from "../common/all-pages-styles.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import AppointmentDetailsPopup from "../../components/Popup/popups-doctor-appointments/doctor-appointment-details-popup";
@@ -9,7 +9,10 @@ import CheckinDoctorAppointmentPopup from "../../components/Popup/popups-doctor-
 import PopupManageSlotsDoctor from "../../components/Popup/popups-doctor-appointments/manage-slots-doctor-popup";
 
 // UTILS.JS FUNCTIONS
-import { getStatusClass } from "../../utils/utils";
+import { 
+  getStatusClass, 
+  toggleActionMenu,
+} from "../../utils/utils";
 
 const AppointmentDoctor = () => {
   const navigate = useNavigate();
@@ -18,6 +21,10 @@ const AppointmentDoctor = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [popupContent, setPopupContent] = useState(null); // State to track which popup to show
   const [activeButton, setActiveButton] = useState(0); 
+  const [menuOpen, setMenuOpen] = useState(null);
+  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
+
+  
   useEffect(() => {
     if (!token) {
       console.log("No token found, Redirecting to login");
@@ -60,13 +67,6 @@ const AppointmentDoctor = () => {
     
   };
 
-  const [menuOpen, setMenuOpen] = useState(null);
-
-  // Function to toggle the menu for a specific appointment
-  const toggleActionMenu = (appointmentId) => {
-    setMenuOpen(menuOpen === appointmentId ? null : appointmentId);
-  };
-
   // Handle the action when an item is clicked in the menu
   const handleActionClick = (action, appointmentId) => {
     console.log(`Action: ${action} on Appointment ID: ${appointmentId}`);
@@ -96,6 +96,22 @@ const AppointmentDoctor = () => {
     }
     // Add logic for other actions like 'Edit' and 'Reschedule' if needed
   };
+
+1// Close the action menu when clicking outside of it
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setMenuOpen(null);
+      }
+    };
+  
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [menuOpen]);
 
   return (
     <div className={styles.pageContainer}>
@@ -184,7 +200,6 @@ const AppointmentDoctor = () => {
                   {appointments.map((row, index) => (
                     <tr
                       key={row.appointment_id}
-                      style={{ borderBottom: "1px solid #ddd" }}
                     >
                       <td>{index + 1}</td>
                       <td>{row.appointment_id}</td>
@@ -200,9 +215,10 @@ const AppointmentDoctor = () => {
                       </td>
                       <td className={getStatusClass(row.status,styles)}>{row.status}</td>
                       <td>{row.notes || "No additional notes"}</td>
+                      
                       <td>
                         <button
-                          onClick={() => toggleActionMenu(row.appointment_id)}
+                          onClick={(event) => toggleActionMenu(row.appointment_id, menuOpen, setMenuOpen, setMenuPosition, event)}
                           className={styles.moreActionsBtn}
                         >
                           <img
@@ -211,8 +227,16 @@ const AppointmentDoctor = () => {
                             className={styles.moreActionsIcon}
                           />
                         </button>
-                        {menuOpen === row.appointment_id && (
-                          <div className={styles.menu}>
+                        {menuOpen && (
+                          <div
+                            ref={menuRef} id={`menu-${row.id}`}
+                            className={styles.menu}
+                            style={{
+                              top: `${menuPosition.top}px`,
+                              left: `${menuPosition.left}px`,
+                              position: "absolute",
+                            }}
+                          >
                             <ul>
                               <li
                                 onClick={() => {
@@ -232,6 +256,7 @@ const AppointmentDoctor = () => {
                           </div>
                         )}
                       </td>
+
                     </tr>
                   ))}
                 </tbody>

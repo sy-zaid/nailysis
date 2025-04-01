@@ -7,6 +7,26 @@ import { getStatusClass } from "../../utils/utils";
 
 const PopupEditProfile = ({ onClose }) => {
     const [popupTrigger, setPopupTrigger] = useState(true);
+    const [profileImage, setProfileImage] = useState("/patient.png"); // Default profile image
+    const [bannerImage, setBannerImage] = useState("/background.png"); // Default banner image
+    
+    const handleImageChange = (event) => {
+      const file = event.target.files[0];
+      if (file) {
+        const imageUrl = URL.createObjectURL(file);
+        setProfileImage(imageUrl); // Update profile picture
+      }
+    };
+    
+    const handleBannerImageChange = (event) => {
+      const file = event.target.files[0];
+      if (file) {
+        const imageUrl = URL.createObjectURL(file);
+        setBannerImage(imageUrl); // Update banner image
+      }
+    };
+    
+
     
     return (
         
@@ -28,26 +48,41 @@ const PopupEditProfile = ({ onClose }) => {
         <div className={styles.popupBottom}>
 
             <div className={otherStyles.profileSection}>
-              <img src="/background.png" 
-                  alt="patient picture"
-                  className={otherStyles.backgroundPicture} 
+              <input
+                type="file"
+                accept="image/*"
+                style={{ display: "none" }}
+                id="bannerPicInput"
+                onChange={(e) => handleBannerImageChange(e)}
               />
-
-              <i className={`fa-solid fa-pen ${otherStyles.editBanner}`}></i>
-
+              <img 
+                src={bannerImage} 
+                alt="banner picture"
+                className={otherStyles.backgroundPicture} 
+              />
+              <i className={`fa-solid fa-pen ${otherStyles.editBanner}`} onClick={() => document.getElementById("bannerPicInput").click()}></i>
               <p className={`${styles.subHeading} ${otherStyles.email}`}>patient0@example.com</p>
-
               <div className={otherStyles.profilePictureWrapper}>
-                <img src="/patient.png"
-                    alt="patient picture"
-                    className={otherStyles.profilePicture} 
+                {/* Hidden file input for profile image */}
+                <input
+                  type="file"
+                  accept="image/*"
+                  style={{ display: "none" }}
+                  id="profilePicInput"
+                  onChange={(e) => handleImageChange(e)}
                 />
-                  <div className={otherStyles.profileIcons}>
-                    <i className="fa-solid fa-pen"></i>
-                    <i class="fa-solid fa-trash"></i>
-                  </div>
+                <img 
+                  src={profileImage} 
+                  alt="patient picture"
+                  className={otherStyles.profilePicture} 
+                />
+                <div className={otherStyles.profileIcons}>
+                  <i className="fa-solid fa-pen" onClick={() => document.getElementById("profilePicInput").click()}></i>
+                  <i className="fa-solid fa-trash" onClick={() => setProfileImage("/patient.png")}></i> 
+                </div>
               </div>
             </div>
+
 
             <hr />
 

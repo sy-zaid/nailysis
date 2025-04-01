@@ -1,4 +1,4 @@
-import React, { act, useEffect, useState } from "react";
+import React, { act, useEffect, useState, useRef } from "react";
 import styles from "../common/all-pages-styles.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import PopupAppointmentBook from "../../components/Popup/popups-doctor-appointments/doctor-appointment-book-popup";
@@ -8,7 +8,11 @@ import DeleteAppointmentPopup from "../../components/Popup/popups-doctor-appoint
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import api from "../../api";
-import { getStatusClass } from "../../utils/utils";  
+// UTILS.JS FUNCTIONS
+import { 
+  getStatusClass, 
+  toggleActionMenu,
+} from "../../utils/utils";
 
 const AppointmentClinicAdmin = ( onClose ) => {
   const navigate = useNavigate(); 
@@ -17,6 +21,8 @@ const AppointmentClinicAdmin = ( onClose ) => {
   const [popupContent, setPopupContent] = useState();
   const [showPopup, setShowPopup] = useState(false);
   const [activeButton, setActiveButton] = useState(0); 
+  const [menuOpen, setMenuOpen] = useState(null);
+  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
   
   const fetchAppointments = async () => {
     try {
@@ -56,10 +62,6 @@ const AppointmentClinicAdmin = ( onClose ) => {
     setShowPopup(false); // Hide the popup when closing
   };
 
-  // Function to toggle the menu for a specific appointment
-  const toggleActionMenu = (appointmentId) => {
-    setMenuOpen(menuOpen === appointmentId ? null : appointmentId);
-  };
 
   // Handle the action when an item is clicked in the menu
   const handleActionClick = (action, appointmentId) => {
@@ -119,7 +121,25 @@ const AppointmentClinicAdmin = ( onClose ) => {
 
     // Add logic for other actions like 'Edit' and 'Reschedule' if needed
   };
-  const [menuOpen, setMenuOpen] = useState(null);
+
+  // Close the action menu when clicking outside of it
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setMenuOpen(null);
+      }
+    };
+  
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [menuOpen]);
+  
+
+
   return (
     <div className={styles.pageContainer}>
       {showPopup && popupContent}
@@ -243,8 +263,8 @@ const AppointmentClinicAdmin = ( onClose ) => {
                       {/* Additional Notes */}
                       <td>
                         <button
-                          onClick={() => toggleActionMenu(row.appointment_id)}
-                          className={styles.moreActionsBtn}
+                        onClick={(event) => toggleActionMenu(row.appointment_id, menuOpen, setMenuOpen, setMenuPosition, event)}
+                        className={styles.moreActionsBtn}
                         >
                           <img
                             src="/icon-three-dots.png"
@@ -252,27 +272,36 @@ const AppointmentClinicAdmin = ( onClose ) => {
                             className={styles.moreActionsIcon}
                           />
                         </button>
-                        {menuOpen === row.appointment_id && (
-                          <div className={styles.menu}>
+
+                        {menuOpen === row.appointment_id &&  (
+                          <div
+                            ref={menuRef} id={`menu-${row.id}`}
+                            className={styles.menu}
+                            style={{
+                              top: `${menuPosition.top}px`,
+                              left: `${menuPosition.left}px`,
+                              position: "absolute",
+                            }}
+                          >
                             <ul>
                               <li
                                 onClick={() => {
                                   handleActionClick("Cancel", row.appointment_id);
                                 }}
                               >
-                                Cancel Appointment
+                                <i className="fa-solid fa-rectangle-xmark"></i>Cancel Appointment
                               </li>
                               <li
                                 onClick={() =>
                                   handleActionClick("Reschedule", row)
                                 }
                               >
-                                Edit / Reschedule Appointment
+                                <i className="fa-solid fa-pen"></i>Edit / Reschedule Appointment
                               </li>
                               <li
                                 onClick={() => handleActionClick("Delete", row)}
                               >
-                                Delete Appointment
+                                <i className="fa-solid fa-trash"></i>Delete Appointment
                               </li>
                             </ul>
                           </div>

@@ -362,8 +362,8 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
               
               {/* Links (hidden by default, shown on hover) */}
               <div className={styles.hiddenLinks}>
-                <a className={styles.profileLink} onClick={() => handleActionClick("Edit Profile")}>Edit Profile</a>
-                <a className={styles.profileLink}>Logout</a>
+                <span className={styles.editProfileLink}><i class="fa-solid fa-pen"></i><a onClick={() => handleActionClick("Edit Profile")}>Edit Profile</a></span>
+                <span className={styles.logoutLink}><i class="fa-solid fa-arrow-right-from-bracket"></i><a>Logout</a></span>
               </div>
               {/* </div> */}
             </div>

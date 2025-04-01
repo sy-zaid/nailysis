@@ -1,5 +1,5 @@
 //  Imports
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styles from "./all-pages-styles.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import axios from "axios";
@@ -36,7 +36,8 @@ import useCurrentUserData from "../../useCurrentUserData";
  * @component
  */
 const ElectronicHealthRecord = () => {
-  const [menuOpen, setMenuOpen] = useState(null); // Track open action menu
+  const [menuOpen, setMenuOpen] = useState(null);
+  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
   const [popupContent, setPopupContent] = useState(); // Store popup content
   const [showPopup, setShowPopup] = useState(false); // Track popup visibility
   const [records, setRecords] = useState([]); // Store EHR records
@@ -207,6 +208,22 @@ const ElectronicHealthRecord = () => {
     }
   }, [curUser]); // Re-run when `curUser` updates
 
+  // Close the action menu when clicking outside of it
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setMenuOpen(null);
+      }
+    };
+  
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [menuOpen]);
+
 
   /**
    * Handles actions on EHR records (Edit, Delete, Add New).
@@ -216,7 +233,7 @@ const ElectronicHealthRecord = () => {
    */
   const handleActionClick = (action, recordDetails) => {
     console.log(`Performing ${action} on`, recordDetails);
-    setMenuOpen(null, menuOpen, setMenuOpen); // Close action menu
+    setMenuOpen(null); // Close action menu
 
     if (action === "Edit") {
       setPopupContent(
@@ -397,27 +414,46 @@ const ElectronicHealthRecord = () => {
                       <td>{record.diagnoses}</td>
                       <td>{record.last_updated}</td>
 
-                      {/* Action Menu */}
-                      {curUserRole === "doctor" && (
+                      {/* ------------------------- ACTION BUTTONS -------------------------*/}
+                      
+                      {curUserRole === "doctor" && ( 
                         <td>
-                          <button
-                            onClick={() => toggleActionMenu(record.id, menuOpen, setMenuOpen)}
-                          >
-                            ⋮
-                          </button>
+                        <button
+                          onClick={(event) => toggleActionMenu(record.id, menuOpen, setMenuOpen, setMenuPosition, event)}
+                          className={styles.moreActionsBtn}
+                        >
+                          <img src="/icon-three-dots.png" alt="More Actions" className={styles.moreActionsIcon} />
+                        </button>
 
-                          {menuOpen === record.id && (
-                            <div className={styles.menu}>
-                              <ul>
-                                <li onClick={() => handleActionClick("Edit", record)}>Edit</li>
-                                <li onClick={() => handleActionClick("Delete", record)}>Delete</li>
-                                {!record.added_to_medical_history && (
-                                  <li onClick={() => handleActionClick("AddToMH", record.id)}>Add to Medical History</li>
-                                )}
-                              </ul>
-                            </div>
-                          )}
-                        </td>  
+                        {menuOpen && (
+                          <div
+                            ref={menuRef} id={`menu-${record.id}`}
+                            className={styles.menu}
+                            style={{
+                              top: `${menuPosition.top}px`,
+                              left: `${menuPosition.left}px`,
+                              position: "absolute",
+                            }}
+                          >
+                            <ul>
+                              
+                                <li onClick={() => handleActionClick("Edit", record)}>
+                                  <i className="fa-solid fa-pen"></i>Edit
+                                </li>
+                                <li onClick={() => handleActionClick("Delete", record)}>
+                                  <i className="fa-solid fa-trash"></i>Delete
+                                </li>
+                                {/* {record.added_to_medical_history === false && ( */}
+                                <li onClick={() => handleActionClick("AddToMH", record.id)}>
+                                  <i className="fa-solid fa-plus"></i>Add to Medical History
+                                </li>
+                                {/* )} */}
+         
+                            </ul>
+                          </div>
+                        )}
+
+                        </td>
                       )}
 
                     </tr>

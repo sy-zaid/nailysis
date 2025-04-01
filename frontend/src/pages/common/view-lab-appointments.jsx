@@ -36,6 +36,8 @@ const AppointmentTechnician = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [popupContent, setPopupContent] = useState(null); // State to track which popup to show
   const [menuOpen, setMenuOpen] = useState(null);
+  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
+
 
   // ----- IMPORTANT DATA
   const [appointments, setAppointments] = useState([]);
@@ -232,6 +234,24 @@ const AppointmentTechnician = () => {
   
     setFilteredAppointments(sortedData);
   }, [appointments, sortOption]);
+
+  // Close the action menu when clicking outside of it
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuOpen !== null) {
+        const menuElement = document.getElementById(`menu-${menuOpen}`);
+        if (!menuElement || !menuElement.contains(event.target)) {
+          setMenuOpen(null);
+        }
+      } 
+    };
+  
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [menuOpen]);
+  
   
 
   return (
@@ -433,78 +453,49 @@ const AppointmentTechnician = () => {
                       {/* ------------------------- ACTION BUTTONS -------------------------*/}
                       
                       <td>
-                        <button
-                          onClick={() =>
-                            toggleActionMenu(
-                              row.appointment_id,
-                              menuOpen,
-                              setMenuOpen
-                            )
-                          }
-                          className={styles.moreActionsBtn}
-                        >
-                          <img
-                            src="/icon-three-dots.png"
-                            alt="More Actions"
-                            className={styles.moreActionsIcon}
-                          />
-                        </button>
+                      <button
+                        onClick={(event) => toggleActionMenu(row.appointment_id, menuOpen, setMenuOpen, setMenuPosition, event)}
+                        className={styles.moreActionsBtn}
+                      >
+                        <img src="/icon-three-dots.png" alt="More Actions" className={styles.moreActionsIcon} />
+                      </button>
 
                       {menuOpen === row.appointment_id && (
-                        <div className={styles.menu}>
+                        <div
+                          id={`menu-${row.appointment_id}`}
+                          className={styles.menu}
+                          style={{
+                            top: `${menuPosition.top}px`,
+                            left: `${menuPosition.left}px`,
+                            position: "absolute",
+                          }}
+                        >
                           <ul>
-                            {curUser[0].role === "lab_technician" &&
-                              row.status !== "Completed" && (
-                                <li
-                                  onClick={() => {
-                                    handleActionClick(
-                                      "Action Start Appointment",
-                                      row
-                                    );
-                                  }}
-                                >
-                                  Start Appointment
-                                </li>
-                              )}
+                            {curUser[0].role === "lab_technician" && row.status !== "Completed" && (
+                              <li onClick={() => handleActionClick("Action Start Appointment", row)}>
+                                <i className="fa-solid fa-plus"></i>Start Appointment
+                              </li>
+                            )}
+                            {(curUser[0].role === "patient" || curUser[0].role === "lab_technician") && (
+                              <li onClick={() => handleActionClick("Button Cancellation Request", row.appointment_id)}>
+                                <i className="fa-solid fa-ban"></i>Request Cancellation
+                              </li>
+                            )}
+                            {curUser[0].role === "lab_admin" && (
+                              <li onClick={() => handleActionClick("Reschedule", row)}>
+                                <i className="fa-solid fa-calendar-days"></i>Reschedule
+                              </li>
+                            )}
+                            {curUser[0].role === "lab_admin" && (
+                              <li onClick={() => handleActionClick("Action Cancel Appointment", row.appointment_id)}>
+                                <i className="fa-solid fa-rectangle-xmark"></i>Cancel Appointment
+                              </li>
+                            )}
+                          </ul>
+                        </div>
+                      )}
 
-                              {(curUser[0].role === "patient" ||
-                                curUser[0].role === "lab_technician") && (
-                                <li
-                                  onClick={() => {
-                                    handleActionClick(
-                                      "Button Cancellation Request",
-                                      row.appointment_id
-                                    );
-                                  }}
-                                >
-                                  Request Cancellation
-                                </li>
-                              )}
-
-                              {curUser[0].role === "lab_admin" && (
-                                <li
-                                  onClick={() =>
-                                    handleActionClick("Reschedule", row)
-                                  }
-                                >
-                                  Reschedule
-                                </li>
-                              )}
-                              {curUser[0].role === "lab_admin" && (
-                                <li
-                                  onClick={() =>
-                                    handleActionClick(
-                                      "Action Cancel Appointment",
-                                      row.appointment_id
-                                    )
-                                  }
-                                >
-                                  Cancel Appointment
-                                </li>
-                              )}
-                            </ul>
-                          </div>
-                        )}
+                      
                       </td>
                     </tr>
                   ))}

@@ -4,7 +4,7 @@
   color: white; /* Change text color */
 }
   
-.pageContainer {
+.pageContainer { 
   display: flex;
   flex-direction: column;
   height: 100vh;
@@ -37,6 +37,7 @@
   padding: 20px;
   background-color: #ffffff;
   overflow-x: hidden;
+  margin-bottom: 50px;
 }
   
 .filters {
@@ -206,18 +207,68 @@
   background-color: #F9FAFB;
 }
 
-.resolved {
+
+/* ---------- Status Styles ---------- */
+
+.consulted {
   color: green;
+}
+
+.cancelled {
+  color: red;
+}
+
+.scheduled {
+  color: orange;
 }
 
 .inProgress {
   color: #007bff;
 }
 
-.pending {
-  color: orange;
+
+
+
+/* Table More Options */
+.moreActionsBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
 }
 
-.defaultColor {
-  color: #000;
+.moreActionsIcon {
+  width: 20px;
+  height: 20px;
+}
+
+.menu {
+  position: absolute;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  top: 100%; /* Adjust the positioning as needed */
+  right: 0;
+  min-width: 150px;
+  max-width: 220px;
+}
+
+.menu ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 10px;
+}
+
+.menu ul li {
+  padding: 8px;
+  cursor: pointer; 
+}
+
+.menu ul li:hover {
+  background-color: #f0f0f0;
+}
+
+.menu ul li i {
+    margin-right: 8px;
+    cursor: pointer; 
 }
