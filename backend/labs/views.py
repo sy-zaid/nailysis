@@ -46,8 +46,8 @@ class LabTestOrderModelViewSet(viewsets.ModelViewSet):
         
         return LabTestOrder.objects.all()
         
-    @action(detail=False, methods=["post"], url_path="submit_reports")
-    def submit_reports(self, request):
+    @action(detail=False, methods=["post"], url_path="submit_results")
+    def submit_results(self, request):
         """
         Submits lab test reports and updates test order status.
 
@@ -78,7 +78,59 @@ class LabTestOrderModelViewSet(viewsets.ModelViewSet):
             "message": "Some test results are missing!",
             "missing_tests": list(requested_test_ids - available_test_ids)
         }, status=400)
-        
+    
+    @action(detail=False, methods=["post"], url_path="finalize_test_order")
+    def finalize_test_order(self, request):
+        """
+        Finalizes a test order if all associated test results are submitted and marked as Finalized.
+        """
+        user = self.request.user
+        if user.role != "lab_admin":
+            return Response({"error": "Not authorized to finalize test orders"}, status=403)
+
+        test_order_id = request.data.get("test_order_id")
+        test_order = get_object_or_404(LabTestOrder, id=test_order_id)
+
+        # Get the requested test types for this order
+        requested_test_ids = set(test_order.test_types.values_list("id", flat=True))
+
+        # Get the available test results for this order (force fresh fetch)
+        available_results = LabTestResult.objects.filter(test_order=test_order, test_type_id__in=requested_test_ids).all()
+        available_test_ids = set(available_results.values_list("test_type_id", flat=True))
+
+        # Debugging prints
+        print(f"Test Order ID: {test_order_id}")
+        print(f"Requested Test IDs: {requested_test_ids}")
+        print(f"Available Test IDs: {available_test_ids}")
+        print(f"Missing Test IDs: {requested_test_ids - available_test_ids}")
+
+        # If some tests are missing, return missing test IDs
+        if not requested_test_ids.issubset(available_test_ids):
+            return Response({
+                "message": "Some test results are missing!",
+                "missing_tests": list(requested_test_ids - available_test_ids)
+            }, status=400)
+
+        # Force DB refresh
+        for result in available_results:
+            result.refresh_from_db()
+            print(f"Test ID: {result.test_type_id}, Status: {result.result_status}")
+
+        if not_finalized_tests := [
+            result.test_type_id
+            for result in available_results
+            if result.result_status != "Finalized"
+        ]:
+            return Response({
+                "message": "Some test results are not finalized yet!",
+                "not_finalized_tests": not_finalized_tests
+            }, status=400)
+
+        # If all test results are finalized, update the test order status
+        test_order.update_status("Completed")
+        return Response({"message": "All test results finalized, order marked as completed!"}, status=200)
+
+       
 class LabTestResultModelViewSet(viewsets.ModelViewSet):
     """
     ViewSet for managing lab test results.
@@ -89,7 +141,7 @@ class LabTestResultModelViewSet(viewsets.ModelViewSet):
 
     queryset = LabTestResult.objects.all()
     serializer_class = LabTestResultSerializer
-    permission_classes = [permissions.AllowAny]  # Adjust permissions as needed
+    permission_classes = [permissions.IsAuthenticated]  # Adjust permissions as needed
 
     def get_queryset(self):
         """
@@ -106,6 +158,10 @@ class LabTestResultModelViewSet(viewsets.ModelViewSet):
         if test_order_id:
             return LabTestResult.objects.filter(test_order_id=test_order_id)
 
+        test_id = self.request.query_params.get("test_id")
+        if test_id:
+            return LabTestResult.objects.filter(id=test_id)
+        
         return LabTestResult.objects.all()
 
     @action(detail=False, methods=["post"], url_path="save_results")
@@ -196,3 +252,37 @@ class LabTestResultModelViewSet(viewsets.ModelViewSet):
         response = HttpResponse(pdf_file, content_type="application/pdf")
         response["Content-Disposition"] = f'attachment; filename="Lab_Report_{pk}.pdf"'
         return response
+    
+    @action(detail=True, methods=["post"], url_path="add_comment")
+    def submit_admin_comments(self, request, pk=None):
+        user = self.request.user
+        admin_comment = request.data.get("admin_comment")
+        print(admin_comment)
+        if user.role != "lab_admin":
+            return Response({"error": "Not authorized to comment on a lab report"}, status=status.HTTP_403_FORBIDDEN)
+
+        try:
+            test_result = LabTestResult.objects.get(pk=pk)
+            if test_result.is_marked_finalized():
+                return Response({"error":"Lab test result already finalized and cannot be modified"},status=status.HTTP_400_BAD_REQUEST)
+            test_result.add_admin_comment(admin_comment)
+            return Response({"message": "Comment added successfully"}, status=status.HTTP_200_OK)
+        except LabTestResult.DoesNotExist:
+            return Response({"error": "Lab test result not found"}, status=status.HTTP_404_NOT_FOUND)
+       
+    @action(detail=True, methods=["post"], url_path="mark_finalized")
+    def mark_finalized(self, request, pk=None):
+        user = self.request.user
+        print(f"Received mark_finalized request for test ID: {pk}")  # Debugging print
+        if user.role != "lab_admin":
+            return Response({"error": "Not authorized to mark a lab report as finalized"}, status=status.HTTP_403_FORBIDDEN)
+
+        try:
+            test_result = LabTestResult.objects.get(pk=pk)
+            if test_result.is_marked_finalized():
+                return Response({"error":"Lab test result already finalized and cannot be modified"},status=status.HTTP_400_BAD_REQUEST)
+            test_result.mark_finalized()
+            return Response({"message": "Marked finalized successfully"}, status=status.HTTP_200_OK)
+        except LabTestResult.DoesNotExist:
+            return Response({"error": "Lab test result not found"}, status=status.HTTP_404_NOT_FOUND)
+         

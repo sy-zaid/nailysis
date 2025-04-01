@@ -3,6 +3,7 @@ import styles from "../../components/CSS Files/LabTechnician.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import Header from "../../components/Dashboard/Header/Header";
 import PopupSelectTestOrder from "../../components/Popup/popups-labs/select-test-order-popup";
+import PopupViewTestOrder from "../../components/Popup/popups-labs/view-test-order-popup";
 import { getTestOrders } from "../../api/labsApi";
 import { getStatusClass } from "../../utils/utils";
 
@@ -51,6 +52,14 @@ const TestOrders = () => {
     if (action === "Process Test Order") {
       setPopupContent(
         <PopupSelectTestOrder
+          onClose={() => setShowPopup(false)}
+          testOrderDetails={testOrderDetails}
+        />
+      );
+      setShowPopup(true);
+    } else if (action === "View Test Order") {
+      setPopupContent(
+        <PopupViewTestOrder
           onClose={() => setShowPopup(false)}
           testOrderDetails={testOrderDetails}
         />
@@ -248,7 +257,8 @@ const TestOrders = () => {
                       {menuOpen === row.id && (
                         <div ref={actionMenuRef} className={styles.menu}>
                           <ul>
-                            {row.lab_technician_appointment.status === "Completed" && (
+                            {row.lab_technician_appointment.status ===
+                              "Completed" && (
                               <li
                                 onClick={() =>
                                   handleActionClick("Process Test Order", row)
@@ -265,15 +275,19 @@ const TestOrders = () => {
                             >
                               <i className="fa-solid fa-pen"></i> Edit Details
                             </li>
-                            <li
-                              onClick={() => handleActionClick("Delete", row)}
-                            >
-                              <i
-                                className="fa-regular fa-circle-xmark"
-                                style={{ color: "red" }}
-                              ></i>{" "}
-                              Delete
-                            </li>
+                            {curUser[0].role === "lab_admin" && (
+                              <li
+                                onClick={() =>
+                                  handleActionClick("View Test Order", row)
+                                }
+                              >
+                                <i
+                                  className="fa-regular fa-circle-xmark"
+                                  style={{ color: "red" }}
+                                ></i>{" "}
+                                View Order
+                              </li>
+                            )}
                             <li
                               onClick={() =>
                                 handleActionClick("Download as PDF", row)

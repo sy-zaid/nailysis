@@ -12,12 +12,32 @@ export const getTestResults = async (test_order_id) => {
   return axios.get(url, getHeaders());
 };
 
+export const getTestResultsById = async (test_id) => {
+  const url = `${API_URL}/api/test_results/?test_id=${test_id}`;
+  return axios.get(url, getHeaders());
+};
+
 export const saveTestResults = async (payload) => {
   const url = `${API_URL}/api/test_results/save_results/`;
   return axios.post(url, payload, getHeaders());
 };
 
-export const finalizeTestOrder = async (payload) => {
-  const url = `${API_URL}/api/test_orders/submit_reports/`;
+export const submitTestResults = async (payload) => {
+  const url = `${API_URL}/api/test_orders/submit_results/`;
   return axios.post(url, payload, getHeaders());
+};
+
+export const finalizeTestOrder = async (payload) => {
+  const url = `${API_URL}/api/test_orders/finalize_test_order/`;
+  return axios.post(url, payload, getHeaders());
+};
+
+export const saveAdminComment = async (reportId, payload) => {
+  const url = `${API_URL}/api/test_results/${reportId}/add_comment/`;
+  return axios.post(url, payload, getHeaders());
+};
+
+export const markResultFinalized = async (reportId) => {
+  const url = `${API_URL}/api/test_results/${reportId}/mark_finalized/`;
+  return axios.post(url, {}, getHeaders());
 };
