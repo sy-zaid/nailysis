@@ -8,36 +8,26 @@ import UrineTestEntryPopup from "./urine-test-entry-popup";
 import { submitTestResults, getTestResults } from "../../../api/labsApi";
 import { toast } from "react-toastify";
 
+/**
+ * PopupSelectTestOrder Component
+ *
+ * This component renders a popup for selecting and managing test orders.
+ * It fetches test results, updates the UI accordingly, and provides
+ * functionalities to submit finalized test reports.
+ *
+ * @param {Object} props - Component props.
+ * @param {Function} props.onClose - Function to close the popup.
+ * @param {Object} props.testOrderDetails - Details of the test order.
+ */
+
 const PopupSelectTestOrder = ({ onClose, testOrderDetails }) => {
+  // ----- POPUPS & NAVIGATION
   const [popupTrigger, setPopupTrigger] = useState(true);
   const [popupContent, setPopupContent] = useState(null);
   const [showInnerPopup, setShowInnerPopup] = useState(false);
   const [completedTests, setCompletedTests] = useState([]);
-  console.log("TEST ORDER DETAILSSSS", testOrderDetails);
-  useEffect(() => {
-    const fetchTestResults = async () => {
-      try {
-        const response = await getTestResults(testOrderDetails.id);
-        console.log("Fetched Test Results:", response.data);
-        const tests = response.data.map((test) => ({
-          id: test.test_type,
-          result_status: test.result_status,
-        }));
-        console.log("Fetched Test Results:", tests);
-        setCompletedTests(tests);
-      } catch (error) {
-        console.error("Error fetching test results:", error);
-      }
-    };
 
-    fetchTestResults();
-  }, [testOrderDetails?.id]);
-
-  const getTestStatus = (testTypeId, testResults) => {
-    const test = testResults.find((t) => t.id === testTypeId);
-    return test ? test.result_status || "Complet" : "Pendi"; // Default to "Pending" if not found
-  };
-
+  // ----- IMPORTANT DATA
   const test_categories = {
     "Blood Test": (testDetails, testOrderDetails) => (
       <BloodTestEntryPopup
@@ -69,33 +59,12 @@ const PopupSelectTestOrder = ({ onClose, testOrderDetails }) => {
       />
     ),
   };
-  // if (!selectreportTypePopup) return null;
-  console.log("GOT THIS TO PROCESS", testOrderDetails);
-  // Function to determine the CSS class based on status
-  const getStatusClass = (status) => {
-    switch (status) {
-      case "Completed":
-        return styles.consulted;
-      case "Cancelled":
-        return styles.cancelled;
-      case "Scheduled":
-        return styles.scheduled;
-      case "Pending":
-        return styles.scheduled;
-      case "Urgent":
-        return styles.cancelled;
-      default:
-        return {};
-    }
-  };
 
-  const setInnerPopup = (testDetails) => {
-    setPopupContent(
-      test_categories[testDetails.category](testDetails, testOrderDetails)
-    );
-    setShowInnerPopup(true);
-  };
-
+  // ----- HANDLERS
+  /**
+   * Handles finalizing and submitting test reports.
+   * Sends a request to submit test results and handles response messages.
+   */
   const handleFinalizeAndSubmit = async () => {
     const payload = { test_order_id: testOrderDetails.id };
 
@@ -134,6 +103,79 @@ const PopupSelectTestOrder = ({ onClose, testOrderDetails }) => {
       }
     }
   };
+
+  // ----- MAIN LOGIC FUNCTIONS
+  /**
+   * Retrieves the test status based on test type ID.
+   *
+   * @param {string} testTypeId - The test type identifier.
+   * @param {Array} testResults - List of test results.
+   * @returns {string} - The status of the test.
+   */
+  const getTestStatus = (testTypeId, testResults) => {
+    const test = testResults.find((t) => t.id === testTypeId);
+    return test ? test.result_status || "" : "Empty Results"; // Default to "Pending" if not found
+  };
+
+  console.log("GOT THIS TO PROCESS", testOrderDetails);
+
+  /**
+   * Determines the CSS class based on test status.
+   *
+   * @param {string} status - The test status.
+   * @returns {Object} - The corresponding CSS class.
+   */
+  const getStatusClass = (status) => {
+    switch (status) {
+      case "Completed":
+        return styles.consulted;
+      case "Cancelled":
+        return styles.cancelled;
+      case "Scheduled":
+        return styles.scheduled;
+      case "Pending":
+        return styles.scheduled;
+      case "Urgent":
+        return styles.cancelled;
+      default:
+        return {};
+    }
+  };
+
+  /**
+   * Sets and displays the inner popup based on test category.
+   *
+   * @param {Object} testDetails - Details of the selected test.
+   */
+  const setInnerPopup = (testDetails) => {
+    setPopupContent(
+      test_categories[testDetails.category](testDetails, testOrderDetails)
+    );
+    setShowInnerPopup(true);
+  };
+
+  // ----- USE EFFECTS
+  useEffect(() => {
+    /**
+     * Fetches test results for the given test order and updates state.
+     */
+    const fetchTestResults = async () => {
+      try {
+        const response = await getTestResults(testOrderDetails.id);
+        console.log("Fetched Test Results:", response.data);
+        const tests = response.data.map((test) => ({
+          id: test.test_type,
+          result_status: test.result_status,
+        }));
+        console.log("Fetched Test Results:", tests);
+        setCompletedTests(tests);
+      } catch (error) {
+        console.error("Error fetching test results:", error);
+      }
+    };
+
+    fetchTestResults();
+  }, [testOrderDetails?.id]);
 
   return (
     <Popup
@@ -314,7 +356,8 @@ const PopupSelectTestOrder = ({ onClose, testOrderDetails }) => {
                     </span>
                     <span className={styles.testTypeBorder}></span>
 
-                    {testStatus === "Completed" ? (
+                    {testStatus === "Review Required" ||
+                    testStatus === "Pending" ? (
                       <>
                         <p style={{ color: "green", fontWeight: "bold" }}>
                           {testStatus}
@@ -323,7 +366,7 @@ const PopupSelectTestOrder = ({ onClose, testOrderDetails }) => {
                           Edit Record
                         </button>
                       </>
-                    ) : testStatus === "In Progress" ? (
+                    ) : testStatus === "Finalized" ? (
                       <>
                         <p style={{ color: "orange", fontWeight: "bold" }}>
                           {testStatus}
@@ -333,13 +376,13 @@ const PopupSelectTestOrder = ({ onClose, testOrderDetails }) => {
                           style={{ marginRight: "45px" }}
                           onClick={() => setInnerPopup(test)}
                         >
-                          Update Record
+                          View Record
                         </button>
                       </>
                     ) : (
                       <>
                         <p style={{ color: "red", fontWeight: "bold" }}>
-                          {testStatus}
+                          Empty Results
                         </p>
                         <button
                           className={styles.addButton}

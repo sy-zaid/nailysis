@@ -70,7 +70,7 @@ class LabTestOrderModelViewSet(viewsets.ModelViewSet):
         requested_test_ids = set(test_order.test_types.values_list("id", flat=True))
         available_test_ids = set(LabTestResult.objects.filter(test_order=test_order).values_list("test_type_id", flat=True))
 
-        if requested_test_ids.issubset(available_test_ids):  
+        if requested_test_ids.issubset(available_test_ids): 
             test_order.update_status("In Progress")
             return Response({"message": "All test results submitted successfully!"}, status=200)
 
@@ -167,16 +167,11 @@ class LabTestResultModelViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["post"], url_path="save_results")
     def save_results(self, request):
         """
-        Saves a new lab test result.
+        Saves or updates a lab test result.
 
-        - Only lab technicians can create test results.
-        - Requires `test_order_id`, `test_type_id`, `technician_id`, and `test_entries`.
-        - Validates JSON format for `test_entries`.
-        - Associates the test result with the correct test order and technician.
-
-        Returns:
-        - Success response with the created test result details.
-        - Error response if required fields are missing or an exception occurs.
+        - If a test result already exists for the given test_order and test_type, it updates the existing record.
+        - If no result exists, it creates a new one.
+        - Only lab technicians can create or update test results.
         """
         user = self.request.user
         if user.role != "lab_technician":
@@ -188,36 +183,38 @@ class LabTestResultModelViewSet(viewsets.ModelViewSet):
         test_entries = request.data.get("test_entries", "[]")  # Default to an empty JSON array
         comments = request.data.get("comments", "")
 
-        if not test_order_id or not technician_id:
-            return Response({"error": "test_order_id and technician_id are required"}, status=status.HTTP_400_BAD_REQUEST)
+        if not test_order_id or not technician_id or not test_type_id:
+            return Response({"error": "test_order_id, test_type_id, and technician_id are required"}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            # Parse test_entries if it is a string
+            # Parse test_entries if it's a string
             if isinstance(test_entries, str):
                 test_entries = json.loads(test_entries)
 
             # Fetch related objects
             test_order = get_object_or_404(LabTestOrder, id=test_order_id)
             lab_technician = get_object_or_404(LabTechnician, user_id=technician_id)
-            test_type = get_object_or_404(LabTestType, id=test_type_id)  # Placeholder for now
+            test_type = get_object_or_404(LabTestType, id=test_type_id)
 
-            # Create and save test result
-            test_result = LabTestResult.objects.create(
+            # Check if a test result already exists
+            test_result, created = LabTestResult.objects.update_or_create(
                 test_order=test_order,
                 test_type=test_type,
-                numeric_results=test_entries,
-                comments=comments,
-                reviewed_by=lab_technician
+                defaults={
+                    "numeric_results": test_entries,
+                    "comments": comments,
+                    "reviewed_by": lab_technician
+                }
             )
 
             return Response(
                 {
-                    "message": "Test result saved successfully",
+                    "message": "Test result {} successfully".format("updated" if not created else "saved"),
                     "test_result_id": test_result.id,
                     "test_order_id": test_order.id,
                     "reviewed_by": lab_technician.user_id
                 },
-                status=status.HTTP_201_CREATED
+                status=status.HTTP_200_OK if not created else status.HTTP_201_CREATED
             )
 
         except json.JSONDecodeError:
@@ -225,8 +222,8 @@ class LabTestResultModelViewSet(viewsets.ModelViewSet):
 
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    
-    
+
+        
     @action(detail=True, methods=["get"], url_path="view_blood_report")
     def view_lab_report_html(self, request, pk=None):
         """
@@ -269,7 +266,7 @@ class LabTestResultModelViewSet(viewsets.ModelViewSet):
             return Response({"message": "Comment added successfully"}, status=status.HTTP_200_OK)
         except LabTestResult.DoesNotExist:
             return Response({"error": "Lab test result not found"}, status=status.HTTP_404_NOT_FOUND)
-       
+    
     @action(detail=True, methods=["post"], url_path="mark_finalized")
     def mark_finalized(self, request, pk=None):
         user = self.request.user
@@ -285,4 +282,4 @@ class LabTestResultModelViewSet(viewsets.ModelViewSet):
             return Response({"message": "Marked finalized successfully"}, status=status.HTTP_200_OK)
         except LabTestResult.DoesNotExist:
             return Response({"error": "Lab test result not found"}, status=status.HTTP_404_NOT_FOUND)
-         
+        

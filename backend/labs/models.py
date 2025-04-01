@@ -110,6 +110,8 @@ class LabTestOrder(models.Model):
             raise ValueError(f"Invalid status '{status}'. Choose from {valid_statuses}")
         
         self.test_status = status
+        if status == "Completed":
+            self.results_available = "Yes"
         self.save()
               
 class LabTestResult(models.Model):

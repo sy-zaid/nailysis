@@ -199,7 +199,7 @@ export const getStatusClass = (status, styles) => {
     case "Resolved":
     case "Paid":
       return styles.consulted;
-    // Red 
+    // Red
     case "Cancelled":
     case "No":
     case "Urgent":
@@ -480,7 +480,6 @@ export const formatTestEntries = ({ testEntries, bloodTestParameters }) => {
     return acc; //  Important: Return accumulator!
   }, {});
 };
-
 
 export const handleParameterChange = (setTestEntries, index, newParameter) => {
   setTestEntries((prevEntries) =>

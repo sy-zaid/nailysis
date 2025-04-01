@@ -23,10 +23,7 @@ const PopupViewTestOrder = ({ onClose, testOrderDetails }) => {
       try {
         const response = await getTestResults(testOrderDetails.id);
         console.log("Fetched Test Results:", response.data);
-        const tests = response.data.map((test) => ({
-          id: test.test_type,
-          result_status: test.result_status,
-        }));
+        const tests = response.data;
         console.log("Fetched Test Results:", tests);
         setCompletedTests(tests);
       } catch (error) {
@@ -38,8 +35,8 @@ const PopupViewTestOrder = ({ onClose, testOrderDetails }) => {
   }, [testOrderDetails?.id]);
 
   const getTestStatus = (testTypeId, testResults) => {
-    const test = testResults.find((t) => t.id === testTypeId);
-    return test ? test.result_status || "Complet" : "Pendi"; // Default to "Pending" if not found
+    const test = testResults.find((t) => t.id === testTypeId); // Ensure test.id matches correctly
+    return test ? test.result_status || "Completed" : "Pending"; // Default to "Pending" if not found
   };
 
   //   Object for storing different popups components for navigating according to the requested test types.
@@ -113,7 +110,7 @@ const PopupViewTestOrder = ({ onClose, testOrderDetails }) => {
         });
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
       if (error.response) {
         const status = error.response;
 
@@ -298,19 +295,29 @@ const PopupViewTestOrder = ({ onClose, testOrderDetails }) => {
               Requested Test Details
             </h3>
             <div style={{ marginLeft: "25px" }}>
-              {testOrderDetails?.test_types?.map((test, index) => {
-                const testStatus = getTestStatus(test.id, completedTests);
-
+              {testOrderDetails.test_types.map((test) => {
+                const testResult = completedTests.find(
+                  (t) => t.test_type === test.id
+                );
+                console.log(testResult, "TEST RESULTSSSSSS");
                 return (
                   <div key={test.id} className={styles.testType}>
                     <span style={{ marginLeft: "25px" }}>
                       {test.name} ({test.category})
                     </span>
                     <span className={styles.testTypeBorder}></span>
-
+                    <span
+                      className={getStatusClass(
+                        testResult?.result_status || "Pending"
+                      )}
+                    >
+                      {testResult?.result_status || "Pending"}
+                    </span>
                     <button
                       className={styles.addButton}
-                      onClick={() => handleActionClick("View Record", test.id)}
+                      onClick={() =>
+                        handleActionClick("View Record", testResult?.id)
+                      }
                     >
                       View Record
                     </button>
@@ -319,7 +326,7 @@ const PopupViewTestOrder = ({ onClose, testOrderDetails }) => {
               })}
             </div>
           </div>
-          ;
+
           <br />
           <hr />
           <div className={styles.newActions}>
