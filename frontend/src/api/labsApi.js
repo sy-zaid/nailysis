@@ -27,9 +27,9 @@ export const submitTestResults = async (payload) => {
   return axios.post(url, payload, getHeaders());
 };
 
-export const finalizeTestOrder = async (payload) => {
-  const url = `${API_URL}/api/test_orders/finalize_test_order/`;
-  return axios.post(url, payload, getHeaders());
+export const finalizeTestOrder = async (id) => {
+  const url = `${API_URL}/api/test_orders/${id}/finalize_test_order/`;
+  return axios.post(url, {}, getHeaders());
 };
 
 export const saveAdminComment = async (reportId, payload) => {

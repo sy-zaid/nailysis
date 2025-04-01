@@ -79,8 +79,8 @@ class LabTestOrderModelViewSet(viewsets.ModelViewSet):
             "missing_tests": list(requested_test_ids - available_test_ids)
         }, status=400)
     
-    @action(detail=False, methods=["post"], url_path="finalize_test_order")
-    def finalize_test_order(self, request):
+    @action(detail=True, methods=["post"], url_path="finalize_test_order")
+    def finalize_test_order(self, request,pk=None):
         """
         Finalizes a test order if all associated test results are submitted and marked as Finalized.
         """
@@ -88,8 +88,8 @@ class LabTestOrderModelViewSet(viewsets.ModelViewSet):
         if user.role != "lab_admin":
             return Response({"error": "Not authorized to finalize test orders"}, status=403)
 
-        test_order_id = request.data.get("test_order_id")
-        test_order = get_object_or_404(LabTestOrder, id=test_order_id)
+        # test_order_id = request.data.get("test_order_id")
+        test_order = get_object_or_404(LabTestOrder, pk=pk)
 
         # Get the requested test types for this order
         requested_test_ids = set(test_order.test_types.values_list("id", flat=True))
@@ -99,7 +99,7 @@ class LabTestOrderModelViewSet(viewsets.ModelViewSet):
         available_test_ids = set(available_results.values_list("test_type_id", flat=True))
 
         # Debugging prints
-        print(f"Test Order ID: {test_order_id}")
+        # print(f"Test Order ID: {test_order_id}")
         print(f"Requested Test IDs: {requested_test_ids}")
         print(f"Available Test IDs: {available_test_ids}")
         print(f"Missing Test IDs: {requested_test_ids - available_test_ids}")
@@ -263,6 +263,7 @@ class LabTestResultModelViewSet(viewsets.ModelViewSet):
             if test_result.is_marked_finalized():
                 return Response({"error":"Lab test result already finalized and cannot be modified"},status=status.HTTP_400_BAD_REQUEST)
             test_result.add_admin_comment(admin_comment)
+            test_result.test_order.update_status("")
             return Response({"message": "Comment added successfully"}, status=status.HTTP_200_OK)
         except LabTestResult.DoesNotExist:
             return Response({"error": "Lab test result not found"}, status=status.HTTP_404_NOT_FOUND)

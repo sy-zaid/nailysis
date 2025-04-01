@@ -111,7 +111,7 @@ class LabTestOrder(models.Model):
         
         self.test_status = status
         if status == "Completed":
-            self.results_available = "Yes"
+            self.results_available = True
         self.save()
               
 class LabTestResult(models.Model):
@@ -167,6 +167,7 @@ class LabTestResult(models.Model):
     
     def add_admin_comment(self, admin_comment):
         self.admin_comments = admin_comment
+        self.result_status = "Review Required"
         self.save()
     
     def mark_finalized(self):

@@ -102,7 +102,7 @@ const PopupViewTestOrder = ({ onClose, testOrderDetails }) => {
     const payload = { test_order_id: testOrderDetails.id };
 
     try {
-      const response = await finalizeTestOrder(payload);
+      const response = await finalizeTestOrder(testOrderDetails.id);
 
       if (response.status === 200) {
         toast.success("Test Order Finalized Successfully", {
