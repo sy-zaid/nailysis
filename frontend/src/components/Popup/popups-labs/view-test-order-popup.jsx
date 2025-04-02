@@ -2,7 +2,11 @@ import React from "react";
 import styles from "./select-test-order-popup.module.css";
 import Popup from "../Popup";
 import { useState, useEffect } from "react";
-import { calculateAge, convertDjangoDateTime } from "../../../utils/utils";
+import {
+  calculateAge,
+  convertDjangoDateTime,
+  getStatusClass,
+} from "../../../utils/utils";
 import {
   submitTestResults,
   getTestResults,
@@ -12,13 +16,75 @@ import { toast } from "react-toastify";
 import BloodTestEntryPopup from "./blood-test-entry-popup";
 import UrineTestEntryPopup from "./urine-test-entry-popup";
 
+/**
+ * PopupViewTestOrder Component
+ *
+ * This component renders a popup for viewing test orders.
+ * It fetches test results, updates the UI accordingly, and provides
+ * functionalities to finalize test orders and view test records.
+ *
+ * @param {Object} props - Component props.
+ * @param {Function} props.onClose - Function to close the popup.
+ * @param {Object} props.testOrderDetails - Details of the test order.
+ */
 const PopupViewTestOrder = ({ onClose, testOrderDetails }) => {
+  // ----- POPUPS & NAVIGATION
   const [popupTrigger, setPopupTrigger] = useState(true);
   const [popupContent, setPopupContent] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
   const [completedTests, setCompletedTests] = useState([]);
   console.log("TEST ORDER DETAILSSSS", testOrderDetails);
+
+  // ----- IMPORTANT DATA
+
+  // ----- HANDLERS
+  /**
+   * Handles viewing test records in a new tab.
+   *
+   * @param {string} action - Action type.
+   * @param {string} id - Test record ID.
+   */
+  const handleActionClick = (action, id) => {
+    if (action === "View Record") {
+      const url = `/lab-test-result/${id}`;
+      window.open(url, "_blank");
+    }
+  };
+
+  /**
+   * Handles finalizing and submitting test orders.
+   * Sends a request to finalize the test order and handles response messages.
+   */
+  const handleFinalizeAndSubmit = async () => {
+    try {
+      const response = await finalizeTestOrder(testOrderDetails.id);
+      if (response.status === 200) {
+        toast.success("Test Order Finalized Successfully", {
+          className: "custom-toast",
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      if (error.response) {
+        const status = error.response;
+        toast.error(status.data.error || "Failed to finalize test order", {
+          className: "custom-toast",
+        });
+      } else {
+        toast.error("Network error! Please try again.", {
+          className: "custom-toast",
+        });
+      }
+    }
+  };
+
+  // ----- MAIN LOGIC FUNCTIONS
+
+  // ----- USE EFFECTS
   useEffect(() => {
+    /**
+     * Fetches test results for the given test order and updates state.
+     */
     const fetchTestResults = async () => {
       try {
         const response = await getTestResults(testOrderDetails.id);
@@ -33,97 +99,6 @@ const PopupViewTestOrder = ({ onClose, testOrderDetails }) => {
 
     fetchTestResults();
   }, [testOrderDetails?.id]);
-
-  const getTestStatus = (testTypeId, testResults) => {
-    const test = testResults.find((t) => t.id === testTypeId); // Ensure test.id matches correctly
-    return test ? test.result_status || "Completed" : "Pending"; // Default to "Pending" if not found
-  };
-
-  //   Object for storing different popups components for navigating according to the requested test types.
-  const test_categories = {
-    "Blood Test": (testDetails, testOrderDetails) => (
-      <BloodTestEntryPopup
-        testDetails={testDetails}
-        testOrderDetails={testOrderDetails}
-        onClose={() => setShowPopup(false)}
-      ></BloodTestEntryPopup>
-    ),
-
-    "Urine Test": (testDetails, testOrderDetails) => (
-      <UrineTestEntryPopup
-        testDetails={testDetails}
-        testOrderDetails={testOrderDetails}
-        onClose={() => setShowPopup(false)}
-      />
-    ),
-    "Imaging Test": (testDetails, testOrderDetails) => (
-      <UrineTestEntryPopup
-        testDetails={testDetails}
-        testOrderDetails={testOrderDetails}
-        onClose={() => setShowPopup(false)}
-      />
-    ),
-    "Pathology Report": (testDetails, testOrderDetails) => (
-      <UrineTestEntryPopup
-        testDetails={testDetails}
-        testOrderDetails={testOrderDetails}
-        onClose={() => setShowPopup(false)}
-      />
-    ),
-  };
-
-  // if (!selectreportTypePopup) return null;
-  console.log("GOT THIS TO PROCESS", testOrderDetails);
-  // Function to determine the CSS class based on status
-  const getStatusClass = (status) => {
-    switch (status) {
-      case "Completed":
-        return styles.consulted;
-      case "Cancelled":
-        return styles.cancelled;
-      case "Scheduled":
-        return styles.scheduled;
-      case "Pending":
-        return styles.scheduled;
-      case "Urgent":
-        return styles.cancelled;
-      default:
-        return {};
-    }
-  };
-  const handleActionClick = (action, id) => {
-    if (action === "View Record") {
-      const url = `/lab-test-result/${id}`;
-      window.open(url, "_blank"); // Open in a new tab
-    }
-  };
-
-  const handleFinalizeAndSubmit = async () => {
-    const payload = { test_order_id: testOrderDetails.id };
-
-    try {
-      const response = await finalizeTestOrder(testOrderDetails.id);
-
-      if (response.status === 200) {
-        toast.success("Test Order Finalized Successfully", {
-          className: "custom-toast",
-        });
-      }
-    } catch (error) {
-      console.log(error);
-      if (error.response) {
-        const status = error.response;
-
-        toast.error(status.data.error || "Failed to finalize test order", {
-          className: "custom-toast",
-        });
-      } else {
-        toast.error("Network error! Please try again.", {
-          className: "custom-toast",
-        });
-      }
-    }
-  };
 
   return (
     <Popup
@@ -157,7 +132,7 @@ const PopupViewTestOrder = ({ onClose, testOrderDetails }) => {
               {" "}
               <i className="fa-solid fa-circle-notch"></i> Status:{" "}
             </span>
-            <span className={getStatusClass(testOrderDetails.test_status)}>
+            <span className={getStatusClass(testOrderDetails.test_status,styles)}>
               {testOrderDetails.test_status}
             </span>
             <span className={styles.key} style={{ margin: "0 0 0 50px" }}>
@@ -308,7 +283,7 @@ const PopupViewTestOrder = ({ onClose, testOrderDetails }) => {
                     <span className={styles.testTypeBorder}></span>
                     <span
                       className={getStatusClass(
-                        testResult?.result_status || "Pending"
+                        testResult?.result_status || "Pending",styles
                       )}
                     >
                       {testResult?.result_status || "Pending"}
@@ -336,12 +311,14 @@ const PopupViewTestOrder = ({ onClose, testOrderDetails }) => {
             >
               Cancel
             </button>
-            <button
-              className={styles.addButton}
-              onClick={() => handleFinalizeAndSubmit()}
-            >
-              Finalize & Upload Results
-            </button>
+            {testOrderDetails.test_status !== "Completed" && (
+              <button
+                className={styles.addButton}
+                onClick={() => handleFinalizeAndSubmit()}
+              >
+                Finalize & Upload Results
+              </button>
+            )}
           </div>
         </div>
       </div>

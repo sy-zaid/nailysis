@@ -29,33 +29,37 @@ const PopupSelectTestOrder = ({ onClose, testOrderDetails }) => {
 
   // ----- IMPORTANT DATA
   const test_categories = {
-    "Blood Test": (testDetails, testOrderDetails) => (
+    "Blood Test": (testDetails, testOrderDetails, editable) => (
       <BloodTestEntryPopup
         testDetails={testDetails}
         testOrderDetails={testOrderDetails}
         onClose={() => setShowInnerPopup(false)}
+        editable={editable}
       ></BloodTestEntryPopup>
     ),
 
-    "Urine Test": (testDetails, testOrderDetails) => (
+    "Urine Test": (testDetails, testOrderDetails, editable) => (
       <UrineTestEntryPopup
         testDetails={testDetails}
         testOrderDetails={testOrderDetails}
         onClose={() => setShowInnerPopup(false)}
+        editable={editable}
       />
     ),
-    "Imaging Test": (testDetails, testOrderDetails) => (
+    "Imaging Test": (testDetails, testOrderDetails, editable) => (
       <UrineTestEntryPopup
         testDetails={testDetails}
         testOrderDetails={testOrderDetails}
         onClose={() => setShowInnerPopup(false)}
+        editable={editable}
       />
     ),
-    "Pathology Report": (testDetails, testOrderDetails) => (
+    "Pathology Report": (testDetails, testOrderDetails, editable) => (
       <UrineTestEntryPopup
         testDetails={testDetails}
         testOrderDetails={testOrderDetails}
         onClose={() => setShowInnerPopup(false)}
+        editable={editable}
       />
     ),
   };
@@ -70,7 +74,6 @@ const PopupSelectTestOrder = ({ onClose, testOrderDetails }) => {
 
     try {
       const response = await submitTestResults(payload);
-
       if (response.status === 200) {
         toast.success(" All test reports submitted to admin!", {
           className: "custom-toast",
@@ -78,24 +81,10 @@ const PopupSelectTestOrder = ({ onClose, testOrderDetails }) => {
       }
     } catch (error) {
       if (error.response) {
-        const { data, status } = error.response;
-
-        if (status === 403) {
-          toast.error("Not authorized to submit test reports", {
-            className: "custom-toast",
-          });
-        } else if (
-          status === 400 &&
-          data.message === "Some test results are missing!"
-        ) {
-          toast.error("Some test results are missing!", {
-            className: "custom-toast",
-          });
-        } else {
-          toast.error(`Error: ${data.message || "Something went wrong!"}`, {
-            className: "custom-toast",
-          });
-        }
+        const status = error.response;
+        toast.error(status.data.error || "Failed to finalize test order", {
+          className: "custom-toast",
+        });
       } else {
         toast.error("Network error! Please try again.", {
           className: "custom-toast",
@@ -146,10 +135,15 @@ const PopupSelectTestOrder = ({ onClose, testOrderDetails }) => {
    * Sets and displays the inner popup based on test category.
    *
    * @param {Object} testDetails - Details of the selected test.
+   * @param {Array} editable - Array of the editable being true allowing the post request to be edit along with a status.
    */
-  const setInnerPopup = (testDetails) => {
+  const setInnerPopup = (testDetails, editable) => {
     setPopupContent(
-      test_categories[testDetails.category](testDetails, testOrderDetails)
+      test_categories[testDetails.category](
+        testDetails,
+        testOrderDetails,
+        editable
+      )
     );
     setShowInnerPopup(true);
   };
@@ -362,7 +356,12 @@ const PopupSelectTestOrder = ({ onClose, testOrderDetails }) => {
                         <p style={{ color: "green", fontWeight: "bold" }}>
                           {testStatus}
                         </p>
-                        <button className={styles.addButton}>
+                        <button
+                          className={styles.addButton}
+                          onClick={() =>
+                            setInnerPopup(test, [true, testStatus])
+                          }
+                        >
                           Edit Record
                         </button>
                       </>
@@ -374,7 +373,9 @@ const PopupSelectTestOrder = ({ onClose, testOrderDetails }) => {
                         <button
                           className={styles.addButton}
                           style={{ marginRight: "45px" }}
-                          onClick={() => setInnerPopup(test)}
+                          onClick={() =>
+                            setInnerPopup(test, [true, testStatus])
+                          }
                         >
                           View Record
                         </button>
@@ -387,7 +388,9 @@ const PopupSelectTestOrder = ({ onClose, testOrderDetails }) => {
                         <button
                           className={styles.addButton}
                           style={{ marginRight: "45px" }}
-                          onClick={() => setInnerPopup(test)}
+                          onClick={() =>
+                            setInnerPopup(test, [true, testStatus])
+                          }
                         >
                           Add Record
                         </button>

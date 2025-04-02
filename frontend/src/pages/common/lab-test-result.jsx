@@ -21,6 +21,7 @@ const LabTestResult = () => {
       try {
         const response = await getTestResultsById(reportId);
         setLabTestResult(response.data[0]);
+        console.log("LAB TEST RESULT", labTestResult);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -60,27 +61,33 @@ const LabTestResult = () => {
 
   const handleMarkFinalized = async (event) => {
     event.preventDefault();
+
+    if (!reportId) {
+      toast.error("Missing report ID", { className: "custom-toast" });
+      return;
+    }
+
     try {
       const response = await markResultFinalized(reportId);
-      console.log(response);
       if (response.status === 200) {
-        toast.success("Test report marked as finalized and cannot be changed", {
+        toast.success("Test report finalized successfully", {
           className: "custom-toast",
         });
+        // Optional: Refresh data or update state
       }
     } catch (error) {
       if (error.response) {
-        toast.error(
-          error.response.data.error || "Failed to mark as finalized",
-          {
-            className: "custom-toast",
-          }
-        );
+        const errorMsg =
+          error.response.data.error ||
+          error.response.data.message ||
+          "Failed to finalize report";
+        toast.error(errorMsg, { className: "custom-toast" });
       } else {
         toast.error("Network error. Please try again.", {
           className: "custom-toast",
         });
       }
+      console.error("Finalization error:", error);
     }
   };
 
@@ -96,7 +103,7 @@ const LabTestResult = () => {
       <div className={styles.content}>
         <p>
           <strong>Test Order ID:</strong>{" "}
-          {labTestResult?.test_order?.id || "N/A"}
+          {labTestResult?.id || "N/A"}
         </p>
         <p>
           <strong>Reviewed By:</strong>{" "}

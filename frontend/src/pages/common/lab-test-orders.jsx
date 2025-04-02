@@ -4,6 +4,8 @@ import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import Header from "../../components/Dashboard/Header/Header";
 import PopupSelectTestOrder from "../../components/Popup/popups-labs/select-test-order-popup";
 import PopupViewTestOrder from "../../components/Popup/popups-labs/view-test-order-popup";
+import PopupDeleteTestOrder from "../../components/Popup/popups-labs/delete-test-order-popup";
+
 import { getTestOrders } from "../../api/labsApi";
 import { getStatusClass } from "../../utils/utils";
 
@@ -60,6 +62,14 @@ const TestOrders = () => {
     } else if (action === "View Test Order") {
       setPopupContent(
         <PopupViewTestOrder
+          onClose={() => setShowPopup(false)}
+          testOrderDetails={testOrderDetails}
+        />
+      );
+      setShowPopup(true);
+    } else if (action === "Delete Order") {
+      setPopupContent(
+        <PopupDeleteTestOrder
           onClose={() => setShowPopup(false)}
           testOrderDetails={testOrderDetails}
         />
@@ -336,10 +346,14 @@ const TestOrders = () => {
                               <>
                                 <li
                                   onClick={() =>
-                                    handleActionClick("Reschedule", row)
+                                    handleActionClick("Delete Order", row)
                                   }
                                 >
-                                  Reschedule
+                                  <i
+                                    className="fa-regular fa-circle-xmark"
+                                    style={{ color: "red" }}
+                                  ></i>{" "}
+                                  Delete Order
                                 </li>
                                 <li
                                   onClick={() =>
