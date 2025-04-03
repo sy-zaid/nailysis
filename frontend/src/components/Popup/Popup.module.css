@@ -31,15 +31,20 @@
   scrollbar-color: #0067ff #f0f0f0; /* Scrollbar color for Firefox */
 }
 
+.test {
+    position: relative;
+}
+
+
 .closeBtn {
-  position: absolute;
-  top: 40px;
-  right: 165px;
-  cursor: pointer;
-  background: transparent;
-  color: #4e4e4e;
-  font-size: 40px;
-  z-index: 200;
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    cursor: pointer;
+    background: transparent;
+    color: #4E4E4E;
+    font-size: 40px;
+    z-index: 200;
 }
 
 .closeBtn i {

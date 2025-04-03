@@ -16,7 +16,7 @@ import DoctorDashboard from "./pages/doctor/doctor-dashboard";
 import PatientDashboard from "./pages/patient/patient-dashboard";
 import LabAdminDashboard from "./pages/admin-lab/lab-admin-dashboard";
 import LabTechnicianDashboard from "./pages/lab-technician/lab-technician-dashboard";
-import LabTechnicianTestOrders from "./pages/lab-technician/lab-technician-test-requests";
+import LabTechnicianTestOrders from "./pages/lab-technician/lab-technician-test-orders";
 import ViewTechnicianAppointments from "./pages/common/view-lab-appointments";
 import PlaceholderComponent from "./components/PlaceholderComponent"; // Placeholder for missing views
 import BillingHistory from "./pages/admin-clinic/billing-history";

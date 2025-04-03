@@ -1,10 +1,9 @@
 //  Imports
-import React, { useState, useEffect } from "react";
-import styles from "./electronic-health-records.module.css";
+import React, { useState, useEffect, useRef } from "react";
+import styles from "./all-pages-styles.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import axios from "axios";
 import Header from "../../components/Dashboard/Header/Header.jsx";
-import otherStyles from "../../components/CSS Files/PatientAppointment.module.css";
 
 // Importing Popups for performing actions on EHR Records
 import PopupEHREdit from "../../components/Popup/popups-electronic-health-records/popup-ehr-edit";
@@ -37,7 +36,8 @@ import useCurrentUserData from "../../useCurrentUserData";
  * @component
  */
 const ElectronicHealthRecord = () => {
-  const [menuOpen, setMenuOpen] = useState(null); // Track open action menu
+  const [menuOpen, setMenuOpen] = useState(null);
+  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
   const [popupContent, setPopupContent] = useState(); // Store popup content
   const [showPopup, setShowPopup] = useState(false); // Track popup visibility
   const [records, setRecords] = useState([]); // Store EHR records
@@ -208,6 +208,22 @@ const ElectronicHealthRecord = () => {
     }
   }, [curUser]); // Re-run when `curUser` updates
 
+  // Close the action menu when clicking outside of it
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setMenuOpen(null);
+      }
+    };
+  
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [menuOpen]);
+
 
   /**
    * Handles actions on EHR records (Edit, Delete, Add New).
@@ -217,7 +233,7 @@ const ElectronicHealthRecord = () => {
    */
   const handleActionClick = (action, recordDetails) => {
     console.log(`Performing ${action} on`, recordDetails);
-    setMenuOpen(null, menuOpen, setMenuOpen); // Close action menu
+    setMenuOpen(null); // Close action menu
 
     if (action === "Edit") {
       setPopupContent(
@@ -258,7 +274,7 @@ const ElectronicHealthRecord = () => {
 
 
       {/* Page Header */}
-      <div className={otherStyles.pageTop}>
+      <div className={styles.pageTop}>
           <Header 
             mainHeading={'Electronic Health Records'}
             subHeading={'View and manage patient health records'}
@@ -266,32 +282,32 @@ const ElectronicHealthRecord = () => {
       </div>
 
 
-      <div className={otherStyles.mainContent}>
+      <div className={styles.mainContent}>
         
-        <div className={otherStyles.appointmentsContainer}>
+        <div className={styles.appointmentsContainer}>
           
           {/* Filter buttons with dynamic active state */}
-          <div className={otherStyles.filters}>
+          <div className={styles.filters}>
             <button
-              className={`${otherStyles.filterButton} ${activeButton === 0 ? otherStyles.active : ''}`}
+              className={`${styles.filterButton} ${activeButton === 0 ? styles.active : ''}`}
               onClick={() => handleFilterClick(0)}
             >
               All
             </button>
             <button
-              className={`${otherStyles.filterButton} ${activeButton === 3 ? otherStyles.active : ''}`}
+              className={`${styles.filterButton} ${activeButton === 3 ? styles.active : ''}`}
               onClick={() => handleFilterClick(3)}
             >
               Your Patients
             </button>
             <button
-              className={`${otherStyles.filterButton} ${activeButton === 1 ? otherStyles.active : ''}`}
+              className={`${styles.filterButton} ${activeButton === 1 ? styles.active : ''}`}
               onClick={() => handleFilterClick(1)}
             >
               Abnormal Results
             </button>
             <button
-              className={`${otherStyles.filterButton} ${activeButton === 2 ? otherStyles.active : ''}`}
+              className={`${styles.filterButton} ${activeButton === 2 ? styles.active : ''}`}
               onClick={() => handleFilterClick(2)}
             >
               Emergency
@@ -302,7 +318,7 @@ const ElectronicHealthRecord = () => {
 
             
             {curUserRole === "doctor" && (
-            <button className={otherStyles.addButton} onClick={() => handleActionClick("Add New Record")}>
+            <button className={styles.addButton} onClick={() => handleActionClick("Add New Record")}>
               + Add New Record
             </button>
             )}
@@ -311,17 +327,17 @@ const ElectronicHealthRecord = () => {
 
 
           {/* EHR Table */}
-          <div className={otherStyles.tableContainer}>
+          <div className={styles.tableContainer}>
             
             {/* Sorting and Search Bar */}
-            <div className={otherStyles.controls}>
+            <div className={styles.controls}>
               
-              <select className={otherStyles.bulkAction}>
+              <select className={styles.bulkAction}>
                 <option>Bulk Action: Delete</option>
               </select>
               
               {/* Sorting dropdown with dynamic selection */}
-              <select className={otherStyles.sortBy} onChange={(e) => handleSortChange(e.target.value)}>
+              <select className={styles.sortBy} onChange={(e) => handleSortChange(e.target.value)}>
                 <option value="">Sort By: None</option>
                 <option value="last_updated">Last Updated</option>
                 <option value="patient_name">Patient Name (A-Z)</option>
@@ -331,7 +347,7 @@ const ElectronicHealthRecord = () => {
 
               {/* Search input with real-time state update */}
               <input
-                className={otherStyles.search}
+                className={styles.search}
                 type="text"
                 placeholder="Search by Patient Name, Doctor, Category, etc."
                 value={searchQuery}
@@ -342,7 +358,7 @@ const ElectronicHealthRecord = () => {
             <hr />
             <br />
 
-            <div className={otherStyles.tableWrapper}>
+            <div className={styles.tableWrapper}>
 
               <table className={styles.table}>
                 <thead>
@@ -397,27 +413,46 @@ const ElectronicHealthRecord = () => {
                       <td>{record.diagnoses}</td>
                       <td>{record.last_updated}</td>
 
-                      {/* Action Menu */}
-                      {curUserRole === "doctor" && (
+                      {/* ------------------------- ACTION BUTTONS -------------------------*/}
+                      
+                      {curUserRole === "doctor" && ( 
                         <td>
-                          <button
-                            onClick={() => toggleActionMenu(record.id, menuOpen, setMenuOpen)}
-                          >
-                            ⋮
-                          </button>
+                        <button
+                          onClick={(event) => toggleActionMenu(record.id, menuOpen, setMenuOpen, setMenuPosition, event)}
+                          className={styles.moreActionsBtn}
+                        >
+                          <img src="/icon-three-dots.png" alt="More Actions" className={styles.moreActionsIcon} />
+                        </button>
 
-                          {menuOpen === record.id && (
-                            <div className={styles.menu}>
-                              <ul>
-                                <li onClick={() => handleActionClick("Edit", record)}>Edit</li>
-                                <li onClick={() => handleActionClick("Delete", record)}>Delete</li>
-                                {!record.added_to_medical_history && (
-                                  <li onClick={() => handleActionClick("AddToMH", record.id)}>Add to Medical History</li>
-                                )}
-                              </ul>
-                            </div>
-                          )}
-                        </td>  
+                        {menuOpen && (
+                          <div
+                            ref={menuRef} id={`menu-${record.id}`}
+                            className={styles.menu}
+                            style={{
+                              top: `${menuPosition.top}px`,
+                              left: `${menuPosition.left}px`,
+                              position: "absolute",
+                            }}
+                          >
+                            <ul>
+                              
+                                <li onClick={() => handleActionClick("Edit", record)}>
+                                  <i className="fa-solid fa-pen"></i>Edit
+                                </li>
+                                <li onClick={() => handleActionClick("Delete", record)}>
+                                  <i className="fa-solid fa-trash"></i>Delete
+                                </li>
+                                {/* {record.added_to_medical_history === false && ( */}
+                                <li onClick={() => handleActionClick("AddToMH", record.id)}>
+                                  <i className="fa-solid fa-plus"></i>Add to Medical History
+                                </li>
+                                {/* )} */}
+         
+                            </ul>
+                          </div>
+                        )}
+
+                        </td>
                       )}
 
                     </tr>

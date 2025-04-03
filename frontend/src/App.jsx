@@ -10,6 +10,8 @@ import PatientHealthHistory from "./pages/common/patient-health-history.jsx";
 import { QueryClientProvider } from "@tanstack/react-query"; // Import React Query Client Provider
 import { queryClient } from "./queryClient.js"; // Import the client
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import Sidebar from "./components/Dashboard/Sidebar/Sidebar";
 import {
@@ -52,6 +54,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <ReactQueryDevtools initialIsOpen={false} />
       <div className="App">
+        <ToastContainer position="top-right" autoClose={3000} />
         <Routes>
           {/* System Admin */}
           <Route

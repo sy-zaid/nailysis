@@ -208,8 +208,8 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
 
         <div className={styles.headerSection}>
           <div className={styles.titleSection}>
-            <h2 style={{ marginLeft: "20px" }}>Schedule Your Appointment</h2> 
-            <p style={{ marginLeft: "20px" }}>Choose your customized appointment timings and other details</p>
+            <h2>Schedule Your Appointment</h2> 
+            <p>Choose your customized appointment timings and other details</p>
           </div>
         </div>
 

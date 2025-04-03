@@ -72,11 +72,11 @@ class FeedbackViewSet(viewsets.ModelViewSet):
         auth_users = ['patient', 'doctor', 'lab_technician']
         user = request.user
 
-        # ✅ Check if user is allowed
+        #  Check if user is allowed
         if user.role not in auth_users:
             return Response({"message": "You are not authorized to submit feedback"}, status=403)
 
-        # ✅ Extract data from request
+        #  Extract data from request
         category = request.data.get('category')
         description = request.data.get('description')
         is_clinic_feedback = request.data.get('is_clinic_feedback')

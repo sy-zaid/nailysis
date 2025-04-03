@@ -37,8 +37,8 @@ const SubmitFeedback = ({ onClose }) => {
   
     const feedbackData = {
       category: formData.category,
-      description: formData.description, // ✅ Fix: Send "description" instead of "message"
-      is_clinic_feedback: true, // ✅ Change based on feedback type
+      description: formData.description, //  Fix: Send "description" instead of "message"
+      is_clinic_feedback: true, //  Change based on feedback type
     };
   
     try {

@@ -157,12 +157,12 @@ def generate_dummy_ehr_records(num_records, patients, doctors):
 
         ehr_record = EHR.objects.create(
             patient=patient,
-            medical_conditions=[fake.word(), fake.word()],  # ✅ Convert set to list
-            current_medications=[fake.word(), fake.word()],  # ✅ Convert set to list
-            immunization_records=[fake.word(), fake.word()],  # ✅ Convert set to list
-            nail_image_analysis=["Normal"],  # ✅ Convert set to list
-            test_results=[fake.word(), fake.word()],  # ✅ Convert set to list
-            diagnoses=[fake.word(), fake.word()],  # ✅ Convert set to list
+            medical_conditions=[fake.word(), fake.word()],  #  Convert set to list
+            current_medications=[fake.word(), fake.word()],  #  Convert set to list
+            immunization_records=[fake.word(), fake.word()],  #  Convert set to list
+            nail_image_analysis=["Normal"],  #  Convert set to list
+            test_results=[fake.word(), fake.word()],  #  Convert set to list
+            diagnoses=[fake.word(), fake.word()],  #  Convert set to list
             visit_date=visit_date,
             category=random.choice(["Chronic", "Emergency", "Preventive", "General"]),
             comments=fake.text(),

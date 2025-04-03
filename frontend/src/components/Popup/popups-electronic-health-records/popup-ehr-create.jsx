@@ -133,7 +133,7 @@ const PopupEHRCreate = ({ onClose }) => {
   }
 
   if (error) {
-    return <p>Error fetching patients</p>;
+    return <p>Error fetching user data</p>;
   }
   return (
     <Popup trigger={popupTrigger} setTrigger={setPopupTrigger} onClose={onClose}>
