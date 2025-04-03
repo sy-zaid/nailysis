@@ -3,6 +3,9 @@ import styles from "../common/all-pages-styles.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import Header from "../../components/Dashboard/Header/Header";
 import PopupSelectTestOrder from "../../components/Popup/popups-labs/select-test-order-popup";
+import PopupViewTestOrder from "../../components/Popup/popups-labs/view-test-order-popup";
+import PopupDeleteTestOrder from "../../components/Popup/popups-labs/delete-test-order-popup";
+
 import { getTestOrders } from "../../api/labsApi";
 import { getStatusClass } from "../../utils/utils";
 
@@ -52,6 +55,22 @@ const TestOrders = () => {
     if (action === "Process Test Order") {
       setPopupContent(
         <PopupSelectTestOrder
+          onClose={() => setShowPopup(false)}
+          testOrderDetails={testOrderDetails}
+        />
+      );
+      setShowPopup(true);
+    } else if (action === "View Test Order") {
+      setPopupContent(
+        <PopupViewTestOrder
+          onClose={() => setShowPopup(false)}
+          testOrderDetails={testOrderDetails}
+        />
+      );
+      setShowPopup(true);
+    } else if (action === "Delete Order") {
+      setPopupContent(
+        <PopupDeleteTestOrder
           onClose={() => setShowPopup(false)}
           testOrderDetails={testOrderDetails}
         />
@@ -229,13 +248,36 @@ const TestOrders = () => {
                           : "Not collected yet"}
                       </td>
 
-                      <td data-label="Price">
-                        {row.lab_technician_appointment?.fee}
-                      </td>
-                      <td
-                        data-label="Status"
-                        className={getStatusClass(row.test_status, styles)}
-                      >
+                    <td data-label="Price">
+                      {row.lab_technician_appointment?.fee}
+                    </td>
+                    <td
+                      data-label="Status"
+                      className={getStatusClass(row.test_status, styles)}
+                    >
+                      {row.lab_technician_appointment.status}
+                    </td>
+                    <td
+                      data-label="Status"
+                      className={getStatusClass(row.test_status, styles)}
+                    >
+                      {row.test_status}
+                    </td>
+                    <td
+                      data-label="Status"
+                      className={getStatusClass(row.test_status, styles)}
+                    >
+                      {row.results_available ? "Yes" : "No"}
+                    </td>
+
+                    {/* ------------------------- ACTION BUTTONS -------------------------*/}
+                    <td>
+                      <button
+                        onClick={() =>
+                          toggleActionMenu(row.id, menuOpen, setMenuOpen)
+                        }
+                        className={styles.moreActionsBtn}
+                      />
                         {row.lab_technician_appointment.status}
                       </td>
                       <td
@@ -263,6 +305,55 @@ const TestOrders = () => {
                             className={styles.moreActionsIcon}
                           />
                         </button>
+                      {/* {menuOpen === row.id && (
+                        <div ref={actionMenuRef} className={styles.menu}>
+                          <ul>
+                            {row.lab_technician_appointment.status ===
+                              "Completed" && (
+                              <li
+                                onClick={() =>
+                                  handleActionClick("Process Test Order", row)
+                                }
+                              >
+                                <i className="fa-solid fa-repeat"></i> Process
+                                Test Order
+                              </li>
+                            )}
+                            <li
+                              onClick={() =>
+                                handleActionClick("Edit Details", row)
+                              }
+                            >
+                              <i className="fa-solid fa-pen"></i> Edit Details
+                            </li>
+                            {curUser[0].role === "lab_admin" && (
+                              <li
+                                onClick={() =>
+                                  handleActionClick("View Test Order", row)
+                                }
+                              >
+                                <i
+                                  className="fa-regular fa-circle-xmark"
+                                  style={{ color: "red" }}
+                                ></i>{" "}
+                                View Order
+                              </li>
+                            )}
+                            <li
+                              onClick={() =>
+                                handleActionClick("Download as PDF", row)
+                              }
+                            >
+                              <i className="fa-regular fa-file-pdf"></i>{" "}
+                              Download as PDF
+                            </li>
+                            <li
+                              onClick={() =>
+                                handleActionClick("Print Code", row)
+                              }
+                            >
+                              <i className="bx bx-qr-scan"></i> Print Code
+                            </li> */}
 
                         {menuOpen && (
                           <div
@@ -274,8 +365,7 @@ const TestOrders = () => {
                               position: "absolute",
                             }}
                           >
-                            <ul>
-
+                          <ul>
                             {row.lab_technician_appointment.status === "Completed" && (
                                 <li
                                   onClick={() =>
@@ -332,8 +422,21 @@ const TestOrders = () => {
                                   </li>
                                 )}
 
-                              {(curUser[0].role === "patient" ||
-                                curUser[0].role === "lab_technician") && (
+                              {/* {(curUser[0].role === "patient" ||
+                                curUser[0].role === "lab_technician") && ( */}
+                            {curUser[0].role === "lab_admin" && (
+                              <>
+                                <li
+                                  onClick={() =>
+                                    handleActionClick("Delete Order", row)
+                                  }
+                                >
+                                  <i
+                                    className="fa-regular fa-circle-xmark"
+                                    style={{ color: "red" }}
+                                  ></i>{" "}
+                                  Delete Order
+                                </li>
                                 <li
                                   onClick={() =>
                                     handleActionClick(
@@ -344,6 +447,7 @@ const TestOrders = () => {
                                 >
                                   Request Cancellation
                                 </li>
+                              </>
                               )}
 
                               {curUser[0].role === "lab_admin" && (
@@ -367,8 +471,8 @@ const TestOrders = () => {
                                   </li>
                                 </>
                               )}
-                            </ul>
-                          </div>
+                          </ul>
+                        </div>
                         )}
 
                       </td>

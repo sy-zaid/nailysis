@@ -110,6 +110,8 @@ class LabTestOrder(models.Model):
             raise ValueError(f"Invalid status '{status}'. Choose from {valid_statuses}")
         
         self.test_status = status
+        if status == "Completed":
+            self.results_available = True
         self.save()
               
 class LabTestResult(models.Model):
@@ -155,7 +157,7 @@ class LabTestResult(models.Model):
         ("Finalized", "Finalized"),
         ("Review Required", "Review Required"),
     ]
-    
+    admin_comments = models.TextField(null=True,blank=True)
     reviewed_by = models.ForeignKey(LabTechnician, on_delete=models.SET_NULL, null=True, blank=True)
     reviewed_at = models.DateTimeField(auto_now_add=True)
     result_status = models.CharField(max_length=20, choices=RESULT_STATUS_CHOICES, default="Pending")
@@ -163,4 +165,15 @@ class LabTestResult(models.Model):
     def __str__(self):
         return f"Results for Order {self.test_order.id}"
     
+    def add_admin_comment(self, admin_comment):
+        self.admin_comments = admin_comment
+        self.result_status = "Review Required"
+        self.save()
+    
+    def mark_finalized(self):
+        if self.result_status != "Finalized":
+            LabTestResult.objects.filter(id=self.id).update(result_status="Finalized")
+            
+    def is_marked_finalized(self):
+        return self.result_status == "Finalized"
     

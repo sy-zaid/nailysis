@@ -110,6 +110,98 @@ export const bloodTestParameters = {
     unit: "mg/dL",
   },
 };
+export const urineTestParameters = {
+  pH: {
+    normalRange: "4.5 - 8.0",
+    unit: "pH",
+    isBoolean: false, // Numeric test
+  },
+  SpecificGravity: {
+    normalRange: "1.005 - 1.030",
+    unit: "",
+    isBoolean: false, // Numeric test
+  },
+  Protein: {
+    normalRange: "Negative",
+    unit: "mg/dL",
+    isBoolean: true, // Positive/Negative
+  },
+  Glucose: {
+    normalRange: "Negative",
+    unit: "mg/dL",
+    isBoolean: true, // Positive/Negative
+  },
+  Ketones: {
+    normalRange: "Negative",
+    unit: "mg/dL",
+    isBoolean: true, // Positive/Negative
+  },
+  Bilirubin: {
+    normalRange: "Negative",
+    unit: "mg/dL",
+    isBoolean: true, // Positive/Negative
+  },
+  Urobilinogen: {
+    normalRange: "0.1 - 1.0",
+    unit: "mg/dL",
+    isBoolean: false, // Numeric test
+  },
+  Blood: {
+    normalRange: "Negative",
+    unit: "RBCs",
+    isBoolean: true, // Positive/Negative
+  },
+  Nitrites: {
+    normalRange: "Negative",
+    unit: "mg",
+    isBoolean: true, // Positive/Negative
+  },
+  LeukocyteEsterase: {
+    normalRange: "Negative",
+    unit: "mg/dL",
+    isBoolean: true, // Positive/Negative
+  },
+  UrineColor: {
+    normalRange: "Light Yellow",
+    unit: "",
+    isBoolean: false, // Predefined string
+  },
+  UrineAppearance: {
+    normalRange: "Clear",
+    unit: "",
+    isBoolean: false, // Predefined string
+  },
+  Microalbumin: {
+    normalRange: "Less than 30",
+    unit: "mg/g creatinine",
+    isBoolean: false, // Numeric test
+  },
+  Calcium: {
+    normalRange: "2.0 - 7.5",
+    unit: "mg/dL",
+    isBoolean: false, // Numeric test
+  },
+  Phosphates: {
+    normalRange: "Variable",
+    unit: "mg/dL",
+    isBoolean: false, // Numeric test
+  },
+  Creatinine: {
+    normalRange: "0.6 - 2.0",
+    unit: "mg/dL",
+    isBoolean: false, // Numeric test
+  },
+  Sodium: {
+    normalRange: "40 - 220",
+    unit: "mEq/L",
+    isBoolean: false, // Numeric test
+  },
+  Potassium: {
+    normalRange: "20 - 120",
+    unit: "mEq/L",
+    isBoolean: false, // Numeric test
+  },
+};
 
 /**
  * Predefined medical conditions options for react-select.
@@ -199,14 +291,14 @@ export const getStatusClass = (status, styles) => {
     case "Resolved":
     case "Paid":
       return styles.consulted;
-    // Red 
+    // Red
     case "Cancelled":
     case "No":
     case "Urgent":
     case "Overdue":
       return styles.cancelled;
     case "Pending":
-    // Yellow
+      return styles.pending;
     case "Scheduled":
       return styles.scheduled;
     // Blue
@@ -484,7 +576,10 @@ export const convertDjangoDateTime = (djangoDate) => {
   return `${dateObj.toLocaleDateString()} | ${dateObj.toLocaleTimeString()}`;
 };
 
-export const formatTestEntries = ({ testEntries, bloodTestParameters }) => {
+export const formatBloodTestEntries = ({
+  testEntries,
+  bloodTestParameters,
+}) => {
   return testEntries.reduce((acc, entry) => {
     acc[entry.parameter] = {
       value: parseFloat(entry.result), // Convert result to number
@@ -495,6 +590,30 @@ export const formatTestEntries = ({ testEntries, bloodTestParameters }) => {
   }, {});
 };
 
+export const formatUrineTestEntries = ({
+  testEntries,
+  urineTestParameters,
+}) => {
+  const result = {};
+
+  testEntries.forEach((entry) => {
+    if (!entry?.parameter) return;
+
+    const paramConfig = urineTestParameters[entry.parameter];
+    if (!paramConfig) return;
+
+    // For ALL parameters, keep the original string value
+    // Don't convert to boolean or number - let the backend handle validation
+    result[entry.parameter] = {
+      value: entry.result, // Keep original string value
+      unit: paramConfig.unit || "",
+      range: paramConfig.normalRange || "",
+      is_boolean: paramConfig.isBoolean || false,
+    };
+  });
+
+  return result;
+};
 
 export const handleParameterChange = (setTestEntries, index, newParameter) => {
   setTestEntries((prevEntries) =>
@@ -512,11 +631,24 @@ export const handleResultChange = (setTestEntries, index, newResult) => {
   );
 };
 
-export const handleAddParameter = (setTestEntries) => {
-  setTestEntries((prevEntries) => [
-    ...prevEntries,
-    { parameter: "Hemoglobin", result: "" }, // Default new parameter
-  ]);
+export const handleAddParameter = (setTestEntries, testCategory) => {
+  setTestEntries((prevEntries) => {
+    let newParameter;
+
+    // Set default parameter based on test category
+    switch (testCategory) {
+      case "Blood":
+        newParameter = { parameter: "Hemoglobin", result: "" };
+        break;
+      case "Urine":
+        newParameter = { parameter: "SpecificGravity", result: "" };
+        break;
+      default:
+        newParameter = { parameter: "pH", result: "" }; // Fallback default
+    }
+
+    return [...prevEntries, newParameter];
+  });
 };
 
 export const handleRemoveParameter = (setTestEntries, index) => {
