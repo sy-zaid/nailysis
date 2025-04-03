@@ -39,7 +39,7 @@
 .closeBtn {
     position: absolute;
     top: 20px;
-    right: 30px;
+    right: 35px;
     cursor: pointer;
     background: transparent;
     color: #4E4E4E;
@@ -48,5 +48,5 @@
 }
 
 .closeBtn i {
-    font-size: 40px;
+    font-size: 28px;
 }

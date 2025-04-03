@@ -186,10 +186,7 @@ const SendFeedback = () => {
       {showPopup && popupContent}
 
       <div className={styles.pageContainer}>
-        {showPopup && popupContent}
         <Navbar />
-
-        {showPopup && popupContent}
 
 
         {/* Page Header */}

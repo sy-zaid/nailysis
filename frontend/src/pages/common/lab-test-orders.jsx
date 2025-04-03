@@ -383,15 +383,19 @@ const TestOrders = () => {
                               >
                                 <i className="fa-solid fa-pen"></i> Edit Details
                               </li>
+                              {curUser[0].role === "lab_admin" && (
                               <li
-                                onClick={() => handleActionClick("Delete", row)}
+                                onClick={() =>
+                                  handleActionClick("View Test Order", row)
+                                }
                               >
                                 <i
                                   className="fa-regular fa-circle-xmark"
                                   style={{ color: "red" }}
                                 ></i>{" "}
-                                Delete
+                                View Order
                               </li>
+                              )}
                               <li
                                 onClick={() =>
                                   handleActionClick("Download as PDF", row)
