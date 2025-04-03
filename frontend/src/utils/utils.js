@@ -643,6 +643,9 @@ export const handleAddParameter = (setTestEntries, testCategory) => {
       case "Urine":
         newParameter = { parameter: "SpecificGravity", result: "" };
         break;
+      case "Pathology":
+        newParameter = { parameter: "WBC", type: "numeric", result: "" };
+        break;
       default:
         newParameter = { parameter: "pH", result: "" }; // Fallback default
     }

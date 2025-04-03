@@ -7,7 +7,7 @@ import PopupViewTestOrder from "../../components/Popup/popups-labs/view-test-ord
 import PopupDeleteTestOrder from "../../components/Popup/popups-labs/delete-test-order-popup";
 
 import { getTestOrders } from "../../api/labsApi";
-import { getStatusClass } from "../../utils/utils";
+import { getAccessToken, getStatusClass } from "../../utils/utils";
 
 import {
   convertDjangoDateTime,
@@ -17,10 +17,27 @@ import {
 } from "../../utils/utils";
 import useCurrentUserData from "../../useCurrentUserData";
 
+/**
+ * TestOrders Component
+ *
+ * This component manages test orders, allowing users to view, process, and delete test requests.
+ * It fetches test orders from the backend, handles user interactions, and manages popups for different actions.
+ *
+ * Features:
+ * - Fetches test orders and displays them in a table.
+ * - Provides options to process, view, or delete test orders.
+ * - Uses popups for handling test order actions.
+ * - Includes filtering and menu interaction handling.
+ *
+ * @returns {JSX.Element} The rendered TestOrders component.
+ */
 const TestOrders = () => {
   // ----- TOKENS & USER INFORMATION
+  /**
+   * Fetches current user data and stores the authentication token.
+   */
   const { data: curUser, isLoading, error } = useCurrentUserData();
-  const token = localStorage.getItem("access");
+  const token = getAccessToken();
 
   // ----- POPUPS & NAVIGATION
   const [menuOpen, setMenuOpen] = useState(null);
@@ -30,15 +47,17 @@ const TestOrders = () => {
   const [activeButton, setActiveButton] = useState(0);
   const actionMenuRef = useRef(null);
 
-  // ------------------------- ZAID'S WORK (OTHER THINGS NEEDS TO BE REVISED) ------------------------- //
-
   // ----- IMPORTANT DATA
+  /**
+   * Stores test orders fetched from the backend.
+   */
   const [testOrders, setTestOrders] = useState([]);
+  console.log("TEST REQUESTS RESPONSE", testOrders);
 
-  console.log("TEST REQUESTS RESPONSSE", testOrders);
-
-  // API CALLS, FUNCTIONS FOR DATA, AND MORE
-  // Fetch test orders to map the rows on table
+  // ----- MAIN LOGIC FUNCTIONS
+  /**
+   * Fetches test orders to populate the table rows.
+   */
   const fetchTestOrders = async () => {
     try {
       const response = await getTestOrders();
@@ -49,6 +68,11 @@ const TestOrders = () => {
   };
 
   // ----- HANDLERS
+  /**
+   * Handles actions (process, view, delete) for test orders and triggers popups accordingly.
+   * @param {string} action - The action to be performed.
+   * @param {Object} testOrderDetails - Details of the selected test order.
+   */
   const handleActionClick = (action, testOrderDetails) => {
     console.log(`Performing ${action} on ID:${testOrderDetails}`);
 
@@ -59,7 +83,6 @@ const TestOrders = () => {
           testOrderDetails={testOrderDetails}
         />
       );
-      setShowPopup(true);
     } else if (action === "View Test Order") {
       setPopupContent(
         <PopupViewTestOrder
@@ -67,7 +90,6 @@ const TestOrders = () => {
           testOrderDetails={testOrderDetails}
         />
       );
-      setShowPopup(true);
     } else if (action === "Delete Order") {
       setPopupContent(
         <PopupDeleteTestOrder
@@ -75,35 +97,45 @@ const TestOrders = () => {
           testOrderDetails={testOrderDetails}
         />
       );
-      setShowPopup(true);
     }
+    setShowPopup(true);
   };
 
+  /**
+   * Updates the active filter button state.
+   * @param {number} index - Index of the clicked filter button.
+   */
   const handleFilterClick = (index) => {
-    setActiveButton(index); // Set the active button when clicked
+    setActiveButton(index);
   };
 
+  /**
+   * Detects clicks outside the action menu to close it.
+   * @param {Event} event - Click event.
+   */
   const handleClickOutside = (event) => {
     if (
       actionMenuRef.current &&
       !actionMenuRef.current.contains(event.target)
     ) {
-      setMenuOpen(null); // Ensure state updates to close the menu
+      setMenuOpen(null);
     }
   };
 
   // ----- USE EFFECTS
-
-  // Helps in closing action menu on mouse click (anywhere)
+  /**
+   * Adds an event listener to close the action menu when clicking outside.
+   */
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Get test requests on component mount
+  /**
+   * Fetches test orders when the component mounts or when the popup closes.
+   */
   useEffect(() => {
     if (!showPopup) {
-      // Fetch only when popup is closed
       fetchTestOrders();
     }
   }, [token]);
