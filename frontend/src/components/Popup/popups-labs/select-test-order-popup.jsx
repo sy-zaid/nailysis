@@ -7,6 +7,8 @@ import BloodTestEntryPopup from "./blood-test-entry-popup";
 import UrineTestEntryPopup from "./urine-test-entry-popup";
 import { submitTestResults, getTestResults } from "../../../api/labsApi";
 import { toast } from "react-toastify";
+import ImagingTestEntryPopup from "./imaging-test-entry-popup";
+import PathologyTestEntryPopup from "./pathology-test-entry-popup";
 
 /**
  * PopupSelectTestOrder Component
@@ -47,7 +49,7 @@ const PopupSelectTestOrder = ({ onClose, testOrderDetails }) => {
       />
     ),
     "Imaging Test": (testDetails, testOrderDetails, editable) => (
-      <UrineTestEntryPopup
+      <ImagingTestEntryPopup
         testDetails={testDetails}
         testOrderDetails={testOrderDetails}
         onClose={() => setShowInnerPopup(false)}
@@ -55,7 +57,7 @@ const PopupSelectTestOrder = ({ onClose, testOrderDetails }) => {
       />
     ),
     "Pathology Report": (testDetails, testOrderDetails, editable) => (
-      <UrineTestEntryPopup
+      <PathologyTestEntryPopup
         testDetails={testDetails}
         testOrderDetails={testOrderDetails}
         onClose={() => setShowInnerPopup(false)}
@@ -401,7 +403,7 @@ const PopupSelectTestOrder = ({ onClose, testOrderDetails }) => {
               })}
             </div>
           </div>
-          ;
+
           <br />
           <hr />
           <div className={styles.newActions}>
