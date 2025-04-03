@@ -383,7 +383,7 @@ const PathologyTestEntryPopup = ({
               </button>
             </div>
           </div>
-          
+
           <div className={styles.qualitativeSection}>
             <h3>
               <i className="fa-solid fa-vial-circle-check"></i>
