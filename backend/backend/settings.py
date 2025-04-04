@@ -70,6 +70,7 @@ INSTALLED_APPS = [
     'ehr',
     'feedbacks', 
     'labs',
+    'model_service.apps.ModelServiceConfig',
     
 ]
 
