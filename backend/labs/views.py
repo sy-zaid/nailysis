@@ -159,6 +159,10 @@ class LabTestResultModelViewSet(viewsets.ModelViewSet):
         if user.role != "lab_technician":
             return Response({"error": "Access denied: Only lab technicians can create test results."}, status=status.HTTP_403_FORBIDDEN)
 
+        test_category = request.data.get("test_category")
+        if test_category == "Pathology":
+            result_file = request.FILES.get("result_file")
+            print("GOT PATH")
         test_order_id = request.data.get("test_order_id")
         test_type_id = request.data.get("test_type_id")
         technician_id = request.data.get("technician_id")
@@ -183,7 +187,8 @@ class LabTestResultModelViewSet(viewsets.ModelViewSet):
                     "numeric_results": test_entries,
                     "comments": comments,
                     "reviewed_by": lab_technician,
-                    "result_status":"Pending"
+                    "result_status":"Pending",
+                    "result_file":result_file or None,
                 }
             )
 

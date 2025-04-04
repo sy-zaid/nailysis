@@ -7,7 +7,11 @@ import {
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import styles from "./lab-test-result.module.css";
-import logo from "../../../public/nailysis-logo-small.png"; // Ensure the logo in this path
+import logo from "../../../public/nailysis-logo-small.png";
+import Modal from "react-modal"; // Import modal for fullscreen viewing
+
+// Set app element for accessibility (needed for react-modal)
+Modal.setAppElement('#root');
 
 const LabTestResult = () => {
   const [labTestResult, setLabTestResult] = useState(null);
@@ -15,13 +19,20 @@ const LabTestResult = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const { reportId } = useParams();
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [fileType, setFileType] = useState("");
 
   useEffect(() => {
     const fetchLabTestResult = async () => {
       try {
         const response = await getTestResultsById(reportId);
         setLabTestResult(response.data[0]);
-        console.log("LAB TEST RESULT", labTestResult);
+        // Determine file type if result_file exists
+        if (response.data[0]?.result_file) {
+          const fileUrl = response.data[0].result_file;
+          const extension = fileUrl.split('.').pop().toLowerCase();
+          setFileType(extension === 'pdf' ? 'pdf' : 'image');
+        }
       } catch (err) {
         setError(err.message);
       } finally {
@@ -73,7 +84,6 @@ const LabTestResult = () => {
         toast.success("Test report finalized successfully", {
           className: "custom-toast",
         });
-        // Optional: Refresh data or update state
       }
     } catch (error) {
       if (error.response) {
@@ -91,6 +101,9 @@ const LabTestResult = () => {
     }
   };
 
+  const openModal = () => setModalIsOpen(true);
+  const closeModal = () => setModalIsOpen(false);
+
   if (loading) return <p className={styles.loading}>Loading report...</p>;
   if (error) return <p className={styles.error}>{error}</p>;
 
@@ -102,8 +115,7 @@ const LabTestResult = () => {
       </header>
       <div className={styles.content}>
         <p>
-          <strong>Test Order ID:</strong>{" "}
-          {labTestResult?.id || "N/A"}
+          <strong>Test Order ID:</strong> {labTestResult?.id || "N/A"}
         </p>
         <p>
           <strong>Reviewed By:</strong>{" "}
@@ -145,14 +157,66 @@ const LabTestResult = () => {
         {labTestResult?.result_file && (
           <div className={styles.section}>
             <h2 className={styles.sectionTitle}>Result File</h2>
-            <a
-              href={labTestResult.result_file}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.link}
-            >
-              Download Report
-            </a>
+            <div className={styles.filePreviewContainer}>
+              {fileType === 'pdf' ? (
+                <>
+                  <div className={styles.pdfThumbnail} onClick={openModal}>
+                    <i className="fas fa-file-pdf" style={{ fontSize: '48px', color: '#e74c3c' }}></i>
+                    <span>View PDF</span>
+                  </div>
+                  <Modal
+                    isOpen={modalIsOpen}
+                    onRequestClose={closeModal}
+                    contentLabel="PDF Viewer"
+                    className={styles.modal}
+                    overlayClassName={styles.overlay}
+                  >
+                    <button onClick={closeModal} className={styles.closeButton}>
+                      <i className="fas fa-times"></i>
+                    </button>
+                    <iframe 
+                      src={labTestResult.result_file} 
+                      title="PDF Viewer"
+                      className={styles.pdfViewer}
+                    />
+                  </Modal>
+                </>
+              ) : (
+                <>
+                  <div className={styles.imageThumbnail} onClick={openModal}>
+                    <img 
+                      src={labTestResult.result_file} 
+                      alt="Test result" 
+                      className={styles.thumbnailImage}
+                    />
+                  </div>
+                  <Modal
+                    isOpen={modalIsOpen}
+                    onRequestClose={closeModal}
+                    contentLabel="Image Viewer"
+                    className={styles.modal}
+                    overlayClassName={styles.overlay}
+                  >
+                    <button onClick={closeModal} className={styles.closeButton}>
+                      <i className="fas fa-times"></i>
+                    </button>
+                    <img 
+                      src={labTestResult.result_file} 
+                      alt="Test result" 
+                      className={styles.fullscreenImage}
+                    />
+                  </Modal>
+                </>
+              )}
+              <a
+                href={labTestResult.result_file}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.downloadLink}
+              >
+                <i className="fas fa-download"></i> Download
+              </a>
+            </div>
           </div>
         )}
 

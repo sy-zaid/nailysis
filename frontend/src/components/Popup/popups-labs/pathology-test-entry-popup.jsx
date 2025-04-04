@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import styles from "../../CSS Files/LabTechnician.module.css";
 import Popup from "../Popup";
 import { toast } from "react-toastify";
@@ -7,9 +6,13 @@ import {
   convertDjangoDateTime,
   getStatusClass,
   handleAddParameter,
+  handleParameterChange,
+  handleResultChange,
   handleRemoveParameter,
+  handleInputChange,
 } from "../../../utils/utils";
 import useCurrentUserData from "../../../useCurrentUserData";
+import { savePathologyTestResults } from "../../../api/labsApi";
 
 const PathologyTestEntryPopup = ({
   onClose,
@@ -23,115 +26,141 @@ const PathologyTestEntryPopup = ({
   const [isChecked, setIsChecked] = useState(false);
 
   // Pathology test state
-  const [numericResults, setNumericResults] = useState({});
-  const [booleanResults, setBooleanResults] = useState({});
-  const [comments, setComments] = useState("");
   const [resultFile, setResultFile] = useState(null);
 
-  const PARAMETER_LIBRARY = {
-    quantitative: {
-      WBC: { unit: "cells/mcL", normalRange: "4,500 - 11,000" },
-      Hemoglobin: { unit: "g/dL", normalRange: "13.5 - 17.5" },
-      Glucose: { unit: "mg/dL", normalRange: "70-99" },
-    },
-    qualitative: {
-      MalariaTest: {
-        options: ["Positive", "Negative"],
-        interpretation: {
-          Positive: "Malaria parasites detected",
-          Negative: "No parasites observed",
-        },
-      },
-      HIV: {
-        options: ["Reactive", "Non-Reactive", "Indeterminate"],
-      },
-      HepatitisBSurfaceAg: {
-        options: ["Positive", "Negative"],
-      },
-    },
-  };
-  const handleAddQualitativeParam = () => {
-    setQualitativeEntries([
-      ...qualitativeEntries,
-      {
-        parameter: Object.keys(PARAMETER_LIBRARY.qualitative)[0],
-        result: "",
-        ...PARAMETER_LIBRARY.qualitative[
-          Object.keys(PARAMETER_LIBRARY.qualitative)[0]
-        ],
-      },
-    ]);
-  };
-  const [qualitativeEntries, setQualitativeEntries] = useState([
-    {
-      parameter: "MalariaTest",
-      result: "",
-      ...PARAMETER_LIBRARY.qualitative["MalariaTest"],
-    },
-  ]);
-  // Sample pathology test parameters (would normally come from API)
+  // Test Result form state
+  const [formData, setFormData] = useState({
+    test_entries: [],
+    comments: "",
+  });
+
   const pathologyParameters = {
     WBC: {
       type: "numeric",
       unit: "cells/mcL",
       normalRange: "4,500 - 11,000",
+      label: "White Blood Cells",
+      description: "Measures the number of white blood cells in blood.",
     },
     RBC: {
       type: "numeric",
       unit: "million cells/mcL",
       normalRange: "4.5 - 5.9",
+      label: "Red Blood Cells",
+      description: "Measures the number of red blood cells in blood.",
     },
     Hemoglobin: {
       type: "numeric",
       unit: "g/dL",
       normalRange: "13.5 - 17.5",
+      label: "Hemoglobin",
+      description: "Measures the hemoglobin concentration in blood.",
     },
     Hematocrit: {
       type: "numeric",
       unit: "%",
       normalRange: "38.3 - 48.6",
+      label: "Hematocrit",
+      description: "Measures the proportion of red blood cells in blood.",
     },
     Platelets: {
       type: "numeric",
       unit: "cells/mcL",
       normalRange: "150,000 - 450,000",
+      label: "Platelets",
+      description: "Measures the number of platelets in blood.",
     },
     MalariaTest: {
       type: "boolean",
       options: ["Positive", "Negative"],
+      label: "Malaria Test",
+      interpretation: {
+        Positive: "Malaria parasites detected",
+        Negative: "No parasites observed",
+      },
+      description: "Detects presence of malaria parasites in blood smear.",
     },
-    HIVTest: {
+    HIV: {
       type: "boolean",
-      options: ["Positive", "Negative", "Indeterminate"],
+      options: ["Reactive", "Non-Reactive", "Indeterminate"],
+      label: "HIV Antibody Test",
+      interpretation: {
+        Reactive:
+          "Possible presence of HIV antibodies. Further testing required.",
+        NonReactive: "No HIV antibodies detected.",
+        Indeterminate: "Result unclear. Repeat test advised.",
+      },
+      description: "HIV screening test using ELISA or rapid test methods.",
     },
+    HepatitisBSurfaceAg: {
+      type: "boolean",
+      options: ["Positive", "Negative"],
+      label: "Hepatitis B Surface Antigen (HBsAg)",
+      interpretation: {
+        Positive: "Indicates active Hepatitis B infection.",
+        Negative: "No Hepatitis B surface antigen detected.",
+      },
+      description: "Checks for the presence of Hepatitis B surface antigen.",
+    },
+    DengueNS1: {
+      type: "boolean",
+      options: ["Positive", "Negative"],
+      label: "Dengue NS1 Antigen",
+      interpretation: {
+        Positive: "Dengue virus antigen detected.",
+        Negative: "No dengue antigen detected.",
+      },
+      description: "Detects early dengue infection before antibodies form.",
+    },
+    TyphoidIgM: {
+      type: "boolean",
+      options: ["Positive", "Negative"],
+      label: "Typhoid IgM Antibodies",
+      interpretation: {
+        Positive: "Recent typhoid infection.",
+        Negative: "No typhoid IgM antibodies detected.",
+      },
+      description: "Identifies recent exposure to Salmonella typhi.",
+    },
+  };
+
+  const formatPathologyTestEntries = ({ testEntries, pathologyParameters }) => {
+    return testEntries.reduce((acc, entry) => {
+      const paramInfo = pathologyParameters[entry.parameter];
+
+      if (!paramInfo) {
+        // Skip unknown parameters
+        return acc;
+      }
+
+      if (paramInfo.type === "numeric") {
+        acc[entry.parameter] = {
+          value: parseFloat(entry.result),
+          unit: paramInfo.unit || "",
+          range: paramInfo.normalRange || "",
+          type: "numeric",
+        };
+      } else if (paramInfo.type === "boolean") {
+        acc[entry.parameter] = {
+          value: entry.result, // keep as string: "Positive", "Negative", etc.
+          options: paramInfo.options || [],
+          type: "boolean",
+          interpretation: paramInfo.interpretation?.[entry.result] || "",
+        };
+      }
+
+      return acc;
+    }, {});
   };
 
   const { data: curUser } = useCurrentUserData();
-
-  const handleNumericResultChange = (param, value) => {
-    setNumericResults((prev) => ({
-      ...prev,
-      [param]: {
-        ...prev[param],
-        value: value,
-        unit: pathologyParameters[param].unit,
-        range: pathologyParameters[param].normalRange,
-      },
-    }));
-  };
 
   // Pathology test state
   const [testEntries, setTestEntries] = useState([
     { parameter: "WBC", type: "numeric", result: "" },
     { parameter: "RBC", type: "numeric", result: "" },
   ]);
-  const handleBooleanResultChange = (param, value) => {
-    setBooleanResults((prev) => ({
-      ...prev,
-      [param]: value,
-    }));
-  };
-
+  const onInputChange = handleInputChange(setFormData);
   const handleFileChange = (event) => {
     setResultFile(event.target.files[0]);
   };
@@ -150,25 +179,18 @@ const PathologyTestEntryPopup = ({
     setLoading(true);
     setError(null);
 
-    const formData = new FormData();
-    formData.append("test_order_id", testOrderDetails.id);
-    formData.append("test_type_id", testDetails.id);
-    formData.append("technician_id", curUser[0]?.user_id);
-    formData.append("numeric_results", JSON.stringify(numericResults));
-    formData.append("boolean_results", JSON.stringify(booleanResults));
-    formData.append("comments", comments);
-    if (resultFile) {
-      formData.append("result_file", resultFile);
-    }
-
+    const payload = {
+      test_order_id: testOrderDetails.id,
+      test_type_id: testDetails.id,
+      test_category: "Pathology",
+      technician_id: curUser[0]?.user_id,
+      test_entries: JSON.stringify(formData.test_entries),
+      comments: formData.comments,
+      result_file: resultFile,
+    };
     try {
-      const response = await axios.post(
-        "/api/lab-tests/pathology-entry",
-        formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        }
-      );
+      console.log("SENDING THIS TO PATH TEST", payload);
+      const response = await savePathologyTestResults(payload);
 
       if (response.status === 201) {
         toast.success("Successfully Created Pathology Test Result", {
@@ -189,6 +211,33 @@ const PathologyTestEntryPopup = ({
     }
     setLoading(false);
   };
+
+  // ----- USE EFFECTS
+  /**
+   * Synchronizes the testEntries state with formData when testEntries changes.
+   */
+  useEffect(() => {
+    if (testEntries && Array.isArray(testEntries)) {
+      setFormData((prev) => ({
+        ...prev,
+        test_entries: formatPathologyTestEntries({
+          testEntries,
+          pathologyParameters: pathologyParameters,
+        }),
+      }));
+    }
+  }, [testEntries]); // This will update formData when testEntries changes
+
+  /**
+   * Logs the formatted test entries whenever the testEntries or pathologyParameters change.
+   */
+  useEffect(() => {
+    if (!testEntries || !Array.isArray(testEntries)) return; // Prevent errors
+    console.log(
+      "TEST ENTRIES FORMATTING:",
+      formatPathologyTestEntries({ testEntries, pathologyParameters })
+    );
+  }, [testEntries, pathologyParameters]);
 
   return (
     <Popup
@@ -299,58 +348,85 @@ const PathologyTestEntryPopup = ({
                       className={styles.patientSelect}
                       value={entry.parameter}
                       onChange={(e) =>
-                        handleParameterChange(index, e.target.value)
+                        handleParameterChange(
+                          setTestEntries,
+                          index,
+                          e.target.value
+                        )
                       }
                     >
                       {Object.keys(pathologyParameters).map((param) => (
                         <option key={param} value={param}>
-                          {param}
+                          {pathologyParameters[param].label}
                         </option>
                       ))}
                     </select>
+                    {paramConfig.description && (
+                      <p className={styles.parameterDescription}>
+                        {paramConfig.description}
+                      </p>
+                    )}
                   </div>
 
-                  <div>
-                    <label>Normal Range</label>
-                    <p>{paramConfig.normalRange}</p>
-                  </div>
+                  {paramConfig.type === "numeric" && (
+                    <>
+                      <div>
+                        <label>Normal Range</label>
+                        <p>{paramConfig.normalRange}</p>
+                      </div>
+                      <div>
+                        <label>Unit</label>
+                        <p>{paramConfig.unit}</p>
+                      </div>
+                    </>
+                  )}
 
                   <div>
                     <label>Result</label>
-                    {entry.type === "numeric" ? (
+                    {paramConfig.type === "numeric" ? (
                       <input
                         type="number"
                         step="any"
                         placeholder="Enter value"
                         value={entry.result}
                         onChange={(e) =>
-                          handleResultChange(index, e.target.value)
+                          handleResultChange(
+                            setTestEntries,
+                            index,
+                            e.target.value
+                          )
                         }
                       />
                     ) : (
-                      <select
-                        className={styles.patientSelect}
-                        value={entry.result}
-                        onChange={(e) =>
-                          handleResultChange(index, e.target.value)
-                        }
-                      >
-                        <option value="">Select result</option>
-                        {paramConfig.options.map((option) => (
-                          <option key={option} value={option}>
-                            {option}
-                          </option>
-                        ))}
-                      </select>
+                      <>
+                        <select
+                          className={styles.patientSelect}
+                          value={entry.result}
+                          onChange={(e) =>
+                            handleResultChange(
+                              setTestEntries,
+                              index,
+                              e.target.value
+                            )
+                          }
+                        >
+                          <option value="">Select result</option>
+                          {paramConfig.options.map((option) => (
+                            <option key={option} value={option}>
+                              {option}
+                            </option>
+                          ))}
+                        </select>
+                        {entry.result &&
+                          paramConfig.interpretation?.[entry.result] && (
+                            <div className={styles.interpretation}>
+                              <strong>Note:</strong>{" "}
+                              {paramConfig.interpretation[entry.result]}
+                            </div>
+                          )}
+                      </>
                     )}
                   </div>
-
-                  {entry.type === "numeric" && (
-                    <div>
-                      <label>Unit</label>
-                      <p>{paramConfig.unit}</p>
-                    </div>
-                  )}
 
                   <div>
                     <button
@@ -384,79 +460,6 @@ const PathologyTestEntryPopup = ({
             </div>
           </div>
 
-          <div className={styles.qualitativeSection}>
-            <h3>
-              <i className="fa-solid fa-vial-circle-check"></i>
-              Qualitative Tests
-              <button
-                onClick={handleAddQualitativeParam}
-                className={styles.addButton}
-              >
-                <i className="bx bx-plus"></i> Add Test
-              </button>
-            </h3>
-
-            {qualitativeEntries.map((entry, index) => (
-              <div key={index} className={styles.qualitativeRow}>
-                <div className={styles.paramSelect}>
-                  <select
-                    value={entry.parameter}
-                    onChange={(e) => {
-                      const updated = [...qualitativeEntries];
-                      updated[index] = {
-                        ...PARAMETER_LIBRARY.qualitative[e.target.value],
-                        parameter: e.target.value,
-                        result: "",
-                      };
-                      setQualitativeEntries(updated);
-                    }}
-                  >
-                    {Object.keys(PARAMETER_LIBRARY.qualitative).map((param) => (
-                      <option key={param} value={param}>
-                        {param}
-                      </option>
-                    ))}
-                  </select>
-
-                  <button
-                    onClick={() => {
-                      setQualitativeEntries(
-                        qualitativeEntries.filter((_, i) => i !== index)
-                      );
-                    }}
-                    className={styles.deleteButton}
-                  >
-                    <i className="fa-solid fa-trash-can"></i>
-                  </button>
-                </div>
-
-                <div className={styles.resultInput}>
-                  <select
-                    value={entry.result}
-                    onChange={(e) => {
-                      const updated = [...qualitativeEntries];
-                      updated[index].result = e.target.value;
-                      setQualitativeEntries(updated);
-                    }}
-                  >
-                    <option value="">Select result</option>
-                    {entry.options.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-
-                  {entry.interpretation && entry.result && (
-                    <div className={styles.interpretation}>
-                      <strong>Note:</strong>{" "}
-                      {entry.interpretation[entry.result]}
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
           <div className={styles.formSection}>
             <h3>
               <i
@@ -494,9 +497,10 @@ const PathologyTestEntryPopup = ({
               <div>
                 <textarea
                   style={{ borderBottom: "2px solid #0067FF" }}
-                  placeholder="Enter detailed findings and interpretation..."
-                  value={comments}
-                  onChange={(e) => setComments(e.target.value)}
+                  placeholder="Enter your comments for this test report"
+                  name="comments"
+                  value={formData.comments}
+                  onChange={onInputChange}
                 ></textarea>
               </div>
             </div>

@@ -1,7 +1,7 @@
 import axios from "axios";
-const API_URL = import.meta.env.VITE_API_URL;
 import { getAccessToken, getHeaders } from "../utils/utils";
-
+const API_URL = import.meta.env.VITE_API_URL;
+const token = getAccessToken()
 /**
  * Fetches all test orders from the API.
  * @returns {Promise} Axios GET request promise.
@@ -49,6 +49,16 @@ export const getTestResultsById = async (test_id) => {
 export const saveTestResults = async (payload) => {
   const url = `${API_URL}/api/test_results/save_results/`;
   return axios.post(url, payload, getHeaders());
+};
+
+export const savePathologyTestResults = async (payload) => {
+  const url = `${API_URL}/api/test_results/save_results/`;
+  return axios.post(url, payload, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+      Authorization: `Bearer ${token}`,
+    },
+  });
 };
 
 /**
