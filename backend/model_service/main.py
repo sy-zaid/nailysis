@@ -30,7 +30,7 @@ async def predict_nail_condition(file: UploadFile = File(...)):
     image_array = np.array(image) / 255.0
     image_array = np.expand_dims(image_array, axis=0)
     
-    # Make prediction
+    # Make prediction 
     predictions = model.predict(image_array)
     predicted_class = np.argmax(predictions, axis=1)[0]
     confidence = float(np.max(predictions))
