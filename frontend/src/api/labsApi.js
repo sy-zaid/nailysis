@@ -51,7 +51,7 @@ export const saveTestResults = async (payload) => {
   return axios.post(url, payload, getHeaders());
 };
 
-export const savePathologyTestResults = async (payload) => {
+export const saveTestResultsWithImage = async (payload) => {
   const url = `${API_URL}/api/test_results/save_results/`;
   return axios.post(url, payload, {
     headers: {

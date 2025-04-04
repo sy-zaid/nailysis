@@ -8,10 +8,9 @@ import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import styles from "./lab-test-result.module.css";
 import logo from "../../../public/nailysis-logo-small.png";
-import Modal from "react-modal"; // Import modal for fullscreen viewing
+import Modal from "react-modal";
 
-// Set app element for accessibility (needed for react-modal)
-Modal.setAppElement('#root');
+Modal.setAppElement("#root");
 
 const LabTestResult = () => {
   const [labTestResult, setLabTestResult] = useState(null);
@@ -20,19 +19,38 @@ const LabTestResult = () => {
   const [error, setError] = useState("");
   const { reportId } = useParams();
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [fileType, setFileType] = useState("");
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [resultFiles, setResultFiles] = useState([]);
+  const [allResultFiles, setAllResultFiles] = useState([]);
 
   useEffect(() => {
     const fetchLabTestResult = async () => {
       try {
         const response = await getTestResultsById(reportId);
-        setLabTestResult(response.data[0]);
-        // Determine file type if result_file exists
-        if (response.data[0]?.result_file) {
-          const fileUrl = response.data[0].result_file;
-          const extension = fileUrl.split('.').pop().toLowerCase();
-          setFileType(extension === 'pdf' ? 'pdf' : 'image');
+        const resultData = response.data[0];
+        setLabTestResult(resultData);
+
+        // Combine all result files from both fields
+        const files = [];
+
+        // Add the main result_file if it exists
+        if (resultData?.result_file) {
+          files.push(resultData.result_file);
         }
+
+        // Add additional images from imaging_results array if it exists
+        if (
+          resultData?.imaging_results &&
+          Array.isArray(resultData.imaging_results)
+        ) {
+          // Assuming the imaging_results array contains filenames that need to be prefixed with the media URL
+          const baseUrl = "http://127.0.0.1:8000/media/lab_results/";
+          resultData.imaging_results.forEach((filename) => {
+            files.push(baseUrl + filename);
+          });
+        }
+
+        setAllResultFiles(files);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -101,8 +119,25 @@ const LabTestResult = () => {
     }
   };
 
-  const openModal = () => setModalIsOpen(true);
+  const openModal = (index) => {
+    setCurrentImageIndex(index);
+    setModalIsOpen(true);
+  };
+
   const closeModal = () => setModalIsOpen(false);
+
+  const navigateImage = (direction) => {
+    let newIndex = currentImageIndex + direction;
+    if (newIndex < 0) newIndex = resultFiles.length - 1;
+    if (newIndex >= resultFiles.length) newIndex = 0;
+    setCurrentImageIndex(newIndex);
+  };
+
+  const getFileType = (fileUrl) => {
+    if (!fileUrl) return "unknown";
+    const extension = fileUrl.split(".").pop().toLowerCase();
+    return extension === "pdf" ? "pdf" : "image";
+  };
 
   if (loading) return <p className={styles.loading}>Loading report...</p>;
   if (error) return <p className={styles.error}>{error}</p>;
@@ -154,69 +189,87 @@ const LabTestResult = () => {
             </div>
           )}
 
-        {labTestResult?.result_file && (
+        {allResultFiles.length > 0 && (
           <div className={styles.section}>
-            <h2 className={styles.sectionTitle}>Result File</h2>
-            <div className={styles.filePreviewContainer}>
-              {fileType === 'pdf' ? (
-                <>
-                  <div className={styles.pdfThumbnail} onClick={openModal}>
-                    <i className="fas fa-file-pdf" style={{ fontSize: '48px', color: '#e74c3c' }}></i>
-                    <span>View PDF</span>
-                  </div>
-                  <Modal
-                    isOpen={modalIsOpen}
-                    onRequestClose={closeModal}
-                    contentLabel="PDF Viewer"
-                    className={styles.modal}
-                    overlayClassName={styles.overlay}
+            <h2 className={styles.sectionTitle}>Result Images</h2>
+            <div className={styles.filesContainer}>
+              {allResultFiles.map((file, index) => (
+                <div key={index} className={styles.filePreviewWrapper}>
+                  <div
+                    className={styles.imageThumbnail}
+                    onClick={() => {
+                      setCurrentImageIndex(index);
+                      setModalIsOpen(true);
+                    }}
                   >
-                    <button onClick={closeModal} className={styles.closeButton}>
-                      <i className="fas fa-times"></i>
-                    </button>
-                    <iframe 
-                      src={labTestResult.result_file} 
-                      title="PDF Viewer"
-                      className={styles.pdfViewer}
-                    />
-                  </Modal>
-                </>
-              ) : (
-                <>
-                  <div className={styles.imageThumbnail} onClick={openModal}>
-                    <img 
-                      src={labTestResult.result_file} 
-                      alt="Test result" 
+                    <img
+                      src={file}
+                      alt={`Test result ${index + 1}`}
                       className={styles.thumbnailImage}
                     />
                   </div>
-                  <Modal
-                    isOpen={modalIsOpen}
-                    onRequestClose={closeModal}
-                    contentLabel="Image Viewer"
-                    className={styles.modal}
-                    overlayClassName={styles.overlay}
+                  <a
+                    href={file}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={styles.downloadLink}
                   >
-                    <button onClick={closeModal} className={styles.closeButton}>
-                      <i className="fas fa-times"></i>
-                    </button>
-                    <img 
-                      src={labTestResult.result_file} 
-                      alt="Test result" 
-                      className={styles.fullscreenImage}
-                    />
-                  </Modal>
-                </>
-              )}
-              <a
-                href={labTestResult.result_file}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.downloadLink}
-              >
-                <i className="fas fa-download"></i> Download
-              </a>
+                    <i className="fas fa-download"></i> Download
+                  </a>
+                  <span className={styles.imageName}>
+                    {file.split("/").pop()}
+                  </span>
+                </div>
+              ))}
             </div>
+
+            <Modal
+              isOpen={modalIsOpen}
+              onRequestClose={closeModal}
+              contentLabel="Image Viewer"
+              className={styles.modal}
+              overlayClassName={styles.overlay}
+            >
+              <button onClick={closeModal} className={styles.closeButton}>
+                <i className="fas fa-times"></i>
+              </button>
+
+              {allResultFiles.length > 1 && (
+                <div className={styles.navigationButtons}>
+                  <button
+                    onClick={() => {
+                      setCurrentImageIndex(
+                        (prev) =>
+                          (prev - 1 + allResultFiles.length) %
+                          allResultFiles.length
+                      );
+                    }}
+                    className={styles.navButton}
+                  >
+                    <i className="fas fa-chevron-left"></i>
+                  </button>
+                  <span className={styles.imageCounter}>
+                    {currentImageIndex + 1} / {allResultFiles.length}
+                  </span>
+                  <button
+                    onClick={() => {
+                      setCurrentImageIndex(
+                        (prev) => (prev + 1) % allResultFiles.length
+                      );
+                    }}
+                    className={styles.navButton}
+                  >
+                    <i className="fas fa-chevron-right"></i>
+                  </button>
+                </div>
+              )}
+
+              <img
+                src={allResultFiles[currentImageIndex]}
+                alt={`Test result ${currentImageIndex + 1}`}
+                className={styles.fullscreenImage}
+              />
+            </Modal>
           </div>
         )}
 

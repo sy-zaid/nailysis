@@ -12,7 +12,7 @@ import {
   handleInputChange,
 } from "../../../utils/utils";
 import useCurrentUserData from "../../../useCurrentUserData";
-import { savePathologyTestResults } from "../../../api/labsApi";
+import { saveTestResultsWithImage } from "../../../api/labsApi";
 
 const PathologyTestEntryPopup = ({
   onClose,
@@ -190,7 +190,7 @@ const PathologyTestEntryPopup = ({
     };
     try {
       console.log("SENDING THIS TO PATH TEST", payload);
-      const response = await savePathologyTestResults(payload);
+      const response = await saveTestResultsWithImage(payload);
 
       if (response.status === 201) {
         toast.success("Successfully Created Pathology Test Result", {

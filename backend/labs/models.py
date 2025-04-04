@@ -151,7 +151,8 @@ class LabTestResult(models.Model):
     boolean_results = models.JSONField(null=True, blank=True)  # Stores Positive/Negative test outcomes
     comments = models.TextField(null=True, blank=True)  # Pathologist notes or imaging descriptions
     result_file = models.FileField(upload_to="lab_results/", null=True, blank=True)  # Upload field for reports
-
+    imaging_results = models.JSONField(null=True, blank=True)  # Stores paths to multiple images
+    
     RESULT_STATUS_CHOICES = [
         ("Pending", "Pending"),
         ("Finalized", "Finalized"),
