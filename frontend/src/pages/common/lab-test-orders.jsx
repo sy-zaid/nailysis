@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import styles from "../../components/CSS Files/LabTechnician.module.css";
+import styles from "../common/all-pages-styles.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import Header from "../../components/Dashboard/Header/Header";
 import PopupSelectTestOrder from "../../components/Popup/popups-labs/select-test-order-popup";
@@ -40,10 +40,8 @@ const TestOrders = () => {
   const token = getAccessToken();
 
   // ----- POPUPS & NAVIGATION
-  /**
-   * Manages UI popups and navigation interactions.
-   */
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(null);
+  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
   const [showPopup, setShowPopup] = useState(false);
   const [popupContent, setPopupContent] = useState();
   const [activeButton, setActiveButton] = useState(0);
@@ -150,6 +148,24 @@ const TestOrders = () => {
     return <p>Error fetching user data</p>;
   }
 
+  // Close the action menu when clicking outside of it
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setMenuOpen(null);
+      }
+    };
+  
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [menuOpen]);
+  
+
+
   return (
     <div className={styles.pageContainer}>
       {showPopup && popupContent}
@@ -215,52 +231,54 @@ const TestOrders = () => {
             </div>
             <hr />
             <br />
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  <th>
-                    <input type="checkbox" />
-                  </th>
-                  <th>#</th>
-                  <th>Order ID</th>
-                  <th>Patient Name</th>
-                  <th>Technician Name</th>
-                  <th>Requested Tests</th>
-                  <th>Requested On</th>
-                  <th>Collected On</th>
-                  <th>Total Price</th>
-                  <th>Appointment Status</th>
-                  <th>Test Status</th>
-                  <th>Results Available</th>
-                </tr>
-              </thead>
-              <tbody>
-                {testOrders.map((row, index) => (
-                  <tr key={row.id}>
-                    <td>
+            <div className={styles.tableWrapper}>
+              <table className={styles.table}>
+                <thead>
+                  <tr>
+                    <th>
                       <input type="checkbox" />
-                    </td>
-                    <td data-label="#">{index + 1}</td>
-                    <td data-label="Order ID">{row.id}</td>
-                    <td data-label="Patient Name">
-                      {row.lab_technician_appointment?.patient_name}
-                    </td>
-                    <td data-label="Technician Name">
-                      {row.lab_technician_appointment?.technician_name}
-                    </td>
-                    <td data-label="Requested Tests">
-                      {row.test_types.map((test) => test.label).join(", ")}
-                    </td>
-                    <td data-label="Requested On">
-                      {convertDjangoDateTime(row.created_at)}
-                    </td>
-                    <td data-label="Collected On">
-                      {row?.lab_technician_appointment?.checkout_datetime
-                        ? convertDjangoDateTime(
-                            row.lab_technician_appointment.checkout_datetime
-                          )
-                        : "Not collected yet"}
-                    </td>
+                    </th>
+                    <th>#</th>
+                    <th>Order ID</th>
+                    <th>Patient Name</th>
+                    <th>Technician Name</th>
+                    <th>Requested Tests</th>
+                    <th>Requested On</th>
+                    <th>Collected On</th>
+                    <th>Total Price</th>
+                    <th>Appointment Status</th>
+                    <th>Test Status</th>
+                    <th>Results Available</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {testOrders.map((row, index) => (
+                    <tr key={row.id}>
+                      <td>
+                        <input type="checkbox" />
+                      </td>
+                      <td data-label="#">{index + 1}</td>
+                      <td data-label="Order ID">{row.id}</td>
+                      <td data-label="Patient Name">
+                        {row.lab_technician_appointment?.patient_name}
+                      </td>
+                      <td data-label="Technician Name">
+                        {row.lab_technician_appointment?.technician_name}
+                      </td>
+                      <td data-label="Requested Tests">
+                        {row.test_types.map((test) => test.label).join(", ")}
+                      </td>
+                      <td data-label="Requested On">
+                        {convertDjangoDateTime(row.created_at)}
+                      </td>
+                      <td data-label="Collected On">
+                        {row?.lab_technician_appointment?.checkout_datetime
+                          ? convertDjangoDateTime(
+                              row.lab_technician_appointment.checkout_datetime
+                            )
+                          : "Not collected yet"}
+                      </td>
 
                     <td data-label="Price">
                       {row.lab_technician_appointment?.fee}
@@ -291,15 +309,35 @@ const TestOrders = () => {
                           toggleActionMenu(row.id, menuOpen, setMenuOpen)
                         }
                         className={styles.moreActionsBtn}
+                      />
+                        {row.lab_technician_appointment.status}
+                      </td>
+                      <td
+                        data-label="Status"
+                        className={getStatusClass(row.test_status, styles)}
                       >
-                        <img
-                          src="/icon-three-dots.png"
-                          alt="More Actions"
-                          className={styles.moreActionsIcon}
-                        />
-                      </button>
+                        {row.test_status}
+                      </td>
+                      <td
+                        data-label="Status"
+                        className={getStatusClass(row.test_status, styles)}
+                      >
+                        {row.results_available ? "Yes" : "No"}
+                      </td>
 
-                      {menuOpen === row.id && (
+                      {/* ------------------------- ACTION BUTTONS -------------------------*/}
+                      <td>
+                        <button
+                          onClick={(event) => toggleActionMenu(row.id, menuOpen, setMenuOpen, setMenuPosition, event)}
+                          className={styles.moreActionsBtn}
+                        >
+                          <img
+                            src="/icon-three-dots.png"
+                            alt="More Actions"
+                            className={styles.moreActionsIcon}
+                          />
+                        </button>
+                      {/* {menuOpen === row.id && (
                         <div ref={actionMenuRef} className={styles.menu}>
                           <ul>
                             {row.lab_technician_appointment.status ===
@@ -347,36 +385,81 @@ const TestOrders = () => {
                               }
                             >
                               <i className="bx bx-qr-scan"></i> Print Code
-                            </li>
+                            </li> */}
 
-                            {curUser[0].role === "lab_technician" &&
-                              row.status !== "Completed" && (
+                        {menuOpen && (
+                          <div
+                            ref={menuRef} id={`menu-${row.id}`}
+                            className={styles.menu}
+                            style={{
+                              top: `${menuPosition.top}px`,
+                              left: `${menuPosition.left-20}px`,
+                              position: "absolute",
+                            }}
+                          >
+                          <ul>
+                            {row.lab_technician_appointment.status === "Completed" && (
                                 <li
                                   onClick={() =>
-                                    handleActionClick(
-                                      "Action Start Appointment",
-                                      row
-                                    )
+                                    handleActionClick("Process Test Order", row)
                                   }
                                 >
-                                  Start Appointment
+                                  <i className="fa-solid fa-repeat"></i> Process
+                                  Test Order
                                 </li>
                               )}
-
-                            {(curUser[0].role === "patient" ||
-                              curUser[0].role === "lab_technician") && (
                               <li
                                 onClick={() =>
-                                  handleActionClick(
-                                    "Button Cancellation Request",
-                                    row.id
-                                  )
+                                  handleActionClick("Edit Details", row)
                                 }
                               >
-                                Request Cancellation
+                                <i className="fa-solid fa-pen"></i> Edit Details
                               </li>
-                            )}
+                              {curUser[0].role === "lab_admin" && (
+                              <li
+                                onClick={() =>
+                                  handleActionClick("View Test Order", row)
+                                }
+                              >
+                                <i
+                                  className="fa-regular fa-circle-xmark"
+                                  style={{ color: "red" }}
+                                ></i>{" "}
+                                View Order
+                              </li>
+                              )}
+                              <li
+                                onClick={() =>
+                                  handleActionClick("Download as PDF", row)
+                                }
+                              >
+                                <i className="fa-regular fa-file-pdf"></i>{" "}
+                                Download as PDF
+                              </li>
+                              <li
+                                onClick={() =>
+                                  handleActionClick("Print Code", row)
+                                }
+                              >
+                                <i className="bx bx-qr-scan"></i> Print Code
+                              </li>
 
+                              {curUser[0].role === "lab_technician" &&
+                                row.status !== "Completed" && (
+                                  <li
+                                    onClick={() =>
+                                      handleActionClick(
+                                        "Action Start Appointment",
+                                        row
+                                      )
+                                    }
+                                  >
+                                    Start Appointment
+                                  </li>
+                                )}
+
+                              {/* {(curUser[0].role === "patient" ||
+                                curUser[0].role === "lab_technician") && ( */}
                             {curUser[0].role === "lab_admin" && (
                               <>
                                 <li
@@ -393,23 +476,47 @@ const TestOrders = () => {
                                 <li
                                   onClick={() =>
                                     handleActionClick(
-                                      "Action Cancel Appointment",
+                                      "Button Cancellation Request",
                                       row.id
                                     )
                                   }
                                 >
-                                  Cancel Appointment
+                                  Request Cancellation
                                 </li>
                               </>
-                            )}
+                              )}
+
+                              {curUser[0].role === "lab_admin" && (
+                                <>
+                                  <li
+                                    onClick={() =>
+                                      handleActionClick("Reschedule", row)
+                                    }
+                                  >
+                                    Reschedule
+                                  </li>
+                                  <li
+                                    onClick={() =>
+                                      handleActionClick(
+                                        "Action Cancel Appointment",
+                                        row.id
+                                      )
+                                    }
+                                  >
+                                    Cancel Appointment
+                                  </li>
+                                </>
+                              )}
                           </ul>
                         </div>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                        )}
+
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>

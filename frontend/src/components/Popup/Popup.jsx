@@ -23,12 +23,12 @@ function Popup(props) {
 
   return props.trigger ? (
     <div className={styles.popup}>
-      <div className={styles.popupInner}>
-        <button className={styles.closeBtn} onClick={handleClose}>
-          <i className="bx bx-x"></i>
-        </button>
-        {props.children}
-      </div>
+        <div className={styles.popupInner}>
+          <div className={styles.test}>
+            <button className={styles.closeBtn} onClick={handleClose}><i class="fa-solid fa-xmark"></i></button>
+            {props.children}
+          </div>
+        </div>
     </div>
   ) : null;
 }

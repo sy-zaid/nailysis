@@ -19,7 +19,7 @@ const PatientProfileClinicAdmin = () => {
   return (
     <div className="page">
       <div className="sidebar">{/* Add your sidebar icons here */}</div>
-
+ 
       <div className="profile-assets">
         <div className="profile">
           <img src="/patient.png" alt="patient picture" />

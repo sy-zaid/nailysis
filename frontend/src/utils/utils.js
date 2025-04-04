@@ -511,10 +511,22 @@ export const preparePayload = (ehrData) => {
  * @param {string} recordId - ID of the record.
  * @param {string|null} menuOpen - Currently open menu ID.
  * @param {Function} setMenuOpen - Function to update menu state.
+ * @param {Function} setMenuPosition - Function to update menu position dynamically.
+ * @param {Event} event - The click event to determine menu position.
  */
-export const toggleActionMenu = (recordId, menuOpen, setMenuOpen) => {
-  setMenuOpen(menuOpen === recordId ? null : recordId);
+export const toggleActionMenu = (recordId, menuOpen, setMenuOpen, setMenuPosition, event) => {
+  if (menuOpen === recordId) {
+    setMenuOpen(null);
+  } else {
+    const buttonRect = event.currentTarget.getBoundingClientRect();
+    setMenuPosition({
+      top: buttonRect.bottom + window.scrollY, // Adjust position based on viewport scrolling
+      left: buttonRect.left + window.scrollX - 120, // Adjust position based on viewport scrolling
+    });
+    setMenuOpen(recordId);
+  }
 };
+
 
 /**
  * Closes the popup and resets its content.
@@ -533,6 +545,8 @@ export const handleClosePopup = (setShowPopup, setPopupContent) => {
 export const handleOpenPopup = (setShowPopup) => {
   setShowPopup(true);
 };
+
+
 
 /**
  * Calculates the total fee for selected lab tests based on available test prices.

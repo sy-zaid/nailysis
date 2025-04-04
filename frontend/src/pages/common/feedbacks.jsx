@@ -10,7 +10,13 @@ import { handleOpenPopup, handleClosePopup } from "../../utils/utils";
 import Header from "../../components/Dashboard/Header/Header.jsx";
 import styles from "./feedbacks.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
-import { getRole } from "../../utils/utils";
+
+// UTILS.JS FUNCTIONS
+import {
+  getStatusClass, 
+  toggleActionMenu,
+  getRole,
+} from "../../utils/utils";
 
 
 const API_BASE_URL = "http://localhost:8000/api/feedbacks"; // Update with actual API URL
@@ -18,11 +24,12 @@ const API_BASE_URL = "http://localhost:8000/api/feedbacks"; // Update with actua
 // My Feedback Screen
 const SendFeedback = () => {
   const [feedbackList, setFeedbackList] = useState([]);
-  const [menuOpen, setMenuOpen] = useState(null); // Track open action menu
   const [popupContent, setPopupContent] = useState(); // Store popup content
   const [showPopup, setShowPopup] = useState(false); // Track popup visibility
   const [selectedRecords, setSelectedRecords] = useState([]);
   const curUserRole = getRole(); // Get current user role
+  const [menuOpen, setMenuOpen] = useState(null);
+  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
 
   const [activeButton, setActiveButton] = useState(0);
 
@@ -98,19 +105,25 @@ const SendFeedback = () => {
     },
   ];
 
+  // USE EFFECTS
 
-  const getStatusClass = (status) => {
-    switch (status) {
-      case "Resolved":
-        return styles.resolved;
-      case "In Progress":
-        return styles.inProgress;
-      case "Pending":
-        return styles.pending;
-      default:
-        return styles.defaultColor;
-    }
-  }
+  // Close the action menu when clicking outside of it
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setMenuOpen(null);
+      }
+    };
+  
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [menuOpen]);
+  
+
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -173,10 +186,7 @@ const SendFeedback = () => {
       {showPopup && popupContent}
 
       <div className={styles.pageContainer}>
-        {showPopup && popupContent}
         <Navbar />
-
-        {showPopup && popupContent}
 
 
         {/* Page Header */}
@@ -331,20 +341,64 @@ const SendFeedback = () => {
                           <td>{`${new Date(f.date_submitted).toLocaleDateString()} | ${new Date(f.date_submitted).toLocaleTimeString()}`}</td>
                           <td>{f.category}</td>
                           <td>{f.description}</td>
-                          <td>{f.status}</td>
+                          <td className={getStatusClass(f.status, styles)}>{f.status}</td>
                           <td>Lorem ipsum dolor sit amet consectetur adipisicing elit.</td>
-                          <td style={{ position: "relative" }}>
-                            <i
-                              className="bx bx-dots-vertical-rounded"
-                              style={{ cursor: "pointer"}}
-                              onClick={togglePopup}
-                            ></i>
+
+                          {/* ------------------------- ACTION BUTTONS -------------------------*/}
+                      
+                          <td>
+                          <button
+                            onClick={(event) => toggleActionMenu(f.id, menuOpen, setMenuOpen, setMenuPosition, event)}
+                            className={styles.moreActionsBtn}
+                          >
+                            <img src="/icon-three-dots.png" alt="More Actions" className={styles.moreActionsIcon} />
+                          </button>
+
+                          {menuOpen && (
+                            <div
+                              ref={menuRef} id={`menu-${f.id}`}
+                              className={styles.menu}
+                              style={{
+                                top: `${menuPosition.top}px`,
+                                left: `${menuPosition.left}px`,
+                                position: "absolute",
+                              }}
+                            >
+                              <ul>
+
+                                <li>
+                                  <i className="fa-solid fa-eye"></i>View Details
+                                </li>
+
+                                {(curUserRole === "lab_admin" || curUserRole === "clinic_admin") && (
+                                  <li>
+                                    <i className="fa-solid fa-reply"></i>View and Respond
+                                  </li>
+                                )}
+
+                                {(curUserRole === "lab_admin" || curUserRole === "clinic_admin") && (
+                                  <li>
+                                    <i className="fa-solid fa-reply"></i>Update Status
+                                  </li>
+                                )}
+
+                                {(curUserRole === "lab_admin" || curUserRole === "clinic_admin") && (
+                                  <li>
+                                    <i class="fa-solid fa-trash"></i>Delete Feedback
+                                  </li>
+                                )}
+                              </ul> 
+                            </div>
+                          )}
+
                           </td>
+                    
+                          
                         </tr>
                       ))
                     ) : (
                       <tr>
-                        <td colSpan="5">No feedbacks available</td> {/*  Show a message if no data */}
+                        <td colSpan="10">No feedbacks available</td> {/*  Show a message if no data */}
                       </tr>
                     )}
                   </tbody>
@@ -359,49 +413,6 @@ const SendFeedback = () => {
           </div>
 
         </div>
-
-        {/* Popup */}
-        {popupVisible && (
-          <div
-            ref={popupRef}
-            style={{
-              position: "absolute",
-              top: popupPosition.top,
-              left: popupPosition.left,
-              background: "white",
-              border: "1px solid #ccc",
-              boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
-              padding: "10px",
-              borderRadius: "10px",
-              fontSize: "14px",
-              zIndex: 1000,
-            }}
-          >
-
-            <p style={{ margin: "10px 0", cursor: "pointer" }} onClick={() => handleActionClick("View Feedback Details")}>
-              <i className="fa-solid fa-repeat" style={{ margin: "0 5px 0 0" }}></i> View Details
-            </p>
-
-            {(curUserRole === "lab_admin" || curUserRole === "clinic_admin") && (
-            <p style={{ margin: "10px 0", cursor: "pointer" }} onClick={() => handleActionClick("Respond To Feedback")}>
-              <i className="fa-regular fa-file-pdf" style={{ margin: "0 5px 0 0" }}></i> View and Respond
-            </p>
-            )} 
-
-            {(curUserRole === "lab_admin" || curUserRole === "clinic_admin") && (
-            <p style={{ margin: "10px 0", cursor: "pointer" }}>
-              <i className="fa-regular fa-file-pdf" style={{ margin: "0 5px 0 0" }}></i> Update Status
-            </p>
-            )}
-
-            {(curUserRole === "lab_admin" || curUserRole === "clinic_admin") && (
-            <p style={{ margin: "10px 0", cursor: "pointer" }}>
-              <i className="fa-regular fa-circle-xmark" style={{ color: "red", margin: "0 5px 0 0" }}></i> Delete Feedback
-            </p>
-            )}
-
-          </div>
-        )}
 
       </div>
     </div>

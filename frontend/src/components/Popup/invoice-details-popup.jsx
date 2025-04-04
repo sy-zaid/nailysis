@@ -14,8 +14,8 @@ const PopupInvoiceDetails = ({ invoiceDetailsPopup, setinvoiceDetailsPopup, onPr
             <div className={styles.headerSection}>
 
                 <div className={styles.titleSection}>
-                    <h2 style={{ marginLeft: "20px" }}>Invoice Details For Patient: John Doe (Invoice ID: 12345)</h2> 
-                    <p style={{ marginLeft: "20px" }}>Detailed view for the invoice number #123456.</p>
+                    <h2>Invoice Details For Patient: John Doe (Invoice ID: 12345)</h2> 
+                    <p>Detailed view for the invoice number #123456.</p>
                 </div>
 
             </div>
