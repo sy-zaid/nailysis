@@ -181,22 +181,22 @@ const PopupSelectTestOrder = ({ onClose, testOrderDetails }) => {
     >
       {showInnerPopup && popupContent}
       <div className={styles.formContainer}>
-        <div className={styles.tophead}>
-          <div className={styles.header}>
-            <h2 style={{ marginBottom: "30px" }}>
-              1.Process Test Order |{" "}
-              <span>Order ID # {testOrderDetails.id}</span>
-            </h2>
-          </div>
+          
+          <div className="headerSection">
 
-          <div className={styles.subhead}>
-            <h5 style={{ marginBottom: "5px" }}>
-              Check patient details and requested tests before adding reports.
-            </h5>
+            <div className={styles.titleSection}>
+              <h2>
+                1. Process Test Order |{" "}
+                <span>Order ID # {testOrderDetails.id}</span>
+              </h2>
+              <p>
+                Check patient details and requested tests before adding reports.
+              </p>
+            </div>
+            
           </div>
 
           <hr />
-        </div>
 
         <div className={styles.popupBottom}>
           <p className={styles.newSubHeading}>
@@ -384,18 +384,18 @@ const PopupSelectTestOrder = ({ onClose, testOrderDetails }) => {
                       </>
                     ) : (
                       <>
-                        <p style={{ color: "red", fontWeight: "bold" }}>
-                          Empty Results
-                        </p>
                         <button
                           className={styles.addButton}
                           style={{ marginRight: "45px" }}
                           onClick={() =>
                             setInnerPopup(test, [true, testStatus])
-                          }
+                          } 
                         >
                           Add Record
                         </button>
+                        <p style={{ color: "red", fontWeight: "bold", marginRight: "15px" }}>
+                          Empty Results
+                        </p>
                       </>
                     )}
                   </div>
@@ -406,7 +406,8 @@ const PopupSelectTestOrder = ({ onClose, testOrderDetails }) => {
 
           <br />
           <hr />
-          <div className={styles.newActions}>
+
+          <div className={styles.actions}>
             <button
               className={styles.cancelButton}
               onClick={() => setselectreportTypePopup(false)}
@@ -420,7 +421,9 @@ const PopupSelectTestOrder = ({ onClose, testOrderDetails }) => {
               Finalize & Submit to Admin
             </button>
           </div>
+
         </div>
+        
       </div>
     </Popup>
   );

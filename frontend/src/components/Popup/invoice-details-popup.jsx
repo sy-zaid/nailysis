@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./all-popups-styles.module.css";
+import styles from "./all-popups-styles.module.css"; 
 import Popup from "./Popup";
 import { useState, useEffect  } from "react";
 import { getStatusClass } from "../../utils/utils";
@@ -11,14 +11,14 @@ const PopupInvoiceDetails = ({ invoiceDetailsPopup, setinvoiceDetailsPopup, onPr
     <Popup trigger={invoiceDetailsPopup} setTrigger={setinvoiceDetailsPopup}>
         <div className={styles.formContainer}>
           
-            <div className={styles.headerSection}>
+          <div className={styles.headerSection}>
 
-                <div className={styles.titleSection}>
-                    <h2>Invoice Details For Patient: John Doe (Invoice ID: 12345)</h2> 
-                    <p>Detailed view for the invoice number #123456.</p>
-                </div>
+              <div className={styles.titleSection}>
+                  <h2>Invoice Details For Patient: John Doe (Invoice ID: 12345)</h2> 
+                  <p>Detailed view for the invoice number #123456.</p>
+              </div>
 
-            </div>
+          </div>
 
         <hr />
 

@@ -204,8 +204,8 @@ const AppointmentTechnician = () => {
         console.log(error);
       }
     };
+  
     if (!showPopup) {
-      // Fetch only when popup is closed
       fetchAppointments();
     }
   }, [showPopup, token]);
@@ -222,7 +222,10 @@ const AppointmentTechnician = () => {
   useEffect(() => {
     let sortedData = [...appointments];
   
-    if (sortOption === "fee-asc") {
+    if (sortOption === "none") {
+      // Default to sorting by latest first (date-desc)
+      sortedData.sort((a, b) => new Date(b.checkin_datetime) - new Date(a.checkin_datetime));
+    } else if (sortOption === "fee-asc") {
       sortedData.sort((a, b) => a.fee - b.fee);
     } else if (sortOption === "fee-desc") {
       sortedData.sort((a, b) => b.fee - a.fee);
@@ -233,7 +236,7 @@ const AppointmentTechnician = () => {
     }
   
     setFilteredAppointments(sortedData);
-  }, [appointments, sortOption]);
+  }, [appointments, sortOption]); 
 
   // Close the action menu when clicking outside of it
   useEffect(() => {

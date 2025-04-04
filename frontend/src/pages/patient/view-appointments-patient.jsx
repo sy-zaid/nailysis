@@ -25,39 +25,37 @@ const AppointmentPatients = () => {
   // Filtering, Searching, Sorting State
   const [activeFilter, setActiveFilter] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
+  // Set default sort to appointment date (latest first)
+  const [sortConfig, setSortConfig] = useState({ key: "date", direction: "desc" });
   const [selectAll, setSelectAll] = useState(false);
   const [selectedAppointments, setSelectedAppointments] = useState({});
 
-  
   // ----- HANDLERS
   const handleOpenDoctorPopup = () => {
-    setShowDoctorPopup(true); // Show the popup when button is clicked
+    setShowDoctorPopup(true);
   };
 
   const handleCloseDoctorPopup = () => {
-    setShowDoctorPopup(false); // Hide the popup when closing
+    setShowDoctorPopup(false);
   };
 
   const handleOpenLabPopup = () => {
-    setShowLabPopup(true); // Show the popup when button is clicked
+    setShowLabPopup(true);
   };
 
   const handleCloseLabPopup = () => {
-    setShowLabPopup(false); // Hide the popup when closing
+    setShowLabPopup(false);
   };
 
   const handleFilterClick = (index) => {
-    setActiveButton(index); // Set the active button when clicked
+    setActiveButton(index);
   };
-  
 
   // Handles checkbox selection
   const handleSelectAll = () => {
     const newSelectAll = !selectAll;
     setSelectAll(newSelectAll);
-  
-    // Update all checkboxes
+
     const newSelectedAppointments = {};
     if (newSelectAll) {
       sortedAppointments.forEach((appointment) => {
@@ -66,36 +64,37 @@ const AppointmentPatients = () => {
     }
     setSelectedAppointments(newSelectedAppointments);
   };
-  
+
   // Handle individual checkbox click
   const handleSelectOne = (appointmentId) => {
     setSelectedAppointments((prev) => {
       const updated = { ...prev, [appointmentId]: !prev[appointmentId] };
-  
-      // If all individual checkboxes are checked, update "Select All"
-      const allChecked = sortedAppointments.length > 0 && sortedAppointments.every(app => updated[app.appointment_id]);
+
+      const allChecked =
+        sortedAppointments.length > 0 &&
+        sortedAppointments.every((app) => updated[app.appointment_id]);
       setSelectAll(allChecked);
-  
+
       return updated;
     });
   };
-  
 
   // ----- MAIN LOGIC FUNCTIONS
 
-
   // Filtering Logic
   const filteredAppointments = appointments.filter((appointment) => {
-    const today = new Date().toISOString().split("T")[0]; // Get today's date in YYYY-MM-DD format
+    const today = new Date().toISOString().split("T")[0];
 
     if (activeFilter === "Scheduled" && appointment.status !== "Scheduled")
       return false;
-    if (activeFilter === "Emergency Visit" && appointment.appointment_type !== "Emergency Visit")
+    if (
+      activeFilter === "Emergency Visit" &&
+      appointment.appointment_type !== "Emergency Visit"
+    )
       return false;
     if (activeFilter === "Today" && appointment.time_slot?.slot_date !== today)
       return false;
 
-    // Search Filtering
     const searchValue = searchQuery.toLowerCase();
     const matchesSearch =
       appointment.appointment_id?.toString().toLowerCase().includes(searchValue) ||
@@ -107,52 +106,47 @@ const AppointmentPatients = () => {
       appointment.time_slot?.end_time?.toLowerCase().includes(searchValue) ||
       appointment.appointment_type?.toLowerCase().includes(searchValue) ||
       appointment.status?.toLowerCase().includes(searchValue) ||
-      (appointment.fee && `PKR ${appointment.fee}`.toLowerCase().includes(searchValue)) ||
+      (appointment.fee &&
+        `PKR ${appointment.fee}`.toLowerCase().includes(searchValue)) ||
       (appointment.doctor?.years_of_experience &&
         appointment.doctor?.years_of_experience.toString().toLowerCase().includes(searchValue)) ||
       appointment.notes?.toLowerCase().includes(searchValue);
 
-    if (!matchesSearch) {
-      return false;
-    }
-
-
-    return true;
+    return matchesSearch;
   });
 
   // Sorting Logic
   const sortedAppointments = [...filteredAppointments].sort((a, b) => {
-    if (!sortConfig.key) return 0; // No sorting applied
+    if (!sortConfig.key) return 0;
 
-    const aValue = sortConfig.key === "experience"
-      ? a.doctor?.years_of_experience || 0
-      : sortConfig.key === "fee"
-      ? a.fee || 0
-      : new Date(a.time_slot?.slot_date).getTime();
+    const aValue =
+      sortConfig.key === "experience"
+        ? a.doctor?.years_of_experience || 0
+        : sortConfig.key === "fee"
+        ? a.fee || 0
+        : new Date(a.time_slot?.slot_date).getTime();
 
-    const bValue = sortConfig.key === "experience"
-      ? b.doctor?.years_of_experience || 0
-      : sortConfig.key === "fee"
-      ? b.fee || 0
-      : new Date(b.time_slot?.slot_date).getTime();
+    const bValue =
+      sortConfig.key === "experience"
+        ? b.doctor?.years_of_experience || 0
+        : sortConfig.key === "fee"
+        ? b.fee || 0
+        : new Date(b.time_slot?.slot_date).getTime();
 
     if (aValue < bValue) return sortConfig.direction === "asc" ? -1 : 1;
     if (aValue > bValue) return sortConfig.direction === "asc" ? 1 : -1;
     return 0;
   });
 
-
-
   const togglePopup = (event) => {
     const iconRect = event.target.getBoundingClientRect();
     setPopupPosition({
-      top: iconRect.top + window.scrollY + iconRect.height + 5, // Adjust for scroll position
-      left: iconRect.left + window.scrollX - 70, // Adjust for horizontal scroll
+      top: iconRect.top + window.scrollY + iconRect.height + 5,
+      left: iconRect.left + window.scrollX - 70,
     });
     setPopupVisible(!popupVisible);
   };
 
-  
   // ----- USE-EFFECTS
   useEffect(() => {
     if (!token) {
@@ -181,7 +175,6 @@ const AppointmentPatients = () => {
     fetchAppointments();
   }, [token, navigate]);
 
-  
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (popupRef.current && !popupRef.current.contains(event.target)) {
@@ -213,33 +206,32 @@ const AppointmentPatients = () => {
       <br />
       <div className={styles.mainContent}>
         <div className={styles.appointmentsContainer}>
-          
           <div className={styles.filters}>
-          {["All", "Scheduled", "Emergency Visit", "Today"].map((filter) => (
-          <button
-            key={filter}
-            className={`${styles.filterButton} ${activeFilter === filter ? styles.active : ""}`}
-            onClick={() => setActiveFilter(filter)}
-          >
-            {filter}
-          </button>
-          ))}
+            {["All", "Scheduled", "Emergency Visit", "Today"].map((filter) => (
+              <button
+                key={filter}
+                className={`${styles.filterButton} ${activeFilter === filter ? styles.active : ""}`}
+                onClick={() => setActiveFilter(filter)}
+              >
+                {filter}
+              </button>
+            ))}
             <p>
-              Total Records: {filteredAppointments.length} | Scheduled: {" "}
-              {filteredAppointments.filter(app => app.status === "Scheduled").length}
+              Total Records: {filteredAppointments.length} | Scheduled:{" "}
+              {filteredAppointments.filter((app) => app.status === "Scheduled").length}
             </p>
 
             <div className={styles.appointmentButtons}>
               <button className={styles.addButton}>
-                <i class="fa-solid fa-download"></i> Download Visit Summary
+                <i className="fa-solid fa-download"></i> Download Visit Summary
               </button>
 
               <button className={styles.addButton} onClick={handleOpenDoctorPopup}>
-                <i className='bx bx-plus-circle'></i> Book Doctor Appointment
+                <i className="bx bx-plus-circle"></i> Book Doctor Appointment
               </button>
 
               <button className={styles.addButton} onClick={handleOpenLabPopup}>
-                <i className='bx bx-plus-circle'></i> Book Lab Technician Appointment
+                <i className="bx bx-plus-circle"></i> Book Lab Technician Appointment
               </button>
             </div>
           </div>
@@ -252,6 +244,7 @@ const AppointmentPatients = () => {
 
               <select
                 className={styles.sortBy}
+                defaultValue="date-desc"
                 onChange={(e) => {
                   const [key, direction] = e.target.value.split("-");
                   setSortConfig({ key, direction });
@@ -303,9 +296,7 @@ const AppointmentPatients = () => {
 
                 <tbody>
                   {sortedAppointments.map((row, index) => (
-                    <tr
-                      key={row.appointment_id}
-                    >
+                    <tr key={row.appointment_id}>
                       <td>
                         <input
                           type="checkbox"
@@ -313,31 +304,20 @@ const AppointmentPatients = () => {
                           onChange={() => handleSelectOne(row.appointment_id)}
                         />
                       </td>
-                      <td>{row.appointment_id}</td> {/* Appointment ID */}
+                      <td>{row.appointment_id}</td>
                       <td>
                         {row.doctor?.user?.first_name || "No first name"}{" "}
                         {row.doctor?.user?.last_name || "No last name"}
-                      </td>{" "}
-                      {/* Doctor's Name */}
+                      </td>
+                      <td>{row.doctor?.specialization || "No specialization"}</td>
                       <td>
-                        {row.doctor?.specialization || "No specialization"}
-                      </td>{" "}
-                      {/* Specialization */}
-                      <td>
-                      {row.time_slot?.slot_date} | {row.time_slot?.start_time} - {row.time_slot?.end_time}
-                      </td>{" "}
-                      {/* Date and Time */}
-                      <td>{row.appointment_type || "N/A"}</td>{" "}
-                      {/* Visit Purpose */}
-                      <td>{row.status}</td> {/* Status */}
-                      <td>{row.fee ? `PKR ${row.fee}` : "Not available"}</td>{" "}
-                      {/* Fee */}
-                      <td>
-                        {row.doctor?.years_of_experience || "N/A"} years
-                      </td>{" "}
-                      {/* Doctor Experience */}
-                      <td>{row.notes || "No additional notes"}</td>{" "}
-                      {/* Additional Notes */}
+                        {row.time_slot?.slot_date} | {row.time_slot?.start_time} - {row.time_slot?.end_time}
+                      </td>
+                      <td>{row.appointment_type || "N/A"}</td>
+                      <td>{row.status}</td>
+                      <td>{row.fee ? `PKR ${row.fee}` : "Not available"}</td>
+                      <td>{row.doctor?.years_of_experience || "N/A"} years</td>
+                      <td>{row.notes || "No additional notes"}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -347,7 +327,6 @@ const AppointmentPatients = () => {
         </div>
       </div>
 
-      {/* Popup */}
       {popupVisible && (
         <div
           ref={popupRef}

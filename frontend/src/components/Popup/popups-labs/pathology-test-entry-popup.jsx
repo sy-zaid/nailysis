@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import styles from "../../CSS Files/LabTechnician.module.css";
+import styles from "../../CSS Files/LabTechnician.module.css"; 
 import Popup from "../Popup";
 import { toast } from "react-toastify";
 import {
@@ -8,6 +8,7 @@ import {
   getStatusClass,
   handleAddParameter,
   handleRemoveParameter,
+  handleResultChange,
 } from "../../../utils/utils";
 import useCurrentUserData from "../../../useCurrentUserData";
 
@@ -197,19 +198,21 @@ const PathologyTestEntryPopup = ({
       onClose={onClose}
     >
       <div className={styles.formContainer}>
-        <div className={styles.tophead}>
-          <div className={styles.header}>
-            <h2>Enter Pathology Test Details For Patient</h2>
+
+        <div className={styles.headerSection}>
+
+          <div className={styles.titleSection}>
+              <h2>Enter Pathology Test Details For Patient</h2> 
+              <p>
+                Record and manage pathology test results with both quantitative
+                measurements and qualitative assessments. Upload supporting
+                documents when available.
+              </p>
           </div>
-          <div className={styles.subhead}>
-            <h5 style={{ margin: "10px 0" }}>
-              Record and manage pathology test results with both quantitative
-              measurements and qualitative assessments. Upload supporting
-              documents when available.
-            </h5>
-          </div>
-          <hr />
+
         </div>
+
+        <hr />
 
         <div className={styles.popupBottom}>
           <p className={styles.newSubHeading}>
@@ -323,17 +326,15 @@ const PathologyTestEntryPopup = ({
                         step="any"
                         placeholder="Enter value"
                         value={entry.result}
-                        onChange={(e) =>
-                          handleResultChange(index, e.target.value)
-                        }
+                        onChange={(e) => handleResultChange(setTestEntries, index, e.target.value)}
+
                       />
                     ) : (
                       <select
                         className={styles.patientSelect}
                         value={entry.result}
-                        onChange={(e) =>
-                          handleResultChange(index, e.target.value)
-                        }
+                        onChange={(e) => handleResultChange(setTestEntries, index, e.target.value)}
+
                       >
                         <option value="">Select result</option>
                         {paramConfig.options.map((option) => (
@@ -386,11 +387,12 @@ const PathologyTestEntryPopup = ({
 
           <div className={styles.qualitativeSection}>
             <h3>
-              <i className="fa-solid fa-vial-circle-check"></i>
+              <i className="fa-solid fa-vial-circle-check" style={{ color: "#007bff", marginRight: "10px"}}></i>
               Qualitative Tests
               <button
                 onClick={handleAddQualitativeParam}
                 className={styles.addButton}
+                style={{ marginLeft: "10px" }}
               >
                 <i className="bx bx-plus"></i> Add Test
               </button>
@@ -493,7 +495,7 @@ const PathologyTestEntryPopup = ({
             <div className={styles.documentFormGroup}>
               <div>
                 <textarea
-                  style={{ borderBottom: "2px solid #0067FF" }}
+                  style={{ borderBottom: "2px solid #0067FF", marginLeft: "0" }}
                   placeholder="Enter detailed findings and interpretation..."
                   value={comments}
                   onChange={(e) => setComments(e.target.value)}
@@ -523,28 +525,31 @@ const PathologyTestEntryPopup = ({
                 </p>
                 <input
                   type="checkbox"
-                  style={{ marginRight: "10px" }}
+                  style={{ margin: "30px 10px -5px 0" }}
                   checked={isChecked}
                   onChange={() => setIsChecked(!isChecked)}
                 />
-                <span style={{ fontSize: "14px", marginTop: "-10px" }}>
+                <span style={{ fontSize: "14px" }}>
                   I confirm the pathology results provided are accurate and
                   complete.
                 </span>
               </div>
             </div>
           </div>
-          <div className={styles.saveCancelButtons}>
+          <div className={styles.newActions}>
+
+            <button className={styles.cancelButton} onClick={onClose}>
+              Cancel
+            </button>
+
             <button
-              className={styles.saveButton}
+              className={styles.addButton}
               onClick={handleSubmit}
               disabled={loading}
             >
               {loading ? "Saving..." : "Save Pathology Results"}
             </button>
-            <button className={styles.cancelButton} onClick={onClose}>
-              Cancel
-            </button>
+            
           </div>
         </div>
       </div>

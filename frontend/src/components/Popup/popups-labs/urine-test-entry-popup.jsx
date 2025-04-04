@@ -97,22 +97,26 @@ const UrineTestEntryPopup = ({
       onClose={onClose}
     >
       <div className={styles.formContainer}>
-        <div className={styles.tophead}>
-          <div className={styles.header}>
-            <h2>Enter Test Details For Patient </h2>
-          </div>
-          <div className={styles.subhead}>
-            <h5 style={{ margin: "10px 0" }}>
+
+        <div className="headerSection">
+
+          <div className={styles.titleSection}>
+            <h2>
+              Enter Test Details For Patient 
+            </h2>
+            <p>
               Manage and generate lab test reports with ease. Technicians can
-              edit reports until finalized, ensuring accuracy before they become
+              edit reports until finalized, ensuring accuracy <br />  before they become
               downloadable PDFs for patients and doctors.
-            </h5>
+            </p>
           </div>
-          <hr />
+          
         </div>
 
+        <hr />
+
         <div className={styles.popupBottom}>
-          <p className={styles.newSubHeading}>
+          <p className={styles.newSubHeading} style={{ marginLeft: "26px" }}>
             <span className={styles.key}>Patient Name: </span>
             <span className={styles.locationValue}>
               {
@@ -130,7 +134,7 @@ const UrineTestEntryPopup = ({
             </span>
           </p>
 
-          <p className={styles.newSubHeading}>
+          <p className={styles.newSubHeading} style={{ marginLeft: "26px" }}>
             <span className={styles.key}>Appointment Date & Time: </span>
             <span className={styles.locationValue}>
               {convertDjangoDateTime(testOrderDetails?.created_at)}
@@ -230,7 +234,7 @@ const UrineTestEntryPopup = ({
                     value={entry.result}
                     onChange={(e) =>
                       handleResultChange(setTestEntries, index, e.target.value)
-                    }
+                    } 
                   />
                 </div>
 
@@ -280,7 +284,7 @@ const UrineTestEntryPopup = ({
             <div className={styles.documentFormGroup}>
               <div>
                 <textarea
-                  style={{ borderBottom: "2px solid #0067FF" }}
+                  style={{ borderBottom: "2px solid #0067FF", marginLeft: "0" }}
                   placeholder="Enter your comments for this test report"
                   name="comments"
                   value={formData.comments}
@@ -306,7 +310,7 @@ const UrineTestEntryPopup = ({
                 </p>
                 <input
                   type="checkbox"
-                  style={{ marginRight: "10px" }}
+                  style={{ margin: "20px 10px -5px 0" }}
                   checked={isChecked}
                   onChange={() => setIsChecked(!isChecked)}
                 />
@@ -317,13 +321,15 @@ const UrineTestEntryPopup = ({
             </div>
           </div>
 
-          <div className={styles.saveCancelButtons}>
-            <button className={styles.saveButton} onClick={handleSaveResults}>
-              Save Test Result
-            </button>
+          <div className={styles.newActions}>
+
             <button className={styles.cancelButton} onClick={onClose}>
               Cancel
             </button>
+            <button className={styles.addButton} onClick={handleSaveResults}>
+              Save Test Result
+            </button>
+
           </div>
         </div>
       </div>
