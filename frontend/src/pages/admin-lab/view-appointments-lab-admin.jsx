@@ -6,7 +6,7 @@ import AppointmentDetailsPopup from "../../components/Popup/popups-doctor-appoin
 import RescheduleAppointmentPopup from "../../components/Popup/popups-doctor-appointments/doctor-appointment-reschedule-popup";
 import DeleteAppointmentPopup from "../../components/Popup/popups-doctor-appointments/doctor-appointment-delete-popup";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios from "axios"; 
 import api from "../../api";
 import { getStatusClass } from "../../utils/utils";
 

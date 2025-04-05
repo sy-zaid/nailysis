@@ -129,7 +129,7 @@ const UrineTestEntryPopup = ({
               }
             </span>
             <span className={styles.secKey}> Status: </span>
-            <span className={getStatusClass("Pending", styles.pending)}>
+            <span className={getStatusClass("Pending", styles)}>
               {editable[0] === true ? editable[1] : "Pending"}
             </span>
           </p>

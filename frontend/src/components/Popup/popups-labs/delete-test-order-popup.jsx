@@ -50,92 +50,98 @@ const PopupDeleteTestOrder = ({ onClose, testOrderDetails }) => {
       onClose={onClose}
     >
       <div className={styles.formContainer}>
-        <div className={styles.header}>
-          <h2>Delete Test Order</h2>
+        
+        <div className={styles.headerSection}>
+
+          <div className={styles.titleSection}>
+              <h2>Delete Test Order</h2> 
+              <p>Permanently remove this test order and its details if they’re no longer needed.</p>
+          </div>
+
         </div>
 
-        <h5 className={styles.subhead}>
-          Are you sure you want to delete this test order?
-        </h5>
         <hr />
 
-        <div className={styles.formSection}>
-          <h3>Test Order Details</h3>
-          <div className={styles.formGroup}>
-            <div>
-              <label>Test Order ID:</label>
-              <span>{testOrderDetails.id || "N/A"}</span>
-            </div>
-            <div>
-              <label>Patient Name:</label>
-              <span>
-                {
-                  testOrderDetails?.lab_technician_appointment?.patient?.user
-                    ?.first_name
-                }{" "}
-                {
-                  testOrderDetails?.lab_technician_appointment?.patient?.user
-                    ?.last_name
-                }
-              </span>
-            </div>
-            <div>
-              <label>Requested Tests:</label>
-              <span>
-                {testOrderDetails?.test_types
-                  ?.map((test) => test.label)
-                  .join(", ") || "N/A"}
-              </span>
-            </div>
-            <div>
-              <label>Test Status:</label>
-              <span>{testOrderDetails?.test_status || "N/A"}</span>
-            </div>
-            <div>
-              <label>Results Available:</label>
-              <span>{testOrderDetails.results_available ? "Yes" : "No"}</span>
-            </div>
-            <div>
-              <label>Technician Name:</label>
-              <span>
-                {testOrderDetails.lab_technician_appointment?.technician_name ||
-                  "N/A"}
-              </span>
-            </div>
-            <div>
-              <label>Technician Specialization:</label>
-              <span>
-                {testOrderDetails.lab_technician_appointment
-                  ?.technician_specialization || "N/A"}
-              </span>
-            </div>
-            <div>
-              <label>Notes:</label>
-              <span>
-                {testOrderDetails.lab_technician_appointment?.notes || "N/A"}
-              </span>
-            </div>
-            <div>
-              <label>Fee:</label>
-              <span>
-                {testOrderDetails.lab_technician_appointment?.fee
-                  ? `PKR ${testOrderDetails.lab_technician_appointment?.fee}`
-                  : "N/A"}
-              </span>
+        <div className={styles.popupBottom}>
+
+          <div className={styles.formSection}>
+            <h3><i className="fa-solid fa-circle fa-2xs"></i> Test Order Details</h3>
+            <div className={styles.formGroup}>
+              <div>
+                <label>Test Order ID:</label>
+                <span>{testOrderDetails.id || "N/A"}</span>
+              </div>
+              <div>
+                <label>Patient Name:</label>
+                <span>
+                  {
+                    testOrderDetails?.lab_technician_appointment?.patient?.user
+                      ?.first_name
+                  }{" "}
+                  {
+                    testOrderDetails?.lab_technician_appointment?.patient?.user
+                      ?.last_name
+                  }
+                </span>
+              </div>
+              <div>
+                <label>Requested Tests:</label>
+                <span>
+                  {testOrderDetails?.test_types
+                    ?.map((test) => test.label)
+                    .join(", ") || "N/A"}
+                </span>
+              </div>
+              <div>
+                <label>Test Status:</label>
+                <span>{testOrderDetails?.test_status || "N/A"}</span>
+              </div>
+              <div>
+                <label>Results Available:</label>
+                <span>{testOrderDetails.results_available ? "Yes" : "No"}</span>
+              </div>
+              <div>
+                <label>Technician Name:</label>
+                <span>
+                  {testOrderDetails.lab_technician_appointment?.technician_name ||
+                    "N/A"}
+                </span>
+              </div>
+              <div>
+                <label>Technician Specialization:</label>
+                <span>
+                  {testOrderDetails.lab_technician_appointment
+                    ?.technician_specialization || "N/A"}
+                </span>
+              </div>
+              <div>
+                <label>Notes:</label>
+                <span>
+                  {testOrderDetails.lab_technician_appointment?.notes || "N/A"}
+                </span>
+              </div>
+              <div>
+                <label>Fee:</label>
+                <span>
+                  {testOrderDetails.lab_technician_appointment?.fee
+                    ? `PKR ${testOrderDetails.lab_technician_appointment?.fee}`
+                    : "N/A"}
+                </span>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className={styles.actions}>
-          <button className={styles.cancelButton} onClick={onClose}>
-            Cancel
-          </button>
-          <button
-            className={styles.confirmButton}
-            onClick={handleDeleteTestOrder}
-          >
-            Confirm Delete
-          </button>
+          <div className={styles.actions}>
+            <button className={styles.cancelButton} onClick={onClose}>
+              Cancel
+            </button>
+            <button
+              className={styles.addButton}
+              onClick={handleDeleteTestOrder}
+            >
+              Confirm Delete
+            </button>
+          </div>
         </div>
       </div>
     </Popup>

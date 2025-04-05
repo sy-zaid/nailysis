@@ -2,7 +2,7 @@ import React from "react";
 import styles from "./all-popups-styles.module.css"; 
 import Popup from "./Popup";
 import { useState, useEffect  } from "react";
-import { getStatusClass } from "../../utils/utils";
+import { getStatusClass } from "../../utils/utils"; 
 
 const PopupInvoiceDetails = ({ invoiceDetailsPopup, setinvoiceDetailsPopup, onProceed }) => {
     

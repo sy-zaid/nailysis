@@ -2,7 +2,7 @@ import React from "react";
 import styles from "./select-test-order-popup.module.css";
 import Popup from "../Popup";
 import { useState, useEffect } from "react";
-import { calculateAge, convertDjangoDateTime } from "../../../utils/utils";
+import { calculateAge, convertDjangoDateTime, getStatusClass } from "../../../utils/utils";
 import BloodTestEntryPopup from "./blood-test-entry-popup";
 import UrineTestEntryPopup from "./urine-test-entry-popup";
 import { submitTestResults, getTestResults } from "../../../api/labsApi";
@@ -111,29 +111,6 @@ const PopupSelectTestOrder = ({ onClose, testOrderDetails }) => {
   console.log("GOT THIS TO PROCESS", testOrderDetails);
 
   /**
-   * Determines the CSS class based on test status.
-   *
-   * @param {string} status - The test status.
-   * @returns {Object} - The corresponding CSS class.
-   */
-  const getStatusClass = (status) => {
-    switch (status) {
-      case "Completed":
-        return styles.consulted;
-      case "Cancelled":
-        return styles.cancelled;
-      case "Scheduled":
-        return styles.scheduled;
-      case "Pending":
-        return styles.scheduled;
-      case "Urgent":
-        return styles.cancelled;
-      default:
-        return {};
-    }
-  };
-
-  /**
    * Sets and displays the inner popup based on test category.
    *
    * @param {Object} testDetails - Details of the selected test.
@@ -204,7 +181,7 @@ const PopupSelectTestOrder = ({ onClose, testOrderDetails }) => {
               {" "}
               <i className="fa-solid fa-circle-notch"></i> Status:{" "}
             </span>
-            <span className={getStatusClass(testOrderDetails.test_status)}>
+            <span className={getStatusClass(testOrderDetails.test_status, styles)}>
               {testOrderDetails.test_status}
             </span>
             <span className={styles.key} style={{ margin: "0 0 0 50px" }}>
@@ -347,7 +324,7 @@ const PopupSelectTestOrder = ({ onClose, testOrderDetails }) => {
 
                 return (
                   <div key={test.id} className={styles.testType}>
-                    <span style={{ marginLeft: "25px" }}>
+                    <span>
                       {test.name} ({test.category})
                     </span>
                     <span className={styles.testTypeBorder}></span>
@@ -355,9 +332,6 @@ const PopupSelectTestOrder = ({ onClose, testOrderDetails }) => {
                     {testStatus === "Review Required" ||
                     testStatus === "Pending" ? (
                       <>
-                        <p style={{ color: "green", fontWeight: "bold" }}>
-                          {testStatus}
-                        </p>
                         <button
                           className={styles.addButton}
                           onClick={() =>
@@ -366,34 +340,36 @@ const PopupSelectTestOrder = ({ onClose, testOrderDetails }) => {
                         >
                           Edit Record
                         </button>
-                      </>
-                    ) : testStatus === "Finalized" ? (
-                      <>
                         <p style={{ color: "orange", fontWeight: "bold" }}>
                           {testStatus}
                         </p>
+                      </>
+                    ) : testStatus === "Finalized" ? (
+                      <>
                         <button
                           className={styles.addButton}
-                          style={{ marginRight: "45px" }}
                           onClick={() =>
                             setInnerPopup(test, [true, testStatus])
                           }
                         >
                           View Record
                         </button>
+                        
+                        <p style={{ color: "green", fontWeight: "bold" }}>
+                          {testStatus}
+                        </p>
                       </>
                     ) : (
                       <>
                         <button
                           className={styles.addButton}
-                          style={{ marginRight: "45px" }}
                           onClick={() =>
                             setInnerPopup(test, [true, testStatus])
                           } 
                         >
                           Add Record
                         </button>
-                        <p style={{ color: "red", fontWeight: "bold", marginRight: "15px" }}>
+                        <p style={{ color: "red", fontWeight: "bold" }}>
                           Empty Results
                         </p>
                       </>
