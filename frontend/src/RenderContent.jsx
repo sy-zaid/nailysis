@@ -24,6 +24,7 @@ import GenerateInvoice from "./pages/admin-clinic/invoice";
 import CancellationRequest from "./pages/admin-clinic/appointment-cancellation-request";
 import LabAppointmentHistory from "./pages/common/lab-appointment-history";
 import ClinicAppointmentHistory from "./pages/common/clinic-appointment-history";
+import Report from "./pages/common/report";
 
 // FEEDBACKS
 import Feedbacks from "./pages/common/feedbacks";
@@ -108,7 +109,7 @@ export const renderPatientContent = (view) => {
     case "Medical History & Notes":
       return <PatientMedicalHistory name="Medical History & Notes" />;
     case "Test Results":
-      return <PlaceholderComponent name="Test Results" />;
+      return <Report name="Test Results" />;
     case "Samples":
       return <PlaceholderComponent name="Samples" />;
     case "Diagnostic Results":

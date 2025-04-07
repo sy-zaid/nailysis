@@ -528,6 +528,7 @@ const LabAppointmentHistory = () => {
                                 display: "flex",
                                 alignItems: "center",
                                 cursor: "pointer",
+                                padding: "12px",
                               }}
                               onClick={() =>
                                 handleActionClick(
