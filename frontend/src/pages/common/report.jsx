@@ -1,3 +1,5 @@
+//report.jsx
+
 import React from "react";
 import styles from "./report.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
@@ -206,26 +208,24 @@ const Report = () => {
                   </div>
                 </div>
               </section>
-
-             
             </div>
             <div className={styles.actionButtons}>
-                <button className={styles.downloadButton}>
-                  <span className={styles.downloadIcon}></span>
-                  Download PDF
-                </button>
-                <button className={styles.shareButton}>
-                  <span className={styles.shareIcon}></span>
-                  Share Report
-                </button>
-                <button className={styles.appointmentButton}>
-                  Book Appointment
-                </button>
-              </div>
+              <button className={styles.downloadButton}>
+                <span className={styles.downloadIcon}></span>
+                Download PDF
+              </button>
+              <button className={styles.shareButton}>
+                <span className={styles.shareIcon}></span>
+                Share Report
+              </button>
+              <button className={styles.appointmentButton}>
+                Book Appointment
+              </button>
+            </div>
 
-              <div className={styles.feedbackLink}>
-                <a href="#">Do you want to submit your feedback?</a>
-              </div>
+            <div className={styles.feedbackLink}>
+              <a href="#">Do you want to submit your feedback?</a>
+            </div>
           </div>
         </div>
       </div>
