@@ -4,7 +4,7 @@ import Popup from "../Popup";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import {
-  formatTestEntries,
+  formatBloodTestEntries,
   bloodTestParameters,
   convertDjangoDateTime,
   handleParameterChange,
@@ -16,34 +16,93 @@ import {
 import useCurrentUserData from "../../../useCurrentUserData";
 import { saveTestResults } from "../../../api/labsApi";
 
-const BloodTestEntryPopup = ({ onClose, testDetails, testOrderDetails }) => {
+const BloodTestEntryPopup = ({
+  onClose,
+  testDetails,
+  testOrderDetails,
+  editable,
+}) => {
   console.log("GOT THIS TEST TO WORK", testDetails, testOrderDetails);
-  // if (!testDetailsPopup) return null
+  console.log(editable);
+  // ----- POPUPS & NAVIGATION
   const [popupTrigger, setPopupTrigger] = useState(true);
+
+  // ----- IMPORTANT DATA
   const { data: curUser, isLoading, isError, error } = useCurrentUserData();
   console.log(curUser[0]);
+  const [isChecked, setIsChecked] = useState(false);
+
   const [testEntries, setTestEntries] = useState([
     { parameter: "Hemoglobin", result: "" },
     { parameter: "WBC", result: "" },
     { parameter: "Platelets", result: "" },
   ]);
 
-  // Add this useEffect to sync testEntries with formData
-  useEffect(() => {
-    if (testEntries && Array.isArray(testEntries)) {
-      setFormData((prev) => ({
-        ...prev,
-        test_entries: formatTestEntries({ testEntries, bloodTestParameters }),
-      }));
-    }
-  }, [testEntries]); // This will update formData when testEntries changes
-
+  // Test Result form state
   const [formData, setFormData] = useState({
     test_entries: [],
     comments: "",
   });
 
-  // Returns the correct CSS styling based on the test status
+  // ----- HANDLERS
+  const onInputChange = handleInputChange(setFormData);
+
+  /**
+   * Handles saving the test results when the form is submitted.
+   *
+   * Sends a request to save the test results and handles response messages.
+   */
+  const handleSaveResults = async (e) => {
+    e.preventDefault();
+    if (!isChecked) {
+      toast.warning(
+        "Please confirm that the results are accurate and complete before submitting.",
+        {
+          className: "custom-toast",
+        }
+      );
+      return;
+    }
+    const payload = {
+      test_order_id: testOrderDetails.id,
+      test_type_id: testDetails.id,
+      technician_id: curUser[0]?.user_id,
+      test_entries: formData.test_entries,
+      comments: formData.comments,
+    };
+    console.clear();
+    try {
+      console.log("SENDING THIS TO SAVE RESULTS", payload);
+      const response = await saveTestResults(payload);
+      if (response.status === 201) {
+        toast.success("Successfully Created Test Result", {
+          className: "custom-toast",
+        });
+      } else if (response.status === 200) {
+        toast.success("Successfully Edited Test Result", {
+          className: "custom-toast",
+        });
+      }
+    } catch (error) {
+      if (error.response) {
+        toast.error(error.response.data.error || "Something went wrong.", {
+          className: "custom-toast",
+        });
+      } else {
+        toast.error("Network error! Please try again.", {
+          className: "custom-toast",
+        });
+      }
+    }
+  };
+
+  // ----- MAIN LOGIC FUNCTIONS
+  /**
+   * Returns the correct CSS class based on the test status.
+   *
+   * @param {string} status - The status of the test.
+   * @returns {Object} - The corresponding CSS class.
+   */
   const getStatusClass = (status) => {
     switch (status) {
       case "Completed":
@@ -60,39 +119,31 @@ const BloodTestEntryPopup = ({ onClose, testDetails, testOrderDetails }) => {
         return {};
     }
   };
-  const onInputChange = handleInputChange(setFormData);
 
-  const handleSaveResults = async (e) => {
-    e.preventDefault();
-
-    const payload = {
-      test_order_id: testOrderDetails.id,
-      test_type_id: testDetails.id,
-      technician_id: curUser[0]?.user_id,
-      test_entries: formData.test_entries,
-      comments: formData.comments,
-    };
-    console.clear();
-    try {
-      console.log("SENDING THIS TO SAVE RESUTLS", payload);
-      const response = await saveTestResults(payload);
-      if (response.status === 201) {
-        toast.success("Successfully Created Test Result", {
-          className: "custom-toast",
-        });
-      }
-    } catch (error) {
-      console.log(error);
-      toast.error(`Error: ${error}`, {
-        className: "custom-toast",
-      });
-    }
-  };
+  // ----- USE EFFECTS
+  /**
+   * Synchronizes the testEntries state with formData when testEntries changes.
+   */
   useEffect(() => {
-    if (!testEntries || !Array.isArray(testEntries)) return; //  Prevent errors
+    if (testEntries && Array.isArray(testEntries)) {
+      setFormData((prev) => ({
+        ...prev,
+        test_entries: formatBloodTestEntries({
+          testEntries,
+          bloodTestParameters: bloodTestParameters,
+        }),
+      }));
+    }
+  }, [testEntries]); // This will update formData when testEntries changes
+
+  /**
+   * Logs the formatted test entries whenever the testEntries or bloodTestParameters change.
+   */
+  useEffect(() => {
+    if (!testEntries || !Array.isArray(testEntries)) return; // Prevent errors
     console.log(
       "TEST ENTRIES FORMATTING:",
-      formatTestEntries({ testEntries, bloodTestParameters })
+      formatBloodTestEntries({ testEntries, bloodTestParameters })
     );
   }, [testEntries, bloodTestParameters]);
 
@@ -122,10 +173,19 @@ const BloodTestEntryPopup = ({ onClose, testDetails, testOrderDetails }) => {
           <p className={styles.newSubHeading}>
             <span className={styles.key}>Patient Name: </span>
             <span className={styles.locationValue}>
-              {testOrderDetails?.lab_technician_appointment?.patient_name}
+              {
+                testOrderDetails?.lab_technician_appointment?.patient.user
+                  .first_name
+              }{" "}
+              {
+                testOrderDetails?.lab_technician_appointment?.patient.user
+                  .last_name
+              }
             </span>
             <span className={styles.secKey}> Status: </span>
-            <span className={getStatusClass("Pending")}>In-Progress</span>
+            <span className={getStatusClass("Pending")}>
+              {editable[0] === true ? editable[1] : "Pending"}
+            </span>
           </p>
 
           <p className={styles.newSubHeading}>
@@ -263,7 +323,7 @@ const BloodTestEntryPopup = ({ onClose, testDetails, testOrderDetails }) => {
             >
               <button
                 className={styles.addButton}
-                onClick={() => handleAddParameter(setTestEntries)}
+                onClick={() => handleAddParameter(setTestEntries,"Blood")}
                 style={{ zIndex: "100" }}
               >
                 <i className="bx bx-plus-circle"></i> Add More Parameters
@@ -355,7 +415,11 @@ const BloodTestEntryPopup = ({ onClose, testDetails, testOrderDetails }) => {
 
             <div className={styles.verificationConfirmation}>
               <p>
-                <input type="checkbox" />{" "}
+                <input
+                  type="checkbox"
+                  checked={isChecked}
+                  onChange={(event) => setIsChecked(event.target.checked)}
+                />{" "}
                 <span>
                   I confirm that the results entered are accurate and complete
                   to the best of my knowledge.

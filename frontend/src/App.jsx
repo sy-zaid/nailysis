@@ -5,7 +5,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import NotFound from "./components/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
-import electronic_health_record from "./pages/common/electronic-health-records.jsx";
+import LabTestResult from "./pages/common/lab-test-result.jsx";
 import PatientHealthHistory from "./pages/common/patient-health-history.jsx";
 import { QueryClientProvider } from "@tanstack/react-query"; // Import React Query Client Provider
 import { queryClient } from "./queryClient.js"; // Import the client
@@ -214,6 +214,11 @@ function App() {
           <Route path="/logout" element={<Navigate to="/login" />} />
           <Route path="/register" element={<Register />} />
           <Route path="/add-appointment" element={<AddAppointment />} />
+          <Route
+            path="/lab-test-result/:reportId"
+            element={<LabTestResult />}
+          />
+
           <Route path="/upload-image" element={<UploadImage />} />
           <Route path="/image-guide" element={<ImageGuide />} />
           <Route path="*" element={<NotFound />} />

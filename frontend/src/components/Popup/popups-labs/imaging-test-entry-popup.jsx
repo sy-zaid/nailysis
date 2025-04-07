@@ -1,94 +1,105 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import styles from "../../CSS Files/LabTechnician.module.css";
 import Popup from "../Popup";
-import { useState } from "react";
 import { toast } from "react-toastify";
 import {
-  urineTestParameters,
   convertDjangoDateTime,
-  handleParameterChange,
-  handleResultChange,
-  handleAddParameter,
-  handleRemoveParameter,
-  handleInputChange,
   getStatusClass,
-  formatUrineTestEntries,
+  handleInputChange,
 } from "../../../utils/utils";
 import useCurrentUserData from "../../../useCurrentUserData";
-import { saveTestResults } from "../../../api/labsApi";
+import { saveTestResultsWithImage } from "../../../api/labsApi";
 
-const UrineTestEntryPopup = ({
+const ImagingTestEntryPopup = ({
   onClose,
   testDetails,
   testOrderDetails,
   editable,
 }) => {
   const [popupTrigger, setPopupTrigger] = useState(true);
-
-  // IMPORTANT DATA
-  const { data: curUser, isLoading, isError, error } = useCurrentUserData();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [isChecked, setIsChecked] = useState(false);
-
-  const [testEntries, setTestEntries] = useState([
-    { parameter: "UrineColor", result: "" },
-    { parameter: "pH", result: "" },
-    { parameter: "SpecificGravity", result: "" },
-  ]);
-
+  const [resultFile, setResultFile] = useState(null);
+  const [previewUrls, setPreviewUrls] = useState([]);
+  const { data: curUser } = useCurrentUserData();
   const [formData, setFormData] = useState({
-    test_entries: [],
     comments: "",
   });
 
   const onInputChange = handleInputChange(setFormData);
 
-  const handleSaveResults = async (e) => {
+  const handleFileChange = (event) => {
+    const files = Array.from(event.target.files);
+    setResultFile(files);
+    
+    // Create preview URLs
+    const urls = files.map(file => URL.createObjectURL(file));
+    setPreviewUrls(urls);
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!isChecked) {
       toast.warning(
         "Please confirm that the results are accurate and complete before submitting.",
-        {
-          className: "custom-toast",
-        }
+        { className: "custom-toast" }
       );
       return;
     }
-    const payload = {
-      test_order_id: testOrderDetails.id,
-      test_type_id: testDetails.id,
-      technician_id: curUser[0]?.user_id,
-      test_entries: formData.test_entries,
-      comments: formData.comments,
-    };
+
+    if (!resultFile || resultFile.length === 0) {
+      setError("Please upload at least one image or report.");
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    const payload = new FormData();
+    payload.append("test_order_id", testOrderDetails.id);
+    payload.append("test_type_id", testDetails.id);
+    payload.append("test_category", "Imaging");
+    payload.append("technician_id", curUser[0]?.user_id);
+    payload.append("comments", formData.comments);
+    
+    // Append all files
+    resultFile.forEach(file => {
+      payload.append("result_file", file);
+    });
+
     try {
-      const response = await saveTestResults(payload);
+      const response = await saveTestResultsWithImage(payload);
+
       if (response.status === 201) {
-        toast.success("Successfully Created Test Result", {
+        toast.success("Successfully Created Imaging Test Result", {
           className: "custom-toast",
         });
       } else if (response.status === 200) {
-        toast.success("Successfully Edited Test Result", {
+        toast.success("Successfully Updated Imaging Test Result", {
           className: "custom-toast",
         });
       }
-    } catch (error) {
-      toast.error(error.response?.data.error || "Something went wrong.", {
-        className: "custom-toast",
-      });
+
+      onClose();
+    } catch (err) {
+      setError(
+        err.response?.data.error ||
+          "Failed to upload imaging test result. Try again."
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
+  // Clean up preview URLs when component unmounts
   useEffect(() => {
-    if (testEntries && Array.isArray(testEntries)) {
-      setFormData((prev) => ({
-        ...prev,
-        test_entries: formatUrineTestEntries({
-          testEntries,
-          urineTestParameters: urineTestParameters,
-        }),
-      }));
-    }
-  }, [testEntries]);
+    return () => {
+      previewUrls.forEach(url => URL.revokeObjectURL(url));
+    };
+  }, [previewUrls]);
 
   return (
     <Popup
@@ -99,13 +110,14 @@ const UrineTestEntryPopup = ({
       <div className={styles.formContainer}>
         <div className={styles.tophead}>
           <div className={styles.header}>
-            <h2>Enter Test Details For Patient </h2>
+            <h2>Enter Imaging Test Details For Patient</h2>
           </div>
           <div className={styles.subhead}>
             <h5 style={{ margin: "10px 0" }}>
-              Manage and generate lab test reports with ease. Technicians can
-              edit reports until finalized, ensuring accuracy before they become
-              downloadable PDFs for patients and doctors.
+              Upload and manage imaging test results. Technicians can attach
+              images or reports and provide descriptions until finalized,
+              ensuring accuracy before they become accessible to patients and
+              doctors.
             </h5>
           </div>
           <hr />
@@ -190,84 +202,44 @@ const UrineTestEntryPopup = ({
                 className="fa-solid fa-circle fa-2xs"
                 style={{ color: "#007bff", marginRight: "10px" }}
               ></i>{" "}
-              Test Result Entry
+              Imaging Test Upload
             </h3>
-            {/* Dynamic test parameters */}
-            {testEntries.map((entry, index) => (
-              <div key={index} className={styles.testParamFormGroup}>
-                <div>
-                  <label>Parameter Name</label>
-                  <select
-                    className={styles.patientSelect}
-                    value={entry.parameter}
-                    onChange={(e) =>
-                      handleParameterChange(
-                        setTestEntries,
-                        index,
-                        e.target.value
-                      )
-                    }
-                  >
-                    {Object.keys(urineTestParameters).map((param) => (
-                      <option key={param} value={param}>
-                        {param}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label>Normal Range</label>
-                  <p>{urineTestParameters[entry.parameter].normalRange}/</p>
-                </div>
-
-                <div>
-                  <label>Results</label>
-                  <input
-                    type="text"
-                    placeholder="Enter result"
-                    required
-                    value={entry.result}
-                    onChange={(e) =>
-                      handleResultChange(setTestEntries, index, e.target.value)
-                    }
-                  />
-                </div>
-
-                <div>
-                  <label>Units</label>
-                  <p>{urineTestParameters[entry.parameter].unit}</p>
-                </div>
-
-                <div>
-                  <button
-                    className={styles.cancelButton}
-                    onClick={() => handleRemoveParameter(setTestEntries, index)}
-                    style={{ marginTop: "20px" }}
-                  >
-                    <i className="fa-solid fa-xmark"></i>
-                  </button>
-                </div>
+            <div className={styles.documentFormGroup}>
+              <div>
+                <label>Upload Images/Reports</label>
+                <input
+                  type="file"
+                  accept="image/*,.pdf,.dicom"
+                  onChange={handleFileChange}
+                  multiple
+                  className={styles.patientSelect}
+                />
+                {resultFile && resultFile.length > 0 && (
+                  <div className={styles.filePreviews}>
+                    <p>Selected Files: {resultFile.length}</p>
+                    <div className={styles.previewContainer}>
+                      {previewUrls.map((url, index) => (
+                        <div key={index} className={styles.previewItem}>
+                          {resultFile[index].type.includes('image') ? (
+                            <img 
+                              src={url} 
+                              alt={`Preview ${index}`}
+                              className={styles.previewImage}
+                            />
+                          ) : (
+                            <div className={styles.fileIcon}>
+                              <i className="fas fa-file-pdf"></i>
+                              <span>{resultFile[index].name}</span>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
-            ))}
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                marginTop: "15px",
-              }}
-            >
-              <button
-                className={styles.addButton}
-                onClick={() => handleAddParameter(setTestEntries, "urine")}
-                style={{ zIndex: "100" }}
-              >
-                <i className="bx bx-plus-circle"></i> Add More Parameters
-              </button>
             </div>
           </div>
-
-          <hr style={{ marginTop: "50px" }} />
 
           <div className={styles.commentsFormSection}>
             <h3>
@@ -275,20 +247,26 @@ const UrineTestEntryPopup = ({
                 className="fa-solid fa-circle fa-2xs"
                 style={{ color: "#007bff", marginRight: "10px" }}
               ></i>{" "}
-              Comments/Observations
+              Findings/Description
             </h3>
             <div className={styles.documentFormGroup}>
-              <div>
-                <textarea
-                  style={{ borderBottom: "2px solid #0067FF" }}
-                  placeholder="Enter your comments for this test report"
-                  name="comments"
-                  value={formData.comments}
-                  onChange={onInputChange}
-                ></textarea>
-              </div>
+              <textarea
+                style={{ borderBottom: "2px solid #0067FF" }}
+                placeholder="Enter detailed description of imaging findings..."
+                name="comments"
+                value={formData.comments}
+                onChange={onInputChange}
+              />
             </div>
           </div>
+
+          {error && (
+            <div className={styles.errorMessage}>
+              <p>{error}</p>
+            </div>
+          )}
+
+          <hr style={{ marginTop: "20px" }} />
 
           <div className={styles.formSection}>
             <h3>
@@ -302,7 +280,7 @@ const UrineTestEntryPopup = ({
               <div>
                 <p style={{ color: "#737070", fontWeight: "600" }}>Consent</p>
                 <p style={{ fontStyle: "italic", fontWeight: "600" }}>
-                  Please verify the accuracy of the test result
+                  Please verify the accuracy of the imaging results
                 </p>
                 <input
                   type="checkbox"
@@ -311,15 +289,20 @@ const UrineTestEntryPopup = ({
                   onChange={() => setIsChecked(!isChecked)}
                 />
                 <span style={{ fontSize: "14px", marginTop: "-10px" }}>
-                  I confirm the results provided are accurate and complete.
+                  I confirm the imaging results provided are accurate and
+                  complete.
                 </span>
               </div>
             </div>
           </div>
 
           <div className={styles.saveCancelButtons}>
-            <button className={styles.saveButton} onClick={handleSaveResults}>
-              Save Test Result
+            <button
+              className={styles.saveButton}
+              onClick={handleSubmit}
+              disabled={loading}
+            >
+              {loading ? "Uploading..." : "Save Imaging Results"}
             </button>
             <button className={styles.cancelButton} onClick={onClose}>
               Cancel
@@ -331,4 +314,4 @@ const UrineTestEntryPopup = ({
   );
 };
 
-export default UrineTestEntryPopup;
+export default ImagingTestEntryPopup;

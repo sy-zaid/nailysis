@@ -16,7 +16,8 @@ import DoctorDashboard from "./pages/doctor/doctor-dashboard";
 import PatientDashboard from "./pages/patient/patient-dashboard";
 import LabAdminDashboard from "./pages/admin-lab/lab-admin-dashboard";
 import LabTechnicianDashboard from "./pages/lab-technician/lab-technician-dashboard";
-import LabTechnicianTestOrders from "./pages/lab-technician/lab-technician-test-orders";
+import LabTestOrders from "./pages/common/lab-test-orders";
+
 import ViewTechnicianAppointments from "./pages/common/view-lab-appointments";
 import PlaceholderComponent from "./components/PlaceholderComponent"; // Placeholder for missing views
 import BillingHistory from "./pages/admin-clinic/billing-history";
@@ -153,7 +154,7 @@ export const renderLabAdminContent = (view) => {
     case "Feedbacks":
       return <Feedbacks name="Feedbacks" />;
     case "Test Requests":
-      return <PlaceholderComponent name="Test Requests" />;
+      return <LabTestOrders name="Test Requests" />;
     case "Appointments":
       return <PlaceholderComponent name="Appointments" />;
     default:
@@ -179,7 +180,7 @@ export const renderLabTechnicianContent = (view) => {
     case "Feedbacks":
       return <Feedbacks name="Feedbacks" />;
     case "Test Requests":
-      return <LabTechnicianTestOrders />;
+      return <LabTestOrders />;
     case "Appointments":
       return <PlaceholderComponent name="Appointments" />;
 

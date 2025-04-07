@@ -3,3 +3,7 @@ __pycache__/
 *.pyc
 *.pyo
 node_modules
+env/
+backend/cnn_model_final-v1.keras
+
+

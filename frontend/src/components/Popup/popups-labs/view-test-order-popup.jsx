@@ -2,86 +2,69 @@ import React from "react";
 import styles from "./select-test-order-popup.module.css";
 import Popup from "../Popup";
 import { useState, useEffect } from "react";
-import { calculateAge, convertDjangoDateTime } from "../../../utils/utils";
+import {
+  calculateAge,
+  convertDjangoDateTime,
+  getStatusClass,
+} from "../../../utils/utils";
+import {
+  submitTestResults,
+  getTestResults,
+  finalizeTestOrder,
+} from "../../../api/labsApi";
+import { toast } from "react-toastify";
 import BloodTestEntryPopup from "./blood-test-entry-popup";
 import UrineTestEntryPopup from "./urine-test-entry-popup";
-import { submitTestResults, getTestResults } from "../../../api/labsApi";
-import { toast } from "react-toastify";
-import ImagingTestEntryPopup from "./imaging-test-entry-popup";
-import PathologyTestEntryPopup from "./pathology-test-entry-popup";
 
 /**
- * PopupSelectTestOrder Component
+ * PopupViewTestOrder Component
  *
- * This component renders a popup for selecting and managing test orders.
+ * This component renders a popup for viewing test orders.
  * It fetches test results, updates the UI accordingly, and provides
- * functionalities to submit finalized test reports.
+ * functionalities to finalize test orders and view test records.
  *
  * @param {Object} props - Component props.
  * @param {Function} props.onClose - Function to close the popup.
  * @param {Object} props.testOrderDetails - Details of the test order.
  */
-
-const PopupSelectTestOrder = ({ onClose, testOrderDetails }) => {
+const PopupViewTestOrder = ({ onClose, testOrderDetails }) => {
   // ----- POPUPS & NAVIGATION
   const [popupTrigger, setPopupTrigger] = useState(true);
   const [popupContent, setPopupContent] = useState(null);
-  const [showInnerPopup, setShowInnerPopup] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
   const [completedTests, setCompletedTests] = useState([]);
+  console.log("TEST ORDER DETAILSSSS", testOrderDetails);
 
   // ----- IMPORTANT DATA
-  const test_categories = {
-    "Blood Test": (testDetails, testOrderDetails, editable) => (
-      <BloodTestEntryPopup
-        testDetails={testDetails}
-        testOrderDetails={testOrderDetails}
-        onClose={() => setShowInnerPopup(false)}
-        editable={editable}
-      ></BloodTestEntryPopup>
-    ),
-
-    "Urine Test": (testDetails, testOrderDetails, editable) => (
-      <UrineTestEntryPopup
-        testDetails={testDetails}
-        testOrderDetails={testOrderDetails}
-        onClose={() => setShowInnerPopup(false)}
-        editable={editable}
-      />
-    ),
-    "Imaging Test": (testDetails, testOrderDetails, editable) => (
-      <ImagingTestEntryPopup
-        testDetails={testDetails}
-        testOrderDetails={testOrderDetails}
-        onClose={() => setShowInnerPopup(false)}
-        editable={editable}
-      />
-    ),
-    "Pathology Report": (testDetails, testOrderDetails, editable) => (
-      <PathologyTestEntryPopup
-        testDetails={testDetails}
-        testOrderDetails={testOrderDetails}
-        onClose={() => setShowInnerPopup(false)}
-        editable={editable}
-      />
-    ),
-  };
 
   // ----- HANDLERS
   /**
-   * Handles finalizing and submitting test reports.
-   * Sends a request to submit test results and handles response messages.
+   * Handles viewing test records in a new tab.
+   *
+   * @param {string} action - Action type.
+   * @param {string} id - Test record ID.
+   */
+  const handleActionClick = (action, id) => {
+    if (action === "View Record") {
+      const url = `/lab-test-result/${id}`;
+      window.open(url, "_blank");
+    }
+  };
+
+  /**
+   * Handles finalizing and submitting test orders.
+   * Sends a request to finalize the test order and handles response messages.
    */
   const handleFinalizeAndSubmit = async () => {
-    const payload = { test_order_id: testOrderDetails.id };
-
     try {
-      const response = await submitTestResults(payload);
+      const response = await finalizeTestOrder(testOrderDetails.id);
       if (response.status === 200) {
-        toast.success(" All test reports submitted to admin!", {
+        toast.success("Test Order Finalized Successfully", {
           className: "custom-toast",
         });
       }
     } catch (error) {
+      console.log(error);
       if (error.response) {
         const status = error.response;
         toast.error(status.data.error || "Failed to finalize test order", {
@@ -96,59 +79,6 @@ const PopupSelectTestOrder = ({ onClose, testOrderDetails }) => {
   };
 
   // ----- MAIN LOGIC FUNCTIONS
-  /**
-   * Retrieves the test status based on test type ID.
-   *
-   * @param {string} testTypeId - The test type identifier.
-   * @param {Array} testResults - List of test results.
-   * @returns {string} - The status of the test.
-   */
-  const getTestStatus = (testTypeId, testResults) => {
-    const test = testResults.find((t) => t.id === testTypeId);
-    return test ? test.result_status || "" : "Empty Results"; // Default to "Pending" if not found
-  };
-
-  console.log("GOT THIS TO PROCESS", testOrderDetails);
-
-  /**
-   * Determines the CSS class based on test status.
-   *
-   * @param {string} status - The test status.
-   * @returns {Object} - The corresponding CSS class.
-   */
-  const getStatusClass = (status) => {
-    switch (status) {
-      case "Completed":
-        return styles.consulted;
-      case "Cancelled":
-        return styles.cancelled;
-      case "Scheduled":
-        return styles.scheduled;
-      case "Pending":
-        return styles.scheduled;
-      case "Urgent":
-        return styles.cancelled;
-      default:
-        return {};
-    }
-  };
-
-  /**
-   * Sets and displays the inner popup based on test category.
-   *
-   * @param {Object} testDetails - Details of the selected test.
-   * @param {Array} editable - Array of the editable being true allowing the post request to be edit along with a status.
-   */
-  const setInnerPopup = (testDetails, editable) => {
-    setPopupContent(
-      test_categories[testDetails.category](
-        testDetails,
-        testOrderDetails,
-        editable
-      )
-    );
-    setShowInnerPopup(true);
-  };
 
   // ----- USE EFFECTS
   useEffect(() => {
@@ -159,10 +89,7 @@ const PopupSelectTestOrder = ({ onClose, testOrderDetails }) => {
       try {
         const response = await getTestResults(testOrderDetails.id);
         console.log("Fetched Test Results:", response.data);
-        const tests = response.data.map((test) => ({
-          id: test.test_type,
-          result_status: test.result_status,
-        }));
+        const tests = response.data;
         console.log("Fetched Test Results:", tests);
         setCompletedTests(tests);
       } catch (error) {
@@ -179,19 +106,20 @@ const PopupSelectTestOrder = ({ onClose, testOrderDetails }) => {
       setTrigger={setPopupTrigger}
       onClose={onClose}
     >
-      {showInnerPopup && popupContent}
+      {showPopup && popupContent}
       <div className={styles.formContainer}>
         <div className={styles.tophead}>
           <div className={styles.header}>
             <h2 style={{ marginBottom: "30px" }}>
-              1.Process Test Order |{" "}
+              View & Confirm Test Order |{" "}
               <span>Order ID # {testOrderDetails.id}</span>
             </h2>
           </div>
 
           <div className={styles.subhead}>
             <h5 style={{ marginBottom: "5px" }}>
-              Check patient details and requested tests before adding reports.
+              Check patient details and requested tests before finalizing
+              reports.
             </h5>
           </div>
 
@@ -204,7 +132,7 @@ const PopupSelectTestOrder = ({ onClose, testOrderDetails }) => {
               {" "}
               <i className="fa-solid fa-circle-notch"></i> Status:{" "}
             </span>
-            <span className={getStatusClass(testOrderDetails.test_status)}>
+            <span className={getStatusClass(testOrderDetails.test_status,styles)}>
               {testOrderDetails.test_status}
             </span>
             <span className={styles.key} style={{ margin: "0 0 0 50px" }}>
@@ -342,62 +270,32 @@ const PopupSelectTestOrder = ({ onClose, testOrderDetails }) => {
               Requested Test Details
             </h3>
             <div style={{ marginLeft: "25px" }}>
-              {testOrderDetails?.test_types?.map((test, index) => {
-                const testStatus = getTestStatus(test.id, completedTests);
-
+              {testOrderDetails.test_types.map((test) => {
+                const testResult = completedTests.find(
+                  (t) => t.test_type === test.id
+                );
+                console.log(testResult, "TEST RESULTSSSSSS");
                 return (
                   <div key={test.id} className={styles.testType}>
                     <span style={{ marginLeft: "25px" }}>
                       {test.name} ({test.category})
                     </span>
                     <span className={styles.testTypeBorder}></span>
-
-                    {testStatus === "Review Required" ||
-                    testStatus === "Pending" ? (
-                      <>
-                        <p style={{ color: "green", fontWeight: "bold" }}>
-                          {testStatus}
-                        </p>
-                        <button
-                          className={styles.addButton}
-                          onClick={() =>
-                            setInnerPopup(test, [true, testStatus])
-                          }
-                        >
-                          Edit Record
-                        </button>
-                      </>
-                    ) : testStatus === "Finalized" ? (
-                      <>
-                        <p style={{ color: "orange", fontWeight: "bold" }}>
-                          {testStatus}
-                        </p>
-                        <button
-                          className={styles.addButton}
-                          style={{ marginRight: "45px" }}
-                          onClick={() =>
-                            setInnerPopup(test, [true, testStatus])
-                          }
-                        >
-                          View Record
-                        </button>
-                      </>
-                    ) : (
-                      <>
-                        <p style={{ color: "red", fontWeight: "bold" }}>
-                          Empty Results
-                        </p>
-                        <button
-                          className={styles.addButton}
-                          style={{ marginRight: "45px" }}
-                          onClick={() =>
-                            setInnerPopup(test, [true, testStatus])
-                          }
-                        >
-                          Add Record
-                        </button>
-                      </>
-                    )}
+                    <span
+                      className={getStatusClass(
+                        testResult?.result_status || "Pending",styles
+                      )}
+                    >
+                      {testResult?.result_status || "Pending"}
+                    </span>
+                    <button
+                      className={styles.addButton}
+                      onClick={() =>
+                        handleActionClick("View Record", testResult?.id)
+                      }
+                    >
+                      View Record
+                    </button>
                   </div>
                 );
               })}
@@ -413,12 +311,14 @@ const PopupSelectTestOrder = ({ onClose, testOrderDetails }) => {
             >
               Cancel
             </button>
-            <button
-              className={styles.addButton}
-              onClick={() => handleFinalizeAndSubmit()}
-            >
-              Finalize & Submit to Admin
-            </button>
+            {testOrderDetails.test_status !== "Completed" && (
+              <button
+                className={styles.addButton}
+                onClick={() => handleFinalizeAndSubmit()}
+              >
+                Finalize & Upload Results
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -426,4 +326,4 @@ const PopupSelectTestOrder = ({ onClose, testOrderDetails }) => {
   );
 };
 
-export default PopupSelectTestOrder;
+export default PopupViewTestOrder;
