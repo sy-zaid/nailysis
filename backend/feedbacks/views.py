@@ -28,7 +28,6 @@ class FeedbackViewSet(viewsets.ModelViewSet):
         Returns:
         - QuerySet of Feedback objects based on user role.
         """
-
         user = self.request.user  # Get the currently authenticated user
 
         if user.role == "patient":
@@ -190,7 +189,30 @@ class FeedbackViewSet(viewsets.ModelViewSet):
 class FeedbackResponseViewSet(viewsets.ModelViewSet):
     queryset = FeedbackResponse.objects.all()
     serializer_class = FeedbackResponseSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
+
+    def get_queryset(self):
+        """
+        Retrieve feedback responses based on user role:
+
+        - Patients, Doctors, and Lab Technicians see only responses to their feedbacks.
+        - Clinic Admins see responses for clinic feedbacks.
+        - Lab Admins see responses for lab feedbacks.
+        """
+        return FeedbackResponse.objects.filter(feedback__is_clinic_feedback=True)
+        user = self.request.user  # Get the logged-in user
+
+        if user.role in ["patient", "doctor", "lab_technician"]:
+            return FeedbackResponse.objects.filter(feedback__user_id=user)
+
+        elif user.role == "clinic_admin":
+            return FeedbackResponse.objects.filter(feedback__is_clinic_feedback=True)
+
+        elif user.role == "lab_admin":
+            return FeedbackResponse.objects.filter(feedback__is_clinic_feedback=False)
+
+        # Default case: If no specific role-based restriction applies
+        return FeedbackResponse.objects.all()
 
     def perform_create(self, serializer):
         """
@@ -205,54 +227,46 @@ class FeedbackResponseViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user)  # Assign the logged-in admin to the response before saving.
 
     @action(detail=True, methods=['post'], url_path='submit_response')
-    def submit_feedback_response(self, request, pk=None):
+    def submit_response(self, request, pk=None):
         """
-        Allows Clinic Admins and Lab Admins to respond to feedback and update its status.
-
-        - **Clinic Admins can respond to clinic feedback only.**
-        - **Lab Admins can respond to lab feedback only.**
-        - **Response text can be empty.**
-        - **Admins can update the status ('Pending' or 'Resolved').**
+        API for admins to submit a response to feedback.
+        Only Clinic Admins and Lab Admins can respond to feedback.
         """
+        auth_users = ['clinic_admin', 'lab_admin']
+        user = request.user
 
-        user = request.user  # Get the logged-in user
-        feedback = self.get_object()  # Get the feedback object from the request
+        #  Check if user is allowed
+        if user.role not in auth_users:
+            return Response({"message": "You are not authorized to respond to feedback"}, status=status.HTTP_403_FORBIDDEN)
 
-        #  Check if the user is an admin
-        if user.role not in ["clinic_admin", "lab_admin"]:
-            return Response({"message": "You are not authorized to respond to feedback."}, status=status.HTTP_403_FORBIDDEN)
+        # Check if the feedback exists
+        try:
+            feedback = Feedback.objects.get(pk=pk)
+        except Feedback.DoesNotExist:
+            return Response({"message": "Feedback not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        #  Clinic Admin can only respond to clinic feedback
-        if user.role == "clinic_admin" and not feedback.is_clinic_feedback:
-            return Response({"message": "You are not allowed to respond to lab feedback."}, status=status.HTTP_403_FORBIDDEN)
+        # Check if a response already exists
+        if hasattr(feedback, 'response'):
+            return Response({"message": "A response already exists for this feedback."}, status=status.HTTP_400_BAD_REQUEST)
 
-        #  Lab Admin can only respond to lab feedback
-        if user.role == "lab_admin" and feedback.is_clinic_feedback:
-            return Response({"message": "You are not allowed to respond to clinic feedback."}, status=status.HTTP_403_FORBIDDEN)
+        # Extract data from request
+        description = request.data.get('description')
+        status_value = request.data.get('status', 'Pending')
 
-        #  Extract response data from request
-        response_text = request.data.get('description', '').strip()  # Can be empty
-        new_status = request.data.get('status', feedback.status)  # Default to existing status
+        if not description:
+            return Response({"message": "Response description is required."}, status=status.HTTP_400_BAD_REQUEST)
 
-        #  Update or create Feedback Response
-        feedback_response, created = FeedbackResponse.objects.update_or_create(
-        feedback=feedback,
-        defaults={
-            "admin": user,
-            "description": response_text
-            }
+        # Save the response
+        feedback_response = FeedbackResponse.objects.create(
+            feedback=feedback,
+            admin=user,
+            description=description
         )
 
-        #  Update Feedback Status (Pending/Resolved)
-        feedback.status = new_status
-        feedback.save()
+        # Update feedback status if marked as resolved
+        if status_value == "Resolved":
+            feedback.status = "Resolved"
+            feedback.save()
 
-        return Response({
-            "message": "Response submitted successfully",
-            "feedback_id": feedback.id,
-            "response_id": feedback_response.id,
-            "status_updated": new_status
-        }, status=status.HTTP_200_OK)
-
-
-    
+        return Response({"message": "Response submitted successfully", 
+                         "response_id": feedback_response.id}, status=status.HTTP_201_CREATED)
