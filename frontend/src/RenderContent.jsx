@@ -26,6 +26,7 @@ import CancellationRequest from "./pages/admin-clinic/appointment-cancellation-r
 import LabAppointmentHistory from "./pages/common/lab-appointment-history";
 import ClinicAppointmentHistory from "./pages/common/clinic-appointment-history";
 import Report from "./pages/common/report";
+import LabTestReport from "./pages/common/lab-test-result-new";
 
 // FEEDBACKS
 import Feedbacks from "./pages/common/feedbacks";
