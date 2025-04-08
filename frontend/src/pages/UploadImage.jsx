@@ -130,7 +130,7 @@ const UploadImage = () => {
           },
         }
       );
-      console.log("RESULTS FROM MODEL PRED",response.data)
+      console.log("RESULTS FROM MODEL PRED", response.data)
       setAnalysisResults(response.data);
     } catch (error) {
       console.error("Upload error:", error);
