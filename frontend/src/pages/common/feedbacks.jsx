@@ -11,9 +11,10 @@ import Header from "../../components/Dashboard/Header/Header.jsx";
 import styles from "./feedbacks.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import { getRole } from "../../utils/utils";
+import { deleteFeedback } from "../../api/feedbacksApi";
+import { getFeedbackResponses } from "../../api/feedbacksApi";
 
-
-const API_BASE_URL = "http://localhost:8000/api/feedbacks"; // Update with actual API URL
+const API_BASE_URL = "http://localhost:8000/api/feedbacks";
 
 // My Feedback Screen
 const SendFeedback = () => {
@@ -34,69 +35,56 @@ const SendFeedback = () => {
     );
   };
 
-  const fetchFeedbacks = async () => {
-    try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/feedbacks/`, // ✅ Correct API endpoint
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access")}`, // ✅ Send authentication token
-          },
-        }
-      );
+  // const fetchFeedbacks = async () => {
+  //   try {
+  //     const response = await axios.get(
+  //       `${import.meta.env.VITE_API_URL}/api/feedbacks/`, // ✅ Correct API endpoint
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${localStorage.getItem("access")}`, // ✅ Send authentication token
+  //         },
+  //       }
+  //     );
 
-      setFeedbackList(response.data); // ✅ Update state with API response
-      console.log("Response from feedback API", response.data);
-    } catch (error) {
-      console.error("Error fetching feedbacks:", error);
-    }
-  };
+  //     setFeedbackList(response.data); // ✅ Update state with API response
+  //     console.log("Response from feedback API", response.data);
+  //   } catch (error) {
+  //     console.error("Error fetching feedbacks:", error);
+  //   }
+  // };
+
+  useEffect(() => {
+    const fetchFeedbackData = async () => {
+      try {
+        // Fetch feedbacks
+        const feedbackResponse = await axios.get(`${import.meta.env.VITE_API_URL}/api/feedbacks/`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem("access")}` },
+        });
+
+        // Fetch feedback responses
+        const feedbackResponsesResponse = await getFeedbackResponses();
+
+        // Map responses to corresponding feedbacks
+        const feedbacksWithResponses = feedbackResponse.data.map((feedback) => {
+          const response = feedbackResponsesResponse.data.find((resp) => resp.feedback === feedback.id);
+          return { ...feedback, response: response || null }; // Attach response if found, else set as null
+        });
+
+        setFeedbackList(feedbacksWithResponses); // ✅ Update state with mapped data
+        console.log("Mapped Feedbacks:", feedbacksWithResponses);
+      } catch (error) {
+        console.error("Error fetching feedback data:", error);
+      }
+    };
+
+    fetchFeedbackData();
+  }, []);
 
 
   const [popupVisible, setPopupVisible] = useState(false);
   const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
   const popupRef = useRef(null);
 
-  // Static feedback data (2 sample rows)
-  const data = [
-    {
-      id: 1,
-      feedbackID: "123456",
-      feedbackBy: "John",
-      role: "patient",
-      dateAndTimeofFeedback: "10/10/2024 09:30 AM",
-      category: "Service Issues",
-      feedbackComments: "Lorem Ipsum è un testo segnaposto utilizzato nel settore ...",
-      response: "xyz lorem ipsum",
-      respondedBy: "CA/LA",
-      status: "Resolved",
-    },
-
-    {
-      id: 2,
-      feedbackID: "123456",
-      feedbackBy: "Doe",
-      role: "patient",
-      dateAndTimeofFeedback: "10/10/2024 09:30 AM",
-      category: "Technical Issues",
-      feedbackComments: "Lorem Ipsum è un testo segnaposto utilizzato nel settore ...",
-      response: "N/a",
-      respondedBy: "N/a",
-      status: "Pending",
-    },
-    {
-      id: 3,
-      feedbackID: "123456",
-      feedbackBy: "John",
-      role: "doctor",
-      dateAndTimeofFeedback: "10/10/2024 09:30 AM",
-      category: "Technical Issues",
-      feedbackComments: "Lorem Ipsum è un testo segnaposto utilizzato nel settore ...",
-      response: "N/a",
-      respondedBy: "N/a",
-      status: "Pending",
-    },
-  ];
 
 
   const getStatusClass = (status) => {
@@ -111,6 +99,20 @@ const SendFeedback = () => {
         return styles.defaultColor;
     }
   }
+
+  useEffect(() => {
+    const fetchFeedbackResponses = async () => {
+      try {
+        const response = await getFeedbackResponses();
+        console.log("Responses:", response.data);
+      } catch (error) {
+        console.error("Error fetching feedback responses:", error);
+      }
+    };
+
+    fetchFeedbackResponses(); // ✅ Call the function inside useEffect
+  }, []); // ✅ Empty dependency array ensures it runs once on mount
+
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -130,22 +132,35 @@ const SendFeedback = () => {
   };
 
 
-  useEffect(() => {
-    fetchFeedbacks(); // ✅ Call the function to fetch feedbacks
-  }, []);
+  // useEffect(() => {
+  //   fetchFeedbacks(); // ✅ Call the function to fetch feedbacks
+  // }, []);
 
   const handleClosePopup = () => {
     setShowPopup(false); // Hide the popup when closing
     onClose();
   };
 
-  const togglePopup = (event) => {
-    const iconRect = event.target.getBoundingClientRect();
+  const handleDeleteFeedback = async (feedbackId) => {
+    if (!window.confirm("Are you sure you want to delete this feedback?")) return;
+
+    try {
+      const response = await deleteFeedback(feedbackId);
+      alert(`Feedback deleted successfully! ${feedbackId}`);
+      setFeedbackList((prevList) => prevList.filter((f) => f.id !== feedbackId));
+    } catch (error) {
+      console.error("Failed to delete feedback:", error.response ? error.response.data : error.message);
+      alert(`Failed to delete feedback: ${error.response ? JSON.stringify(error.response.data) : error.message}`);
+    }
+  };
+
+  const togglePopup = (event, feedback) => { // ✅ Accept feedback details
     setPopupPosition({
-      top: iconRect.top + window.scrollY + iconRect.height + 5, // Adjust for scroll position
-      left: iconRect.left + window.scrollX - 95, // Adjust for horizontal scroll
+      top: event.target.getBoundingClientRect().top + window.scrollY + 5,
+      left: event.target.getBoundingClientRect().left + window.scrollX - 95,
     });
     setPopupVisible(!popupVisible);
+    setMenuOpen(feedback); // ✅ Store selected feedback details
   };
 
   const handleActionClick = (action, recordDetails) => {
@@ -153,19 +168,23 @@ const SendFeedback = () => {
     setPopupVisible(false); // Close popup after clicking any action
 
     if (action === "Submit Clinic Feedback") {
-      setPopupContent(<PopupFeedbackForm onClose={handleClosePopup} />);
+      setPopupContent(<PopupFeedbackForm onClose={handleClosePopup} isClinicFeedback={true} />);
       setShowPopup(true);
     } if (action === "Submit Lab Feedback") {
-      setPopupContent(<PopupFeedbackForm onClose={handleClosePopup} />);
+      setPopupContent(<PopupFeedbackForm onClose={handleClosePopup} isClinicFeedback={false} />);
       setShowPopup(true);
     } if (action === "View Feedback Details") {
       setPopupContent(<PopupFeedbackDetails onClose={handleClosePopup} />);
       setShowPopup(true);
     } else if (action === "Respond To Feedback") {
-      setPopupContent(<PopupFeedbackResponse onClose={handleClosePopup} />);
+      setPopupContent(
+        <PopupFeedbackResponse onClose={handleClosePopup} recordDetails={recordDetails} />);
       setShowPopup(true);
+    } else if (action === "Delete Feedback") {
+      handleDeleteFeedback(recordDetails.id);
     }
   };
+
 
 
   return (
@@ -225,24 +244,37 @@ const SendFeedback = () => {
               <div className={styles.appointmentButtons}>
 
                 {/* Show 'Submit New Feedback' for patients, doctors, and lab technicians */}
-                {(curUserRole === "patient" || curUserRole === "doctor" || curUserRole === "lab_technician") && (
+                {(curUserRole === "patient") && (
                   <>
-                    <button className={styles.addButton} onClick={() => handleActionClick("Submit Clinic Feedback")}>
-                      <i className="bx bx-plus-circle"></i> Submit Clinic Feedback
-                    </button>
+                    <div className={styles.appointmentButtons}>
 
-                    <button className={styles.addButton} onClick={() => handleActionClick("Submit Lab Feedback")}>
-                      Submit Lab Feedback
-                    </button>
+                      <button className={styles.addButton} onClick={() => handleActionClick("Submit Lab Feedback")}>
+                        <i className='bx bx-plus-circle'></i> Submit Lab Feedback
+                      </button>
+
+                      <button className={styles.addButton} onClick={() => handleActionClick("Submit Clinic Feedback")}>
+                        <i className="bx bx-plus-circle"></i> Submit Clinic Feedback
+                      </button>
+
+                    </div>
                   </>
                 )}
 
 
-                {/* Show 'Respond To Feedback' for lab admins and clinic admins */}
-                {(curUserRole === "lab_admin" || curUserRole === "clinic_admin") && (
-                  <button className={styles.addButton}>
-                    <i className='bx bx-plus-circle'></i> Request New Feedback
-                  </button>
+                {(curUserRole === "doctor") && (
+                  <>
+                    <button className={styles.addButton} onClick={() => handleActionClick("Submit Clinic Feedback")}>
+                      <i className='bx bx-plus-circle'></i> Submit Clinic Feedback
+                    </button>
+                  </>
+                )}
+
+                {(curUserRole === "lab_technician") && (
+                  <>
+                    <button className={styles.addButton} onClick={() => handleActionClick("Submit Lab Feedback")}>
+                      <i className='bx bx-plus-circle'></i> Submit Lab Feedback
+                    </button>
+                  </>
                 )}
 
               </div>
@@ -288,13 +320,14 @@ const SendFeedback = () => {
                       </th>
                       <th>ID</th>
                       <th>Feedback By</th>
-                      {(curUserRole === "lab_admin" || curUserRole === "clinic_admin") && (
+                      {/* {(curUserRole === "lab_admin" || curUserRole === "clinic_admin") && (
                         <th>Role</th>
-                      )}
+                      )} */}
                       <th>Submitted at</th>
                       <th>Category</th>
                       <th>Description</th>
                       <th>Status</th>
+                      <th>Response</th>
                       <th>Action</th>
                     </tr>
                   </thead>
@@ -317,10 +350,13 @@ const SendFeedback = () => {
                           <td>{f.category}</td>
                           <td>{f.description}</td>
                           <td>{f.status}</td>
-                          <td>
-                            <Link to={`/feedback/${f.id}`} className="text-blue-500">
-                              View
-                            </Link>
+                          <td>{f.response?.description || "No response yet"}</td>
+                          <td style={{ position: "relative" }}>
+                            <i
+                              className="bx bx-dots-vertical-rounded"
+                              style={{ cursor: "pointer" }}
+                              onClick={(event) => togglePopup(event, f)} // ✅ Fix: Pass feedback data
+                            ></i>
                           </td>
                         </tr>
                       ))
@@ -364,14 +400,23 @@ const SendFeedback = () => {
               <i className="fa-solid fa-repeat" style={{ margin: "0 5px 0 0" }}></i> View Details
             </p>
 
-            <p style={{ margin: "10px 0", cursor: "pointer" }} onClick={() => handleActionClick("Respond To Feedback")}>
-              <i className="fa-regular fa-file-pdf" style={{ margin: "0 5px 0 0" }}></i> Edit Feedback
-            </p>
+            {(curUserRole === "lab_admin" || curUserRole === "clinic_admin") && (
+              <p style={{ margin: "10px 0", cursor: "pointer" }} onClick={() => handleActionClick("Respond To Feedback", menuOpen)}>
+                <i className="fa-regular fa-file-pdf" style={{ margin: "0 5px 0 0" }}></i> View and Respond
+              </p>
+            )}
 
-            <p style={{ margin: "10px 0", cursor: "pointer" }}>
-              <i className="fa-regular fa-circle-xmark" style={{ color: "red", margin: "0 5px 0 0" }}></i> Delete Feedback
-            </p>
+            {(curUserRole === "lab_admin" || curUserRole === "clinic_admin") && (
+              <p style={{ margin: "10px 0", cursor: "pointer" }}>
+                <i className="fa-regular fa-file-pdf" style={{ margin: "0 5px 0 0" }}></i> Update Status
+              </p>
+            )}
 
+            {(curUserRole === "lab_admin" || curUserRole === "clinic_admin") && (
+              <p style={{ margin: "10px 0", cursor: "pointer" }} onClick={() => handleActionClick("Delete Feedback", menuOpen)}>
+                <i className="fa-regular fa-circle-xmark" style={{ color: "red", margin: "0 5px 0 0" }}></i> Delete Feedback
+              </p>
+            )}
 
           </div>
         )}

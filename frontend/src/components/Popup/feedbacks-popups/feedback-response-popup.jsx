@@ -1,41 +1,133 @@
-import React, { useState } from "react";
+import React from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import Popup from "../Popup.jsx";
+import { useNavigate } from "react-router-dom";
+const API_BASE_URL = "http://localhost:8000/api/feedback_reponse"; // Update with actual API URL
 import styles from "./popup-feedback.module.css";
+import useCurrentUserData from "../../../useCurrentUserData.jsx";
 
-const FeedbackResponse = ({ onClose }) => {
+
+import {
+  calculateAge,
+  getAccessToken,
+  getRole,
+  handleInputChange,
+} from "../../../utils/utils.js";
+import {
+  submitFeedbackResponse,
+  getFeedbackCategories,
+} from "../../../api/feedbacksApi.js";
+
+const FeedbackResponse = ({ onClose, recordDetails }) => {
+  console.log("Record Details", recordDetails)
   const [popupTrigger, setPopupTrigger] = useState(true);
-  const [response, setResponse] = useState("");
-  const [status, setStatus] = useState("Pending");
+  const navigate = useNavigate();
+  const token = getAccessToken();
+  const [reply, setReply] = useState("");  // Stores the response text
+  const [isResolved, setIsResolved] = useState(false); // ✅ Track checkbox state
+  const [category, setCategory] = useState("");
+  const [feedback, setFeedback] = [{
+    id: 1,
+    feedbackID: "123456",
+    feedbackBy: "John",
+    role: "patient",
+    dateAndTimeofFeedback: "10/10/2024 09:30 AM",
+    category: "Service Issues",
+    feedbackComments: "Lorem Ipsum è un testo segnaposto utilizzato nel settore ...",
+    response: "xyz lorem ipsum",
+    respondedBy: "CA/LA",
+    status: "Resolved",
+  }]; // Store feedback details
+  const [categories, setCategories] = useState([]);
+  const [message, setMessage] = useState("");
+  const feedbackId = "2"
+  const [formData, setFormData] = useState({
+    description: "",
+  });
 
-  // Static feedback data (2 sample rows)
-  const data = [
-    {
-        id: 1,
-        feedbackID: "123456",
-        feedbackBy: "John",
-        role: "patient",
-        dateAndTimeofFeedback: "10/10/2024 09:30 AM",
-        category: "Service Issues",
-        feedbackComments: "Lorem Ipsum è un testo segnaposto utilizzato nel settore ...",
-        response: "xyz lorem ipsum",
-        respondedBy: "CA/LA",
-        status: "Resolved",
-    },
 
-    {
-        id: 2,
-        feedbackID: "123456",
-        feedbackBy: "Doe",
-        role: "patient",
-        dateAndTimeofFeedback: "10/10/2024 09:30 AM",
-        category: "Technical Issues",
-        feedbackComments: "Lorem Ipsum è un testo segnaposto utilizzato nel settore ...",
-        response: "N/a",
-        respondedBy: "N/a",
-        status: "Pending",
-    },
-  ];
 
+  const onInputChange = handleInputChange(setFormData);
+
+  // Fetch feedback details when the popup opens
+  useEffect(() => {
+    const fetchFeedbackDetails = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/${feedbackId}/`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setFeedback(response.data);
+      } catch (error) {
+        console.error("Error fetching feedback details:", error);
+      }
+    };
+
+    if (feedbackId) {
+      fetchFeedbackDetails();
+    }
+  }, [feedbackId, token]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+  
+    const feedbackData = {
+      description: reply, // Send the response text
+      status: isResolved ? "Resolved" : "Pending",
+    };
+  
+    const feedbackId = recordDetails?.id; // Ensure this is correctly passed
+  
+    if (!feedbackId) {
+      alert("Error: Feedback ID missing");
+      return;
+    }
+  
+    const url = `${import.meta.env.VITE_API_URL}/api/feedback_response/${feedbackId}/submit_response/`;
+  
+    try {
+      const response = await axios.post(url, feedbackData, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access")}`,
+          "Content-Type": "application/json",
+        },
+      });
+  
+      if (response?.status === 201) {
+        alert("Response submitted successfully!");
+        onClose(); // Close the popup
+      } else {
+        alert("Failed to submit response.");
+      }
+    } catch (error) {
+      console.error("Error submitting response:", error.response?.data || error);
+      alert("Error submitting response. Please try again.");
+    }
+  };
+  
+  
+
+
+  const handleFeedback = async (e) => {
+    e.preventDefault();
+
+    const feedbackData = {
+      description: formData.description,
+    };
+
+    try {
+      const response = await submitFeedbackResponse(feedbackData);
+      if (response.status === 200) {
+        alert("Response Submitted Successfully");
+      }
+    } catch (error) {
+      alert("Failed to submit response");
+      console.error(error);
+      throw error;
+    }
+  };
 
   const getStatusClass = (status) => {
     switch (status) {
@@ -47,17 +139,8 @@ const FeedbackResponse = ({ onClose }) => {
         return styles.pending;
       default:
         return {};
-    }    
+    }
   }
-
-  // Using the first feedback entry for display (for now)
-  const feedback = data[0];
-
-  const handleResponse = () => {
-    console.log("Response Submitted:", { response, status });
-  };
-
- 
 
   return (
     <Popup trigger={popupTrigger} setTrigger={setPopupTrigger} onClose={onClose}>
@@ -67,7 +150,7 @@ const FeedbackResponse = ({ onClose }) => {
         <div className={styles.headerSection}>
 
           <div className={styles.titleSection}>
-            <h2 style={{ marginLeft: "20px" }}>Respond to Feedback</h2> 
+            <h2 style={{ marginLeft: "20px" }}>Respond to Feedback</h2>
             <p style={{ marginLeft: "20px" }}>Check insights from the patient's feedback for continuous improvement in care.</p>
           </div>
 
@@ -76,68 +159,86 @@ const FeedbackResponse = ({ onClose }) => {
         <hr />
 
         <p className={styles.newSubHeading}>
-            <span className={styles.key} style={{margin: "0 0 0 20px"}}> <i className="fa-solid fa-circle-notch" style={{ fontSize: "14px" }}></i> Status: </span>
-            <span className={getStatusClass(status)} style={{ fontSize: "16px" }}>{feedback.status}</span>
+          <span className={styles.key} style={{ margin: "0 0 0 20px" }}> <i className="fa-solid fa-circle-notch" style={{ fontSize: "14px" }}></i> Status: </span>
+          <span className={getStatusClass(status)} style={{ fontSize: "16px" }}>{recordDetails?.status || "Unknown"}</span>
 
-            <span className={styles.key} style={{margin: "0 0 0 20px"}}> <i class='bx bx-calendar-alt'></i> Date Submitted: </span>
-            <span className={styles.locationValue}>{feedback.dateAndTimeofFeedback}</span>
+          <span className={styles.key} style={{ margin: "0 0 0 20px" }}> <i class='bx bx-calendar-alt'></i> Date Submitted: </span>
+          <span className={styles.locationValue}>{new Date(recordDetails?.date_submitted).toLocaleString("en-US", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+          })}</span>
 
         </p>
 
         <div className={styles.popupBottom}>
 
           <div className={styles.formSection}>
-                    <h3><i className="fa-solid fa-circle fa-2xs" style={{color: "#007bff", marginRight: "10px"}}></i> Feedback Submitted By</h3>
-                    <div className={styles.newFormGroup}>
-                      <div>
-                        <label>Patient ID</label>
-                        <p className={styles.subHeading}>123456</p>
-                      </div>
-                      <div>
-                        <label>Patient Name</label>
-                        <p className={styles.subHeading}>Mr. John Doe</p>
-                      </div>
-                      <div>
-                        <label>Age</label>
-                        <p className={styles.subHeading}>32</p>
-                      </div>
-                      <div>
-                        <label>Gender</label>
-                        <p className={styles.subHeading}>Male</p>
-                      </div>
-                      <div>
-                        <label>Phone Number</label>
-                        <p className={styles.subHeading}>+92 12345678</p>
-                      </div>
-
-                      <div>
-                        <label>Email Address</label>
-                        <p className={styles.subHeading}>patient@gmail.com</p>
-                      </div>
-
-                    </div>
-          </div>
-
-          <hr />
-
-          <div className={styles.formSection}>
-              <h3><i className="fa-solid fa-circle fa-2xs" style={{color: "#007bff", marginRight: "10px"}}></i> Comments/Feedback</h3>
+            <h3><i className="fa-solid fa-circle fa-2xs" style={{ color: "#007bff", marginRight: "10px" }}></i> Feedback Submitted By</h3>
+            <div className={styles.newFormGroup}>
               <div>
-                <div>
-                  <textarea style={{ borderBottom: "2px solid #0067FF" }} defaultValue="Lorem ipsum dolor sit amet consectetur adipisicing elit" disabled></textarea>
-                </div>
+                <label>Fedback ID</label>
+                <p className={styles.subHeading}>{recordDetails?.id}</p>
               </div>
+              <div>
+                <label>Patient ID</label>
+                <p className={styles.subHeading}>{recordDetails?.user?.user_id}</p>
+              </div>
+              <div>
+                <label>Patient Name</label>
+                <p className={styles.subHeading}>{recordDetails?.user?.first_name}{" "}{recordDetails?.user?.last_name}</p>
+              </div>
+              <div>
+                <label>Age</label>
+                <p className={styles.subHeading}>{calculateAge(recordDetails?.user?.patient?.date_of_birth)}</p>
+              </div>
+              <div>
+                <label>Gender</label>
+                <p className={styles.subHeading}>{recordDetails?.user?.patient?.gender}</p>
+              </div>
+              <div>
+                <label>Phone Number</label>
+                <p className={styles.subHeading}>{recordDetails?.user?.phone}</p>
+              </div>
+
+              <div>
+                <label>Email Address</label>
+                <p className={styles.subHeading}>{recordDetails?.user?.email}</p>
+              </div>
+
+            </div>
           </div>
 
           <hr />
 
           <div className={styles.formSection}>
-            <h3><i className="fa-solid fa-circle fa-2xs" style={{color: "#007bff", marginRight: "10px"}}></i> Add a Reply</h3>
+            <h3><i className="fa-solid fa-circle fa-2xs" style={{ color: "#007bff", marginRight: "10px" }}></i> Comments/Feedback</h3>
+            <div>
+              <div>
+                <textarea style={{ borderBottom: "2px solid #0067FF" }} value={recordDetails?.description || "No feedback available"} disabled></textarea>
+              </div>
+            </div>
+          </div>
+
+          <hr />
+
+          <div className={styles.formSection}>
+            <h3><i className="fa-solid fa-circle fa-2xs" style={{ color: "#007bff", marginRight: "10px" }}></i> Add a Reply</h3>
             <div className={styles.formGroup}>
-              <textarea style={{ borderBottom: "2px solid #0067FF", marginLeft: "0" }} defaultValue="Thank You!"></textarea>
+              <textarea style={{ borderBottom: "2px solid #0067FF", marginLeft: "0" }}
+                placeholder="Enter your response here..."
+                value={reply}
+                onChange={(e) => setReply(e.target.value)}>
+              </textarea>
 
               <div className={styles.verificationConfirmation}>
-                <p><input type="checkbox" /> <span>Mark Issue As Resolved</span> </p> 
+                <p><input type="checkbox"
+                  checked={isResolved}
+                  onChange={(e) => setIsResolved(e.target.checked)} />
+                  <span>Mark Issue As Resolved</span> </p>
               </div>
             </div>
           </div>
@@ -146,16 +247,16 @@ const FeedbackResponse = ({ onClose }) => {
 
           <div className={styles.actions}>
 
-            <button 
+            <button
               className={styles.cancelButton}
               onClick={onClose}
-              >
-                Cancel
+            >
+              Cancel
             </button>
 
             <button
               className={styles.addButton}
-              onClick={handleResponse}
+              onClick={handleSubmit}
             >
               Submit Response
             </button>
