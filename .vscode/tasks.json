@@ -17,6 +17,24 @@
       "problemMatcher": []
     },
     {
+      "label": "Start Uvicorn Server",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-Command",
+        "uvicorn backend.model_service.main:app --reload --port 8001"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+    {
       "label": "Start Backend Server",
       "type": "shell",
       "command": "powershell",
@@ -81,6 +99,7 @@
       "dependsOn": [
         "Activate Virtual Environment",
         "Start Backend Server",
+        "Start Uvicorn Server",
         // "Start WebSockets Server",
         "Start Frontend Server",
         "Start Auto Login"
