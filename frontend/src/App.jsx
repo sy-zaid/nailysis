@@ -7,6 +7,8 @@ import NotFound from "./components/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 import LabTestResult from "./pages/common/lab-test-result.jsx";
 import PatientHealthHistory from "./pages/common/patient-health-history.jsx";
+import LabTestReport from "./pages/common/lab-test-result-new";
+
 import { QueryClientProvider } from "@tanstack/react-query"; // Import React Query Client Provider
 import { queryClient } from "./queryClient.js"; // Import the client
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
@@ -29,6 +31,7 @@ import Home from "./pages/Home";
 import YourPatients from "./pages/admin-clinic/your-patients-clinic-admin";
 import PatientProfile from "./pages/admin-clinic/patient-profile-clinic-admin";
 import DoctorProfile from "./pages/admin-clinic/doctor-profile-clinic-admin";
+import BillingHistory from "./pages/admin-clinic/billing-history.jsx";
 
 function Logout() {
   localStorage.clear();
@@ -120,50 +123,6 @@ function App() {
             }
           />
 
-          {/*clinic-admin => electronic_health_record */}
-          <Route
-            path="/clinic-admin/electronic_health_record"
-            element={
-              <ProtectedRoute requiredRole="clinic_admin">
-                <Sidebar
-                  userRole="clinic_admin"
-                  setView={setView}
-                  isOpen={isOpen}
-                  toggleSidebar={toggleSidebar}
-                />
-                <div
-                  className={`mainContent ${
-                    isOpen ? "sidebar-open" : "sidebar-closed"
-                  }`}
-                >
-                  <electronic_health_record />
-                </div>
-              </ProtectedRoute>
-            }
-          />
-
-          {/*clinic-admin => Patient Health History */}
-          <Route
-            path="/clinic-admin/patient-history"
-            element={
-              <ProtectedRoute requiredRole="clinic_admin">
-                <Sidebar
-                  userRole="clinic_admin"
-                  setView={setView}
-                  isOpen={isOpen}
-                  toggleSidebar={toggleSidebar}
-                />
-                <div
-                  className={`mainContent ${
-                    isOpen ? "sidebar-open" : "sidebar-closed"
-                  }`}
-                >
-                  <PatientHealthHistory />
-                </div>
-              </ProtectedRoute>
-            }
-          />
-
           {/* Doctor */}
           <Route
             path="/doctor-dashboard"
@@ -185,6 +144,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+
           {/* Patient */}
 
           <Route
@@ -262,6 +222,7 @@ function App() {
           />
 
           <Route path="/upload-image" element={<UploadImage />} />
+          <Route path="/rep" element={<LabTestReport />} />
           <Route path="/image-guide" element={<ImageGuide />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -4,4 +4,8 @@ __pycache__/
 *.pyo
 node_modules
 env/
-
+backend/cnn_model_final-v1.keras
+*/cnn_model_final-v1.keras
+*.h5
+*.keras
+nail_scans/

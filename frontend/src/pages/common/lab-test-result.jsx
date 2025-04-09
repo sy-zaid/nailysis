@@ -1,3 +1,4 @@
+//lab-test-result.jsx
 import React, { useState, useEffect } from "react";
 import {
   getTestResultsById,
@@ -7,7 +8,10 @@ import {
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import styles from "./lab-test-result.module.css";
-import logo from "../../../public/nailysis-logo-small.png"; // Ensure the logo in this path
+import logo from "../../../public/nailysis-logo-small.png";
+import Modal from "react-modal";
+
+Modal.setAppElement("#root");
 
 const LabTestResult = () => {
   const [labTestResult, setLabTestResult] = useState(null);
@@ -15,13 +19,41 @@ const LabTestResult = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const { reportId } = useParams();
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [resultFiles, setResultFiles] = useState([]);
+  const [allResultFiles, setAllResultFiles] = useState([]);
 
   useEffect(() => {
     const fetchLabTestResult = async () => {
       try {
         const response = await getTestResultsById(reportId);
-        setLabTestResult(response.data[0]);
-        console.log("LAB TEST RESULT", labTestResult);
+        const resultData = response.data[0];
+        setLabTestResult(resultData);
+
+        // Combine all result files from both fields
+        const files = [];
+
+        // Add the main result_file if it exists
+        if (resultData?.result_file) {
+          files.push(resultData.result_file);
+        }
+
+        // Add additional images from imaging_results array if it exists
+
+        //outputs not loaded image
+        if (
+          resultData?.imaging_results &&
+          Array.isArray(resultData.imaging_results)
+        ) {
+          // Assuming the imaging_results array contains filenames that need to be prefixed with the media URL
+          const baseUrl = "http://127.0.0.1:8000/media/lab_results/";
+          resultData.imaging_results.forEach((filename) => {
+            files.push(baseUrl + filename);
+          });
+        }
+
+        setAllResultFiles(files);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -73,7 +105,6 @@ const LabTestResult = () => {
         toast.success("Test report finalized successfully", {
           className: "custom-toast",
         });
-        // Optional: Refresh data or update state
       }
     } catch (error) {
       if (error.response) {
@@ -91,19 +122,43 @@ const LabTestResult = () => {
     }
   };
 
+  const openModal = (index) => {
+    setCurrentImageIndex(index);
+    setModalIsOpen(true);
+  };
+
+  const closeModal = () => setModalIsOpen(false);
+
+  const navigateImage = (direction) => {
+    let newIndex = currentImageIndex + direction;
+    if (newIndex < 0) newIndex = resultFiles.length - 1;
+    if (newIndex >= resultFiles.length) newIndex = 0;
+    setCurrentImageIndex(newIndex);
+  };
+
+  const getFileType = (fileUrl) => {
+    if (!fileUrl) return "unknown";
+    const extension = fileUrl.split(".").pop().toLowerCase();
+    return extension === "pdf" ? "pdf" : "image";
+  };
+
   if (loading) return <p className={styles.loading}>Loading report...</p>;
   if (error) return <p className={styles.error}>{error}</p>;
 
   return (
     <div className={styles.container}>
+      <div className="top">
+        <h1>Diagnosis Report</h1>
+        <p>View diagnosis results and submit comments</p>
+      </div>
+
       <header className={styles.header}>
-        <img src={logo} alt="Nailysis Logo" className={styles.logo} />
         <h1 className={styles.title}>Nailysis - Lab Test Report</h1>
+        <img src={logo} alt="Nailysis Logo" className={styles.logo} />
       </header>
       <div className={styles.content}>
         <p>
-          <strong>Test Order ID:</strong>{" "}
-          {labTestResult?.id || "N/A"}
+          <strong>Test Order ID:</strong> {labTestResult?.id || "N/A"}
         </p>
         <p>
           <strong>Reviewed By:</strong>{" "}
@@ -142,17 +197,87 @@ const LabTestResult = () => {
             </div>
           )}
 
-        {labTestResult?.result_file && (
+        {allResultFiles.length > 0 && (
           <div className={styles.section}>
-            <h2 className={styles.sectionTitle}>Result File</h2>
-            <a
-              href={labTestResult.result_file}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.link}
+            <h2 className={styles.sectionTitle}>Result Images</h2>
+            <div className={styles.filesContainer}>
+              {allResultFiles.map((file, index) => (
+                <div key={index} className={styles.filePreviewWrapper}>
+                  <div
+                    className={styles.imageThumbnail}
+                    onClick={() => {
+                      setCurrentImageIndex(index);
+                      setModalIsOpen(true);
+                    }}
+                  >
+                    <img
+                      src={file}
+                      alt={`Test result ${index + 1}`}
+                      className={styles.thumbnailImage}
+                    />
+                  </div>
+                  <a
+                    href={file}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={styles.downloadLink}
+                  >
+                    <i className="fas fa-download"></i> Download
+                  </a>
+                  <span className={styles.imageName}>
+                    {file.split("/").pop()}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            <Modal
+              isOpen={modalIsOpen}
+              onRequestClose={closeModal}
+              contentLabel="Image Viewer"
+              className={styles.modal}
+              overlayClassName={styles.overlay}
             >
-              Download Report
-            </a>
+              <button onClick={closeModal} className={styles.closeButton}>
+                <i className="fas fa-times"></i>
+              </button>
+
+              {allResultFiles.length > 1 && (
+                <div className={styles.navigationButtons}>
+                  <button
+                    onClick={() => {
+                      setCurrentImageIndex(
+                        (prev) =>
+                          (prev - 1 + allResultFiles.length) %
+                          allResultFiles.length
+                      );
+                    }}
+                    className={styles.navButton}
+                  >
+                    <i className="fas fa-chevron-left"></i>
+                  </button>
+                  <span className={styles.imageCounter}>
+                    {currentImageIndex + 1} / {allResultFiles.length}
+                  </span>
+                  <button
+                    onClick={() => {
+                      setCurrentImageIndex(
+                        (prev) => (prev + 1) % allResultFiles.length
+                      );
+                    }}
+                    className={styles.navButton}
+                  >
+                    <i className="fas fa-chevron-right"></i>
+                  </button>
+                </div>
+              )}
+
+              <img
+                src={allResultFiles[currentImageIndex]}
+                alt={`Test result ${currentImageIndex + 1}`}
+                className={styles.fullscreenImage}
+              />
+            </Modal>
           </div>
         )}
 

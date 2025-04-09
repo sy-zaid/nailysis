@@ -3,8 +3,13 @@ import axios from "axios";
 import styles from "../../CSS Files/LabTechnician.module.css";
 import Popup from "../Popup";
 import { toast } from "react-toastify";
-import { convertDjangoDateTime, getStatusClass } from "../../../utils/utils";
+import {
+  convertDjangoDateTime,
+  getStatusClass,
+  handleInputChange,
+} from "../../../utils/utils";
 import useCurrentUserData from "../../../useCurrentUserData";
+import { saveTestResultsWithImage } from "../../../api/labsApi";
 
 const ImagingTestEntryPopup = ({
   onClose,
@@ -13,21 +18,30 @@ const ImagingTestEntryPopup = ({
   editable,
 }) => {
   const [popupTrigger, setPopupTrigger] = useState(true);
-  const [file, setFile] = useState(null);
-  const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isChecked, setIsChecked] = useState(false);
-
+  const [resultFile, setResultFile] = useState(null);
+  const [previewUrls, setPreviewUrls] = useState([]);
   const { data: curUser } = useCurrentUserData();
+  const [formData, setFormData] = useState({
+    comments: "",
+  });
+
+  const onInputChange = handleInputChange(setFormData);
 
   const handleFileChange = (event) => {
-    setFile(event.target.files[0]);
+    const files = Array.from(event.target.files);
+    setResultFile(files);
+    
+    // Create preview URLs
+    const urls = files.map(file => URL.createObjectURL(file));
+    setPreviewUrls(urls);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!isChecked) {
       toast.warning(
         "Please confirm that the results are accurate and complete before submitting.",
@@ -36,26 +50,29 @@ const ImagingTestEntryPopup = ({
       return;
     }
 
-    if (!file) {
-      setError("Please upload an image or report.");
+    if (!resultFile || resultFile.length === 0) {
+      setError("Please upload at least one image or report.");
       return;
     }
 
     setLoading(true);
     setError(null);
 
-    const formData = new FormData();
-    formData.append("test_order_id", testOrderDetails.id);
-    formData.append("test_type_id", testDetails.id);
-    formData.append("technician_id", curUser[0]?.user_id);
-    formData.append("image", file);
-    formData.append("description", description);
+    const payload = new FormData();
+    payload.append("test_order_id", testOrderDetails.id);
+    payload.append("test_type_id", testDetails.id);
+    payload.append("test_category", "Imaging");
+    payload.append("technician_id", curUser[0]?.user_id);
+    payload.append("comments", formData.comments);
+    
+    // Append all files
+    resultFile.forEach(file => {
+      payload.append("result_file", file);
+    });
 
     try {
-      const response = await axios.post("/api/lab-tests/imaging-entry", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      
+      const response = await saveTestResultsWithImage(payload);
+
       if (response.status === 201) {
         toast.success("Successfully Created Imaging Test Result", {
           className: "custom-toast",
@@ -65,16 +82,31 @@ const ImagingTestEntryPopup = ({
           className: "custom-toast",
         });
       }
-      
+
       onClose();
     } catch (err) {
-      setError(err.response?.data.error || "Failed to upload imaging test result. Try again.");
+      setError(
+        err.response?.data.error ||
+          "Failed to upload imaging test result. Try again."
+      );
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
+  // Clean up preview URLs when component unmounts
+  useEffect(() => {
+    return () => {
+      previewUrls.forEach(url => URL.revokeObjectURL(url));
+    };
+  }, [previewUrls]);
+
   return (
-    <Popup trigger={popupTrigger} setTrigger={setPopupTrigger} onClose={onClose}>
+    <Popup
+      trigger={popupTrigger}
+      setTrigger={setPopupTrigger}
+      onClose={onClose}
+    >
       <div className={styles.formContainer}>
         <div className={styles.tophead}>
           <div className={styles.header}>
@@ -82,9 +114,10 @@ const ImagingTestEntryPopup = ({
           </div>
           <div className={styles.subhead}>
             <h5 style={{ margin: "10px 0" }}>
-              Upload and manage imaging test results. Technicians can attach images or reports 
-              and provide descriptions until finalized, ensuring accuracy before they become 
-              accessible to patients and doctors.
+              Upload and manage imaging test results. Technicians can attach
+              images or reports and provide descriptions until finalized,
+              ensuring accuracy before they become accessible to patients and
+              doctors.
             </h5>
           </div>
           <hr />
@@ -173,17 +206,36 @@ const ImagingTestEntryPopup = ({
             </h3>
             <div className={styles.documentFormGroup}>
               <div>
-                <label>Upload Image/Report</label>
+                <label>Upload Images/Reports</label>
                 <input
                   type="file"
                   accept="image/*,.pdf,.dicom"
                   onChange={handleFileChange}
+                  multiple
                   className={styles.patientSelect}
                 />
-                {file && (
-                  <p style={{ marginTop: "10px", color: "#666" }}>
-                    Selected File: {file.name}
-                  </p>
+                {resultFile && resultFile.length > 0 && (
+                  <div className={styles.filePreviews}>
+                    <p>Selected Files: {resultFile.length}</p>
+                    <div className={styles.previewContainer}>
+                      {previewUrls.map((url, index) => (
+                        <div key={index} className={styles.previewItem}>
+                          {resultFile[index].type.includes('image') ? (
+                            <img 
+                              src={url} 
+                              alt={`Preview ${index}`}
+                              className={styles.previewImage}
+                            />
+                          ) : (
+                            <div className={styles.fileIcon}>
+                              <i className="fas fa-file-pdf"></i>
+                              <span>{resultFile[index].name}</span>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 )}
               </div>
             </div>
@@ -198,14 +250,13 @@ const ImagingTestEntryPopup = ({
               Findings/Description
             </h3>
             <div className={styles.documentFormGroup}>
-              <div>
-                <textarea
-                  style={{ borderBottom: "2px solid #0067FF" }}
-                  placeholder="Enter detailed description of imaging findings..."
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                ></textarea>
-              </div>
+              <textarea
+                style={{ borderBottom: "2px solid #0067FF" }}
+                placeholder="Enter detailed description of imaging findings..."
+                name="comments"
+                value={formData.comments}
+                onChange={onInputChange}
+              />
             </div>
           </div>
 
@@ -238,15 +289,16 @@ const ImagingTestEntryPopup = ({
                   onChange={() => setIsChecked(!isChecked)}
                 />
                 <span style={{ fontSize: "14px", marginTop: "-10px" }}>
-                  I confirm the imaging results provided are accurate and complete.
+                  I confirm the imaging results provided are accurate and
+                  complete.
                 </span>
               </div>
             </div>
           </div>
 
           <div className={styles.saveCancelButtons}>
-            <button 
-              className={styles.saveButton} 
+            <button
+              className={styles.saveButton}
               onClick={handleSubmit}
               disabled={loading}
             >

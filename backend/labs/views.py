@@ -159,6 +159,15 @@ class LabTestResultModelViewSet(viewsets.ModelViewSet):
         if user.role != "lab_technician":
             return Response({"error": "Access denied: Only lab technicians can create test results."}, status=status.HTTP_403_FORBIDDEN)
 
+        test_category = request.data.get("test_category")
+        
+        # Check for pathology or imaging category
+        if test_category == "Pathology" or test_category == "Imaging":
+            # Get multiple files for imaging tests (result_file can be a list of files)
+            result_files = request.FILES.getlist("result_file")
+            print("Received files:", result_files)
+        
+        # Retrieve other data
         test_order_id = request.data.get("test_order_id")
         test_type_id = request.data.get("test_type_id")
         technician_id = request.data.get("technician_id")
@@ -176,6 +185,15 @@ class LabTestResultModelViewSet(viewsets.ModelViewSet):
             lab_technician = get_object_or_404(LabTechnician, user_id=technician_id)
             test_type = get_object_or_404(LabTestType, id=test_type_id)
 
+            # Handle file upload for multiple files (if any)
+            imaging_results = []
+            if result_files:
+                for file in result_files:
+                    # You can save each image to your desired directory or storage system
+                    file_path = file.name  # Adjust this as needed for your storage (e.g., a URL or a local path)
+                    imaging_results.append(file_path)
+
+            # Create or update the lab test result
             test_result, created = LabTestResult.objects.update_or_create(
                 test_order=test_order,
                 test_type=test_type,
@@ -183,13 +201,15 @@ class LabTestResultModelViewSet(viewsets.ModelViewSet):
                     "numeric_results": test_entries,
                     "comments": comments,
                     "reviewed_by": lab_technician,
-                    "result_status":"Pending"
+                    "result_status": "Pending",
+                    "result_file": result_files[0] if result_files else None,  # Store the first file as the result_file (or leave it empty)
+                    "imaging_results": imaging_results,  # Save the multiple images' paths/URLs
                 }
             )
 
             return Response(
                 {
-                    "message": "Test result {} successfully.".format("updated" if not created else "saved"),
+                    "message": f"Test result {'updated' if not created else 'saved'} successfully.",
                     "test_result_id": test_result.id,
                     "test_order_id": test_order.id,
                     "reviewed_by": lab_technician.user_id
@@ -201,7 +221,6 @@ class LabTestResultModelViewSet(viewsets.ModelViewSet):
             return Response({"error": "Invalid format: test_entries must be a valid JSON array."}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({"error": f"Unexpected error: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
     @action(detail=False, methods=["put"], url_path="edit_results")
     def edit_results(self, request):
         """

@@ -58,8 +58,8 @@ const AppointmentDoctor = () => {
   };
 
 
-  const handleOpenPopup = () => {
-    setShowPopup(true); // Show the popup when button is clicked
+  const handleAddAppointment = () => {
+    navigate("/add-appointment");
   };
 
   const handleClosePopup = () => {
@@ -75,11 +75,11 @@ const AppointmentDoctor = () => {
     if (action === "Cancel") {
       setPopupContent(
         <CancellationRequestForm
-          appointmentId={appointmentId}
+          appointmentId={appointment.appointment_id}
           onClose={handleClosePopup}
         />
       );
-      setShowPopup(true); // Show the Cancellation Request Form popup
+      setShowPopup(true);
     } else if (action === "Start Appointment") {
       setPopupContent(
         <CheckinDoctorAppointmentPopup
@@ -89,9 +89,7 @@ const AppointmentDoctor = () => {
       );
       setShowPopup(true);
     } else if (action === "Manage Availability") {
-      setPopupContent(<PopupManageSlotsDoctor
-        onClose={handleClosePopup}
-      />);
+      setPopupContent(<PopupManageSlotsDoctor onClose={handleClosePopup} />);
       setShowPopup(true);
     }
     // Add logic for other actions like 'Edit' and 'Reschedule' if needed
@@ -117,7 +115,6 @@ const AppointmentDoctor = () => {
     <div className={styles.pageContainer}>
       {showPopup && popupContent}{" "}
       {/* Render the correct popup based on the action */}
-
       <div className={styles.pageTop}>
         <Navbar />
         <h1>Appointments</h1>

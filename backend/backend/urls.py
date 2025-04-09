@@ -31,6 +31,10 @@ from feedbacks.urls import router as feedbacks_router
 
 from labs.urls import urlpatterns as labs_urls
 from labs.urls import router as labs_router
+
+from model_service.urls import urlpatterns as model_service_urls
+from model_service.urls import router as model_service_router
+
 # Define URL patterns
 urlpatterns = [
     path("admin/", admin.site.urls),  # Django admin panel for managing users, models, etc.
@@ -69,6 +73,10 @@ urlpatterns = [
     # LABS API endpoints
     path("api/", include(labs_router.urls)),  # Registers viewsets using Django REST Framework's router
     *labs_urls,   # Additional labs-related URLs
+    
+    # MODEL SERVICE API endpoints
+    path("api/", include(model_service_router.urls)),  # Registers viewsets using Django REST Framework's router
+    *model_service_urls,   # Additional model_service-related URLs
 ]
 from django.conf import settings
 from django.conf.urls.static import static
