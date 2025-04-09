@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import Popup from "../Popup.jsx";
 import { useNavigate } from "react-router-dom";
-const API_BASE_URL = "http://localhost:8000/api/feedback_reponse"; // Update with actual API URL
+const API_BASE_URL = "http://localhost:8000/api/feedback_reponse"; // API URL
 import styles from "./popup-feedback.module.css";
 import useCurrentUserData from "../../../useCurrentUserData.jsx";
 
@@ -25,7 +25,7 @@ const FeedbackResponse = ({ onClose, recordDetails }) => {
   const navigate = useNavigate();
   const token = getAccessToken();
   const [reply, setReply] = useState("");  // Stores the response text
-  const [isResolved, setIsResolved] = useState(false); // ✅ Track checkbox state
+  const [isResolved, setIsResolved] = useState(false); // Track checkbox state
   const [category, setCategory] = useState("");
   const [feedback, setFeedback] = [{
     id: 1,

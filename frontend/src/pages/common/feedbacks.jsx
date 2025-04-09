@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom"; // ✅ Import Link properly
+import { Link } from "react-router-dom"; //   Import Link properly
 import React from "react";
 import PopupFeedbackForm from "../../components/Popup/feedbacks-popups/feedback-form-popup.jsx";
 import PopupFeedbackResponse from "../../components/Popup/feedbacks-popups/feedback-response-popup.jsx";
@@ -30,23 +30,23 @@ const SendFeedback = () => {
   const handleSelectRecord = (recordId) => {
     setSelectedRecords((prevSelected) =>
       prevSelected.includes(recordId)
-        ? prevSelected.filter((id) => id !== recordId) // ✅ Remove if already selected
-        : [...prevSelected, recordId] // ✅ Add if not selected
+        ? prevSelected.filter((id) => id !== recordId) //   Remove if already selected
+        : [...prevSelected, recordId] //   Add if not selected
     );
   };
 
   // const fetchFeedbacks = async () => {
   //   try {
   //     const response = await axios.get(
-  //       `${import.meta.env.VITE_API_URL}/api/feedbacks/`, // ✅ Correct API endpoint
+  //       `${import.meta.env.VITE_API_URL}/api/feedbacks/`, //   Correct API endpoint
   //       {
   //         headers: {
-  //           Authorization: `Bearer ${localStorage.getItem("access")}`, // ✅ Send authentication token
+  //           Authorization: `Bearer ${localStorage.getItem("access")}`, //   Send authentication token
   //         },
   //       }
   //     );
 
-  //     setFeedbackList(response.data); // ✅ Update state with API response
+  //     setFeedbackList(response.data); //   Update state with API response
   //     console.log("Response from feedback API", response.data);
   //   } catch (error) {
   //     console.error("Error fetching feedbacks:", error);
@@ -70,7 +70,7 @@ const SendFeedback = () => {
           return { ...feedback, response: response || null }; // Attach response if found, else set as null
         });
 
-        setFeedbackList(feedbacksWithResponses); // ✅ Update state with mapped data
+        setFeedbackList(feedbacksWithResponses); //   Update state with mapped data
         console.log("Mapped Feedbacks:", feedbacksWithResponses);
       } catch (error) {
         console.error("Error fetching feedback data:", error);
@@ -110,8 +110,8 @@ const SendFeedback = () => {
       }
     };
 
-    fetchFeedbackResponses(); // ✅ Call the function inside useEffect
-  }, []); // ✅ Empty dependency array ensures it runs once on mount
+    fetchFeedbackResponses(); //   Call the function inside useEffect
+  }, []); //   Empty dependency array ensures it runs once on mount
 
 
   useEffect(() => {
@@ -133,7 +133,7 @@ const SendFeedback = () => {
 
 
   // useEffect(() => {
-  //   fetchFeedbacks(); // ✅ Call the function to fetch feedbacks
+  //   fetchFeedbacks(); //   Call the function to fetch feedbacks
   // }, []);
 
   const handleClosePopup = () => {
@@ -154,13 +154,13 @@ const SendFeedback = () => {
     }
   };
 
-  const togglePopup = (event, feedback) => { // ✅ Accept feedback details
+  const togglePopup = (event, feedback) => { //   Accept feedback details
     setPopupPosition({
       top: event.target.getBoundingClientRect().top + window.scrollY + 5,
       left: event.target.getBoundingClientRect().left + window.scrollX - 95,
     });
     setPopupVisible(!popupVisible);
-    setMenuOpen(feedback); // ✅ Store selected feedback details
+    setMenuOpen(feedback); //   Store selected feedback details
   };
 
   const handleActionClick = (action, recordDetails) => {
@@ -174,7 +174,8 @@ const SendFeedback = () => {
       setPopupContent(<PopupFeedbackForm onClose={handleClosePopup} isClinicFeedback={false} />);
       setShowPopup(true);
     } if (action === "View Feedback Details") {
-      setPopupContent(<PopupFeedbackDetails onClose={handleClosePopup} />);
+      setPopupContent(
+        <PopupFeedbackDetails onClose={handleClosePopup} recordDetails={recordDetails}/>);
       setShowPopup(true);
     } else if (action === "Respond To Feedback") {
       setPopupContent(
@@ -339,7 +340,7 @@ const SendFeedback = () => {
                           <td>
                             <input
                               type="checkbox"
-                              checked={selectedRecords.includes(f.id)} // ✅ Now properly defined
+                              checked={selectedRecords.includes(f.id)} //   Now properly defined
                               onChange={() => handleSelectRecord(f.id)}
                             />
                           </td>
@@ -355,14 +356,14 @@ const SendFeedback = () => {
                             <i
                               className="bx bx-dots-vertical-rounded"
                               style={{ cursor: "pointer" }}
-                              onClick={(event) => togglePopup(event, f)} // ✅ Fix: Pass feedback data
+                              onClick={(event) => togglePopup(event, f)} // Fix: Pass feedback data
                             ></i>
                           </td>
                         </tr>
                       ))
                     ) : (
                       <tr>
-                        <td colSpan="5">No feedbacks available</td> {/* ✅ Show a message if no data */}
+                        <td colSpan="5">No feedbacks available</td> {/*   Show a message if no data */}
                       </tr>
                     )}
                   </tbody>
@@ -396,7 +397,7 @@ const SendFeedback = () => {
             }}
           >
 
-            <p style={{ margin: "10px 0", cursor: "pointer" }} onClick={() => handleActionClick("View Feedback Details")}>
+            <p style={{ margin: "10px 0", cursor: "pointer" }} onClick={() => handleActionClick("View Feedback Details", menuOpen)}>
               <i className="fa-solid fa-repeat" style={{ margin: "0 5px 0 0" }}></i> View Details
             </p>
 
