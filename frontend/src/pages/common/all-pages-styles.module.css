@@ -1,0 +1,360 @@
+
+/* ALL PATIENTS DEFAULT STYLES */
+
+::selection {
+    background-color: #0067FF;
+    color: white;
+}
+
+.pageContainer {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.pageTop {
+    padding-left: 0;
+}
+
+.pageTop h1 {
+    padding-top: 20px;
+    padding-left: 40px;
+    font-size: 50px;
+}
+
+.pageTop p {
+    font-size: 18px;
+    color: #555;
+    padding-left: 40px;
+}
+
+.mainContent {
+    display: flex;
+    flex: 1;
+    padding-top: 30px;
+}
+
+.appointmentsContainer {
+    flex: 1;
+    padding: 20px;
+    background-color: #ffffff;
+    overflow-x: hidden;
+    margin-bottom: 50px;
+}
+
+.filters {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 30px 10px 20px 10px;
+}
+
+.filters > :last-child {
+    margin-left: auto; /* Push the last element to the right */
+}
+
+.filters p {
+  color: #737070;
+  font-weight: 400;
+  margin-left: 10px;
+}
+
+.filterTabs {
+  display: flex;
+  gap: 10px;
+}
+
+.filterButton {
+    padding: 8px 5px;
+    margin: 0 5px;
+    border: none;
+    background: none;
+    color: #737070;
+    cursor: pointer;
+    border-radius: 0px;
+    position: relative;
+}
+
+.filterButton.active::after {
+    content: "";
+    display: block;
+    width: 100%;
+    height: 3px;
+    background-color: #0067FF; /* Bottom border color */
+    position: absolute;
+    bottom: -2px; /* Position the border just below the button */
+    left: 0;
+}
+
+.filterButton:hover {
+    background-color: #ffffff;
+}
+
+.statusSummary {
+    display: flex;
+    font-size: 14px;
+    color: #555;
+    padding-left: 10px;
+    align-items: center;
+}
+
+hr {
+    color: #CFCFCF;
+    opacity: 0.6;
+}
+
+/*  ---------- Checkbox Styling ---------- */
+
+input[type="checkbox"] {
+    appearance: none; /* Removes default styling */
+    border: none;
+    background-color: #B0D5FF; 
+    border-radius: 5px;
+    cursor: pointer;
+    position: relative;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+}
+
+input[type="checkbox"]:checked {
+    background-color: #0067FF; /* Blue when checked */
+    border-color: #0067FF
+}
+
+input[type="checkbox"]::before {
+    content: "✔"; /* Checkmark */
+    font-size: 16px;
+    color: white;
+    display: none;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+input[type="checkbox"]:checked::before {
+    display: block; /* Show checkmark */
+}
+
+
+/* ---------- Table Styles ---------- */
+
+.tableContainer {
+    background-color: white;
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+    width: 100%;
+}
+
+.controls {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.bulkAction,
+.sortBy {
+    appearance: none;
+    border: none;
+    outline: none;
+    padding: 8px 12px;
+    margin-right: 10px;
+    cursor: pointer;
+    background: white url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>') 
+    no-repeat right 12px center; 
+}
+
+.bulkAction,
+.sortBy {
+    background-size: 24px; /* Reduce icon size */
+    padding-right: 20px; /* Adjust space for smaller icon */
+}
+
+.search {
+    padding: 5px;
+    border: none;
+    border-bottom: 2px solid #1E68F8;
+    background: none;
+    border-radius: 0px;
+}
+
+.tableWrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+table {
+    width: max-content;
+    min-width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    font-size: 14px;
+}
+
+.table th {
+    color: #3C3C3C;
+    font-weight: 600;
+    padding: 25px 16px;
+    text-align: center;
+    border-bottom: 1px solid #E5E7EB;
+    white-space: nowrap;
+    border: none;
+}
+
+.table th:first-child {
+    border-top-left-radius: 8px;
+}
+
+.table th:last-child {
+    border-top-right-radius: 8px;
+}
+
+.table td {
+    padding: 25px 16px;
+    text-align: center;
+    /* border-bottom: 1px solid #E5E7EB; */
+}
+
+.table tbody tr:hover {
+  background-color: #F9FAFB;
+}
+
+.table tr:hover {
+  background-color: #f1f1f1;
+}
+
+/* Increase space for the phone column */
+.phoneColumn {
+  width: 150px; /* Adjust this value as needed */
+  word-wrap: break-word;
+}
+
+/* ---------- Status Styles ---------- */
+
+.consulted {
+    color: green;
+}
+
+.cancelled {
+    color: red;
+}
+
+.scheduled {
+    color: orange;
+}
+
+.inProgress {
+    color: #007bff;
+}
+
+
+/* ---------- Buttons ---------- */
+
+.appointmentButtons {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-top: -50px;
+}
+
+.appointmentButtons button {
+    width: 100%;
+}
+
+.addButton {
+    display: block;
+    padding: 8px 30px;
+    background-color:#007bff ;
+    color: white;
+    border: none;
+    border-radius: 15px; 
+    cursor: pointer;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+    transition: all 0.1s;
+}
+  
+.addButton:hover {
+    background-color: #0056b3;
+}
+  
+.cancelButton {
+    background-color: #dc3545;
+    padding: 8px 30px;
+    color: white;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+    transition: all 0.1s;
+}
+  
+.cancelButton:hover {
+    background-color: #b12937;
+}
+
+.shareBtn {
+    padding: 8px 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    font-weight: normal;
+    white-space: nowrap; /* Prevents text from wrapping */
+    display: inline-block; /* Ensures proper sizing */
+    text-align: center; /* Centers the text */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.shareBtn:hover {
+    background-color: #0056b3;
+}
+
+
+/* Table More Options */
+.moreActionsBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.moreActionsIcon {
+  width: 20px;
+  height: 20px;
+}
+
+.menu {
+  position: absolute;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  top: 100%; /* Adjust the positioning as needed */
+  right: 0;
+  min-width: 150px;
+  max-width: 220px;
+}
+
+.menu ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 10px;
+}
+
+.menu ul li {
+  padding: 8px;
+  cursor: pointer; 
+}
+
+.menu ul li:hover {
+  background-color: #f0f0f0;
+}
+
+.menu ul li i {
+    margin-right: 8px;
+    cursor: pointer; 
+}

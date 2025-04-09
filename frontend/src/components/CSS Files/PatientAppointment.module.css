@@ -116,12 +116,13 @@
 }
 
 .tableContainer {
-    overflow-x: auto;
+    width: 100%;
     background-color: white;
     padding: 20px;
     border-radius: 20px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
 }
+
 
 .controls {
   display: flex;
@@ -141,12 +142,17 @@
   no-repeat right 12px center; 
 }
 
+.bulkAction,
+.sortBy {
+  background-size: 24px; /* Reduce icon size */
+  padding-right: 20px; /* Adjust space for smaller icon */
+}
 
-.bulkAction:focus,
+/* .bulkAction:focus,
 .sortBy:focus {
   border-color: #004080;
   box-shadow: 0 0 5px rgba(0, 91, 187, 0.5);
-}
+} */
 
 
 .search {
@@ -157,12 +163,20 @@
     border-radius: 0px;
 }
 
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto;
+  max-width: 68vw;
+}
+
 
 table {
-    width: 100%;
+    width: max-content;
+    min-width: 100%;
     border-collapse: collapse;
     border: none;
 }
+
 
 
 .table th,
@@ -176,7 +190,6 @@ table {
 .table th {
   background-color: #f4f4f4; 
 } */
-
 
 .table tr:nth-child(even) {
   background-color: #f9f9f9;
@@ -203,6 +216,8 @@ table {
 
 
 
+/* ---------- Status Styles ---------- */
+
 .consulted {
   color: green;
 }
@@ -214,6 +229,12 @@ table {
 .scheduled {
   color: orange;
 }
+
+.inProgress {
+  color: #007bff;
+}
+
+
 
 
 /* Responsive Styles for table*/
@@ -594,3 +615,4 @@ hr {
 .menu ul li:hover {
   background-color: #f0f0f0;
 }
+

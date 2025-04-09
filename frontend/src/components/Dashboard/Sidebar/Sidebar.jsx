@@ -1,11 +1,15 @@
 import React, { useState } from "react";
 import styles from "./Sidebar.module.css";
 import useCurrentUserData from "../../../useCurrentUserData";
+import PopupEditProfile from "../../Popup/patient-edit-profile-popup";
 
 const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
   // const [isOpen, setIsOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null); // Track which dropdown is open
   const { data: curUser } = useCurrentUserData(); // Fetch patient data
+
+  const [popupContent, setPopupContent] = useState();
+  const [showPopup, setShowPopup] = useState(false);
 
   const toggleDropdown = (index) => {
     setOpenDropdown(openDropdown === index ? null : index); // Toggle dropdown visibility
@@ -31,7 +35,8 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
         label: "Appointments",
         subItems: [
           { label: "View Appointments" },
-          { label: "Appointment History" },
+          { label: "Appointments History" },
+          { label: "Cancellation Requests" },
         ],
       },
       {
@@ -43,21 +48,6 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
         ],
       },
       { icon: "icon-feedback-black.jpg", label: "Feedbacks", subItems: [] },
-      {
-        icon: "icon-test-request-black.jpg",
-        label: "Test Requests",
-        subItems: [],
-      },
-      {
-        icon: "icon-test-request-black.jpg",
-        label: "electronic-health-records",
-        subItems: [],
-      },
-      {
-        icon: "icon-test-request-black.jpg",
-        label: "Patient Health History",
-        subItems: [],
-      },
     ],
     doctor: [
       {
@@ -78,7 +68,9 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
         label: "Appointments",
         subItems: [
           { label: "View Appointments" },
-          { label: "Appointment History" },
+          { label: "Appointments History" },
+          { label: "Manage Availability" },
+          { label: "Cancellation Requests" },
         ],
       },
       {
@@ -90,11 +82,6 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
         ],
       },
       { icon: "icon-feedback-black.jpg", label: "Feedbacks", subItems: [] },
-      {
-        icon: "icon-test-request-black.jpg",
-        label: "Test Requests",
-        subItems: [],
-      },
     ],
     patient: [
       {
@@ -119,8 +106,10 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
         icon: "icon-appointments-black.jpg",
         label: "Appointments",
         subItems: [
-          { label: "View Appointments" },
-          { label: "Appointment History" },
+          { label: "View Clinic Appointments" },
+          { label: "View Lab Appointments" },
+          { label: "Appointments History" },
+          { label: "Cancellation Requests" },
         ],
       },
       {
@@ -154,7 +143,8 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
         label: "Appointments",
         subItems: [
           { label: "View Appointments" },
-          { label: "Appointment History" },
+          { label: "Appointments History" },
+          { label: "Cancellation Requests" },
         ],
       },
       {
@@ -188,7 +178,9 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
         label: "Appointments",
         subItems: [
           { label: "View Appointments" },
-          { label: "Appointment History" },
+          { label: "Appointments History" },
+          { label: "Manage Availability" },
+          { label: "Cancellation Requests" },
         ],
       },
       {
@@ -210,8 +202,28 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
 
   const currentMenu = menuItems[userRole] || [];
 
+  // Handlers 
+
+  const handleClosePopup = () => {
+    setShowPopup(false); // Hide the popup when closing
+  };
+
+  const handleActionClick = (action) => {
+    console.log(`Action: ${action}`);
+
+    if (action === "Edit Profile") {
+      setPopupContent(
+        <PopupEditProfile
+          onClose={handleClosePopup}
+        />
+      );
+      setShowPopup(true);
+    }
+  }
+
   return (
     <div>
+      {showPopup && popupContent}
       {/* Toggle Button (hide when sidebar is open) */}
       {!isOpen && (
         <>
@@ -342,11 +354,17 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
                 src={item.profile_picture || "profile-pic.jpg"}
                 alt="Profile"
               />
-              <h2>
+              <h2 className={styles.profileInfo}>
                 {item.first_name} {item.last_name}
                 <br />
                 <span>{item.email}</span>
               </h2>
+              
+              {/* Links (hidden by default, shown on hover) */}
+              <div className={styles.hiddenLinks}>
+                <span className={styles.editProfileLink}><i class="fa-solid fa-pen"></i><a onClick={() => handleActionClick("Edit Profile")}>Edit Profile</a></span>
+                <span className={styles.logoutLink}><i class="fa-solid fa-arrow-right-from-bracket"></i><a>Logout</a></span>
+              </div>
               {/* </div> */}
             </div>
           ))}

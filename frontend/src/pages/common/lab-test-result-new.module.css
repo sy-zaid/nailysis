@@ -1,0 +1,425 @@
+/* lab-test-result-new.module.css */
+
+.pageContainer {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f5f7fa;
+}
+
+.contentWrapper {
+  display: flex;
+  flex: 1;
+  /* padding-top: 50px; Space for fixed navbar */
+}
+
+.mainContent {
+  flex: 1;
+  padding: 2rem;
+  /* margin-left: 50px; Width of sidebar */
+}
+
+.reportContainer {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.reportTitle {
+  font-size: 2rem;
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.reportSubtitle {
+  color: #7f8c8d;
+  margin-bottom: 2rem;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.reportCard {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.reportHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+}
+
+.headerLeft {
+  flex: 1;
+}
+
+.clinicName {
+  font-size: 1.5rem;
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.clinicAddress {
+  font-style: normal;
+  color: #7f8c8d;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.headerRight {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.contactInfo {
+  color: #7f8c8d;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.logo {
+  width: 150px;
+  height: 150px;
+}
+/* background-color: #4a90e2; */
+/* border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+} */
+
+.logo img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.divider {
+  height: 1px;
+  background-color: #e0e0e0;
+  margin: 1.5rem 0;
+}
+
+.section {
+  margin-bottom: 1.5rem;
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  font-size: 1.2rem;
+  color: #2c3e50;
+  margin-bottom: 1.2rem;
+  font-weight: 600;
+}
+
+.dot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  background-color: #4a90e2;
+  border-radius: 50%;
+  margin-right: 0.5rem;
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.infoItem h4 {
+  color: #7f8c8d;
+  font-size: 0.9rem;
+  margin-bottom: 0.3rem;
+  font-weight: normal;
+}
+
+.infoItem p {
+  color: #2c3e50;
+  font-weight: 500;
+}
+
+.testResultsTable {
+  width: 100%;
+  overflow-x: auto;
+  margin-bottom: 1.5rem;
+}
+
+.testResultsTable table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.testResultsTable th {
+  background-color: #f8f9fa;
+  text-align: left;
+  padding: 0.8rem;
+  font-weight: 600;
+  color: #2c3e50;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.testResultsTable td {
+  padding: 0.8rem;
+  border-bottom: 1px solid #f0f0f0;
+  color: #2c3e50;
+}
+
+.normal {
+  color: #27ae60;
+  font-weight: 500;
+}
+
+.high {
+  color: #e74c3c;
+  font-weight: 500;
+}
+
+.low {
+  color: #f39c12;
+  font-weight: 500;
+}
+
+/* Result Images Section */
+.imagesGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.imageBox {
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #f8f9fa;
+  border: 1px dashed #e0e0e0;
+  aspect-ratio: 1/1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.imageBox img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+/* Lab Admin Comments Section */
+.commentsContainer {
+  margin: 1.5rem 0;
+}
+
+.commentBox {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 1.2rem;
+  border-left: 4px solid #4a90e2;
+}
+
+.commentText {
+  color: #2c3e50;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.commentMeta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #e0e0e0;
+  padding-top: 0.8rem;
+}
+
+.commentAuthor {
+  color: #2c3e50;
+  font-weight: 500;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.commentDate {
+  color: #7f8c8d;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.disclaimer {
+  background-color: #f8f9fa;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-top: 1.5rem;
+}
+
+.disclaimer p {
+  color: #7f8c8d;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.signatures {
+  margin-top: 2rem;
+}
+
+.disclaimerText {
+  color: #7f8c8d;
+  font-size: 0.85rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.signatureGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.signatureItem {
+  text-align: center;
+}
+
+.signatureItem p {
+  margin: 0;
+  color: #2c3e50;
+  font-weight: 500;
+}
+
+.credentials {
+  color: #7f8c8d;
+  font-size: 0.85rem;
+  margin-top: 0.3rem;
+}
+
+.teamTitle {
+  color: #2c3e50;
+  font-weight: 500;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 50px;
+}
+
+.downloadButton,
+.shareButton,
+.appointmentButton {
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.downloadButton {
+  background-color: #4a90e2;
+  color: white;
+}
+
+.shareButton {
+  background-color: #27ae60;
+  color: white;
+}
+
+.appointmentButton {
+  background-color: #f39c12;
+  color: white;
+}
+
+.downloadButton:hover,
+.shareButton:hover,
+.appointmentButton:hover {
+  filter: brightness(1.05);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.feedbackLink {
+  text-align: center;
+  color: #4a90e2;
+  margin-bottom: 2rem;
+}
+
+.feedbackLink a {
+  color: #4a90e2;
+  text-decoration: none;
+}
+
+.feedbackLink a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 1024px) {
+  .mainContent {
+    margin-left: 0;
+  }
+
+  .signatureGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .imagesGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .reportHeader {
+    flex-direction: column;
+  }
+
+  .headerRight {
+    align-items: flex-start;
+    margin-top: 1rem;
+  }
+
+  .actionButtons {
+    flex-direction: column;
+  }
+
+  .actionButtons button {
+    width: 100%;
+  }
+
+  .signatureGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .imagesGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .commentMeta {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .commentDate {
+    margin-top: 0.5rem;
+  }
+}

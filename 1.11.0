@@ -1,0 +1,5 @@
+Collecting wrapt
+  Downloading wrapt-1.17.2-cp311-cp311-win_amd64.whl.metadata (6.5 kB)
+Downloading wrapt-1.17.2-cp311-cp311-win_amd64.whl (38 kB)
+Installing collected packages: wrapt
+Successfully installed wrapt-1.17.2

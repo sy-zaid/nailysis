@@ -26,6 +26,7 @@ class EHR(models.Model):
     last_updated = models.DateTimeField(auto_now=True)
     consulted_by = models.CharField(max_length=255, blank=True)  # Name of the doctor or healthcare provider
     
+    added_to_medical_history = models.BooleanField(default=False)
     
     def create_record(self):
         """
@@ -106,14 +107,44 @@ class EHR(models.Model):
         Returns a string representation of the EHR record.
         """
         return f"EHR Record for {self.patient.first_name} {self.patient.last_name}"
+    
+    def add_to_medical_history(self):
+        """
+        Adds relevant details from this EHR record to Medical History.
+        Prevents duplicate entries.
+        """
+        history, created = MedicalHistory.objects.get_or_create(patient=self.patient)
+
+        # Prevent duplicate chronic conditions, immunizations, etc.
+        if self.diagnoses:
+            if not history.chronic_conditions:
+                history.chronic_conditions = []
+            for condition in self.diagnoses:
+                if condition not in history.chronic_conditions:
+                    history.chronic_conditions.append(condition)
+
+        if self.immunization_records:
+            if not history.immunization_history:
+                history.immunization_history = []
+            for immunization in self.immunization_records:
+                if immunization not in history.immunization_history:
+                    history.immunization_history.append(immunization)
+
+        history.last_updated = self.last_updated
+        history.save()
+        
+        # **Save the EHR record after updating the field**
+        self.added_to_medical_history = True
+        self.save()
+
 
 class MedicalHistory(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
-    surgeries = models.JSONField(null=True, blank=True)
     family_history = models.TextField(null=True, blank=True)
     chronic_conditions = models.JSONField(null=True, blank=True)
-    injuries = models.JSONField(null=True, blank=True)
+    surgeries = models.JSONField(null=True, blank=True)
     immunization_history = models.JSONField(null=True, blank=True)  # Added
+    injuries = models.JSONField(null=True, blank=True)
     allergies = models.JSONField(null=True, blank=True)  # Added
 
     date_created = models.DateTimeField(auto_now_add=True)

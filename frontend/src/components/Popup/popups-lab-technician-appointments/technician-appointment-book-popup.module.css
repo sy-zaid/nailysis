@@ -1,0 +1,255 @@
+/* Popup classes */
+.formContainer {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+  width: 100%;
+  height: 80vh;
+  overflow: auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 15px;
+}
+
+.titleSection h2 {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0 0 5px 0;
+  color: #000;
+}
+
+.titleSection p {
+  margin: 0;
+  font-size: 14px;
+  color: #666;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+  color: #333;
+  padding: 0;
+  margin: 0;
+  line-height: 1;
+}
+
+.closeButton span {
+  font-size: 40px;
+  font-weight: 200;
+}
+
+hr {
+  border: none;
+  height: 1px;
+  background-color: #e0e0e0;
+  margin: 15px 0;
+}
+
+/* Patient Selection Dropdown */
+.patientSelectSection {
+  margin: 25px 0;
+}
+
+.patientSelectSection label {
+  display: block;
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 8px;
+  margin-left: 36%;
+}
+
+.Select {
+  border: none;
+  outline: none;
+  cursor: pointer;
+}
+
+/* select {
+  border: none;
+  outline: none;
+  cursor: pointer;
+  width: 80% !important;
+  padding-left: 0 !important;
+} */
+
+
+
+.dropdown {
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+/* Section Headers with Bullets */
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  margin-bottom: -10px;
+}
+
+.subhead {
+  font-size: 18px;
+  color: #4E4E4E;
+  font-weight: 300;
+  margin-bottom: 10px;
+}
+
+.subHeading {
+  margin: 10px 10px 20px auto;
+}
+
+.icons {
+  font-size: 18px;
+  margin-right: 10px;
+}
+
+.key {
+  color: #4E4E4E;
+  font-size: 16px;
+  margin-right: 10px;
+}
+
+.statusValue {
+  color: #FFB031;
+}
+
+.locationValue {
+  color: #000;
+  font-weight: 600;
+  margin-right: 35px;
+}
+
+.continueButton {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 15px;
+  padding: 8px 40px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+  transition: background-color 0.2s;
+  margin-top: 10px;
+}
+
+.continueButton:hover {
+  background-color: #0056b3;
+}
+
+/* Form fields that appear after clicking continue */
+.ehrFormSection {
+  margin-top: 20px;
+}
+
+.formSection {
+  margin: 25px 0;
+}
+
+.formGroup {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-left: 26px;
+}
+
+.formGroup label {
+  display: block;
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 6px;
+}
+
+.formGroup textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  min-height: 80px;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.subhead {
+  font-size: 16px;
+  color: #4E4E4E;
+  font-weight: 300;
+}
+
+.subHeading {
+  margin: 20px 10px 20px auto;
+  font-size: 14px;
+}
+
+/* Action buttons for the form */
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin: 25px 0 20px 0;
+}
+
+
+.confirmButton {
+  background-color: #0066ff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.cancelButton:hover {
+  background-color: #bd2c3a;;
+}
+
+.confirmButton:hover {
+  background-color: #0052cc;
+}
+
+
+
+.popupBottom {
+  max-height: 75vh;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+  padding-right: 20px;
+  padding-bottom: 20px;
+}
+
+
+.ehrRecordsColumn {
+  margin-top: 20px;
+}
+
+.cancelButton {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.confirmButton {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.addButton:hover {
+background-color: #0056b3;
+}

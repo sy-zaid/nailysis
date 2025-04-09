@@ -1,0 +1,148 @@
+
+.formContainer {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    width: 800px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+    position: relative;
+    height: 95vh;
+    max-height: 95vh;
+    overflow-y: hidden;
+    top: -2%;
+    margin-top: -2%;
+    padding-right: 10px;
+}
+
+
+.profileSection {
+    margin: 10px 0 50px 0; 
+    position: relative; 
+}
+
+.backgroundPicture {
+    width: 98%;
+    height: 150px;
+    object-fit: cover; 
+}
+
+.editBanner {
+    position: absolute;
+    padding: 8px;
+    background-color: #fff;
+    right: 5%;
+    top: 10%;
+    border-radius: 50%;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.6);
+    cursor: pointer;
+}
+
+.profilePictureWrapper {
+    position: absolute;
+    height: 150px;
+    width: 150px;
+    border-radius: 50%;
+    left: 3%;
+    bottom: -25%;
+    overflow: hidden; /* Ensures overlay does not leak */
+    border: 4px solid #fff;
+    cursor: pointer;
+}
+
+.profilePictureWrapper::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.8));
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.profilePictureWrapper:hover::after {
+    opacity: 1;
+}
+
+.profilePicture {
+    position: absolute;
+    height: 150px;
+    width: 150px;
+    border-radius: 50%;
+}
+
+.profileIcons {
+    position: absolute;
+    bottom: 10px; 
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: row; 
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    z-index: 200;
+}
+
+
+.profilePictureWrapper:hover .profileIcons {
+    opacity: 1;
+}
+
+
+/* Style for the icons */
+.profileIcons i {
+    background: white;
+    color: black;
+    padding: 8px;
+    border-radius: 50%;
+    font-size: 14px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+}
+
+.email {
+    position: absolute;
+    right: -41%;
+    bottom: -36%;
+    font-weight: 600;
+}
+
+
+.dateOfBirthField {
+    width: 70%;
+    padding: 12px;
+}
+
+.radioGroup {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+}
+
+.radioGroup input {
+    cursor: pointer;
+}
+
+.radioRow {
+  display: flex;
+  gap: 15px;
+}
+
+.radioGroup label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
+  cursor: pointer;
+  white-space: nowrap; 
+  padding-top: 12px;
+}
+
+.closeBtn {
+    left: 70%;
+}

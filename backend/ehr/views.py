@@ -11,17 +11,17 @@ import json
 
 from appointments.models import (
     Appointment, DoctorAppointment, TechnicianAppointment, 
-    DoctorAppointmentFee, LabTechnicianAppointmentFee, CancellationRequest
+    DoctorAppointmentFee, CancellationRequest
 )
 from appointments.serializers import (
     AppointmentSerializer, DoctorAppointmentSerializer, 
     TechnicianAppointmentSerializer, DoctorFeeSerializer, CancellationRequestSerializer
 )
 
-from .serializers import (EHRSerializer)
+from .serializers import (EHRSerializer,MedicalHistorySerializer)
 
 from users.models import Patient, Doctor, ClinicAdmin, CustomUser
-from ehr.models import EHR
+from ehr.models import EHR,MedicalHistory
 
 
 class EHRView(viewsets.ModelViewSet):
@@ -146,4 +146,28 @@ class EHRView(viewsets.ModelViewSet):
         self.perform_destroy(instance)
         self.send_websocket_delete(id)  # Send WebSocket Delete Event
         return Response({"message": "EHR record deleted."}, status=status.HTTP_204_NO_CONTENT)
+    
+    @action(detail=True,methods=['post'],url_path="add_ehr_to_medical_history")
+    def add_ehr_to_medical_history(self,request,pk = None):
+        print("HELLLOOOOOOOOOOOOOOOO    ")
+        user = self.request.user
+        if user.role == "doctor":
+            ehr_record,created = EHR.objects.get_or_create(pk=pk)
+            ehr_record.add_to_medical_history()
+            return Response({"message":"Successfully Added to Medical History"}, status=status.HTTP_201_CREATED)
+        return Response({"error":"User not authorized to add ehr to medical history"})
 
+
+class MedicalHistoryView(viewsets.ModelViewSet):
+    queryset = MedicalHistory.objects.all()
+    serializer_class = MedicalHistorySerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        # user = self.request.user
+        # if user.role != "doctor" or user.role != "clinic_admin"
+        patient_id = self.request.query_params.get("patient")
+        if patient_id:
+            return MedicalHistory.objects.filter(patient_id = patient_id)
+        else:
+            return MedicalHistory.objects.all()

@@ -32,5 +32,16 @@ body {
 }
 
 .sidebar-closed {
-  margin-left: 4%; /* No sidebar */
+  margin-left: 10%; /* No sidebar */
+}
+
+/* TOASTS STYLING */
+
+/* Custom Toast Styles */
+.custom-toast {
+  font-family: "DM Sans", sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  border-radius: 8px;
+  padding: 12px;
 }

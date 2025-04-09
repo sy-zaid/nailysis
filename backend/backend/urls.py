@@ -24,6 +24,17 @@ from users.urls import urlpatterns as users_urls
 
 from ehr.urls import urlpatterns as ehr_urls
 from ehr.urls import router as ehr_router
+
+from feedbacks.urls import urlpatterns as feedbacks_urls
+from feedbacks.urls import router as feedbacks_router
+
+
+from labs.urls import urlpatterns as labs_urls
+from labs.urls import router as labs_router
+
+from model_service.urls import urlpatterns as model_service_urls
+from model_service.urls import router as model_service_router
+
 # Define URL patterns
 urlpatterns = [
     path("admin/", admin.site.urls),  # Django admin panel for managing users, models, etc.
@@ -54,6 +65,18 @@ urlpatterns = [
     # EHR API endpoints
     path("api/", include(ehr_router.urls)),  # Registers viewsets using Django REST Framework's router
     *ehr_urls,   # Additional ehr-related URLs
+
+    # feedbacks API endpoints
+    path("api/", include(feedbacks_router.urls)),  # Registers viewsets using Django REST Framework's router
+    *feedbacks_urls,   # Additional feedbacks-related URLs
+    
+    # LABS API endpoints
+    path("api/", include(labs_router.urls)),  # Registers viewsets using Django REST Framework's router
+    *labs_urls,   # Additional labs-related URLs
+    
+    # MODEL SERVICE API endpoints
+    path("api/", include(model_service_router.urls)),  # Registers viewsets using Django REST Framework's router
+    *model_service_urls,   # Additional model_service-related URLs
 ]
 from django.conf import settings
 from django.conf.urls.static import static

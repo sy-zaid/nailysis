@@ -4,7 +4,9 @@ import styles from "../../components/CSS Files/LabTechnician.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar.jsx";
 import Header from "../../components/Dashboard/Header/Header.jsx";
 import Sidebar from "../../components/Dashboard/Sidebar/Sidebar.jsx";
-import PopupStartConsultation from "../../components/Popup/popup-checking-in-lab-technician.jsx";
+import TechnicianAppointmentCheckinPopup from "../../components/Popup/popups-lab-technician-appointments/technician-appointment-checkin-popup.jsx";
+import { getStatusClass } from '../../utils/utils.js';
+
 
 const ViewAppointments = (props) => {
   const [popupVisible, setPopupVisible] = useState(false);
@@ -16,7 +18,8 @@ const ViewAppointments = (props) => {
   const [activeButton, setActiveButton] = useState(0); 
 
   const [startConsultationPopup, setstartConsultationPopup] = useState(false);
-    
+  
+  
 
     {/* Function to handle all popup item clicks and close the popup */}
     const handlePopupItemClick = (callback) => {
@@ -76,16 +79,6 @@ const ViewAppointments = (props) => {
     setActiveButton(index); // Set the active button when clicked
   };
 
-  const getStatusClass = (status) => {
-    switch (status) {
-      case "Consulted":
-        return styles.consulted;
-      case "Cancelled":
-        return styles.cancelled;
-      default:
-        return styles.scheduled;
-        }
-    }
   
   const togglePopup = (event, status) => {
     const iconRect = event.target.getBoundingClientRect();
@@ -114,7 +107,7 @@ const ViewAppointments = (props) => {
     
     <div className={styles.pageContainer}>
 
-      <PopupStartConsultation 
+      <TechnicianAppointmentCheckinPopup 
         startConsultationPopup={startConsultationPopup} 
         setstartConsultationPopup={setstartConsultationPopup} 
       />
@@ -131,7 +124,7 @@ const ViewAppointments = (props) => {
 
         <div className={styles.appointmentsContainer}>
           <div className={styles.filters}>
-          <button
+            <button
               className={`${styles.filterButton} ${activeButton === 0 ? styles.active : ''}`}
               onClick={() => handleFilterClick(0)}
             >
@@ -217,7 +210,7 @@ const ViewAppointments = (props) => {
                     <td data-label="Phone">{row.phone}</td>
                     <td data-label="Appointment Date & Time">{row.appointmentDateTime}</td>
                     <td data-label="Purpose">{row.purpose}</td>
-                    <td data-label="Scheduled Appointments" className={getStatusClass(row.scheduledAppointments)}>{row.scheduledAppointments}</td>
+                    <td data-label="Scheduled Appointments" className={getStatusClass(row.scheduledAppointments, styles)}>{row.scheduledAppointments}</td>
                  
                     <td style={{ position: "relative" }}>
                       <i
