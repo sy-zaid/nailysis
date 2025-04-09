@@ -29,19 +29,19 @@ const AddAppointment = () => {
               <div className={styles.formGroup}>
                 <div>
                   <label>Name</label>
-                  <input type="text" placeholder="John Doe" />
+                  <input className={styles.inputBox} type="text" placeholder="John Doe" />
                 </div>
                 <div>
                   <label>Age</label>
-                  <input type="number" placeholder="21" />
+                  <input className={styles.inputBox} type="number" placeholder="21" />
                 </div>
                 <div>
                   <label>Gender</label>
-                  <input type="text" placeholder="Male" />
+                  <input className={styles.inputBox} type="text" placeholder="Male" />
                 </div>
                 <div>
                   <label>Phone Number</label>
-                  <input type="tel" placeholder="+92 12345678" />
+                  <input className={styles.inputBox} type="tel" placeholder="+92 12345678" />
                 </div>
               </div>
             </div>

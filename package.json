@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "react-tooltip": "^5.28.0"
+    "react-tooltip": "^5.28.0",
+    "scrollreveal": "^4.0.9"
   }
 }
