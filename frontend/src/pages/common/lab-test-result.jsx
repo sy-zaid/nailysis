@@ -1,3 +1,4 @@
+//lab-test-result.jsx
 import React, { useState, useEffect } from "react";
 import {
   getTestResultsById,
@@ -39,6 +40,8 @@ const LabTestResult = () => {
         }
 
         // Add additional images from imaging_results array if it exists
+
+        //outputs not loaded image
         if (
           resultData?.imaging_results &&
           Array.isArray(resultData.imaging_results)
@@ -144,9 +147,14 @@ const LabTestResult = () => {
 
   return (
     <div className={styles.container}>
+      <div className="top">
+        <h1>Diagnosis Report</h1>
+        <p>View diagnosis results and submit comments</p>
+      </div>
+
       <header className={styles.header}>
-        <img src={logo} alt="Nailysis Logo" className={styles.logo} />
         <h1 className={styles.title}>Nailysis - Lab Test Report</h1>
+        <img src={logo} alt="Nailysis Logo" className={styles.logo} />
       </header>
       <div className={styles.content}>
         <p>

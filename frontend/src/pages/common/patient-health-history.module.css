@@ -4,14 +4,17 @@
 }
 
 .header {
+  margin-top: 30px;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 20px;
+  margin-left: 20px;
+  margin-right: 20px;
 }
 
 .header h1 {
-  font-size: 20px;
+  font-size: 30px;
   font-weight: 600;
   margin: 0;
   color: #111827;
@@ -20,14 +23,14 @@
 .header p {
   color: #6b7280;
   margin: 4px 0 0 0;
-  font-size: 13px;
+  font-size: 18px;
 }
 
 .addButton {
-  background-color: #0067FF;
+  background-color: #0067ff;
   color: white;
   padding: 8px 16px;
-  border-radius: 6px;
+  border-radius: 15px;
   border: none;
   font-size: 14px;
   cursor: pointer;
@@ -38,10 +41,11 @@
 }
 
 .addButton:hover {
-  background-color: #0067FF
+  background-color: #0067ff;
 }
 
 .statusContainer {
+  margin-left: 20px;
   display: flex;
   align-items: center;
   margin-bottom: 16px;
@@ -58,7 +62,7 @@
 }
 
 .status.active {
-  background-color: #0067FF;
+  background-color: #0067ff;
   color: white;
 }
 
@@ -69,8 +73,8 @@
 
 .mainContent {
   background-color: white;
-  border-radius: 12px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  border-radius: 50px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
   padding: 16px;
 }
 
