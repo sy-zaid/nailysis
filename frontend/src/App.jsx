@@ -7,6 +7,8 @@ import NotFound from "./components/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 import LabTestResult from "./pages/common/lab-test-result.jsx";
 import PatientHealthHistory from "./pages/common/patient-health-history.jsx";
+import LabTestReport from "./pages/common/lab-test-result-new";
+
 import { QueryClientProvider } from "@tanstack/react-query"; // Import React Query Client Provider
 import { queryClient } from "./queryClient.js"; // Import the client
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
@@ -220,6 +222,7 @@ function App() {
           />
 
           <Route path="/upload-image" element={<UploadImage />} />
+          <Route path="/rep" element={<LabTestReport />} />
           <Route path="/image-guide" element={<ImageGuide />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

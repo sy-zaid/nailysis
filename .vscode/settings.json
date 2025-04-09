@@ -1,5 +1,4 @@
 {
-    "python.analysis.extraPaths": [
-        "./backend"
-    ]
+  "python.defaultInterpreterPath": ".\\env\\Scripts\\python.exe",
+  "python.terminal.activateEnvironment": true
 }

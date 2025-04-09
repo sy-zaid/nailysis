@@ -38,7 +38,10 @@
       "label": "Start Backend Server",
       "type": "shell",
       "command": "powershell",
-      "args": ["-Command", "python manage.py runserver"],
+      "args": [
+        "-Command",
+        "${workspaceFolder}\\env\\Scripts\\python.exe manage.py runserver"
+      ],
       "options": {
         "cwd": "${workspaceFolder}/backend"
       },
