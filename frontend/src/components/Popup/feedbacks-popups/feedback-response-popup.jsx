@@ -11,7 +11,7 @@ import useCurrentUserData from "../../../useCurrentUserData.jsx";
 import {
   calculateAge,
   getAccessToken,
-  getRole, getStatusClass,
+  getRole,
   handleInputChange,
 } from "../../../utils/utils.js";
 import {
@@ -22,38 +22,110 @@ import {
 const FeedbackResponse = ({ onClose, recordDetails }) => {
   console.log("Record Details", recordDetails)
   const [popupTrigger, setPopupTrigger] = useState(true);
-  const [response, setResponse] = useState("");
-  const [status, setStatus] = useState("Pending");
+  const navigate = useNavigate();
+  const token = getAccessToken();
+  const [reply, setReply] = useState("");  // Stores the response text
+  const [isResolved, setIsResolved] = useState(false); // ✅ Track checkbox state
+  const [category, setCategory] = useState("");
+  const [feedback, setFeedback] = [{
+    id: 1,
+    feedbackID: "123456",
+    feedbackBy: "John",
+    role: "patient",
+    dateAndTimeofFeedback: "10/10/2024 09:30 AM",
+    category: "Service Issues",
+    feedbackComments: "Lorem Ipsum è un testo segnaposto utilizzato nel settore ...",
+    response: "xyz lorem ipsum",
+    respondedBy: "CA/LA",
+    status: "Resolved",
+  }]; // Store feedback details
+  const [categories, setCategories] = useState([]);
+  const [message, setMessage] = useState("");
+  const feedbackId = "2"
+  const [formData, setFormData] = useState({
+    description: "",
+  });
 
-  // Static feedback data (2 sample rows)
-  const data = [
-    {
-      id: 1,
-      feedbackID: "123456",
-      feedbackBy: "John",
-      role: "patient",
-      dateAndTimeofFeedback: "10/10/2024 09:30 AM",
-      category: "Service Issues",
-      feedbackComments: "Lorem Ipsum è un testo segnaposto utilizzato nel settore ...",
-      response: "xyz lorem ipsum",
-      respondedBy: "CA/LA",
-      status: "Resolved",
-    },
+  const onInputChange = handleInputChange(setFormData);
 
-    {
-      id: 2,
-      feedbackID: "123456",
-      feedbackBy: "Doe",
-      role: "patient",
-      dateAndTimeofFeedback: "10/10/2024 09:30 AM",
-      category: "Technical Issues",
-      feedbackComments: "Lorem Ipsum è un testo segnaposto utilizzato nel settore ...",
-      response: "N/a",
-      respondedBy: "N/a",
-      status: "Pending",
-    },
-  ];
+  // Fetch feedback details when the popup opens
+  useEffect(() => {
+    const fetchFeedbackDetails = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/${feedbackId}/`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setFeedback(response.data);
+      } catch (error) {
+        console.error("Error fetching feedback details:", error);
+      }
+    };
 
+    if (feedbackId) {
+      fetchFeedbackDetails();
+    }
+  }, [feedbackId, token]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const feedbackData = {
+      description: reply, // Send the response text
+      status: isResolved ? "Resolved" : "Pending",
+    };
+
+    const feedbackId = recordDetails?.id; // Ensure this is correctly passed
+
+    if (!feedbackId) {
+      alert("Error: Feedback ID missing");
+      return;
+    }
+
+    const url = `${import.meta.env.VITE_API_URL}/api/feedback_response/${feedbackId}/submit_response/`;
+
+    try {
+      const response = await axios.post(url, feedbackData, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access")}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response?.status === 201) {
+        alert("Response submitted successfully!");
+        onClose(); // Close the popup
+      } else {
+        alert("Failed to submit response.");
+      }
+    } catch (error) {
+      console.error("Error submitting response:", error.response?.data || error);
+      alert("Error submitting response. Please try again.");
+    }
+  };
+
+
+
+
+  const handleFeedback = async (e) => {
+    e.preventDefault();
+
+    const feedbackData = {
+      description: formData.description,
+    };
+
+    try {
+      const response = await submitFeedbackResponse(feedbackData);
+      if (response.status === 200) {
+        alert("Response Submitted Successfully");
+      }
+    } catch (error) {
+      alert("Failed to submit response");
+      console.error(error);
+      throw error;
+    }
+  };
 
   const getStatusClass = (status) => {
     switch (status) {
@@ -67,15 +139,6 @@ const FeedbackResponse = ({ onClose, recordDetails }) => {
         return {};
     }
   }
-
-  // Using the first feedback entry for display (for now)
-  const feedback = data[0];
-
-  const handleResponse = () => {
-    console.log("Response Submitted:", { response, status });
-  };
-
-
 
   return (
     <Popup trigger={popupTrigger} setTrigger={setPopupTrigger} onClose={onClose}>
@@ -95,7 +158,7 @@ const FeedbackResponse = ({ onClose, recordDetails }) => {
 
         <p className={styles.newSubHeading}>
           <span className={styles.key} style={{ margin: "0 0 0 20px" }}> <i className="fa-solid fa-circle-notch" style={{ fontSize: "14px" }}></i> Status: </span>
-          <span className={getStatusClass(status)} style={{ fontSize: "16px" }}>{feedback.status}</span>
+          <span className={getStatusClass(status)} style={{ fontSize: "16px" }}>{recordDetails?.status || "Unknown"}</span>
 
           <span className={styles.key} style={{ margin: "0 0 0 20px" }}> <i class='bx bx-calendar-alt'></i> Date Submitted: </span>
           <span className={styles.locationValue}>{new Date(recordDetails?.date_submitted).toLocaleString("en-US", {

@@ -32,7 +32,7 @@ const SubmitFeedback = ({ onClose, isClinicFeedback }) => {
     description: "",
   });
 
-  console.log("isClinicFeedback:", isClinicFeedback); // ✅ Check if this is true/false
+  console.log("isClinicFeedback:", isClinicFeedback); //  Check if this is true/false
 
   const onInputChange = handleInputChange(setFormData);
   const handleSubmit = async (e) => {
@@ -40,7 +40,7 @@ const SubmitFeedback = ({ onClose, isClinicFeedback }) => {
   
     const feedbackData = {
       category: formData.category,
-      description: formData.description, // ✅ Fix: Send "description" instead of "message"
+      description: formData.description, //  Fix: Send "description" instead of "message"
       is_clinic_feedback: isClinicFeedback,
     };
   

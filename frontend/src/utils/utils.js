@@ -309,7 +309,7 @@ export const getStatusClass = (status, styles) => {
     default:
       return {};
   }
-}; 
+};
 
 export const getResultsClass = (value, styles) => {
   if (value === true) return styles.consulted; // Apply "Yes" color
@@ -515,7 +515,13 @@ export const preparePayload = (ehrData) => {
  * @param {Function} setMenuPosition - Function to update menu position dynamically.
  * @param {Event} event - The click event to determine menu position.
  */
-export const toggleActionMenu = (recordId, menuOpen, setMenuOpen, setMenuPosition, event) => {
+export const toggleActionMenu = (
+  recordId,
+  menuOpen,
+  setMenuOpen,
+  setMenuPosition,
+  event
+) => {
   if (menuOpen === recordId) {
     setMenuOpen(null);
   } else {
@@ -527,7 +533,6 @@ export const toggleActionMenu = (recordId, menuOpen, setMenuOpen, setMenuPositio
     setMenuOpen(recordId);
   }
 };
-
 
 /**
  * Closes the popup and resets its content.
@@ -546,8 +551,6 @@ export const handleClosePopup = (setShowPopup, setPopupContent) => {
 export const handleOpenPopup = (setShowPopup) => {
   setShowPopup(true);
 };
-
-
 
 /**
  * Calculates the total fee for selected lab tests based on available test prices.

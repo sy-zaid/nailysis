@@ -15,7 +15,7 @@ export const submitFeedback = async (feedbackData) => {
 };
 
 export const submitFeedbackResponse = async (feedbackId, feedbackData) => {
-  const url = `${import.meta.env.VITE_API_URL}/api/feedbacks/${feedbackId}/submit_response/`; // ✅ FIX: Add `feedbackId`
+  const url = `${import.meta.env.VITE_API_URL}/api/feedbacks/${feedbackId}/submit_response/`; //  FIX: Add `feedbackId`
   
   return axios.post(url, feedbackData, {
     headers: {
