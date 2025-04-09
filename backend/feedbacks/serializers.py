@@ -12,7 +12,8 @@ class FeedbackSerializer(serializers.ModelSerializer):
 
 class FeedbackResponseSerializer(serializers.ModelSerializer):
     # feedback_details = FeedbackSerializer(source='feedback', read_only=True)
-    
+    # admin = CustomUserSerializer(read_only=True)
+    # feedback = FeedbackSerializer(read_only=True)
     class Meta:
         model = FeedbackResponse
         fields = '__all__'

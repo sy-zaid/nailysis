@@ -20,7 +20,7 @@ import {
 
 
 // Feedback Submission Screen
-const SubmitFeedback = ({ onClose }) => {
+const SubmitFeedback = ({ onClose, isClinicFeedback }) => {
   const [popupTrigger, setPopupTrigger] = useState(true);
   const navigate = useNavigate();
   const token = getAccessToken();
@@ -31,14 +31,17 @@ const SubmitFeedback = ({ onClose }) => {
     category: "",
     description: "",
   });
+
+  console.log("isClinicFeedback:", isClinicFeedback); // ✅ Check if this is true/false
+
   const onInputChange = handleInputChange(setFormData);
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevents default form behavior
   
     const feedbackData = {
       category: formData.category,
-      description: formData.description, //  Fix: Send "description" instead of "message"
-      is_clinic_feedback: true, //  Change based on feedback type
+      description: formData.description, // ✅ Fix: Send "description" instead of "message"
+      is_clinic_feedback: isClinicFeedback,
     };
   
     try {
@@ -60,7 +63,7 @@ const SubmitFeedback = ({ onClose }) => {
     const feedbackData = {
       category: formData.category,
       description: formData.description,
-      is_clinic_feedback: "True"           //This needs to be updated
+      is_clinic_feedback: isClinicFeedback,
     };
 
     try {

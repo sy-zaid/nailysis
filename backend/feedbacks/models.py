@@ -30,7 +30,7 @@ class Feedback(models.Model):
 class FeedbackResponse(models.Model):
     feedback = models.OneToOneField(Feedback, on_delete=models.CASCADE, related_name="response")
     admin = models.ForeignKey(CustomUser, on_delete=models.CASCADE)  # Clinic Admin or Lab Admin
-    response_text = models.TextField()
+    description = models.TextField(blank=True, null=True)
     date_submitted = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
