@@ -296,9 +296,10 @@ export const getStatusClass = (status, styles) => {
     case "No":
     case "Urgent":
     case "Overdue":
+    case "Review Required":
       return styles.cancelled;
+    // Yellow
     case "Pending":
-      return styles.pending;
     case "Scheduled":
       return styles.scheduled;
     // Blue
@@ -308,7 +309,7 @@ export const getStatusClass = (status, styles) => {
     default:
       return {};
   }
-};
+}; 
 
 export const getResultsClass = (value, styles) => {
   if (value === true) return styles.consulted; // Apply "Yes" color

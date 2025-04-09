@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import styles from "../common/all-pages-styles.module.css";
+import styles from "./all-pages-styles.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import Header from "../../components/Dashboard/Header/Header";
 import PopupSelectTestOrder from "../../components/Popup/popups-labs/select-test-order-popup";
@@ -7,9 +7,11 @@ import PopupViewTestOrder from "../../components/Popup/popups-labs/view-test-ord
 import PopupDeleteTestOrder from "../../components/Popup/popups-labs/delete-test-order-popup";
 
 import { getTestOrders } from "../../api/labsApi";
-import { getAccessToken, getStatusClass } from "../../utils/utils";
 
 import {
+  getAccessToken,
+  getStatusClass, 
+  getResultsClass,
   convertDjangoDateTime,
   handleClosePopup,
   handleOpenPopup,
@@ -22,20 +24,23 @@ import useCurrentUserData from "../../useCurrentUserData";
  *
  * This component manages test orders, allowing users to view, process, and delete test requests.
  * It fetches test orders from the backend, handles user interactions, and manages popups for different actions.
+ * Additionally, it now implements dynamic filtering, searching, and sorting.
  *
- * Features:
- * - Fetches test orders and displays them in a table.
- * - Provides options to process, view, or delete test orders.
- * - Uses popups for handling test order actions.
- * - Includes filtering and menu interaction handling.
+ * Filters:
+ * 1) Scheduled appointments (from appointment status)
+ * 2) Pending tests (from test status)
+ * 3) Review required (from test status)
+ *
+ * Sorting options:
+ * 1) Default (Last updated first)
+ * 2) Oldest first
+ * 3) Price low to high
+ * 4) Price high to low
  *
  * @returns {JSX.Element} The rendered TestOrders component.
  */
 const TestOrders = () => {
   // ----- TOKENS & USER INFORMATION
-  /**
-   * Fetches current user data and stores the authentication token.
-   */
   const { data: curUser, isLoading, error } = useCurrentUserData();
   const token = getAccessToken();
 
@@ -44,20 +49,21 @@ const TestOrders = () => {
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
   const [showPopup, setShowPopup] = useState(false);
   const [popupContent, setPopupContent] = useState();
-  const [activeButton, setActiveButton] = useState(0);
-  const actionMenuRef = useRef(null);
+  // We'll use activeFilter as a string for clarity (e.g., "All", "Scheduled", "Pending", "Review")
+  const [activeFilter, setActiveFilter] = useState("All");
 
   // ----- IMPORTANT DATA
-  /**
-   * Stores test orders fetched from the backend.
-   */
   const [testOrders, setTestOrders] = useState([]);
+  const [filteredTestOrders, setFilteredTestOrders] = useState([]); // Data after filtering, searching, sorting
   console.log("TEST REQUESTS RESPONSE", testOrders);
 
+  // ----- SEARCH & SORT STATE
+  const [searchQuery, setSearchQuery] = useState("");
+  // Sort options: "last-updated" (default), "oldest", "price-asc", "price-desc"
+  const [sortOption, setSortOption] = useState("last-updated");
+
+
   // ----- MAIN LOGIC FUNCTIONS
-  /**
-   * Fetches test orders to populate the table rows.
-   */
   const fetchTestOrders = async () => {
     try {
       const response = await getTestOrders();
@@ -68,14 +74,10 @@ const TestOrders = () => {
   };
 
   // ----- HANDLERS
-  /**
-   * Handles actions (process, view, delete) for test orders and triggers popups accordingly.
-   * @param {string} action - The action to be performed.
-   * @param {Object} testOrderDetails - Details of the selected test order.
-   */
+
+  // Action menu click handler (keeps your original logic)
   const handleActionClick = (action, testOrderDetails) => {
     console.log(`Performing ${action} on ID:${testOrderDetails}`);
-
     if (action === "Process Test Order") {
       setPopupContent(
         <PopupSelectTestOrder
@@ -101,44 +103,115 @@ const TestOrders = () => {
     setShowPopup(true);
   };
 
-  /**
-   * Updates the active filter button state.
-   * @param {number} index - Index of the clicked filter button.
-   */
-  const handleFilterClick = (index) => {
-    setActiveButton(index);
+  // Filtering Handler
+  const handleFilterClick = (filter) => {
+    setActiveFilter(filter);
   };
 
-  /**
-   * Detects clicks outside the action menu to close it.
-   * @param {Event} event - Click event.
-   */
-  const handleClickOutside = (event) => {
-    if (
-      actionMenuRef.current &&
-      !actionMenuRef.current.contains(event.target)
-    ) {
-      setMenuOpen(null);
-    }
+  // Search Handler
+  const handleSearch = (e) => {
+    const query = e.target.value.toLowerCase();
+    setSearchQuery(query);
+  };
+
+  // Sorting Handler
+  const handleSortChange = (e) => {
+    setSortOption(e.target.value);
   };
 
   // ----- USE EFFECTS
-  /**
-   * Adds an event listener to close the action menu when clicking outside.
-   */
+
+  // Close the action menu when clicking outside
   useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (event.target.closest(`.${styles.menu}`) === null) {
+        setMenuOpen(null);
+      }
+    };
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    return () =>
+      document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  /**
-   * Fetches test orders when the component mounts or when the popup closes.
-   */
+  // Fetch test orders on mount or when popup closes
   useEffect(() => {
     if (!showPopup) {
       fetchTestOrders();
     }
-  }, [token]);
+  }, [token, showPopup]);
+
+  // Main filtering, searching, and sorting effect:
+  // This effect recalculates filteredTestOrders whenever testOrders, activeFilter, searchQuery, or sortOption changes.
+  useEffect(() => {
+    let data = [...testOrders];
+
+    // Filter based on activeFilter
+    if (activeFilter === "Scheduled Appointments") {
+      data = data.filter(
+        (order) =>
+          order.lab_technician_appointment?.status === "Scheduled"
+      );
+    } else if (activeFilter === "Pending Tests") {
+      data = data.filter((order) => order.test_status === "Pending");
+    } else if (activeFilter === "Review Required") {
+      data = data.filter((order) => order.test_status === "Review Required");
+    }
+    // "All" shows all orders
+
+    // Search filter (across all fields)
+    if (searchQuery) {
+      data = data.filter((order) => {
+        const firstName = order.lab_technician_appointment?.patient?.user?.first_name || "";
+        const lastName = order.lab_technician_appointment?.patient?.user?.last_name || "";
+        const fullName = `${firstName} ${lastName}`.toLowerCase();
+
+        const technician = order.lab_technician_appointment?.technician_name?.toLowerCase() || "";
+        const orderId = String(order.id);
+        const testNames = order.test_types.map((test) => test.label).join(", ").toLowerCase();
+        const status = order.lab_technician_appointment?.status?.toLowerCase() || "";
+        const testStatus = order.test_status?.toLowerCase() || "";
+        const price = String(order.lab_technician_appointment?.fee || "");
+        const resultStatus = order.results_available ? "yes" : "no";
+
+        return (
+          fullName.includes(searchQuery) ||
+          technician.includes(searchQuery) ||
+          orderId.includes(searchQuery) ||
+          testNames.includes(searchQuery) ||
+          status.includes(searchQuery) ||
+          testStatus.includes(searchQuery) ||
+          price.includes(searchQuery) ||
+          resultStatus.includes(searchQuery)
+        );
+      });
+    }
+
+
+    // Sorting
+    if (sortOption === "last-updated") {
+      // Latest first (descending by updated_at)
+      data.sort(
+        (a, b) => new Date(b.updated_at) - new Date(a.updated_at)
+      );
+    } else if (sortOption === "oldest") {
+      // Oldest first (ascending by updated_at)
+      data.sort(
+        (a, b) => new Date(a.updated_at) - new Date(b.updated_at)
+      );
+    } else if (sortOption === "price-asc") {
+      data.sort(
+        (a, b) =>
+          (a.lab_technician_appointment?.fee || 0) - (b.lab_technician_appointment?.fee || 0)
+      );
+    } else if (sortOption === "price-desc") {
+      data.sort(
+        (a, b) =>
+          (b.lab_technician_appointment?.fee || 0) - (a.lab_technician_appointment?.fee || 0)
+      );
+    }
+
+    setFilteredTestOrders(data);
+  }, [testOrders, activeFilter, searchQuery, sortOption]);
 
   if (isLoading) {
     return <p>Loading...</p>;
@@ -148,23 +221,27 @@ const TestOrders = () => {
     return <p>Error fetching user data</p>;
   }
 
-  // Close the action menu when clicking outside of it
+  // Close the action menu when clicking outside (menuRef)
   const menuRef = useRef(null);
-
   useEffect(() => {
-    const handleClickOutside = (event) => {
+    const handleClickOutsideMenu = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
         setMenuOpen(null);
       }
     };
-  
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutsideMenu);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutsideMenu);
     };
   }, [menuOpen]);
-  
 
+  const inProgressCount = filteredTestOrders.filter(
+    order => order.test_status === "In Progress"
+  ).length;
+  const completedCount = filteredTestOrders.filter(
+    order => order.test_status === "Completed"
+  ).length;
+  
 
   return (
     <div className={styles.pageContainer}>
@@ -179,54 +256,42 @@ const TestOrders = () => {
       </div>
       <div className={styles.mainContent}>
         <div className={styles.appointmentsContainer}>
+          {/* Filters */}
           <div className={styles.filters}>
-            <button
-              className={`${styles.filterButton} ${
-                activeButton === 0 ? styles.active : ""
-              }`}
-              onClick={() => handleFilterClick(0)}
-            >
-              All
-            </button>
-            <button
-              className={`${styles.filterButton} ${
-                activeButton === 1 ? styles.active : ""
-              }`}
-              onClick={() => handleFilterClick(1)}
-            >
-              Pending
-            </button>
-            <button
-              className={`${styles.filterButton} ${
-                activeButton === 2 ? styles.active : ""
-              }`}
-              onClick={() => handleFilterClick(2)}
-            >
-              Completed
-            </button>
-            <button
-              className={`${styles.filterButton} ${
-                activeButton === 3 ? styles.active : ""
-              }`}
-              onClick={() => handleFilterClick(3)}
-            >
-              Cancelled
-            </button>
-            <p>50 completed, 4 pending</p>
+            {["All", "Scheduled Appointments", "Pending Tests", "Review Required"].map((filter, index) => (
+              <button
+                key={index}
+                className={`${styles.filterButton} ${
+                  activeFilter === filter ? styles.active : ""
+                }`}
+                onClick={() => handleFilterClick(filter)}
+              >
+                {filter}
+              </button>
+            ))}
+                <p>
+                  Total Records: {filteredTestOrders.length} | In-Progress: {inProgressCount} | Completed: {completedCount}
+                </p>
           </div>
 
+          {/* Controls: Bulk Action, Sorting and Search */}
           <div className={styles.tableContainer}>
             <div className={styles.controls}>
               <select className={styles.bulkAction}>
                 <option>Bulk Action: Delete</option>
               </select>
-              <select className={styles.sortBy}>
-                <option>Sort By: Ordered Today</option>
+              <select className={styles.sortBy} onChange={handleSortChange} value={sortOption}>
+                <option value="last-updated">Sort By: Last Updated</option>
+                <option value="oldest">Sort By: Oldest First</option>
+                <option value="price-asc">Price (Low to High)</option>
+                <option value="price-desc">Price (High to Low)</option>
               </select>
               <input
                 className={styles.search}
                 type="text"
-                placeholder="Search By Patient Name"
+                placeholder="Search by Test, Patient Name"
+                value={searchQuery}
+                onChange={handleSearch}
               />
             </div>
             <hr />
@@ -253,7 +318,7 @@ const TestOrders = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {testOrders.map((row, index) => (
+                  {filteredTestOrders.map((row, index) => (
                     <tr key={row.id}>
                       <td>
                         <input type="checkbox" />
@@ -261,7 +326,8 @@ const TestOrders = () => {
                       <td data-label="#">{index + 1}</td>
                       <td data-label="Order ID">{row.id}</td>
                       <td data-label="Patient Name">
-                        {row.lab_technician_appointment?.patient_name}
+                        {row.lab_technician_appointment?.patient?.user?.first_name}{" "}
+                        {row.lab_technician_appointment?.patient?.user?.last_name}
                       </td>
                       <td data-label="Technician Name">
                         {row.lab_technician_appointment?.technician_name}
@@ -279,37 +345,13 @@ const TestOrders = () => {
                             )
                           : "Not collected yet"}
                       </td>
-
-                    <td data-label="Price">
-                      {row.lab_technician_appointment?.fee}
-                    </td>
-                    <td
-                      data-label="Status"
-                      className={getStatusClass(row.test_status, styles)}
-                    >
-                      {row.lab_technician_appointment.status}
-                    </td>
-                    <td
-                      data-label="Status"
-                      className={getStatusClass(row.test_status, styles)}
-                    >
-                      {row.test_status}
-                    </td>
-                    <td
-                      data-label="Status"
-                      className={getStatusClass(row.test_status, styles)}
-                    >
-                      {row.results_available ? "Yes" : "No"}
-                    </td>
-
-                    {/* ------------------------- ACTION BUTTONS -------------------------*/}
-                    <td>
-                      <button
-                        onClick={() =>
-                          toggleActionMenu(row.id, menuOpen, setMenuOpen)
-                        }
-                        className={styles.moreActionsBtn}
-                      />
+                      <td data-label="Price">
+                        {row.lab_technician_appointment?.fee}
+                      </td>
+                      <td
+                        data-label="Status"
+                        className={getStatusClass(row.lab_technician_appointment.status, styles)}
+                      >
                         {row.lab_technician_appointment.status}
                       </td>
                       <td
@@ -318,17 +360,17 @@ const TestOrders = () => {
                       >
                         {row.test_status}
                       </td>
-                      <td
-                        data-label="Status"
-                        className={getStatusClass(row.test_status, styles)}
-                      >
-                        {row.results_available ? "Yes" : "No"}
+                      <td data-label="Status">
+                        <span className={getResultsClass(row.results_available, styles)}>
+                          {row.results_available ? "Yes" : "No"}
+                        </span>
                       </td>
-
-                      {/* ------------------------- ACTION BUTTONS -------------------------*/}
+                      {/* ACTION BUTTONS */}
                       <td>
                         <button
-                          onClick={(event) => toggleActionMenu(row.id, menuOpen, setMenuOpen, setMenuPosition, event)}
+                          onClick={(event) =>
+                            toggleActionMenu(row.id, menuOpen, setMenuOpen, setMenuPosition, event)
+                          }
                           className={styles.moreActionsBtn}
                         >
                           <img
@@ -337,180 +379,51 @@ const TestOrders = () => {
                             className={styles.moreActionsIcon}
                           />
                         </button>
-                      {/* {menuOpen === row.id && (
-                        <div ref={actionMenuRef} className={styles.menu}>
-                          <ul>
-                            {row.lab_technician_appointment.status ===
-                              "Completed" && (
-                              <li
-                                onClick={() =>
-                                  handleActionClick("Process Test Order", row)
-                                }
-                              >
-                                <i className="fa-solid fa-repeat"></i> Process
-                                Test Order
-                              </li>
-                            )}
-                            <li
-                              onClick={() =>
-                                handleActionClick("Edit Details", row)
-                              }
-                            >
-                              <i className="fa-solid fa-pen"></i> Edit Details
-                            </li>
-                            {curUser[0].role === "lab_admin" && (
-                              <li
-                                onClick={() =>
-                                  handleActionClick("View Test Order", row)
-                                }
-                              >
-                                <i
-                                  className="fa-regular fa-circle-xmark"
-                                  style={{ color: "red" }}
-                                ></i>{" "}
-                                View Order
-                              </li>
-                            )}
-                            <li
-                              onClick={() =>
-                                handleActionClick("Download as PDF", row)
-                              }
-                            >
-                              <i className="fa-regular fa-file-pdf"></i>{" "}
-                              Download as PDF
-                            </li>
-                            <li
-                              onClick={() =>
-                                handleActionClick("Print Code", row)
-                              }
-                            >
-                              <i className="bx bx-qr-scan"></i> Print Code
-                            </li> */}
-
-                        {menuOpen && (
+                        {menuOpen === row.id && (
                           <div
-                            ref={menuRef} id={`menu-${row.id}`}
+                            ref={menuRef}
+                            id={`menu-${row.id}`}
                             className={styles.menu}
                             style={{
                               top: `${menuPosition.top}px`,
-                              left: `${menuPosition.left-20}px`,
+                              left: `${menuPosition.left - 20}px`,
                               position: "absolute",
-                            }}
+                            }} 
                           >
-                          <ul>
-                            {row.lab_technician_appointment.status === "Completed" && (
-                                <li
-                                  onClick={() =>
-                                    handleActionClick("Process Test Order", row)
-                                  }
-                                >
-                                  <i className="fa-solid fa-repeat"></i> Process
-                                  Test Order
+                            <ul>
+                              {row.lab_technician_appointment.status === "Completed" && (
+                                <li onClick={() => handleActionClick("Process Test Order", row)}>
+                                  <i className="fa-solid fa-repeat"></i> Process Test Order
                                 </li>
                               )}
-                              <li
-                                onClick={() =>
-                                  handleActionClick("Edit Details", row)
-                                }
-                              >
+                              <li onClick={() => handleActionClick("Edit Details", row)}>
                                 <i className="fa-solid fa-pen"></i> Edit Details
                               </li>
                               {curUser[0].role === "lab_admin" && (
-                              <li
-                                onClick={() =>
-                                  handleActionClick("View Test Order", row)
-                                }
-                              >
-                                <i
-                                  className="fa-regular fa-circle-xmark"
-                                  style={{ color: "red" }}
-                                ></i>{" "}
-                                View Order
-                              </li>
-                              )}
-                              <li
-                                onClick={() =>
-                                  handleActionClick("Download as PDF", row)
-                                }
-                              >
-                                <i className="fa-regular fa-file-pdf"></i>{" "}
-                                Download as PDF
-                              </li>
-                              <li
-                                onClick={() =>
-                                  handleActionClick("Print Code", row)
-                                }
-                              >
-                                <i className="bx bx-qr-scan"></i> Print Code
-                              </li>
-
-                              {curUser[0].role === "lab_technician" &&
-                                row.status !== "Completed" && (
-                                  <li
-                                    onClick={() =>
-                                      handleActionClick(
-                                        "Action Start Appointment",
-                                        row
-                                      )
-                                    }
-                                  >
-                                    Start Appointment
-                                  </li>
-                                )}
-
-                              {/* {(curUser[0].role === "patient" ||
-                                curUser[0].role === "lab_technician") && ( */}
-                            {curUser[0].role === "lab_admin" && (
-                              <>
-                                <li
-                                  onClick={() =>
-                                    handleActionClick("Delete Order", row)
-                                  }
-                                >
-                                  <i
-                                    className="fa-regular fa-circle-xmark"
-                                    style={{ color: "red" }}
-                                  ></i>{" "}
-                                  Delete Order
-                                </li>
-                                <li
-                                  onClick={() =>
-                                    handleActionClick(
-                                      "Button Cancellation Request",
-                                      row.id
-                                    )
-                                  }
-                                >
-                                  Request Cancellation
-                                </li>
-                              </>
-                              )}
-
-                              {curUser[0].role === "lab_admin" && (
                                 <>
-                                  <li
-                                    onClick={() =>
-                                      handleActionClick("Reschedule", row)
-                                    }
-                                  >
-                                    Reschedule
+                                  <li onClick={() => handleActionClick("View Test Order", row)}>
+                                    <i className="fa-solid fa-eye"></i>{" "}
+                                    View Order
                                   </li>
-                                  <li
-                                    onClick={() =>
-                                      handleActionClick(
-                                        "Action Cancel Appointment",
-                                        row.id
-                                      )
-                                    }
-                                  >
-                                    Cancel Appointment
+                                  <li onClick={() => handleActionClick("Download as PDF", row)}>
+                                    <i className="fa-regular fa-file-pdf"></i> Download as PDF
+                                  </li>
+                                  <li onClick={() => handleActionClick("Print Code", row)}>
+                                    <i className="bx bx-qr-scan"></i> Print Code
+                                  </li>
+                                  <li onClick={() => handleActionClick("Delete Order", row)}>
+                                    <i class="fa-solid fa-trash"></i>{" "}
+                                    Delete Order
                                   </li>
                                 </>
                               )}
-                          </ul>
-                        </div>
+                              {curUser[0].role !== "lab_admin" && (
+                                // If needed, add additional actions for other roles
+                                <></>
+                              )}
+                            </ul>
+                          </div>
                         )}
-
                       </td>
                     </tr>
                   ))}

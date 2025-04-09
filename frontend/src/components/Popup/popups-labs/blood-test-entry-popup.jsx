@@ -12,6 +12,7 @@ import {
   handleAddParameter,
   handleRemoveParameter,
   handleInputChange,
+  getStatusClass,
 } from "../../../utils/utils";
 import useCurrentUserData from "../../../useCurrentUserData";
 import { saveTestResults } from "../../../api/labsApi";
@@ -97,29 +98,7 @@ const BloodTestEntryPopup = ({
   };
 
   // ----- MAIN LOGIC FUNCTIONS
-  /**
-   * Returns the correct CSS class based on the test status.
-   *
-   * @param {string} status - The status of the test.
-   * @returns {Object} - The corresponding CSS class.
-   */
-  const getStatusClass = (status) => {
-    switch (status) {
-      case "Completed":
-        return styles.consulted;
-      case "Cancelled":
-        return styles.cancelled;
-      case "Scheduled":
-        return styles.scheduled;
-      case "Pending":
-        return styles.scheduled;
-      case "Urgent":
-        return styles.cancelled;
-      default:
-        return {};
-    }
-  };
-
+  
   // ----- USE EFFECTS
   /**
    * Synchronizes the testEntries state with formData when testEntries changes.

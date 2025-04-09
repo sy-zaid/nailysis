@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import styles from "./technician-appointment-book-popup.module.css";
+import styles from "../all-popups-styles.module.css"
 import Select from "react-select";
 import Popup from "../Popup.jsx";
 
@@ -163,177 +163,192 @@ const PopupRescheduleTechnicianAppointment = ({
       onClose={onClose}
     >
       <div className={styles.formContainer}>
-        <div className={styles.header}>
-          <h2>Reschedule Your Appointment</h2>
+        
+        <div className={styles.headerSection}>
+          <div className={styles.titleSection}>
+            <h2>Reschedule Your Appointment</h2> 
+            <p>Select a new appointment time and adjust other relevant details as needed.</p>
+          </div>
         </div>
 
-        <h5 className={styles.subhead}>
-          Select a new time for your appointment
-        </h5>
         <hr />
 
         <form onSubmit={(e) => e.preventDefault()}>
-          {/* Patient Information (Read-Only) */}
-          <div className={styles.formSection}>
-            <h3>Patient Information</h3>
-            <div className={styles.formGroup}>
-              <div>
-                <label>Name</label>
-                <input
-                  type="text"
-                  name="patientName"
-                  value={
-                    patient[0]?.first_name + " " + patient[0]?.last_name || ""
-                  }
-                  disabled
-                />
-              </div>
-              <div>
-                <label>Age</label>
-                <input
-                  type="text"
-                  name="age"
-                  value={patient[1]?.age || ""}
-                  disabled
-                />
-              </div>
-              <div>
-                <label>Phone Number</label>
-                <input
-                  type="tel"
-                  name="phone"
-                  value={patient[0]?.phone || ""}
-                  disabled
-                />
-              </div>
-              <div>
-                <label>Email Address</label>
-                <input
-                  type="text"
-                  name="email"
-                  value={patient[0]?.email || ""}
-                  disabled
-                />
+
+          <div className={styles.popupBottom}>
+            {/* Patient Information (Read-Only) */}
+            <div className={styles.formSection}>
+              <h3><i className="fa-solid fa-circle fa-2xs"></i> Patient Information</h3>
+              <div className={styles.newFormGroup}>
+                <div>
+                  <label>Name</label>
+                  <input
+                    type="text"
+                    name="patientName"
+                    value={
+                      patient[0]?.first_name + " " + patient[0]?.last_name || ""
+                    }
+                    disabled
+                  />
+                </div>
+                <div>
+                  <label>Age</label>
+                  <input
+                    type="text"
+                    name="age"
+                    value={patient[1]?.age || ""}
+                    disabled
+                  />
+                </div>
+                <div>
+                  <label>Phone Number</label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={patient[0]?.phone || ""}
+                    disabled
+                  />
+                </div>
+                <div>
+                  <label>Email Address</label>
+                  <input
+                    type="text"
+                    name="email"
+                    value={patient[0]?.email || ""}
+                    disabled
+                  />
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Reschedule Appointment Details */}
+            <hr />
 
-          {/* Appointment Details */}
-          <div className={styles.formGroup}>
-            <label>Specialization</label>
-            <select
-              name="specialization"
-              value={formData.specialization}
-              onChange={onInputChange}
-            >
-              <option value="">Select Specialization</option>
-              {specializations.map((spec, index) => (
-                <option key={index} value={spec}>
-                  {spec}
-                </option>
-              ))}
-            </select>
-          </div>
+            {/* Reschedule Appointment Details */}
 
-          <div className={styles.formGroup}>
-            <label>Lab Technician</label>
-            <select
-              name="labTechnicianId"
-              value={formData.labTechnicianId}
-              onChange={onInputChange}
-            >
-              <option value="">Select Lab Technician</option>
-              {labTechnicians.length > 0 ? (
-                labTechnicians.map((labTechnician) => (
-                  <option key={labTechnician.id} value={labTechnician.id}>
-                    {labTechnician.name}
-                  </option>
-                ))
-              ) : (
-                <option disabled>Loading labTechnicians...</option>
-              )}
-            </select>
-          </div>
+            {/* Appointment Details */}
+            <div className={styles.formSection}>
+              <h3><i className="fa-solid fa-circle fa-2xs"></i> Appointment Details</h3>
+                        
+              <div className={styles.formGroup}>
+                <div>
+                  <label>Specialization</label>
+                  <select
+                    name="specialization"
+                    value={formData.specialization}
+                    onChange={onInputChange}
+                  >
+                    <option value="">Select Specialization</option>
+                    {specializations.map((spec, index) => (
+                      <option key={index} value={spec}>
+                        {spec}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
-          <div className={styles.formGroup}>
-            <label>Date & Time</label>
-            <input
-              type="date"
-              name="appointmentDate"
-              value={formData.appointmentDate}
-              onChange={onInputChange}
-            />
-          </div>
-          {/* Available Slots Selection */}
-          <div className={styles.formGroup}>
-            <label>Available Slots</label>
-            <select
-              name="slotId"
-              value={formData.slotId}
-              onChange={onInputChange}
-              disabled={availableSlots.length === 0}
-            >
-              <option value="">
-                {availableSlots.length ? "Select a Slot" : "No slots available"}
-              </option>
-              {availableSlots.map((slot, index) => (
-                <option key={index} value={slot.id}>
-                  {slot.slot_id} - {slot.end_time}
-                </option>
-              ))}
-            </select>
-          </div>
+                <div>
+                  <label>Lab Technician</label>
+                  <select
+                    name="labTechnicianId"
+                    value={formData.labTechnicianId}
+                    onChange={onInputChange}
+                  >
+                    <option value="">Select Lab Technician</option>
+                    {labTechnicians.length > 0 ? (
+                      labTechnicians.map((labTechnician) => (
+                        <option key={labTechnician.id} value={labTechnician.id}>
+                          {labTechnician.name}
+                        </option>
+                      ))
+                    ) : (
+                      <option disabled>Loading labTechnicians...</option>
+                    )}
+                  </select>
+                </div>
 
-          <div className={styles.formGroup}>
-            <div className={styles.infoLabel}>Required Lab Tests</div>
-            <div>
-              <Select
-                isMulti
-                options={availableLabTests}
-                placeholder="Select required lab tests"
-                onChange={(selected) =>
-                  onSelectChange("requestedLabTests", selected)
-                }
-                styles={{
-                  control: (base) => ({
-                    ...base,
-                    border: "none",
-                    borderBottom: "2px solid #1E68F8",
-                    borderRadius: "none",
-                    padding: "0",
-                    outline: "none",
+                <div>
+                  <label>Date & Time</label>
+                  <input
+                    type="date"
+                    name="appointmentDate"
+                    value={formData.appointmentDate}
+                    onChange={onInputChange}
+                  />
+                </div>
 
-                    width: "80%",
-                  }),
-                  option: (base, state) => ({
-                    ...base,
-                    color: state.isSelected ? "white" : "black", // Change text color
-                    cursor: "pointer",
-                    outline: "none",
-                    padding: "5px",
-                  }),
-                  menu: (base) => ({
-                    ...base,
-                    width: "80%", // Set dropdown width
-                  }),
-                }}
-              />
+                {/* Available Slots Selection */}
+                <div>
+                  <label>Available Slots</label>
+                  <select
+                    name="slotId"
+                    value={formData.slotId}
+                    onChange={onInputChange}
+                    disabled={availableSlots.length === 0}
+                  >
+                    <option value="">
+                      {availableSlots.length ? "Select a Slot" : "No slots available"}
+                    </option>
+                    {availableSlots.map((slot, index) => (
+                      <option key={index} value={slot.id}>
+                        {slot.slot_id} - {slot.end_time}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <div className={styles.infoLabel}>Required Lab Tests</div>
+                  <div>
+                    <Select
+                      isMulti
+                      options={availableLabTests}
+                      placeholder="Select required lab tests"
+                      onChange={(selected) =>
+                        onSelectChange("requestedLabTests", selected)
+                      }
+                      styles={{
+                        control: (base) => ({
+                          ...base,
+                          border: "none",
+                          borderBottom: "2px solid #1E68F8",
+                          borderRadius: "none",
+                          padding: "0",
+                          outline: "none",
+
+                          width: "80%",
+                        }),
+                        option: (base, state) => ({
+                          ...base,
+                          color: state.isSelected ? "white" : "black", // Change text color
+                          cursor: "pointer",
+                          outline: "none",
+                          padding: "5px",
+                        }),
+                        menu: (base) => ({
+                          ...base,
+                          width: "80%", // Set dropdown width
+                        }),
+                        indicatorSeparator: () => ({ display: "none" }), // Hide vertical separator
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
 
-          <div className={styles.actions}>
-            <button className={styles.cancelButton} onClick={onClose}>
-              Cancel
-            </button>
-            <button
-              className={styles.confirmButton}
-              type="submit"
-              onClick={handleRescheduleAppointment}
-            >
-              Confirm Reschedule
-            </button>
+            <br />
+            <div className={styles.actions}>
+              <button className={styles.cancelButton} onClick={onClose}>
+                Cancel
+              </button>
+              <button
+                className={styles.addButton}
+                type="submit"
+                onClick={handleRescheduleAppointment}
+              >
+                Confirm Reschedule
+              </button>
+            </div>
           </div>
         </form>
       </div>

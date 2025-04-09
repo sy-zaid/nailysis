@@ -246,19 +246,21 @@ const PathologyTestEntryPopup = ({
       onClose={onClose}
     >
       <div className={styles.formContainer}>
-        <div className={styles.tophead}>
-          <div className={styles.header}>
-            <h2>Enter Pathology Test Details For Patient</h2>
+
+        <div className={styles.headerSection}>
+
+          <div className={styles.titleSection}>
+              <h2>Enter Pathology Test Details For Patient</h2> 
+              <p>
+                Record and manage pathology test results with both quantitative
+                measurements and qualitative assessments. Upload supporting
+                documents when available.
+              </p>
           </div>
-          <div className={styles.subhead}>
-            <h5 style={{ margin: "10px 0" }}>
-              Record and manage pathology test results with both quantitative
-              measurements and qualitative assessments. Upload supporting
-              documents when available.
-            </h5>
-          </div>
-          <hr />
+
         </div>
+
+        <hr />
 
         <div className={styles.popupBottom}>
           <p className={styles.newSubHeading}>
@@ -274,7 +276,7 @@ const PathologyTestEntryPopup = ({
               }
             </span>
             <span className={styles.secKey}> Status: </span>
-            <span className={getStatusClass("Pending", styles.pending)}>
+            <span className={getStatusClass("Pending", styles)}>
               {editable[0] === true ? editable[1] : "Pending"}
             </span>
           </p>
@@ -460,6 +462,80 @@ const PathologyTestEntryPopup = ({
             </div>
           </div>
 
+          <div className={styles.qualitativeSection}>
+            <h3>
+              <i className="fa-solid fa-vial-circle-check" style={{ color: "#007bff", marginRight: "10px"}}></i>
+              Qualitative Tests
+              <button
+                onClick={handleAddQualitativeParam}
+                className={styles.addButton}
+                style={{ marginLeft: "10px" }}
+              >
+                <i className="bx bx-plus"></i> Add Test
+              </button>
+            </h3>
+
+            {qualitativeEntries.map((entry, index) => (
+              <div key={index} className={styles.qualitativeRow}>
+                <div className={styles.paramSelect}>
+                  <select
+                    value={entry.parameter}
+                    onChange={(e) => {
+                      const updated = [...qualitativeEntries];
+                      updated[index] = {
+                        ...PARAMETER_LIBRARY.qualitative[e.target.value],
+                        parameter: e.target.value,
+                        result: "",
+                      };
+                      setQualitativeEntries(updated);
+                    }}
+                  >
+                    {Object.keys(PARAMETER_LIBRARY.qualitative).map((param) => (
+                      <option key={param} value={param}>
+                        {param}
+                      </option>
+                    ))}
+                  </select>
+
+                  <button
+                    onClick={() => {
+                      setQualitativeEntries(
+                        qualitativeEntries.filter((_, i) => i !== index)
+                      );
+                    }}
+                    className={styles.deleteButton}
+                  >
+                    <i className="fa-solid fa-trash-can"></i>
+                  </button>
+                </div>
+
+                <div className={styles.resultInput}>
+                  <select
+                    value={entry.result}
+                    onChange={(e) => {
+                      const updated = [...qualitativeEntries];
+                      updated[index].result = e.target.value;
+                      setQualitativeEntries(updated);
+                    }}
+                  >
+                    <option value="">Select result</option>
+                    {entry.options.map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
+
+                  {entry.interpretation && entry.result && (
+                    <div className={styles.interpretation}>
+                      <strong>Note:</strong>{" "}
+                      {entry.interpretation[entry.result]}
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
           <div className={styles.formSection}>
             <h3>
               <i
@@ -527,28 +603,31 @@ const PathologyTestEntryPopup = ({
                 </p>
                 <input
                   type="checkbox"
-                  style={{ marginRight: "10px" }}
+                  style={{ margin: "30px 10px -5px 0" }}
                   checked={isChecked}
                   onChange={() => setIsChecked(!isChecked)}
                 />
-                <span style={{ fontSize: "14px", marginTop: "-10px" }}>
+                <span style={{ fontSize: "14px" }}>
                   I confirm the pathology results provided are accurate and
                   complete.
                 </span>
               </div>
             </div>
           </div>
-          <div className={styles.saveCancelButtons}>
+          <div className={styles.newActions}>
+
+            <button className={styles.cancelButton} onClick={onClose}>
+              Cancel
+            </button>
+
             <button
-              className={styles.saveButton}
+              className={styles.addButton}
               onClick={handleSubmit}
               disabled={loading}
             >
               {loading ? "Saving..." : "Save Pathology Results"}
             </button>
-            <button className={styles.cancelButton} onClick={onClose}>
-              Cancel
-            </button>
+            
           </div>
         </div>
       </div>
