@@ -118,20 +118,20 @@ const FeedbackDetails = ({ onClose, recordDetails }) => {
               </div>
               <div>
                 <label>Age</label>
-                <p className={styles.subHeading}>{calculateAge(recordDetails?.user?.patient?.date_of_birth)}</p>
+                <p className={styles.subHeading}>{calculateAge(recordDetails?.user?.patient?.date_of_birth) || "No Age"}</p>
               </div>
               <div>
                 <label>Gender</label>
-                <p className={styles.subHeading}>{recordDetails?.user?.patient?.gender}</p>
+                <p className={styles.subHeading}>{recordDetails?.user?.patient?.gender || "No Gender"}</p>
               </div>
               <div>
                 <label>Phone Number</label>
-                <p className={styles.subHeading}>{recordDetails?.user?.phone}</p>
+                <p className={styles.subHeading}>{recordDetails?.user?.phone || "No Phone"}</p>
               </div>
 
               <div>
                 <label>Email Address</label>
-                <p className={styles.subHeading}>{recordDetails?.user?.email}</p>
+                <p className={styles.subHeading}>{recordDetails?.user?.email || "No Email"}</p>
               </div>
 
             </div>
