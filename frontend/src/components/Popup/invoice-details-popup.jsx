@@ -1,35 +1,24 @@
 import React from "react";
-import styles from "./all-popups-styles.module.css";
+import styles from "./all-popups-styles.module.css"; 
 import Popup from "./Popup";
 import { useState, useEffect  } from "react";
+import { getStatusClass } from "../../utils/utils"; 
 
 const PopupInvoiceDetails = ({ invoiceDetailsPopup, setinvoiceDetailsPopup, onProceed }) => {
     
-    const [status, setStatus] = useState("Paid");
-
-    // Function to determine the CSS class based on status
-    const getStatusClass = (status) => {
-        switch (status) {
-          case "Paid":
-            return styles.resolved;
-          default:
-            return {};
-        }    
-    }
-
     return (
         
     <Popup trigger={invoiceDetailsPopup} setTrigger={setinvoiceDetailsPopup}>
         <div className={styles.formContainer}>
           
-            <div className={styles.headerSection}>
+          <div className={styles.headerSection}>
 
-                <div className={styles.titleSection}>
-                    <h2 style={{ marginLeft: "20px" }}>Invoice Details For Patient: John Doe (Invoice ID: 12345)</h2> 
-                    <p style={{ marginLeft: "20px" }}>Detailed view for the invoice number #123456.</p>
-                </div>
+              <div className={styles.titleSection}>
+                  <h2>Invoice Details For Patient: John Doe (Invoice ID: 12345)</h2> 
+                  <p>Detailed view for the invoice number #123456.</p>
+              </div>
 
-            </div>
+          </div>
 
         <hr />
 
@@ -39,7 +28,7 @@ const PopupInvoiceDetails = ({ invoiceDetailsPopup, setinvoiceDetailsPopup, onPr
             <span className={styles.locationValue}>Clinic Admin</span>
 
             <span className={styles.key} style={{margin: "0 0 0 20px"}}> <i className="fa-solid fa-circle-notch" style={{ fontSize: "14px" }}></i> Status: </span>
-            <span className={getStatusClass(status)} style={{ fontSize: "16px" }}>Paid</span>
+            <span className={getStatusClass("Paid", styles)} style={{ fontSize: "16px" }}>Paid</span>
           
             <span className={styles.key} style={{margin: "0 0 0 20px"}}> <i class='bx bx-calendar-check' ></i> Issuance Date & Time: </span>
             <span className={styles.locationValue}>10/10/2024 09:30 AM</span>  
@@ -114,8 +103,10 @@ const PopupInvoiceDetails = ({ invoiceDetailsPopup, setinvoiceDetailsPopup, onPr
               Send to Printer
             </button>
           </div>
+          <br />
+          
         </div>
-        </div>
+      </div>
     </Popup>
 
 

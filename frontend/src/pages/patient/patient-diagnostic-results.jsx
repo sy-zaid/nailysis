@@ -5,12 +5,20 @@ import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import Header from "../../components/Dashboard/Header/Header";
 import Sidebar from "../../components/Dashboard/Sidebar/Sidebar";
 
+// UTILS.JS FUNCTIONS
+import { 
+  getStatusClass, 
+  toggleActionMenu,
+} from "../../utils/utils";
+
  
 const DiagnosticResults = (props) => {
   // ----- POPUPS & NAVIGATION
   const [popupVisible, setPopupVisible] = useState(false);
   const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
   const popupRef = useRef(null);
+  const [menuOpen, setMenuOpen] = useState(null);
+  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
 
   // ----- IMPORTANT DATA
   const [activeButton, setActiveButton] = useState(0); 
@@ -45,17 +53,6 @@ const DiagnosticResults = (props) => {
     setActiveButton(index); // Set the active button when clicked
   };
 
-
-  const getStatusClass = (status) => {
-    switch (status) {
-      case "Completed":
-        return styles.consulted;
-      case "Cancelled":
-        return styles.cancelled;
-      default:
-        return styles.scheduled;
-    }
-  }
   
   const togglePopup = (event) => {
     const iconRect = event.target.getBoundingClientRect();
@@ -68,20 +65,26 @@ const DiagnosticResults = (props) => {
 
   // ----- USE-EFFECTS
 
-  // Close popup when clicking outside 
+  // Close the action menu when clicking outside of it
+  const menuRef = useRef(null);
+
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (popupRef.current && !popupRef.current.contains(event.target)) {
-        setPopupVisible(false);
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setMenuOpen(null);
       }
     };
+  
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
+  }, [menuOpen]);
+  
 
-  return (
+  
+
+  return ( 
     
     <div className={styles.pageContainer}>
 
@@ -177,14 +180,42 @@ const DiagnosticResults = (props) => {
                       <td data-label="Technician">{row.technician}</td>
                       <td data-label="Test Result">{row.testResult}</td>
                       <td data-label="Comments">{row.comments}</td>
-                      <td data-label="Status" className={getStatusClass(row.status)}>{row.status}</td>
+                      <td data-label="Status" className={getStatusClass(row.status, styles)}>{row.status}</td>
                       <td data-label="Actions"><button className={styles.shareBtn}>{row.shareReportBtn}</button></td>
-                      <td style={{ position: "relative" }}>
-                        <i
-                          className="bx bx-dots-vertical-rounded"
-                          style={{ cursor: "pointer" }}
-                          onClick={togglePopup}
-                        ></i>
+                      
+                      {/* ------------------------- ACTION BUTTONS -------------------------*/}
+                      
+                      <td>
+                      <button
+                        onClick={(event) => toggleActionMenu(row.id, menuOpen, setMenuOpen, setMenuPosition, event)}
+                        className={styles.moreActionsBtn}
+                      >
+                        <img src="/icon-three-dots.png" alt="More Actions" className={styles.moreActionsIcon} />
+                      </button>
+
+                      {menuOpen && (
+                        <div
+                          ref={menuRef} id={`menu-${row.id}`}
+                          className={styles.menu}
+                          style={{
+                            top: `${menuPosition.top}px`,
+                            left: `${menuPosition.left}px`,
+                            position: "absolute",
+                          }}
+                        >
+                          <ul>
+
+                            <li>
+                              <i className="fa-solid fa-download"></i>Download as PDF
+                            </li>
+                            <li>
+                              <i className="fa-solid fa-print"></i>Send to Printer
+                            </li>
+                            
+                          </ul> 
+                        </div>
+                      )}
+
                       </td>
                     </tr>
                   ))}
@@ -196,30 +227,6 @@ const DiagnosticResults = (props) => {
         </div>
       </div>
 
-      {/* Popup */}
-      {popupVisible && (
-        <div
-          ref={popupRef}
-          style={{
-            position: "absolute",
-            top: popupPosition.top,
-            left: popupPosition.left,
-            background: "white",
-            border: "1px solid #ccc",
-            boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
-            padding: "10px",
-            borderRadius: "10px",
-            zIndex: 1000,
-          }}
-        >
-          <p style={{ margin: "5px 0", cursor: "pointer" }}>
-            📄 Download as PDF
-          </p>
-          <p style={{ margin: "5px 0", cursor: "pointer" }}>
-            🖨️ Send to Printer
-          </p>
-        </div>
-      )}
     </div>
     
   );

@@ -216,6 +216,8 @@ table {
 
 
 
+/* ---------- Status Styles ---------- */
+
 .consulted {
   color: green;
 }
@@ -227,6 +229,12 @@ table {
 .scheduled {
   color: orange;
 }
+
+.inProgress {
+  color: #007bff;
+}
+
+
 
 
 /* Responsive Styles for table*/

@@ -156,6 +156,8 @@
   word-wrap: break-word;
 }
 
+/* ---------- Status Styles ---------- */
+
 .consulted {
   color: green;
 }
@@ -167,6 +169,12 @@
 .scheduled {
   color: orange;
 }
+
+.inProgress {
+  color: #007bff;
+}
+
+
 
 .dropdownButton {
   display: block;

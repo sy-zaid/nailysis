@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from .models import LabTestType, LabTestOrder
-
+from .models import LabTestType, LabTestOrder,LabTestResult
+from users.serializers import PatientSerializer
 class LabTestTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = LabTestType
@@ -22,10 +22,19 @@ class LabTestOrderSerializer(serializers.ModelSerializer):
             appointment = obj.lab_technician_appointment
             return {
                 "id": appointment.appointment_id,
-                "patient_name": appointment.patient.user.first_name + " " + appointment.patient.user.last_name,  # Example
+                "patient": PatientSerializer(appointment.patient).data,
                 "technician_name": appointment.lab_technician.user.first_name + " " + appointment.lab_technician.user.last_name,  # Example
+                "technician_specialization": appointment.lab_technician.specialization,
                 "checkout_datetime": appointment.checkout_datetime,
                 "status": appointment.status,
                 "fee": appointment.fee,
+                "notes": appointment.notes,
             }
         return None
+
+class LabTestResultSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = LabTestResult
+        fields =  "__all__"
+        

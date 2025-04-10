@@ -3,8 +3,8 @@
   border-radius: 8px;
   padding: 20px;
   width: 1100px;
-  max-width: 1100px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-width: 1100px; 
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
   position: relative;
   height: 95vh;
   max-height: 95vh;
@@ -18,6 +18,10 @@
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 15px;
+}
+
+.titleSection{
+  margin-left: 20px;
 }
 
 .titleSection h2 {
@@ -58,7 +62,7 @@
   grid-template-columns: repeat(2, 1fr);
   width: 100%;
   margin-left: 26px;
-  row-gap: 10px;
+  row-gap: 20px;
 }
 
 .newFormGroup {
@@ -158,6 +162,18 @@ textarea {
   scrollbar-width: none;
 }
 
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="date"]  {
+  outline: none;
+}
+
+.inputField {
+  padding-left: 0;
+  padding-top: 0;
+}
+
 textarea::placeholder {
   font-size: 14px;
 }
@@ -216,3 +232,23 @@ textarea::placeholder {
 .phoneField {
   margin-top: 6px;
 }
+
+
+/* ---------- Status Styles ---------- */
+
+.consulted {
+  color: green;
+}
+
+.cancelled {
+  color: red;
+}
+
+.scheduled {
+  color: orange;
+}
+
+.inProgress {
+  color: #007bff;
+}
+

@@ -46,8 +46,6 @@ const FeedbackResponse = ({ onClose, recordDetails }) => {
     description: "",
   });
 
-
-
   const onInputChange = handleInputChange(setFormData);
 
   // Fetch feedback details when the popup opens
@@ -72,21 +70,21 @@ const FeedbackResponse = ({ onClose, recordDetails }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     const feedbackData = {
       description: reply, // Send the response text
       status: isResolved ? "Resolved" : "Pending",
     };
-  
+
     const feedbackId = recordDetails?.id; // Ensure this is correctly passed
-  
+
     if (!feedbackId) {
       alert("Error: Feedback ID missing");
       return;
     }
-  
+
     const url = `${import.meta.env.VITE_API_URL}/api/feedback_response/${feedbackId}/submit_response/`;
-  
+
     try {
       const response = await axios.post(url, feedbackData, {
         headers: {
@@ -94,7 +92,7 @@ const FeedbackResponse = ({ onClose, recordDetails }) => {
           "Content-Type": "application/json",
         },
       });
-  
+
       if (response?.status === 201) {
         alert("Response submitted successfully!");
         onClose(); // Close the popup
@@ -106,8 +104,8 @@ const FeedbackResponse = ({ onClose, recordDetails }) => {
       alert("Error submitting response. Please try again.");
     }
   };
-  
-  
+
+
 
 
   const handleFeedback = async (e) => {

@@ -5,7 +5,7 @@ const API_URL = import.meta.env.VITE_API_URL; // Ensure this is set in .env file
 
 // Submit new Feedback
 export const submitFeedback = async (feedbackData) => {
-  const url = `${import.meta.env.VITE_API_URL}/api/feedbacks/submit_feedback/`; // ✅ Ensure correct API URL
+  const url = `${import.meta.env.VITE_API_URL}/api/feedbacks/submit_feedback/`; //  Ensure correct API URL
   return axios.post(url, feedbackData, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem("access")}`,
@@ -15,7 +15,7 @@ export const submitFeedback = async (feedbackData) => {
 };
 
 export const submitFeedbackResponse = async (feedbackId, feedbackData) => {
-  const url = `${import.meta.env.VITE_API_URL}/api/feedbacks/${feedbackId}/submit_response/`; // ✅ FIX: Add `feedbackId`
+  const url = `${import.meta.env.VITE_API_URL}/api/feedbacks/${feedbackId}/submit_response/`; //  FIX: Add `feedbackId`
   
   return axios.post(url, feedbackData, {
     headers: {

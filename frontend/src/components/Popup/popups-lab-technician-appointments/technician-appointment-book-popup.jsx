@@ -23,7 +23,7 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
   // ----- TOKENS AND USER INFORMATION
   const token = localStorage.getItem("access");
   const curUserRole = localStorage.getItem("role");
-  const { data: curUser, isLoading, isError, error } = usePatientData(); // Fetch patient data
+  const { data: curUser, isLoading, isError, error } = usePatientData(); // Fetch user data
 
   // ----- POPUPS & NAVIGATION
   const [popupTrigger, setPopupTrigger] = useState(true);
@@ -208,8 +208,8 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
 
         <div className={styles.headerSection}>
           <div className={styles.titleSection}>
-            <h2 style={{ marginLeft: "20px" }}>Schedule Your Appointment</h2> 
-            <p style={{ marginLeft: "20px" }}>Choose your customized appointment timings and other details</p>
+            <h2>Schedule Your Appointment</h2> 
+            <p>Choose your customized appointment timings and other details</p>
           </div>
         </div>
 

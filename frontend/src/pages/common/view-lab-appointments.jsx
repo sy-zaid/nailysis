@@ -22,6 +22,7 @@ import {
   handleClosePopup,
   getStatusClass, 
   toggleActionMenu,
+  convertDjangoDateTime,
   getResultsClass,
 } from "../../utils/utils";
 import PopupBookTechnicianAppointment from "../../components/Popup/popups-lab-technician-appointments/technician-appointment-book-popup";
@@ -35,6 +36,8 @@ const AppointmentTechnician = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [popupContent, setPopupContent] = useState(null); // State to track which popup to show
   const [menuOpen, setMenuOpen] = useState(null);
+  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
+
 
   // ----- IMPORTANT DATA
   const [appointments, setAppointments] = useState([]);
@@ -201,8 +204,8 @@ const AppointmentTechnician = () => {
         console.log(error);
       }
     };
+  
     if (!showPopup) {
-      // Fetch only when popup is closed
       fetchAppointments();
     }
   }, [showPopup, token]);
@@ -219,7 +222,10 @@ const AppointmentTechnician = () => {
   useEffect(() => {
     let sortedData = [...appointments];
   
-    if (sortOption === "fee-asc") {
+    if (sortOption === "none") {
+      // Default to sorting by latest first (date-desc)
+      sortedData.sort((a, b) => new Date(b.checkin_datetime) - new Date(a.checkin_datetime));
+    } else if (sortOption === "fee-asc") {
       sortedData.sort((a, b) => a.fee - b.fee);
     } else if (sortOption === "fee-desc") {
       sortedData.sort((a, b) => b.fee - a.fee);
@@ -230,7 +236,25 @@ const AppointmentTechnician = () => {
     }
   
     setFilteredAppointments(sortedData);
-  }, [appointments, sortOption]);
+  }, [appointments, sortOption]); 
+
+  // Close the action menu when clicking outside of it
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuOpen !== null) {
+        const menuElement = document.getElementById(`menu-${menuOpen}`);
+        if (!menuElement || !menuElement.contains(event.target)) {
+          setMenuOpen(null);
+        }
+      } 
+    };
+  
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [menuOpen]);
+  
   
 
   return (
@@ -387,11 +411,7 @@ const AppointmentTechnician = () => {
                     )}
                     <td>
                       {row?.checkin_datetime
-                        ? `${new Date(
-                            row.checkin_datetime
-                          ).toLocaleDateString()} | ${new Date(
-                            row.checkin_datetime
-                          ).toLocaleTimeString()}`
+                        ? convertDjangoDateTime(row.checkin_datetime)
                         : "N/A"}
                     </td>
                     <td>
@@ -436,78 +456,49 @@ const AppointmentTechnician = () => {
                       {/* ------------------------- ACTION BUTTONS -------------------------*/}
                       
                       <td>
-                        <button
-                          onClick={() =>
-                            toggleActionMenu(
-                              row.appointment_id,
-                              menuOpen,
-                              setMenuOpen
-                            )
-                          }
-                          className={styles.moreActionsBtn}
-                        >
-                          <img
-                            src="/icon-three-dots.png"
-                            alt="More Actions"
-                            className={styles.moreActionsIcon}
-                          />
-                        </button>
+                      <button
+                        onClick={(event) => toggleActionMenu(row.appointment_id, menuOpen, setMenuOpen, setMenuPosition, event)}
+                        className={styles.moreActionsBtn}
+                      >
+                        <img src="/icon-three-dots.png" alt="More Actions" className={styles.moreActionsIcon} />
+                      </button>
 
                       {menuOpen === row.appointment_id && (
-                        <div className={styles.menu}>
+                        <div
+                          id={`menu-${row.appointment_id}`}
+                          className={styles.menu}
+                          style={{
+                            top: `${menuPosition.top}px`,
+                            left: `${menuPosition.left}px`,
+                            position: "absolute",
+                          }}
+                        >
                           <ul>
-                            {curUser[0].role === "lab_technician" &&
-                              row.status !== "Completed" && (
-                                <li
-                                  onClick={() => {
-                                    handleActionClick(
-                                      "Action Start Appointment",
-                                      row
-                                    );
-                                  }}
-                                >
-                                  Start Appointment
-                                </li>
-                              )}
+                            {curUser[0].role === "lab_technician" && row.status !== "Completed" && (
+                              <li onClick={() => handleActionClick("Action Start Appointment", row)}>
+                                <i className="fa-solid fa-plus"></i>Start Appointment
+                              </li>
+                            )}
+                            {(curUser[0].role === "patient" || curUser[0].role === "lab_technician") && (
+                              <li onClick={() => handleActionClick("Button Cancellation Request", row.appointment_id)}>
+                                <i className="fa-solid fa-ban"></i>Request Cancellation
+                              </li>
+                            )}
+                            {curUser[0].role === "lab_admin" && (
+                              <li onClick={() => handleActionClick("Reschedule", row)}>
+                                <i className="fa-solid fa-calendar-days"></i>Reschedule
+                              </li>
+                            )}
+                            {curUser[0].role === "lab_admin" && (
+                              <li onClick={() => handleActionClick("Action Cancel Appointment", row.appointment_id)}>
+                                <i className="fa-solid fa-rectangle-xmark"></i>Cancel Appointment
+                              </li>
+                            )}
+                          </ul>
+                        </div>
+                      )}
 
-                              {(curUser[0].role === "patient" ||
-                                curUser[0].role === "lab_technician") && (
-                                <li
-                                  onClick={() => {
-                                    handleActionClick(
-                                      "Button Cancellation Request",
-                                      row.appointment_id
-                                    );
-                                  }}
-                                >
-                                  Request Cancellation
-                                </li>
-                              )}
-
-                              {curUser[0].role === "lab_admin" && (
-                                <li
-                                  onClick={() =>
-                                    handleActionClick("Reschedule", row)
-                                  }
-                                >
-                                  Reschedule
-                                </li>
-                              )}
-                              {curUser[0].role === "lab_admin" && (
-                                <li
-                                  onClick={() =>
-                                    handleActionClick(
-                                      "Action Cancel Appointment",
-                                      row.appointment_id
-                                    )
-                                  }
-                                >
-                                  Cancel Appointment
-                                </li>
-                              )}
-                            </ul>
-                          </div>
-                        )}
+                      
                       </td>
                     </tr>
                   ))}

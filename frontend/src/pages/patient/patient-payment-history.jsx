@@ -1,13 +1,21 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import styles from "../common/all-pages-styles.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import Header from "../../components/Dashboard/Header/Header";
 import Sidebar from "../../components/Dashboard/Sidebar/Sidebar";
 
+// UTILS.JS FUNCTIONS
+import {
+  getStatusClass, 
+  toggleActionMenu,
+} from "../../utils/utils";
+
 
 const PaymentHistory = (props) => {
   const [activeButton, setActiveButton] = useState(0); 
+  const [menuOpen, setMenuOpen] = useState(null);
+  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
 
   // ----- SAMPLE DATA
   const data = [
@@ -41,16 +49,25 @@ const PaymentHistory = (props) => {
     setActiveButton(index); // Set the active button when clicked
   };
 
-  const getStatusClass = (status) => {
-    switch (status) {
-      case "Paid":
-        return styles.consulted;
-      case "Overdue":
-        return styles.cancelled;
-      default:
-        return styles.scheduled;
-    }
-  };
+  
+  // ----- USE-EFFECTS
+
+  // Close the action menu when clicking outside of it
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setMenuOpen(null);
+      }
+    };
+  
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [menuOpen]);
+
 
   return (
     
@@ -150,8 +167,40 @@ const PaymentHistory = (props) => {
                       <td>{row.dueDate}</td>
                       <td>{row.pendingAmount}</td>
                       <td>{row.totalAmount}</td>
-                      <td className={getStatusClass(row.paymentStatus)}>{row.paymentStatus}</td>
-                      <td><i class='bx bx-dots-vertical-rounded'></i></td>
+                      <td className={getStatusClass(row.paymentStatus, styles)}>{row.paymentStatus}</td>
+                      
+                      {/* ------------------------- ACTION BUTTONS -------------------------*/}
+                      
+                      <td>
+                        <button
+                          onClick={(event) => toggleActionMenu(row.id, menuOpen, setMenuOpen, setMenuPosition, event)}
+                          className={styles.moreActionsBtn}
+                        >
+                          <img src="/icon-three-dots.png" alt="More Actions" className={styles.moreActionsIcon} />
+                        </button>
+
+                        {menuOpen && (
+                          <div
+                            ref={menuRef} id={`menu-${row.id}`}
+                            className={styles.menu}
+                            style={{
+                              top: `${menuPosition.top}px`,
+                              left: `${menuPosition.left}px`,
+                              position: "absolute",
+                            }}
+                          >
+                            <ul>
+
+                              <li>
+                                <i className="fa-solid fa-eye"></i>View Details
+                              </li>
+                              
+                            </ul>
+                          </div>
+                        )}
+
+                      </td>
+
                     </tr>
                   ))}
                 </tbody>

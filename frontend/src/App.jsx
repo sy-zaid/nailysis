@@ -5,11 +5,15 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import NotFound from "./components/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
-import electronic_health_record from "./pages/common/electronic-health-records.jsx";
+import LabTestResult from "./pages/common/lab-test-result.jsx";
 import PatientHealthHistory from "./pages/common/patient-health-history.jsx";
+import LabTestReport from "./pages/common/lab-test-result-new";
+
 import { QueryClientProvider } from "@tanstack/react-query"; // Import React Query Client Provider
 import { queryClient } from "./queryClient.js"; // Import the client
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import Sidebar from "./components/Dashboard/Sidebar/Sidebar";
 import {
@@ -27,6 +31,7 @@ import Home from "./pages/Home";
 import YourPatients from "./pages/admin-clinic/your-patients-clinic-admin";
 import PatientProfile from "./pages/admin-clinic/patient-profile-clinic-admin";
 import DoctorProfile from "./pages/admin-clinic/doctor-profile-clinic-admin";
+import BillingHistory from "./pages/admin-clinic/billing-history.jsx";
 
 function Logout() {
   localStorage.clear();
@@ -51,6 +56,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <ReactQueryDevtools initialIsOpen={false} />
       <div className="App">
+        <ToastContainer position="top-right" autoClose={3000} />
         <Routes>
           {/* System Admin */}
           <Route
@@ -117,50 +123,6 @@ function App() {
             }
           />
 
-          {/*clinic-admin => electronic_health_record */}
-          <Route
-            path="/clinic-admin/electronic_health_record"
-            element={
-              <ProtectedRoute requiredRole="clinic_admin">
-                <Sidebar
-                  userRole="clinic_admin"
-                  setView={setView}
-                  isOpen={isOpen}
-                  toggleSidebar={toggleSidebar}
-                />
-                <div
-                  className={`mainContent ${
-                    isOpen ? "sidebar-open" : "sidebar-closed"
-                  }`}
-                >
-                  <electronic_health_record />
-                </div>
-              </ProtectedRoute>
-            }
-          />
-
-          {/*clinic-admin => Patient Health History */}
-          <Route
-            path="/clinic-admin/patient-history"
-            element={
-              <ProtectedRoute requiredRole="clinic_admin">
-                <Sidebar
-                  userRole="clinic_admin"
-                  setView={setView}
-                  isOpen={isOpen}
-                  toggleSidebar={toggleSidebar}
-                />
-                <div
-                  className={`mainContent ${
-                    isOpen ? "sidebar-open" : "sidebar-closed"
-                  }`}
-                >
-                  <PatientHealthHistory />
-                </div>
-              </ProtectedRoute>
-            }
-          />
-
           {/* Doctor */}
           <Route
             path="/doctor-dashboard"
@@ -182,6 +144,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+
           {/* Patient */}
 
           <Route
@@ -253,7 +216,13 @@ function App() {
           <Route path="/logout" element={<Navigate to="/login" />} />
           <Route path="/register" element={<Register />} />
           <Route path="/add-appointment" element={<AddAppointment />} />
+          <Route
+            path="/lab-test-result/:reportId"
+            element={<LabTestResult />}
+          />
+
           <Route path="/upload-image" element={<UploadImage />} />
+          <Route path="/rep" element={<LabTestReport />} />
           <Route path="/image-guide" element={<ImageGuide />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

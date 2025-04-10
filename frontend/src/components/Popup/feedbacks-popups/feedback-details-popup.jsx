@@ -10,6 +10,7 @@ import {
   getRole,
   handleInputChange,
 } from "../../../utils/utils.js";
+import { getStatusClass } from "../../../utils/utils.js";
 
 const FeedbackDetails = ({ onClose, recordDetails }) => {
   console.log("Record Details", recordDetails)
@@ -41,19 +42,6 @@ const FeedbackDetails = ({ onClose, recordDetails }) => {
   }, [feedbackId, token]);
 
 
-  const getStatusClass = (status) => {
-    switch (status) {
-      case "Resolved":
-        return styles.resolved;
-      case "In Progress":
-        return styles.inProgress;
-      case "Pending":
-        return styles.pending;
-      default:
-        return {};
-    }
-  }
-
   // Using the first feedback entry for display (for now)
 
   const handleResponse = () => {
@@ -80,7 +68,7 @@ const FeedbackDetails = ({ onClose, recordDetails }) => {
 
         <p className={styles.newSubHeading}>
           <span className={styles.key} style={{ margin: "0 0 0 20px" }}> <i className="fa-solid fa-circle-notch" style={{ fontSize: "14px" }}></i> Status: </span>
-          <span className={getStatusClass(status)} style={{ fontSize: "16px" }}>{recordDetails?.status}</span>
+          <span className={getStatusClass(status, styles)} style={{ fontSize: "16px" }}>{recordDetails?.status}</span>
 
           <span className={styles.key} style={{ margin: "0 0 0 20px" }}> <i class='bx bx-calendar-alt'></i> Date Submitted: </span>
           <span className={styles.locationValue}>{new Date(recordDetails?.date_submitted).toLocaleString("en-US", {

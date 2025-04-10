@@ -63,6 +63,7 @@
   flex-direction: column;
   border-right: 0.5px solid rgba(0, 0, 0, 0.078);
   box-shadow: #181818;
+  background-color: #fff;
   animation: fadeIn 0.5s ease-out;
 }
 
@@ -130,6 +131,7 @@
   flex-direction: row;
   align-items: start;
   border-bottom: 1px solid #cfcfcf;
+  background-color: #fff;
 }
 .secOneImg {
   display: flex;
@@ -159,6 +161,7 @@
   justify-content: start;
   align-items: start;
   border-bottom: 1px solid #cfcfcf;
+  background-color: #fff;
 }
 
 .sectionTwo button {
@@ -199,6 +202,7 @@
   align-items: start;
   justify-content: start;
   border-bottom: 1px solid #cfcfcf;
+  background-color: #fff;
 }
 
 .sectionThreeSecondDiv {
@@ -297,12 +301,14 @@
   padding: 3% 0% 0% 0%;
   justify-content: left;
   align-items: end;
+  position: relative; /* Ensure it is positioned */
+  z-index: 100;
 }
 
 .profSection {
   position: relative;
   width: 100%;
-  /* background-color: #181818; */
+  background-color: #fff;
   height: 100%;
   display: flex;
   flex-direction: row;
@@ -310,24 +316,28 @@
   padding-left: 2%;
   align-items: center;
   border: 1px solid #cfcfcf;
-  border-radius: 32px;
+  border-radius: 40px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1); /* Subtle shadow effect */
-
-  transition: all 0.3s ease; /* Smooth transition effect */
+  transition: all 0.5s ease; /* Smooth transition effect */
 }
 
 .profSection:hover {
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0), 0 8px 16px rgba(0, 0, 0, 0.2); /* Darker shadow on hover */
-  transform: translateY(-5px); /* Lift effect on hover */
+  height: 280%;
+  transform: translateY(-100px);
+  z-index: 100; /* Ensures it appears above section 3 */
+  border-radius: 18px;
 }
 
 .profSection img {
   height: 40px;
   width: 40px;
   border-radius: 32px;
+  margin-left: 5px;
 }
 
-.profSection h2 {
+
+.profileInfo {
   font-size: 0.95rem;
   color: #4e4e4e;
   font-weight: 700;
@@ -337,8 +347,70 @@
   gap: 0px;
 }
 
-.profSection > h2 > span {
+.profileInfo, .profSection img {
+  transition: transform 0.5s ease-in-out;
+}
+
+.profileInfo span {
   font-size: 0.8rem;
   color: #4e4e4e;
   font-weight: 400;
+}
+
+.profSection:hover .profileInfo,
+.profSection:hover img {
+  transform: translateY(-40px); /* Moves name, email, and image upwards */
+}
+
+.profSection:hover .hiddenLinks {
+  border-top: 1px solid rgb(207, 207, 207);
+}
+
+.hiddenLinks {
+  position: absolute;
+  bottom: 10px;
+  opacity: 0;
+  left: 5%;
+  transition: opacity 0.5s ease-in-out;
+  width: 90%;
+  font-weight: 600;
+}
+
+.profSection:hover .hiddenLinks {
+  opacity: 1;
+}
+
+.hiddenLinks span {
+  margin: 15px 0 5px 22%;
+}
+
+.hiddenLinks i {
+  margin-right: 8px;
+  font-size: 14px;
+}
+
+.editProfileLink {
+  display: block;
+  font-size: 0.95rem;
+  color: #4e4e4e;
+  text-decoration: none;
+  margin-top: 5px;
+  cursor: pointer;
+}
+
+.editProfileLink:hover {
+  color: #444444;
+}
+
+.logoutLink {
+  display: block;
+  font-size: 0.95rem;
+  color: #dc3545;
+  text-decoration: none;
+  margin-top: 5px;
+  cursor: pointer;
+}
+
+.logoutLink:hover {
+  color: #b12937;
 }
