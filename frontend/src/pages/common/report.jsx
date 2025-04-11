@@ -5,7 +5,84 @@ import styles from "./report.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import Sidebar from "../../components/Dashboard/Sidebar/Sidebar";
 
-const Report = () => {
+// Importing recharts sample component
+import PieChartRes from "../../components/ReCharts/pie-chart";
+import BarChartRes from "../../components/ReCharts/bar-chart";
+import RadarChartRes from "../../components/ReCharts/radar-chart";
+import BarChartStackedRes from "../../components/ReCharts/bar-chart-stacked";
+import GaugeChartRes from "../../components/ReCharts/guage-chart";
+
+const Report = ({ predictionResult }) => {
+  predictionResult = {
+    individual_predictions: [
+      {
+        top_classes: [
+          {
+            class_index: 4,
+            predicted_class: "koilonychia",
+            confidence: 0.9999979734420776,
+          },
+          {
+            class_index: 8,
+            predicted_class: "onychogryphosis",
+            confidence: 0.00000195485404219653,
+          },
+          {
+            class_index: 10,
+            predicted_class: "onychomycosis",
+            confidence: 1.167044416661156e-7,
+          },
+        ],
+      },
+      {
+        top_classes: [
+          {
+            class_index: 5,
+            predicted_class: "melanoma",
+            confidence: 0.9999997615814209,
+          },
+          {
+            class_index: 6,
+            predicted_class: "muehrckes Lines",
+            confidence: 1.544823788890426e-7,
+          },
+          {
+            class_index: 1,
+            predicted_class: "bluish nails",
+            confidence: 7.614843156034112e-8,
+          },
+        ],
+      },
+    ],
+    combined_result: [
+      {
+        class_index: 5,
+        predicted_class: "melanoma",
+        confidence: 0.9999997615814209,
+        vote_count: 1,
+        max_confidence: 0.9999997615814209,
+      },
+      {
+        class_index: 4,
+        predicted_class: "koilonychia",
+        confidence: 0.9999979734420776,
+        vote_count: 1,
+        max_confidence: 0.9999979734420776,
+      },
+      {
+        class_index: 8,
+        predicted_class: "onychogryphosis",
+        confidence: 0.00000195485404219653,
+        vote_count: 0,
+        max_confidence: 0.00000195485404219653,
+      },
+    ],
+  };
+
+  const combined = predictionResult.combined_result;
+  console.log("predictionResult", predictionResult);
+  console.log("combined", combined);
+
   return (
     <div className={styles.pageContainer}>
       <Navbar />
@@ -136,6 +213,28 @@ const Report = () => {
                 </div>
 
                 <h4 className={styles.confidenceTitle}>Confidence Levels</h4>
+                <div className="p-6">
+                  <h2 className="text-2xl font-semibold mb-4">
+                    Patient Trends
+                  </h2>
+                  {combined.map((idx) => (
+                    <>
+                      <PieChartRes data={idx} />
+                      <h1>{idx.predicted_class}</h1>
+                    </>
+                  ))}
+                  <h2>Bar Chart</h2>
+                  <BarChartRes data={combined} />
+
+                  <h2>Radar Chart</h2>
+                  <RadarChartRes allClassConfidences={combined} />
+
+                  <h2>Stacked Bar Chart</h2>
+                  <BarChartStackedRes data={combined} />
+
+                  <h2>Gauge for Top Confidence</h2>
+                  <GaugeChartRes confidence={combined[0].confidence} />
+                </div>
                 <div className={styles.confidenceGrid}>
                   <div className={styles.confidenceItem}>
                     <div className={styles.confidenceCircle}>
