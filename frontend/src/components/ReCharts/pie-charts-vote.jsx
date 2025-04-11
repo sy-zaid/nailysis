@@ -2,7 +2,7 @@ import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
-const PieChartVote = ({ data }) => (
+const PieChartVoteRes = ({ data }) => (
   <ResponsiveContainer width="100%" height={400}>
     <PieChart>
       <Pie
@@ -25,4 +25,4 @@ const PieChartVote = ({ data }) => (
   </ResponsiveContainer>
 );
 
-export default PieChartVote;
+export default PieChartVoteRes;

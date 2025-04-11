@@ -12,6 +12,10 @@ import RadarChartRes from "../../components/ReCharts/radar-chart";
 import BarChartStackedRes from "../../components/ReCharts/bar-chart-stacked";
 import GaugeChartRes from "../../components/ReCharts/guage-chart";
 
+import BoxPlotRes from "../../components/ReCharts/box-plot";
+import SankeyRes from "../../components/ReCharts/sankey";
+import PieChartVoteRes from "../../components/ReCharts/pie-charts-vote";
+
 const Report = ({ predictionResult }) => {
   predictionResult = {
     individual_predictions: [
@@ -82,7 +86,16 @@ const Report = ({ predictionResult }) => {
   const combined = predictionResult.combined_result;
   console.log("predictionResult", predictionResult);
   console.log("combined", combined);
+  const diseaseConfidences = {};
 
+  combined.forEach((item) => {
+    const { predicted_class, confidence } = item;
+    if (!diseaseConfidences[predicted_class]) {
+      diseaseConfidences[predicted_class] = [];
+    }
+    diseaseConfidences[predicted_class].push(confidence);
+  });
+  console.log(diseaseConfidences);
   return (
     <div className={styles.pageContainer}>
       <Navbar />
@@ -214,18 +227,14 @@ const Report = ({ predictionResult }) => {
 
                 <h4 className={styles.confidenceTitle}>Confidence Levels</h4>
                 <div className="p-6">
-                  <h2 className="text-2xl font-semibold mb-4">
-                    Patient Trends
-                  </h2>
-                  {combined.map((idx) => (
-                    <>
-                      <PieChartRes data={idx} />
-                      <h1>{idx.predicted_class}</h1>
-                    </>
-                  ))}
+                  <h2>Sankey Chart</h2>
+                  <SankeyRes data={combined} />
+                  <h2>PieChartsVote Chart</h2>
+                  <PieChartVoteRes data={combined} />
+                  <h2>BoxPlotRes Chart</h2>
+                  <BoxPlotRes data={diseaseConfidences} />
                   <h2>Bar Chart</h2>
                   <BarChartRes data={combined} />
-
                   <h2>Radar Chart</h2>
                   <RadarChartRes allClassConfidences={combined} />
 
@@ -236,25 +245,12 @@ const Report = ({ predictionResult }) => {
                   <GaugeChartRes confidence={combined[0].confidence} />
                 </div>
                 <div className={styles.confidenceGrid}>
-                  <div className={styles.confidenceItem}>
-                    <div className={styles.confidenceCircle}>
-                      <span className={styles.confidenceValue}>98%</span>
+                  {combined.map((idx) => (
+                    <div>
+                      <PieChartRes data={idx} />
+                      <h1>{idx.predicted_class}</h1>
                     </div>
-                    <p>Onychomycosis</p>
-                    <span className={styles.alertIndicator}></span>
-                  </div>
-                  <div className={styles.confidenceItem}>
-                    <div className={styles.confidenceCircle}>
-                      <span className={styles.confidenceValue}>73%</span>
-                    </div>
-                    <p>Beau's Lines</p>
-                  </div>
-                  <div className={styles.confidenceItem}>
-                    <div className={styles.confidenceCircle}>
-                      <span className={styles.confidenceValue}>42%</span>
-                    </div>
-                    <p>Clubbing</p>
-                  </div>
+                  ))}
                 </div>
 
                 <div className={styles.disclaimer}>
