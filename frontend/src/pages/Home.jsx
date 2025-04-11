@@ -234,15 +234,68 @@ const Home = () => {
             They can reveal early signs of infections, nutritional deficiencies, or underlying conditions. Nailysis uses AI to scan and analyze nail images, helping you uncover possible health issues in seconds — safely, quickly, and intelligently.
           </p>
 
+          <img src="services-bg-1.jpg" alt="" className={styles.serviceBg1} />
+          <img src="services-bg-2.jpg" alt="" className={styles.serviceBg2} />
+
           <div className={styles.serviceCards}>
+
             <div className={styles.serviceCard1}>
-              <p>Icon</p>
+              <i className="fa-solid fa-stethoscope"></i>
               <div className={styles.serviceCardContent}>
                 <h2 className={styles.serviceCardHeading}>Consult a Doctor</h2>
                 <p className={styles.serviceCardText}>Easy access to professional medical advice.</p>
               </div>
             </div>
-          </div>
+            <div className={styles.serviceCard2}>
+              <i className="fa-solid fa-calendar-days"></i>
+              <div className={styles.serviceCardContent}>
+                <h2 className={styles.serviceCardHeading}>Medical Appointments</h2>
+                <p className={styles.serviceCardText}>Hassle-free scheduling for clinic visits.</p>
+              </div>
+            </div>
+            <div className={styles.serviceCard3}>
+              <i className="fa-solid fa-robot"></i>
+              <div className={styles.serviceCardContent}>
+                <h2 className={styles.serviceCardHeading}>AI Technology</h2>
+                <p className={styles.serviceCardText}>Advanced disease detection using AI-powered nail image analysis.</p>
+              </div>
+            </div>
+            <div className={styles.serviceCard4}>
+              <i class="fa-solid fa-headset"></i>
+              <div className={styles.serviceCardContent}>
+                <h2 className={styles.serviceCardHeading}>24/7  Online Support</h2>
+                <p className={styles.serviceCardText}>Round-the-clock assistance for users.</p>
+              </div>
+            </div>
+
+          </div>   
+        </section>
+
+        <section className={styles.howItWorksSection}>
+          <h2 className={styles.howItWorksSectionHeading}>How it <span>works?</span></h2>
+
+          <img src="robot-arm.png" alt="" className={styles.howItWorksSectionImage} />
+
+          <div className={styles.howItWorksCards}>
+
+            <div className={styles.howItWorksCard1}>
+              <h2 className={styles.howItWorksCardHeading}>Capture And Upload</h2>
+              <p className={styles.howItWorksCardText}>Take a clear photo of your fingernail</p>
+            </div>
+            <div className={styles.howItWorksCard2}>
+              <h2 className={styles.howItWorksCardHeading}>AI Analysis</h2>
+              <p className={styles.howItWorksCardText}>Our system detects potential health conditions</p>
+            </div>
+            <div className={styles.howItWorksCard3}>
+              <h2 className={styles.howItWorksCardHeading}>Get Results & Insights</h2>
+              <p className={styles.howItWorksCardText}>Receive instant feedback and recommendations</p>
+            </div>
+
+            <img src="how-it-works-1.png" alt="" className={styles.howItWorksImage1} />
+            <img src="how-it-works-2.png" alt="" className={styles.howItWorksImage2} />
+
+          </div>   
+
         </section>
 
       </main>

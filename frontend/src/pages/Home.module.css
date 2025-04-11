@@ -34,7 +34,9 @@ nav {
   position: fixed;
   isolation: isolate;
   width: 100%;
-  background-color: #fff;
+  background: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  backdrop-filter: blur(10px);
   z-index: 9;
 }
 
@@ -416,8 +418,150 @@ nav {
   text-align: center;
 }
 
+.serviceCards {
+  display: grid;
+  /* grid-template-columns: repeat(2, 1fr); */
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin: 2rem 0;
+}
+
+.serviceCard1, 
+.serviceCard2,
+.serviceCard3,
+.serviceCard4 {
+  background-color: #fff;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.8);
+  border-radius: 10px; 
+  border: 1px solid rgba(255, 255, 255, 0.18); 
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  z-index: 1;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.serviceCard1:hover, 
+.serviceCard2:hover,
+.serviceCard3:hover,
+.serviceCard4:hover {
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(5px);
+}
 
 
+.serviceCardContent {
+  display: flex;
+  flex-direction: column;
+  margin: 1rem 0;
+  z-index: 2;
+}
+
+.serviceCardHeading {
+  margin: 0;
+  color:  var(--text-light);
+  font-size: 2rem;
+  font-weight: 500;
+  transition: 0.3s;
+}
+
+.serviceCard1:hover .serviceCardHeading,
+.serviceCard2:hover .serviceCardHeading,
+.serviceCard3:hover .serviceCardHeading,
+.serviceCard4:hover .serviceCardHeading {
+  color: #fff;
+}
+
+.serviceCardText {
+  color: var(--text-light);
+  transition: 0.3s;
+}
+
+.serviceCard1:hover .serviceCardText,
+.serviceCard2:hover .serviceCardText,
+.serviceCard3:hover .serviceCardText,
+.serviceCard4:hover .serviceCardText {
+  color: #fff;
+}
+
+.serviceCard1 i, 
+.serviceCard2 i,
+.serviceCard3 i,
+.serviceCard4 i {
+  color:  var(--text-light);
+  margin-left: 1.5rem;
+  font-size: 2rem;
+  transition: 0.3s;
+}
+
+
+.serviceCard1:hover i,
+.serviceCard2:hover i,
+.serviceCard3:hover i,
+.serviceCard4:hover i {
+  color: #fff;
+}
+
+.serviceBg1,
+.serviceBg2 {
+  display: none;
+}
+
+
+/* ---------- How it works Section ---------- */
+
+.howItWorksSection {
+  margin: 2rem 0;
+  position: relative;
+  padding: 2rem;
+}
+
+.howItWorksSectionHeading {
+  font-size: 3rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  line-height: 3.5rem;
+  text-align: center;
+}
+
+.howItWorksSectionHeading span {
+  color: var(--text-light);
+}
+
+.howItWorksSectionImage {
+  display: none;
+}
+
+.howItWorksCards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 4rem;
+  margin: 2rem 0;
+  padding: 3rem 2rem;
+  background-color: rgb(187, 215, 255);
+  
+  border-radius: 10px;
+}
+
+.howItWorksCardHeading, .howItWorksCardText {
+  color: var(--text-dark);
+  z-index: 2;
+}
+
+.howItWorksImage1, 
+.howItWorksImage2 {
+  display: none;
+}
+
+
+
+
+
+
+/* ------------------------------ Media Queries ------------------------------ */
 
 @media (width > 768px) {
   nav {
@@ -430,6 +574,9 @@ nav {
     align-items: center;
     justify-content: space-between;
     gap: 2rem;
+    background: #fff;
+    box-shadow: none;
+    backdrop-filter: none;
   }
 
   .navHeader {
@@ -560,5 +707,108 @@ nav {
     top: 17%;
     z-index: -1;
   }
+
+  /* ---------- Services Section ---------- */
+
+  .serviceSectionHeading, 
+  .serviceSectionText {
+    text-align: left;
+    margin-left: 3rem;
+  }
+
+  .serviceSectionText {
+    margin: 1rem 4rem 3rem 3rem;
+  }
+
+  .serviceCards {
+    grid-template-columns: repeat(2, 1fr);
+    margin: 1rem 5rem 1rem 3rem;
+    gap: 3rem;
+  }
+
+  .serviceCard1, 
+  .serviceCard2,
+  .serviceCard3,
+  .serviceCard4 {
+    padding: 3rem 2rem;
+    gap: 2rem;
+    justify-content: flex-start;
+  }
+
+  .serviceCardContent {
+    gap: 0.5rem;
+    margin: 0;
+  }
+
+
+  .serviceCard1 i, 
+  .serviceCard2 i,
+  .serviceCard3 i,
+  .serviceCard4 i {
+    margin: 0 0 0 1rem;
+  }
+
+  .serviceBg1,
+  .serviceBg2 {
+    display: block;
+  }
+
+  .serviceBg1 {
+    position: absolute;
+    width: 20vw;
+    right: 0;
+    top: 5%;
+    z-index: 1;
+  }
+
+  .serviceBg2 {
+    position: absolute;
+    width: 25vw;
+    bottom: 2%;
+    left: 1%;
+  }
+
+  /* ---------- How it works Section ---------- */
+
+
+
+  .howItWorksSectionHeading {
+    text-align: left;
+    margin-left: 3rem;
+    margin-bottom: 2rem;
+  }
+
+  .howItWorksSectionImage {
+    display: block;
+    width: 35vw;
+    position: absolute;
+    right: 0;
+    top: -3%;
+  }
+
+  .howItWorksCards {
+    margin: 0 5rem 0 3rem;
+    background: rgba(187, 215, 255, 0.4);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+  }
+
+  .howItWorksImage1, 
+  .howItWorksImage2 {
+    display: block;
+    position: absolute;
+    width: 12vw;
+  }
+
+  .howItWorksImage1 {
+    top: 5%;
+    right: 15%;
+  }
+
+  .howItWorksImage2 {
+    bottom: 5%;
+    right: 15%;
+  }
+
 
 }
