@@ -28,7 +28,7 @@ app.add_middleware(
 # Load the trained Keras model
 # NOTE: Ensure the path is correct and accessible
 model = tf.keras.models.load_model(
-    'C:/Users/syedm/nailysis/backend/model_service/cnn_model_final-v1.keras'
+    'E:/Nailysis/backend/model_service/cnn_model_final-v1.keras'
 )
 
 # Define class names (same as in your training code)
