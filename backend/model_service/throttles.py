@@ -3,9 +3,9 @@ from rest_framework.throttling import SimpleRateThrottle
 class RoleBasedRateThrottle(SimpleRateThrottle):
     # Class-level rate mapping
     RATE_MAP = {
-        'patient': '3/hour',
-        'doctor': '10/hour',
-        'lab_technician': '15/hour',
+        'patient': '30/hour',
+        'doctor': '100/hour',
+        'lab_technician': '150/hour',
         'default': '5/hour'  # Fallback rate
     }
     

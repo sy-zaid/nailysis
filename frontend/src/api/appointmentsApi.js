@@ -7,7 +7,10 @@ export const getLabTechnicianAppointments = async () => {
   const url = `${API_URL}/api/lab_technician_appointments/`;
   return axios.get(url, getHeaders());
 };
-
+export const getRecommendedTests = async (patient_id) => {
+  const url = `${API_URL}/api/doctor_appointments/recommended_tests/?patient=${patient_id}/`;
+  return axios.get(url, getHeaders());
+};
 export const getAvailableLabTests = async () => {
   const url = `${API_URL}/api/test_types/`;
   return axios.get(url, getHeaders());
@@ -98,5 +101,5 @@ export const cancelTechnicianAppointment = async (appointmentId) => {
 
 export const completeTechnicianAppointment = async (appointmentId) => {
   const url = `${API_URL}/api/lab_technician_appointments/${appointmentId}/complete_appointment/`;
-  return axios.post(url, {},getHeaders());
+  return axios.post(url, {}, getHeaders());
 };

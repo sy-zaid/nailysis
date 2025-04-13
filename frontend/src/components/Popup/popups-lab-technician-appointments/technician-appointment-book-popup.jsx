@@ -17,6 +17,7 @@ import {
   getAvailableSlots,
   getTechnicianFromSpecialization,
   getTechnicianSpecializations,
+  getRecommendedTests,
 } from "../../../api/appointmentsApi.js";
 
 const PopupBookTechnicianAppointment = ({ onClose }) => {
@@ -34,6 +35,16 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
   const [availableSlots, setAvailableSlots] = useState([]);
   const [specializations, setSpecializations] = useState([]);
   const [labTechnicians, setLabTechnicians] = useState([]);
+  const [recommendedTests, setRecommendedTests] = useState([]);
+  const fetchRecommendedTests=async ()=>{
+    const response = await getRecommendedTests("PAT002");
+    
+    setRecommendedTests(response.data)
+  }
+  useEffect(()=>{
+    fetchRecommendedTests()
+  },[])
+  console.log("recommendedTests",recommendedTests)
   const [availableLabTests, setAvailableLabTests] = useState([]);
   const [availableTestPrices, setAvailableTestPrices] = useState([]);
   const [patient, setPatient] = useState([]);
@@ -205,10 +216,9 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
       onClose={onClose}
     >
       <div className={styles.formContainer}>
-
         <div className={styles.headerSection}>
           <div className={styles.titleSection}>
-            <h2>Schedule Your Appointment</h2> 
+            <h2>Schedule Your Appointment</h2>
             <p>Choose your customized appointment timings and other details</p>
           </div>
         </div>
@@ -216,114 +226,119 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
         <hr />
 
         <form onSubmit={(e) => e.preventDefault()}>
-
           <div className={styles.popupBottom}>
-          {/* Patient Information */}
-          <div className={styles.formSection}>
-            <h3><i className="fa-solid fa-circle fa-2xs"></i> Patient Information</h3>
-            <div className={styles.newFormGroup}>
-              <div>
-                <label>First Name</label>
-                <input
-                  type="text"
-                  name="patientFirstName"
-                  value={formData.patientFirstName}
-                  onChange={onInputChange}
-                  placeholder={
-                    curUserRole === "patient"
-                      ? patient[0]?.first_name || ""
-                      : "Enter First"
-                  }
-                  disabled={curUserRole === "patient"}
-                />
-              </div>
-              <div>
-                <label>Last Name</label>
-                <input
-                  type="text"
-                  name="patientLastName"
-                  value={formData.patientLastName}
-                  onChange={onInputChange}
-                  placeholder={
-                    curUserRole === "patient"
-                      ? patient[0]?.last_name || ""
-                      : "Enter Last"
-                  }
-                  disabled={curUserRole === "patient"}
-                />
-              </div>
-              <div>
-                <label>Age</label>
-                <input
-                  type="text"
-                  name="age"
-                  value={formData.age}
-                  onChange={onInputChange}
-                  placeholder={
-                    curUserRole === "patient"
-                      ? calculateAge(patient[1]?.date_of_birth) || ""
-                      : "Enter Age"
-                  }
-                  disabled={curUserRole === "patient"}
-                />
-              </div>
-              <div>
-                <label>Gender</label>
-                <input
-                  type="text"
-                  name="gender"
-                  value={formData.gender}
-                  onChange={onInputChange}
-                  placeholder={
-                    curUserRole === "patient"
-                      ? patient[1]?.gender || ""
-                      : "Enter gender"
-                  }
-                  disabled={curUserRole === "patient"}
-                />
-              </div>
-              <div className={styles.phoneField}>
-                <label>Phone Number</label>
-                <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={onInputChange}
-                  placeholder={
-                    curUserRole === "patient"
-                      ? patient[0]?.phone || ""
-                      : "Enter phone number"
-                  }
-                  disabled={curUserRole === "patient"}
-                  style={{ height: "20px" }}
-                />
-              </div>
-              <div>
-                <label>Email Address</label>
-                <input
-                  type="text"
-                  name="email"
-                  value={formData.email}
-                  onChange={onInputChange}
-                  placeholder={
-                    curUserRole === "patient"
-                      ? patient[0]?.email || ""
-                      : "Enter email address"
-                  }
-                  disabled={curUserRole === "patient"}
-                />
+            {/* Patient Information */}
+            <div className={styles.formSection}>
+              <h3>
+                <i className="fa-solid fa-circle fa-2xs"></i> Patient
+                Information
+              </h3>
+              <div className={styles.newFormGroup}>
+                <div>
+                  <label>First Name</label>
+                  <input
+                    type="text"
+                    name="patientFirstName"
+                    value={formData.patientFirstName}
+                    onChange={onInputChange}
+                    placeholder={
+                      curUserRole === "patient"
+                        ? patient[0]?.first_name || ""
+                        : "Enter First"
+                    }
+                    disabled={curUserRole === "patient"}
+                  />
+                </div>
+                <div>
+                  <label>Last Name</label>
+                  <input
+                    type="text"
+                    name="patientLastName"
+                    value={formData.patientLastName}
+                    onChange={onInputChange}
+                    placeholder={
+                      curUserRole === "patient"
+                        ? patient[0]?.last_name || ""
+                        : "Enter Last"
+                    }
+                    disabled={curUserRole === "patient"}
+                  />
+                </div>
+                <div>
+                  <label>Age</label>
+                  <input
+                    type="text"
+                    name="age"
+                    value={formData.age}
+                    onChange={onInputChange}
+                    placeholder={
+                      curUserRole === "patient"
+                        ? calculateAge(patient[1]?.date_of_birth) || ""
+                        : "Enter Age"
+                    }
+                    disabled={curUserRole === "patient"}
+                  />
+                </div>
+                <div>
+                  <label>Gender</label>
+                  <input
+                    type="text"
+                    name="gender"
+                    value={formData.gender}
+                    onChange={onInputChange}
+                    placeholder={
+                      curUserRole === "patient"
+                        ? patient[1]?.gender || ""
+                        : "Enter gender"
+                    }
+                    disabled={curUserRole === "patient"}
+                  />
+                </div>
+                <div className={styles.phoneField}>
+                  <label>Phone Number</label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={onInputChange}
+                    placeholder={
+                      curUserRole === "patient"
+                        ? patient[0]?.phone || ""
+                        : "Enter phone number"
+                    }
+                    disabled={curUserRole === "patient"}
+                    style={{ height: "20px" }}
+                  />
+                </div>
+                <div>
+                  <label>Email Address</label>
+                  <input
+                    type="text"
+                    name="email"
+                    value={formData.email}
+                    onChange={onInputChange}
+                    placeholder={
+                      curUserRole === "patient"
+                        ? patient[0]?.email || ""
+                        : "Enter email address"
+                    }
+                    disabled={curUserRole === "patient"}
+                  />
+                </div>
               </div>
             </div>
-          </div>
 
-          <hr />
+            <hr />
 
-          {/* Appointment Details */}
-          <div className={styles.formSection}>
-            <h3><i className="fa-solid fa-circle fa-2xs"></i> Appointment Details</h3>
-            
-            <div className={styles.formGroup}>
-              <div>
+            {/* Appointment Details */}
+            <div className={styles.formSection}>
+              <h3>
+                <i className="fa-solid fa-circle fa-2xs"></i> Appointment
+                Details
+              </h3>
+
+              <div className={styles.formGroup}>
+                <div>
                   <label>Specialization</label>
                   <select
                     name="specialization"
@@ -339,163 +354,162 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
                   </select>
                 </div>
 
-              <div>
-                <label>Lab Technician</label>
-                <select
-                  name="labTechnicianId"
-                  value={formData.labTechnicianId}
-                  onChange={onInputChange}
-                >
-                  <option value="">Select Lab Technician</option>
-                  {labTechnicians.length > 0 ? (
-                    labTechnicians.map((labTechnician) => (
-                      <option key={labTechnician.id} value={labTechnician.id}>
-                        {labTechnician.name}
+                <div>
+                  <label>Lab Technician</label>
+                  <select
+                    name="labTechnicianId"
+                    value={formData.labTechnicianId}
+                    onChange={onInputChange}
+                  >
+                    <option value="">Select Lab Technician</option>
+                    {labTechnicians.length > 0 ? (
+                      labTechnicians.map((labTechnician) => (
+                        <option key={labTechnician.id} value={labTechnician.id}>
+                          {labTechnician.name}
+                        </option>
+                      ))
+                    ) : (
+                      <option disabled>Loading labTechnicians...</option>
+                    )}
+                  </select>
+                </div>
+
+                <div>
+                  <label>Date & Time</label>
+                  <input
+                    type="date"
+                    name="appointmentDate"
+                    value={formData.appointmentDate}
+                    onChange={onInputChange}
+                  />
+                </div>
+
+                {/* Available Slots Selection */}
+                <div>
+                  <label>Available Slots</label>
+                  <select
+                    name="slotId"
+                    value={formData.slotId}
+                    onChange={onInputChange}
+                    disabled={availableSlots.length === 0}
+                  >
+                    <option value="">
+                      {availableSlots.length
+                        ? "Select a Slot"
+                        : "No slots available"}
+                    </option>
+                    {availableSlots.map((slot, index) => (
+                      <option key={index} value={slot.id}>
+                        {slot.slot_id} - {slot.start_time} to {slot.end_time}
                       </option>
-                    ))
-                  ) : (
-                    <option disabled>Loading labTechnicians...</option>
-                  )}
-                </select>
-              </div>
+                    ))}
+                  </select>
+                </div>
 
-            <div>
-              <label>Date & Time</label>
-              <input
-                type="date"
-                name="appointmentDate"
-                value={formData.appointmentDate}
-                onChange={onInputChange}
-              />
+                <div>
+                  <div className={styles.infoLabel}>Required Lab Tests</div>
+                  <div>
+                    <Select
+                      isMulti
+                      options={availableLabTests}
+                      placeholder="Select required lab tests"
+                      onChange={handleTestSelection}
+                      styles={{
+                        control: (base) => ({
+                          ...base,
+                          border: "none",
+                          borderBottom: "2px solid #1E68F8",
+                          borderRadius: "none",
+                          padding: "0",
+                          outline: "none",
+                          width: "80%",
+                          fontSize: "14px",
+                        }),
+                        option: (base, state) => ({
+                          ...base,
+                          color: state.isSelected ? "white" : "black",
+                          cursor: "pointer",
+                          outline: "none",
+                          fontSize: "14px",
+                        }),
+                        menu: (base) => ({
+                          ...base,
+                          width: "80%",
+                          fontSize: "14px",
+                        }),
+                        dropdownIndicator: (base) => ({
+                          ...base,
+                          transform: "scale(0.9)",
+                        }),
+                        indicatorSeparator: () => ({ display: "none" }), // Hide vertical separator
+                      }}
+                    />
+                  </div>
+
+                  <div className={styles.additionalNotes}>
+                    <label>Additional Notes</label>
+                    <input
+                      type="text"
+                      name="notes"
+                      value={formData.notes}
+                      onChange={onInputChange}
+                      placeholder={"Enter notes"}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label>Calculated Fee (PKR)</label>
+                  <input
+                    type="text"
+                    value={formData.fee}
+                    readOnly
+                    className={styles.feeInput}
+                  />
+                </div>
+              </div>
             </div>
 
-            {/* Available Slots Selection */}
-            <div>
-              <label>Available Slots</label>
-              <select
-                name="slotId"
-                value={formData.slotId}
-                onChange={onInputChange}
-                disabled={availableSlots.length === 0}
+            <hr />
+
+            {/* Payment Details */}
+            <div className={styles.formSection}>
+              <h3>
+                <i className="fa-solid fa-circle fa-2xs"></i> Payment Details
+              </h3>
+              <div className={styles.newFormGroup}>
+                <div>
+                  <label>Discount Code</label>
+                  <select>
+                    <option>No Discount</option>
+                  </select>
+                </div>
+                <div>
+                  <label>Service Fee</label>
+                  <p className={styles.subHeading}>RS/- {formData.fee}</p>
+                </div>
+                <div>
+                  <label>Sales Tax</label>
+                  <p className={styles.subHeading}>RS/- 5.0</p>
+                </div>
+              </div>
+            </div>
+
+            <div className={styles.actions}>
+              <button className={styles.cancelButton} onClick={onClose}>
+                Cancel
+              </button>
+              <button
+                className={styles.addButton}
+                type="submit"
+                onClick={handleBookAppointment}
               >
-                <option value="">
-                  {availableSlots.length ? "Select a Slot" : "No slots available"}
-                </option>
-                {availableSlots.map((slot, index) => (
-                  <option key={index} value={slot.id}>
-                    {slot.slot_id} - {slot.start_time} to {slot.end_time}
-                  </option>
-                ))}
-              </select>
+                Continue to Next Step
+              </button>
             </div>
-
-            <div>
-              <div className={styles.infoLabel}>Required Lab Tests</div>
-              <div>
-              <Select
-                isMulti
-                options={availableLabTests}
-                placeholder="Select required lab tests"
-                onChange={handleTestSelection}
-                styles={{
-                  control: (base) => ({
-                    ...base,
-                    border: "none",
-                    borderBottom: "2px solid #1E68F8",
-                    borderRadius: "none",
-                    padding: "0",
-                    outline: "none",
-                    width: "80%",
-                    fontSize: "14px",
-                  }),
-                  option: (base, state) => ({
-                    ...base,
-                    color: state.isSelected ? "white" : "black",
-                    cursor: "pointer",
-                    outline: "none",
-                    fontSize: "14px",
-                  }),
-                  menu: (base) => ({
-                    ...base,
-                    width: "80%",
-                    fontSize: "14px",
-                  }),
-                  dropdownIndicator: (base) => ({
-                    ...base,
-                    transform: "scale(0.9)",
-                  }),
-                  indicatorSeparator: () => ({ display: "none" }), // Hide vertical separator
-                }}
-              />
-
-              </div>
-            
-
-            <div className={styles.additionalNotes}>
-              <label>Additional Notes</label>
-              <input
-                type="text"
-                name="notes"
-                value={formData.notes}
-                onChange={onInputChange}
-                placeholder={"Enter notes"}
-              />
-            </div>
-            </div>
-
-            <div>
-              <label>Calculated Fee (PKR)</label>
-              <input
-                type="text"
-                value={formData.fee}
-                readOnly
-                className={styles.feeInput}
-              />
-            </div>
-          
-          </div>
-          </div>
-        
-        <hr />
-
-        {/* Payment Details */}
-        <div className={styles.formSection}>
-            <h3><i className="fa-solid fa-circle fa-2xs"></i> Payment Details</h3>
-            <div className={styles.newFormGroup}>
-              <div>
-                <label>Discount Code</label>
-                <select>
-                  <option>No Discount</option>
-                </select>
-              </div>
-              <div>
-                <label>Service Fee</label>
-                <p className={styles.subHeading}>RS/- {formData.fee}</p>
-              </div>
-              <div>
-                <label>Sales Tax</label>
-                <p className={styles.subHeading}>RS/- 5.0</p>
-              </div>
-            </div>
-        </div>
-
-          <div className={styles.actions}>
-            <button className={styles.cancelButton} onClick={onClose}>
-              Cancel
-            </button>
-            <button
-              className={styles.addButton}
-              type="submit"
-              onClick={handleBookAppointment}
-            >
-              Continue to Next Step
-            </button>
-          </div>
-
           </div>
         </form>
-
-        </div>
+      </div>
     </Popup>
   );
 };
