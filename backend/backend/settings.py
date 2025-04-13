@@ -44,10 +44,6 @@ REST_FRAMEWORK = {
         'model_service.throttles.RoleBasedRateThrottle',
     ],
     'DEFAULT_THROTTLE_RATES': {
-        'nail_analysis_patient': '3/hour',
-        'nail_analysis_doctor': '10/hour',
-        'nail_analysis_lab_technician': '15/hour',
-        'nail_analysis_default': '1/hour',
         'user': '100/day',
     }
 }
