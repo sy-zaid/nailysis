@@ -25,7 +25,7 @@ import GenerateInvoice from "./pages/admin-clinic/invoice";
 import CancellationRequest from "./pages/admin-clinic/appointment-cancellation-request";
 import LabAppointmentHistory from "./pages/common/lab-appointment-history";
 import ClinicAppointmentHistory from "./pages/common/clinic-appointment-history";
-import Report from "./pages/common/report";
+import NailysisReport from "./pages/common/report";
 import LabTestReport from "./pages/common/lab-test-result-new";
 
 // FEEDBACKS

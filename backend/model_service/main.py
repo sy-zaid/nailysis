@@ -12,6 +12,7 @@ from PIL import Image
 import io
 import tensorflow as tf
 from tensorflow.keras.preprocessing.image import img_to_array
+from pathlib import Path
 
 # Initialize FastAPI app
 app = FastAPI()
@@ -25,11 +26,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Get the base directory (where this script is located)
+BASE_DIR = Path(__file__).resolve().parent
+
+# Join path to your model
+MODEL_PATH = BASE_DIR / 'cnn_model_final-v1.keras'
 # Load the trained Keras model
 # NOTE: Ensure the path is correct and accessible
-model = tf.keras.models.load_model(
-    'E:/Nailysis/backend/model_service/cnn_model_final-v1.keras'
-)
+# Load the model
+model = tf.keras.models.load_model(str(MODEL_PATH))
 
 # Define class names (same as in your training code)
 CLASS_NAMES = [
