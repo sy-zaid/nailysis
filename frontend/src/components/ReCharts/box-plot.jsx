@@ -27,75 +27,63 @@ const calculateQ3 = (arr) => {
 
 // --- Main Component ---
 const BoxPlotRes = ({ data }) => {
-  if (!data || Object.keys(data).length === 0) {
+  if (!data || typeof data !== "object" || Object.keys(data).length === 0) {
     return <div>No data available</div>;
   }
 
-  // Transform to log10(confidence + epsilon) to handle zeros
-  const transformConfidence = (c) => Math.log10(c + 1e-10);
+  // Better transformation
+  const transformedData = {};
+  Object.entries(data).forEach(([disease, confidences]) => {
+    transformedData[disease] = confidences.map(c => -Math.log10(1 - c));
+  });
 
-  const transformedData = Object.entries(data).map(([disease, confidences]) => ({
-    disease,
-    values: confidences.map(transformConfidence),
-  }));
-
-  const allValues = transformedData.flatMap((d) => d.values);
+  const allValues = Object.values(transformedData).flat();
   const minValue = Math.min(...allValues);
   const maxValue = Math.max(...allValues);
 
-  // Scale setup
   const valueScale = scaleLinear({
-    domain: [minValue, maxValue],
-    range: [350, 50], // SVG coordinates (reversed)
+    domain: [minValue * 0.9, maxValue * 1.1], // Add some padding
+    range: [350, 50], // More room for labels
   });
 
   return (
     <svg width={800} height={400}>
-      {transformedData.map(({ disease, values }, i) => {
+      {Object.entries(transformedData).map(([disease, confidences], i) => {
         const x = i * 150 + 100;
-        const sorted = [...values].sort((a, b) => a - b);
 
-        // Box plot calculations
-        const min = Math.min(...values);
-        const max = Math.max(...values);
-        const median = calculateMedian(sorted);
-        const q1 = calculateQ1(sorted);
-        const q3 = calculateQ3(sorted);
+        // Only show box plot if we have enough data
+        if (confidences.length < 2) {
+          return (
+            <g key={disease}>
+              <circle cx={x} cy={valueScale(confidences[0])} r={5} fill="red" />
+              <text x={x} y={350} textAnchor="middle" fontSize={12}>
+                {disease}
+              </text>
+            </g>
+          );
+        }
 
         return (
-          <g key={disease} transform={`translate(${x}, 0)`}>
-            {/* Whiskers */}
-            <line x1={0} y1={valueScale(min)} x2={0} y2={valueScale(max)} stroke="#333" />
-            {/* Box */}
-            <rect
-              x={-20}
-              y={valueScale(q3)}
-              width={40}
-              height={valueScale(q1) - valueScale(q3)}
+          <g key={disease}>
+            <BoxPlot
+              valueScale={valueScale}
+              x={x}
+              min={Math.min(...confidences)}
+              max={Math.max(...confidences)}
+              firstQuartile={calculateQ1(confidences)}
+              median={calculateMedian(confidences)}
+              thirdQuartile={calculateQ3(confidences)}
+              boxWidth={40}
               fill="#8884d8"
               stroke="#333"
+              orientation="vertical"
             />
-            {/* Median line */}
-            <line x1={-20} y1={valueScale(median)} x2={20} y2={valueScale(median)} stroke="#333" strokeWidth={2} />
-            {/* Disease label (rotated) */}
-            <text
-              x={0}
-              y={370}
-              textAnchor="middle"
-              fontSize={10}
-              transform="rotate(30, 0, 370)"
-            >
-              {disease.length > 12 ? `${disease.substring(0, 10)}...` : disease}
+            <text x={x} y={380} textAnchor="middle" fontSize={12}>
+              {disease}
             </text>
           </g>
         );
       })}
-      {/* Y-axis labels (log scale) */}
-      {[-5, -10, -15].map((logVal) => (
-        <text key={logVal} x={50} y={valueScale(logVal)} fontSize={10}>
-          {`10^${logVal}`}
-        </text>
-      ))}
     </svg>
   );
 };

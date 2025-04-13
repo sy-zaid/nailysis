@@ -66,7 +66,7 @@ const LabTestResultNew = () => {
 
                 <div className={styles.infoGrid}>
                   <div className={styles.infoItem}>
-                    <h4>Sex</h4>
+                    <h4>Gender</h4>
                     <p>Female</p>
                   </div>
                   <div className={styles.infoItem}>
