@@ -1,90 +1,103 @@
-import { Sankey } from "recharts";
+import React from 'react';
+import { Sankey, Tooltip } from 'recharts';
 import PropTypes from 'prop-types';
 
-const SankeyRes = ({ data = [] }) => {
-  // Filter out items with no votes and create class mapping
-  const validResults = data.filter(res => (res.vote_count || 0) > 0);
-  
-  // Create mapping from original class_index to sequential indices
-  const classIndexMap = {};
-  validResults.forEach((res, index) => {
-    classIndexMap[res.class_index] = index;
-  });
+// Custom Node with ALWAYS-VISIBLE labels
+const CustomNode = ({ x, y, width, height, index, payload, containerWidth }) => {
+  const isOuterNode = index === 0 || index === containerWidth; // Adjust logic as needed
+  return (
+    <g>
+      <rect
+        x={x}
+        y={y}
+        width={width}
+        height={height}
+        fill={index === 0 ? "#8884d8" : "#82ca9d"}
+        stroke="#333"
+        strokeWidth={1}
+      />
+      <text
+        x={x + (index === 0 ? width + 10 : -10)} // Force left/right positioning
+        y={y + height / 2}
+        textAnchor={index === 0 ? "start" : "end"}
+        dy="0.35em"
+        fill="#333"
+        fontSize={12}
+        fontWeight="bold"
+      >
+        {payload.name}
+      </text>
+    </g>
+  );
+};
 
-  // Calculate total votes needed
-  const totalVotes = validResults.reduce((sum, res) => sum + (res.vote_count || 0), 0);
-  
-  // Create dummy vote nodes
-  const voteNodes = Array(Math.max(totalVotes, 1)).fill(null);
+const SankeyRes = ({ predictionResult }) => {
+  // Normalize data (clamp confidence to avoid extreme values)
+  const normalizeConfidence = (confidence) => {
+    const clamped = Math.max(0.05, Math.min(0.99, confidence)); // Force into [0.05, 0.99]
+    return Number(clamped.toFixed(2));
+  };
 
-  // Create nodes
+  const data = (predictionResult?.combined_result || [])
+    .filter(res => res.confidence > 0)
+    .map(res => ({
+      ...res,
+      confidence: normalizeConfidence(res.confidence),
+    }));
+
+  // Nodes: Source (Predictions) → Targets (Classes)
   const nodes = [
-    ...voteNodes.map((_, i) => ({ name: `Vote ${i + 1}` })),
-    ...validResults.map(res => ({ name: res.predicted_class }))
+    { name: 'Predictions' },
+    ...data.map(res => ({ name: res.predicted_class })),
   ];
 
-  // Create links
-  let voteIndex = 0;
-  const links = validResults.flatMap((res) => {
-    const resLinks = [];
-    const votes = res.vote_count || 0;
-    
-    for (let i = 0; i < votes; i++) {
-      resLinks.push({
-        source: voteIndex++,
-        target: voteNodes.length + classIndexMap[res.class_index],
-        value: res.max_confidence || 0.1
-      });
-    }
-    return resLinks;
-  });
+  // Links: Flow strength = confidence (scaled up)
+  const links = data.map((res, index) => ({
+    source: 0,
+    target: index + 1,
+    value: res.confidence * 100, // Ensures visibility
+  }));
 
-  // Fallback if no valid data
-  if (nodes.length < 2 || links.length === 0) {
-    return (
-      <div style={{ width: 800, height: 500, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <p>Not enough data to display the Sankey diagram</p>
-      </div>
-    );
+  // Fallback if no data
+  if (nodes.length < 2) {
+    return <p>Not enough data to display the Sankey diagram</p>;
   }
 
   return (
-    <Sankey
-      width={800}
-      height={500}
-      data={{ nodes, links }}
-      nodePadding={50}
-      margin={{ left: 200, right: 200, top: 20, bottom: 20 }}
-      node={{
-        stroke: '#333',
-        strokeWidth: 1,
-        width: 20,
-        height: 20
-      }}
-      link={{
-        stroke: '#7bc0f9',
-        strokeWidth: 0.5,
-        fillOpacity: 0.6,
-        curvature: 0.3
-      }}
-    />
+    <div style={{ width: '100%', overflow: 'visible' }}>
+      <Sankey
+        width={1000} // Increased for label space
+        height={600}
+        data={{ nodes, links }}
+        nodePadding={60}
+        margin={{ left: 150, right: 150, top: 50, bottom: 50 }} // More margin for labels
+        node={{
+          render: (props) => <CustomNode {...props} containerWidth={1000} />,
+        }}
+        link={{
+          stroke:"#7bc0f9",
+          strokeWidth: 50, // Thicker for visibility
+          fillOpacity: 0.8,
+          curvature: 0.4,
+        }}
+      >
+        <Tooltip 
+          formatter={(value, name) => [`Confidence: ${value}%`, name]} 
+        />
+      </Sankey>
+    </div>
   );
 };
 
 SankeyRes.propTypes = {
-  data: PropTypes.arrayOf(
-    PropTypes.shape({
-      class_index: PropTypes.number,
-      predicted_class: PropTypes.string,
-      confidence: PropTypes.number,
-      vote_count: PropTypes.number,
-      max_confidence: PropTypes.number
-    })
-  )
-};
-
-SankeyRes.defaultProps = {
-  data: []
+  predictionResult: PropTypes.shape({
+    combined_result: PropTypes.arrayOf(
+      PropTypes.shape({
+        predicted_class: PropTypes.string,
+        confidence: PropTypes.number,
+      })
+    ),
+  }),
 };
 
 export default SankeyRes;

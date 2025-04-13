@@ -3,7 +3,7 @@
   --primary-color-dark: #0056b3;
   --text-dark: #191919;
   --text-light: #4e4e4e;
-  --max-width: 1200px;
+  --max-width: 1500px;
 }
 
 * {
@@ -21,9 +21,9 @@ html {
   padding: 0;
 }
 
-img {
+/* img {
   width: 100%;
-}
+} */
 
 a {
   text-decoration: none;
