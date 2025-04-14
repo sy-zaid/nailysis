@@ -3,7 +3,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 const BarChartStackedRes = ({ data }) => {
   return (
     <ResponsiveContainer width="100%" height={300}>
-      <BarChart layout="vertical" data={data} margin={{ top: 20, right: 30, left: 100, bottom: 5 }}>
+      <BarChart layout="vertical" data={data} margin={{ top: 20, right: 50, left: 100, bottom: 5 }}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis type="number" domain={[0, 1]} />
         <YAxis type="category" dataKey="predicted_class" />

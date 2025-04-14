@@ -133,7 +133,9 @@ const UploadImage = () => {
       );
       console.log("RESULTS FROM MODEL PRED", response.data);
       setAnalysisResults(response.data);
-      setPopupContent(<NailysisReport predictionResult={analysisResults}></NailysisReport>);
+      setPopupContent(
+        <NailysisReport predictionResult={analysisResults}></NailysisReport>
+      );
       setShowPopup(true);
     } catch (error) {
       console.error("Upload error:", error);
@@ -142,6 +144,10 @@ const UploadImage = () => {
       setIsUploading(false);
     }
   };
+  useEffect(() => {
+    setPopupContent(<NailysisReport predictionResult={analysisResults} />);
+    setShowPopup(true);
+  }, []);
 
   return (
     <>

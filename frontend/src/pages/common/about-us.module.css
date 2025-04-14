@@ -25,7 +25,8 @@ header {
 }
 
 .navLogo img {
-  height: 40px;
+  height: 150px;
+  width: auto;
 }
 
 .navMenuBtn {
@@ -316,7 +317,8 @@ header {
 /* Footer styles */
 /* Footer styles */
 .footer {
-  background-color: #d9d9d9; /* White background as shown in design */
+  background-color: #f9f9f9;
+  /* White background as shown in design */
   color: #333; /* Dark text for contrast */
   padding: 2rem 4rem; /* Increase horizontal padding */
 }
@@ -336,7 +338,8 @@ header {
 }
 
 .footerLogo img {
-  height: 40px;
+  height: 120px;
+  width: auto;
   margin-bottom: 1.5rem;
 }
 
