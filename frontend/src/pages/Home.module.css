@@ -19,10 +19,7 @@ html {
 .container {
   margin: 0;
   padding: 0;
-}
-
-img {
-  width: 100%;
+  overflow-x: hidden;
 }
 
 a {
@@ -216,21 +213,21 @@ nav {
 
 .heroContent {
   position: relative;
-  padding-left: 20px;
+  padding-left: 30px;
 }
 
 .heroContent::before {
   content: "";
   position: absolute;
   left: 0;
-  top: -8vh;
-  bottom: -8vh;
+  top: -6vh;
+  bottom: -6vh;
   width: 4px;
   background-color: var(--primary-color);
 }
 
 .heroContent h1 {
-  margin-bottom: 1rem;
+  margin-bottom: 2rem;
   font-size: 4rem;
   font-weight: 600;
   color: var(--text-light);
@@ -243,7 +240,7 @@ nav {
 }
 
 .heroContent p {
-  margin-bottom: 2rem;
+  margin-bottom: 3rem;
   color: var(--text-light);
   line-height: 1.75rem;
   text-align: center;
@@ -261,11 +258,11 @@ nav {
   display: inline-flex;
   justify-content: center;
   width: 100%;
-  padding: 8px 30px;
+  padding: 10px 30px;
   background-color: var(--primary-color);
   color: white;
   border: none;
-  border-radius: 15px;
+  border-radius: 25px;
   cursor: pointer;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
   transition: 0.3s;
@@ -289,7 +286,7 @@ nav {
 
 .featureSection {
   max-width: var(--max-width);
-  margin: 2rem;
+  margin: 3rem;
   position: relative;
 }
 
@@ -557,6 +554,205 @@ nav {
 }
 
 
+/* ---------- Parallax Section ---------- */
+
+.parallaxSection {
+  background-image: url('/parallax-img.png');
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  height: 80vh; /* or adjust as needed */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: white;
+  margin-bottom: 10vh;
+}
+
+.parallaxContent {
+  background-color: rgba(0, 0, 0, 0.3);
+  padding: 2rem;
+  height: 100%;
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.parallaxSectionHeading {
+  position: absolute;
+  top: 8rem;
+  font-size: 2.5rem;
+  color: var(--text-dark);
+  text-shadow: 2px 2px 5px rgba(255, 255, 255, 0.5);
+}
+
+.parallaxBottomContent {
+  position: absolute;
+  bottom: 8rem; /* Adjust spacing from bottom */
+  text-align: center;
+}
+
+.parallaxSectionSubHeading {
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+
+.parallaxContent i {
+  position: absolute;
+  bottom: 3rem;
+  font-size: 2rem;
+  color: var(--text-dark);
+}
+
+.parallaxSectionText {
+  font-size: 1.2rem;
+}
+
+/* ---------- Team Section ---------- */
+
+.teamSection {
+  background-color: #ecf3fe;
+  position: relative;
+  padding: 4rem;
+  margin-bottom: 10vh;
+}
+
+.teamSectionHeading {
+  font-size: 3rem;
+  text-align: center;
+}
+
+.doctorGrids {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 3rem;
+  margin: 3rem;
+}
+
+.doctorGrid1 img,
+.doctorGrid2 img,
+.doctorGrid3 img,
+.doctorGrid4 img {
+  height: 40vh;
+}
+
+.doctorName {
+  font-size: 1.2rem;
+  margin: 0.5rem 0;
+}
+
+/* ---------- Footer ---------- */
+
+footer {
+  margin: 3rem;
+  position: relative;
+}
+
+.footerContent {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 5rem;
+}
+
+
+.leftFooterSection {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex;
+  flex-direction: column;
+  position: relative;
+  gap: 1rem;
+}
+
+.leftFooterSection img {
+  width: 10rem;
+  margin-left: -1.8rem;
+}
+
+.leftFooterSection h5 {
+  font-size: 1.2rem;
+  font-weight: 500;
+  margin-left: 0.2rem;
+}
+
+.leftFooterSection i {
+  position: absolute;
+  bottom: 31%;
+  left: 3%;
+}
+
+.inputMailField {
+ border-bottom: 1px solid var(--text-dark);
+ padding: 0.8rem 0.5;
+ padding-left: 2rem;
+ margin-left: 0.4rem;
+}
+
+.footerContactInfo {
+  color: var(--text-light);
+  margin-top: 1rem;
+}
+
+.footerContactInfo p {
+  padding: 5px;
+}
+
+.centerFooterSection,
+.rightFooterSection {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.centerFooterSection h4 {
+  font-size: 1.8rem;
+  margin-top: 3rem;
+  margin-left: -4.8rem;
+}
+
+.footerMenuItems,
+.footerSocialItems {
+  color: var(--text-light);
+}
+
+.footerMenuItems p {
+  padding: 10px;
+}
+
+.rightFooterSection h4 {
+  font-size: 1.8rem;
+  margin-top: 3rem;
+}
+
+
+.footerSocialItems p {
+  display: flex;
+  align-items: center; /* Align items (icon and text) vertically */
+  padding: 10px;
+}
+
+.footerSocialItems i {
+  font-size: 1.5rem;
+  margin-right: 8px; /* Space between icon and text */
+}
+
+
+.copyrightSection {
+  background-color: var(--primary-color);
+  width: 100%;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 0;
+}
 
 
 
@@ -810,5 +1006,40 @@ nav {
     right: 15%;
   }
 
+  /* ---------- Parallax Section ---------- */
 
+  .parallaxSectionHeading {
+    font-size: 3rem;
+  }
+
+  .parallaxBottomContent {
+    bottom: 5rem; 
+  }
+  
+  .parallaxSectionSubHeading {
+    font-size: 2rem;
+  }
+
+  .parallaxSectionText {
+    font-size: 1.2rem;
+  }
+  
+  .parallaxContent i {
+    bottom: 16rem;
+    right: 5rem;
+  }
+
+
+}
+
+
+@media (min-width: 1600px) {
+  :root {
+    --max-width: 1400px;
+  }
+
+  .howItWorksImage1, 
+  .howItWorksImage2 {
+    width: 8vw;
+  }
 }

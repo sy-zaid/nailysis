@@ -73,7 +73,8 @@ const Home = () => {
       interval: 200,
     });
   }, []);
-
+  
+  
   return (
     <div className={styles.container}>
 
@@ -82,7 +83,7 @@ const Home = () => {
           <div className={styles.navHeader}>
             <div className={styles.navLogo}>
               <a href="#">
-                <img src="logo.png" alt="Logo" />
+                <img src="logo.png" alt="Logo"/>
               </a>
             </div>
             <div
@@ -104,7 +105,7 @@ const Home = () => {
               <a href="#">Book an Appointment</a>
             </li>
             <li onClick={handleLinkClick}>
-              <a href="#about">About</a>
+              <a href="#">About</a>
             </li>
             <li onClick={handleLinkClick}>
               <a href="#">Contact Us</a>
@@ -148,17 +149,17 @@ const Home = () => {
 
             <div className={`${styles.heroImageCard} ${styles.heroImageCard5}`}>
               <span>
-                <img src="stethoscope.png" alt="" />
+                <img src="stethoscope.png" alt="" style={{ width: "100%" }} />
               </span>
             </div>
 
             <div className={`${styles.heroImageCard} ${styles.heroImageCard6}`}>
               <span>
-                <img src="hand.png" alt="" />
+                <img src="hand.png" alt="" style={{ width: "100%" }} />
               </span>
             </div>
 
-            <img src="hero-header.png" alt="Hero Image" />
+            <img src="hero-header.png" alt="Hero Image" style={{ width: "100%" }} />
             
           </div>
           <div className={styles.heroContent} id="heroContent">
@@ -222,7 +223,7 @@ const Home = () => {
             </div>
 
             <div className={styles.aboutUsImage}>
-              <img src="about-us.png" alt="" />
+              <img src="about-us.png" alt="" style={{ width: "100%" }} />
             </div>
 
           </div>
@@ -298,8 +299,97 @@ const Home = () => {
 
         </section>
 
+        <section className={styles.parallaxSection}>
+          <div className={styles.parallaxContent}>
+            <h2 className={styles.parallaxSectionHeading}>Why Choose Nailysis?</h2>
+            <i className="fa-solid fa-chevron-right"></i>
+            <div className={styles.parallaxBottomContent}>
+              <h2 className={styles.parallaxSectionSubHeading}>AI-Powered Accuracy</h2>
+              <p className={styles.parallaxSectionText}>
+                Our AI-powered system analyzes nail images with high precision, leveraging machine <br /> learning to detect potential health issues quickly and accurately.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section className={styles.teamSection}>
+          <h2 className={styles.teamSectionHeading}>
+            Meet Our Expert Medical Team of <br /> Dedicated Specialists
+          </h2>
+
+          <div className={styles.doctorGrids}>
+
+            <div className={styles.doctorGrid1}>
+              <img src="doctor-1.png" alt=""  style={{ width: "100%" }}/>
+              <h4 className={styles.doctorName}>Dr. Mary Alen</h4>
+              <p className={styles.doctorSpeciality}>Dermatologist</p>
+            </div>
+
+            <div className={styles.doctorGrid2}>
+              <img src="doctor-2.png" alt="" style={{ width: "100%" }} />
+              <h4 className={styles.doctorName}>Dr. Pearson  Jack </h4>
+              <p className={styles.doctorSpeciality}>Dermatologist</p>
+            </div>
+            
+            <div className={styles.doctorGrid3}>
+              <img src="doctor-3.png" alt="" style={{ width: "100%" }} />
+              <h4 className={styles.doctorName}>Dr. Ally Hanson</h4>
+              <p className={styles.doctorSpeciality}>Dermatologist</p>
+            </div>
+
+            <div className={styles.doctorGrid4}>
+              <img src="doctor-4.png" alt="" style={{ width: "100%" }} />
+              <h4 className={styles.doctorName}>Dr. Michael James</h4>
+              <p className={styles.doctorSpeciality}>Dermatologist</p>
+            </div>
+          </div>
+        </section>
+
       </main>
 
+      <footer>
+        <div className={styles.footerContent}>
+
+          <div className={styles.leftFooterSection}>
+            <img src="logo.png" alt="Logo" />
+            <h5>Subscribe Now</h5>
+            <i className="fa-solid fa-envelope"></i>
+            <input type="text" className={styles.inputMailField} placeholder="Enter your email here" />
+
+            <div className={styles.footerContactInfo}>
+              <p>Tel: 021 12345678</p>
+              <p>Mail: Nailysis@gmail.com</p>
+            </div>
+          </div>
+
+          <div className={styles.centerFooterSection}>
+            <h4>Menu</h4>
+
+            <div className={styles.footerMenuItems}>
+              <p>Book An Appointment</p>
+              <p>About</p>
+              <p>Contact</p>
+              <p>Policy</p>
+            </div>
+          </div>
+
+          <div className={styles.rightFooterSection}>
+            <h4>Socials</h4>
+
+            <div className={styles.footerSocialItems}>
+              <p><i class='bx bxl-facebook-square' style={{ color: "#3B5998" }}  ></i> <span>Facebook</span> </p>
+              <p><i class='bx bxl-twitter' style={{ color: "#24A4F2" }} ></i> <span>Twitter</span> </p>
+              <p><i class='bx bxl-instagram-alt' style={{ color: "#FE0895" }} ></i> <span>Instagram</span></p>
+            </div>
+          </div>
+
+        </div>
+
+      </footer>
+      
+      <div className={styles.copyrightSection}>
+        © 2025 Nailysis. All rights reserved.
+      </div>
     </div>
   );
 };
