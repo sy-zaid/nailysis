@@ -156,11 +156,12 @@ class LabTestResultModelViewSet(viewsets.ModelViewSet):
         - Only lab technicians can create or update test results.
         """
         user = self.request.user
+        result_files = []
+        
         if user.role != "lab_technician":
             return Response({"error": "Access denied: Only lab technicians can create test results."}, status=status.HTTP_403_FORBIDDEN)
 
         test_category = request.data.get("test_category")
-        
         # Check for pathology or imaging category
         if test_category == "Pathology" or test_category == "Imaging":
             # Get multiple files for imaging tests (result_file can be a list of files)
@@ -221,6 +222,7 @@ class LabTestResultModelViewSet(viewsets.ModelViewSet):
             return Response({"error": "Invalid format: test_entries must be a valid JSON array."}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({"error": f"Unexpected error: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
     @action(detail=False, methods=["put"], url_path="edit_results")
     def edit_results(self, request):
         """
