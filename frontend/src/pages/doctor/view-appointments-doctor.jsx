@@ -3,16 +3,13 @@ import styles from "../common/all-pages-styles.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import AppointmentDetailsPopup from "../../components/Popup/popups-doctor-appointments/doctor-appointment-details-popup";
 import { useNavigate } from "react-router-dom";
-import api from "../../api"; 
+import api from "../../api";
 import CancellationRequestForm from "./cancellation-request-form"; // Import CancellationRequestForm
 import CheckinDoctorAppointmentPopup from "../../components/Popup/popups-doctor-appointments/doctor-appointment-checkin-popup";
 import PopupManageSlotsDoctor from "../../components/Popup/popups-doctor-appointments/manage-slots-doctor-popup";
 
 // UTILS.JS FUNCTIONS
-import { 
-  getStatusClass, 
-  toggleActionMenu,
-} from "../../utils/utils";
+import { getStatusClass, toggleActionMenu } from "../../utils/utils";
 
 const AppointmentDoctor = () => {
   const navigate = useNavigate();
@@ -20,11 +17,10 @@ const AppointmentDoctor = () => {
   const token = localStorage.getItem("access");
   const [showPopup, setShowPopup] = useState(false);
   const [popupContent, setPopupContent] = useState(null); // State to track which popup to show
-  const [activeButton, setActiveButton] = useState(0); 
+  const [activeButton, setActiveButton] = useState(0);
   const [menuOpen, setMenuOpen] = useState(null);
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
 
-  
   useEffect(() => {
     if (!token) {
       console.log("No token found, Redirecting to login");
@@ -57,14 +53,12 @@ const AppointmentDoctor = () => {
     setActiveButton(index); // Set the active button when clicked
   };
 
-
   const handleAddAppointment = () => {
     navigate("/add-appointment");
   };
 
   const handleClosePopup = () => {
     setShowPopup(false); // Hide the popup when closing
-    
   };
 
   // Handle the action when an item is clicked in the menu
@@ -95,7 +89,7 @@ const AppointmentDoctor = () => {
     // Add logic for other actions like 'Edit' and 'Reschedule' if needed
   };
 
-1// Close the action menu when clicking outside of it
+  1; // Close the action menu when clicking outside of it
   const menuRef = useRef(null);
 
   useEffect(() => {
@@ -104,7 +98,7 @@ const AppointmentDoctor = () => {
         setMenuOpen(null);
       }
     };
-  
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
@@ -130,31 +124,38 @@ const AppointmentDoctor = () => {
         <div className={styles.appointmentsContainer}>
           <div className={styles.filters}>
             <button
-              className={`${styles.filterButton} ${activeButton === 0 ? styles.active : ''}`}
+              className={`${styles.filterButton} ${
+                activeButton === 0 ? styles.active : ""
+              }`}
               onClick={() => handleFilterClick(0)}
             >
               All
             </button>
             <button
-              className={`${styles.filterButton} ${activeButton === 1 ? styles.active : ''}`}
+              className={`${styles.filterButton} ${
+                activeButton === 1 ? styles.active : ""
+              }`}
               onClick={() => handleFilterClick(1)}
             >
               Pending
             </button>
             <button
-              className={`${styles.filterButton} ${activeButton === 2 ? styles.active : ''}`}
+              className={`${styles.filterButton} ${
+                activeButton === 2 ? styles.active : ""
+              }`}
               onClick={() => handleFilterClick(2)}
             >
               Completed
             </button>
             <button
-              className={`${styles.filterButton} ${activeButton === 3 ? styles.active : ''}`}
+              className={`${styles.filterButton} ${
+                activeButton === 3 ? styles.active : ""
+              }`}
               onClick={() => handleFilterClick(3)}
             >
               Cancelled
             </button>
             <p>50 completed, 4 pending</p>
-            
 
             <button className={styles.addButton}>Cancel Appointment</button>
           </div>
@@ -170,16 +171,14 @@ const AppointmentDoctor = () => {
               <input
                 className={styles.search}
                 type="text"
-                placeholder="Search By Patient Name" 
-              /> 
+                placeholder="Search By Patient Name"
+              />
             </div>
             <hr />
             <br />
 
             <div className={styles.tableWrapper}>
-              <table
-                className={styles.table}
-              >
+              <table className={styles.table}>
                 <thead>
                   <tr>
                     <th>#</th>
@@ -195,9 +194,7 @@ const AppointmentDoctor = () => {
 
                 <tbody>
                   {appointments.map((row, index) => (
-                    <tr
-                      key={row.appointment_id}
-                    >
+                    <tr key={row.appointment_id}>
                       <td>{index + 1}</td>
                       <td>{row.appointment_id}</td>
                       <td>
@@ -207,16 +204,27 @@ const AppointmentDoctor = () => {
                       <td>{row.patient?.gender || "N/A"}</td>
                       <td>{row.appointment_type || "N/A"}</td>
                       <td>
-                        {row.time_slot?.slot_date} | {row.time_slot?.start_time} -{" "}
-                        {row.time_slot?.end_time}
+                        {row.time_slot?.slot_date} | {row.time_slot?.start_time}{" "}
+                        - {row.time_slot?.end_time}
                       </td>
-                      <td className={getStatusClass(row.status,styles)}>{row.status}</td>
+                      <td className={getStatusClass(row.status, styles)}>
+                        {row.status}
+                      </td>
                       <td>{row.notes || "No additional notes"}</td>
-                      
+
                       <td>
                         <button
-                          onClick={(event) => toggleActionMenu(row.appointment_id, menuOpen, setMenuOpen, setMenuPosition, event)}
+                          onClick={(event) =>
+                            toggleActionMenu(
+                              row.appointment_id,
+                              menuOpen,
+                              setMenuOpen,
+                              setMenuPosition,
+                              event
+                            )
+                          }
                           className={styles.moreActionsBtn}
+                          id={`action-btn-${row.appointment_id}`} // Add this line
                         >
                           <img
                             src="/icon-three-dots.png"
@@ -224,9 +232,10 @@ const AppointmentDoctor = () => {
                             className={styles.moreActionsIcon}
                           />
                         </button>
-                        {menuOpen && (
+                        {menuOpen === row.appointment_id && ( // Change this condition
                           <div
-                            ref={menuRef} id={`menu-${row.id}`}
+                            ref={menuRef}
+                            id={`menu-${row.appointment_id}`} // Use appointment_id consistently
                             className={styles.menu}
                             style={{
                               top: `${menuPosition.top}px`,
@@ -237,7 +246,10 @@ const AppointmentDoctor = () => {
                             <ul>
                               <li
                                 onClick={() => {
-                                  handleActionClick("Cancel", row.appointment_id);
+                                  handleActionClick(
+                                    "Cancel",
+                                    row.appointment_id
+                                  );
                                 }}
                               >
                                 Request Cancellation
@@ -253,7 +265,6 @@ const AppointmentDoctor = () => {
                           </div>
                         )}
                       </td>
-
                     </tr>
                   ))}
                 </tbody>

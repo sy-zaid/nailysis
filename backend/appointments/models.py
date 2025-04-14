@@ -74,6 +74,7 @@ class Appointment(models.Model):
         
     def mark_completed(self):
         """Mark appointment as Completed when the consultation is done."""
+        print("MARK COMPLETED")
         if self.status != "Completed":
             self.status = "Completed"
 
@@ -104,11 +105,12 @@ class Appointment(models.Model):
             self.save()
 
     def complete_appointment_with_ehr(self,ehr_data):
-        
+        print(f"Current status: {self.status}")
         """Handle the creation of EHR when appointment is Completed."""
         if self.status != 'Completed':  # Ensure appointment is not already completed
             
-
+            print("COMPLETING APP")
+            print(ehr_data[7])
             # Create EHR for the patient
             ehr_record = EHR.objects.create(
                 patient=self.patient,  # Assuming patient is available through the Appointment model
@@ -227,7 +229,6 @@ class DoctorAppointment(Appointment):
     
     follow_up = models.BooleanField(default=False)
     fee = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    recommended_tests = models.JSONField(null=True,blank=True)
     
     # Field for linking every appointment with EHR record
     ehr = models.OneToOneField(EHR,on_delete=models.SET_NULL,blank=True, null=True,related_name="doc_appointment_ehr")

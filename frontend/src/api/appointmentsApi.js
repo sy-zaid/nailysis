@@ -8,7 +8,7 @@ export const getLabTechnicianAppointments = async () => {
   return axios.get(url, getHeaders());
 };
 export const getRecommendedTests = async (patient_id) => {
-  const url = `${API_URL}/api/doctor_appointments/recommended_tests/?patient=${patient_id}/`;
+  const url = `${API_URL}/api/ehr_records/recommended_tests/?patient=${patient_id}`;
   return axios.get(url, getHeaders());
 };
 export const getAvailableLabTests = async () => {

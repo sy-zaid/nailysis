@@ -24,7 +24,7 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
   // ----- TOKENS AND USER INFORMATION
   const token = localStorage.getItem("access");
   const curUserRole = localStorage.getItem("role");
-  const { data: curUser, isLoading, isError, error } = usePatientData(); // Fetch user data
+  const { data: curUser, isLoading, isError, error } = usePatientData();
 
   // ----- POPUPS & NAVIGATION
   const [popupTrigger, setPopupTrigger] = useState(true);
@@ -36,18 +36,48 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
   const [specializations, setSpecializations] = useState([]);
   const [labTechnicians, setLabTechnicians] = useState([]);
   const [recommendedTests, setRecommendedTests] = useState([]);
-  const fetchRecommendedTests=async ()=>{
-    const response = await getRecommendedTests("PAT002");
-    
-    setRecommendedTests(response.data)
-  }
-  useEffect(()=>{
-    fetchRecommendedTests()
-  },[])
-  console.log("recommendedTests",recommendedTests)
   const [availableLabTests, setAvailableLabTests] = useState([]);
   const [availableTestPrices, setAvailableTestPrices] = useState([]);
   const [patient, setPatient] = useState([]);
+  const [includeRecommended, setIncludeRecommended] = useState(false);
+
+  // Fetch recommended tests
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await getRecommendedTests(curUser?.[0]?.user_id);
+        setRecommendedTests(response.data);
+      } catch (error) {
+        console.error("Error fetching recommended tests:", error);
+        setRecommendedTests([]);
+      }
+    };
+    fetchData();
+  }, [curUser]);
+  console.log("Recommended Testssss", recommendedTests);
+
+  // Transform recommended tests to match Select component format
+  const getRecommendedTestOptions = () => {
+    if (!Array.isArray(recommendedTests)) return [];
+    return recommendedTests
+      .map((testName) => {
+        // Find the full test details from availableLabTests using case-insensitive matching
+        const fullTest = availableLabTests.find((availableTest) => {
+          // Extract just the test name part (before " | ") for comparison
+          const availableTestName = availableTest.label.split(" | ")[0];
+          return availableTestName
+            .toLowerCase()
+            .includes(testName.toLowerCase());
+        });
+        return fullTest
+          ? {
+              value: fullTest.value,
+              label: fullTest.label,
+            }
+          : null;
+      })
+      .filter(Boolean);
+  };
 
   // ----- APPOINTMENT FORM STATE
   const [formData, setFormData] = useState({
@@ -68,6 +98,7 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
 
   // ----- HANDLERS
   const onInputChange = handleInputChange(setFormData);
+
   const handleTestSelection = (selectedTests) => {
     const totalFee = calculateTotalFee(selectedTests, availableTestPrices);
     setFormData((prevData) => ({
@@ -76,6 +107,34 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
       fee: totalFee,
     }));
   };
+
+  // Handle checkbox change
+  const handleRecommendedCheckbox = (e) => {
+    const isChecked = e.target.checked;
+    setIncludeRecommended(isChecked);
+
+    if (isChecked) {
+      // Add recommended tests to current selection
+      const recommendedOptions = getRecommendedTestOptions();
+      const combinedTests = [
+        ...formData.requestedLabTests,
+        ...recommendedOptions.filter(
+          (test) =>
+            !formData.requestedLabTests.some((t) => t.value === test.value)
+        ),
+      ];
+      handleTestSelection(combinedTests);
+    } else {
+      // Remove only recommended tests
+      const recommendedOptions = getRecommendedTestOptions();
+      const recommendedValues = recommendedOptions.map((test) => test.value);
+      const filteredTests = formData.requestedLabTests.filter(
+        (test) => !recommendedValues.includes(test.value)
+      );
+      handleTestSelection(filteredTests);
+    }
+  };
+
   // Handles sending payload to backend and booking appointment
   const handleBookAppointment = async (e) => {
     e.preventDefault();
@@ -408,12 +467,28 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
 
                 <div>
                   <div className={styles.infoLabel}>Required Lab Tests</div>
+                  {recommendedTests.length > 0 && (
+                    <div style={{ marginBottom: "10px" }}>
+                      <label>
+                        <input
+                          type="checkbox"
+                          checked={includeRecommended}
+                          onChange={handleRecommendedCheckbox}
+                          style={{ marginRight: "8px" }}
+                        />
+                        Add recommended tests by doctor
+                      </label>
+                    </div>
+                  )}
                   <div>
                     <Select
                       isMulti
                       options={availableLabTests}
+                      getOptionLabel={(e) => e.label}
+                      getOptionValue={(e) => `${e.value}-${e.label}`} // Ensures uniqueness
                       placeholder="Select required lab tests"
                       onChange={handleTestSelection}
+                      value={formData.requestedLabTests}
                       styles={{
                         control: (base) => ({
                           ...base,
@@ -441,19 +516,8 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
                           ...base,
                           transform: "scale(0.9)",
                         }),
-                        indicatorSeparator: () => ({ display: "none" }), // Hide vertical separator
+                        indicatorSeparator: () => ({ display: "none" }),
                       }}
-                    />
-                  </div>
-
-                  <div className={styles.additionalNotes}>
-                    <label>Additional Notes</label>
-                    <input
-                      type="text"
-                      name="notes"
-                      value={formData.notes}
-                      onChange={onInputChange}
-                      placeholder={"Enter notes"}
                     />
                   </div>
                 </div>

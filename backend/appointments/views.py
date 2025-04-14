@@ -390,7 +390,7 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
         category = request.data.get("category", "General")
 
         ehr_data = [category, medical_conditions, current_medications, immunization_records, diagnoses, comments, family_history,recommended_lab_test]
-        print("EHRDATA",ehr_data)
+        # print("EHRDATA",ehr_data)
         try:
             appointment = DoctorAppointment.objects.get(pk=pk)
             appointment.complete_appointment_with_ehr(ehr_data=ehr_data)
@@ -403,21 +403,7 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
                 {"error": "No matching appointment found."},
                 status=status.HTTP_404_NOT_FOUND
             )
-    
-    @action(detail=False,methods=["get"],url_path="recommended_tests")
-    def get_recommended_tests(self,request):
-        user = self.request.user
-        if user.role not in ["lab_admin","patient"]:
-            return Response({"error":"Not authorized to get the recommended tests."})
-        patient_id = self.request.query_params.get("patient")
-        
-        appointments_with_rec = DoctorAppointment.objects.filter(patient_id=patient_id).exclude(recommended_tests=None)
-        recommended_tests = []
-        for app in appointments_with_rec:
-            if isinstance(app.recommended_tests,list):
-                recommended_tests.extend(app.recommended_tests)
-        return Response({"recommended_tests": recommended_tests})
-                
+          
         
 class LabTechnicianAppointmentViewset(viewsets.ModelViewSet):
     """

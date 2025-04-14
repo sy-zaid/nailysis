@@ -28,7 +28,7 @@ const CheckinDoctorAppointmentPopup = ({ onClose, appointmentDetails }) => {
   const [popupTrigger, setPopupTrigger] = useState(true);
   const [status, setStatus] = useState("Pending");
   const { data: curUser } = useCurrentUserData();
-
+  console.log("DETAA",appointmentDetails)
   // Function to format time in HH:MM:SS format
   const formatTime = (time) => {
     const hours = String(Math.floor(time / 3600)).padStart(2, "0");
@@ -73,7 +73,7 @@ const CheckinDoctorAppointmentPopup = ({ onClose, appointmentDetails }) => {
       );
       alert("Successfully marked as completed");
       stopTimer();
-      handleClosePopup(onClose);
+      onClose();
     } catch (error) {
       console.log(error);
       alert("Failed to complete appointment");
