@@ -53,30 +53,46 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
       }
     };
     fetchData();
-  }, [curUser]);
-  console.log("Recommended Testssss", recommendedTests);
+  }, []);
 
   // Transform recommended tests to match Select component format
   const getRecommendedTestOptions = () => {
-    if (!Array.isArray(recommendedTests)) return [];
+    if (!Array.isArray(recommendedTests) || !Array.isArray(availableLabTests))
+      return [];
+
+    // Create a normalized map of available tests
+    const testMap = availableLabTests.reduce((acc, test) => {
+      const testName = test.label.split(" | ")[0].trim().toLowerCase();
+      // Store both original and simplified names
+      acc[testName] = test;
+      acc[testName.replace(/[^a-z]/g, "")] = test; // Remove all non-alphabetic characters
+      return acc;
+    }, {});
+
     return recommendedTests
       .map((testName) => {
-        // Find the full test details from availableLabTests using case-insensitive matching
-        const fullTest = availableLabTests.find((availableTest) => {
-          // Extract just the test name part (before " | ") for comparison
-          const availableTestName = availableTest.label.split(" | ")[0];
-          return availableTestName
-            .toLowerCase()
-            .includes(testName.toLowerCase());
-        });
-        return fullTest
-          ? {
-              value: fullTest.value,
-              label: fullTest.label,
-            }
-          : null;
+        const normalizedTestName = testName.toLowerCase();
+        // Try direct match first
+        if (testMap[normalizedTestName]) {
+          return testMap[normalizedTestName];
+        }
+        // Try match without special characters
+        const cleanTestName = normalizedTestName.replace(/[^a-z]/g, "");
+        if (testMap[cleanTestName]) {
+          return testMap[cleanTestName];
+        }
+        // Try partial match
+        for (const [key, test] of Object.entries(testMap)) {
+          if (key.includes(cleanTestName) || cleanTestName.includes(key)) {
+            return test;
+          }
+        }
+        return null;
       })
-      .filter(Boolean);
+      .filter(
+        (test, index, self) =>
+          test && self.findIndex((t) => t.value === test.value) === index
+      ); // Remove duplicates
   };
 
   // ----- APPOINTMENT FORM STATE
@@ -107,26 +123,33 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
       fee: totalFee,
     }));
   };
-
+  useEffect(() => {
+    console.log("Recommended tests from API:", recommendedTests);
+    console.log("Available lab tests:", availableLabTests);
+    console.log("Mapped recommended options:", getRecommendedTestOptions());
+  }, [recommendedTests, availableLabTests]);
   // Handle checkbox change
   const handleRecommendedCheckbox = (e) => {
     const isChecked = e.target.checked;
     setIncludeRecommended(isChecked);
 
+    const recommendedOptions = getRecommendedTestOptions();
+    console.log("Matched recommended tests:", recommendedOptions);
+
     if (isChecked) {
-      // Add recommended tests to current selection
-      const recommendedOptions = getRecommendedTestOptions();
+      // Merge existing tests with recommended ones, removing duplicates
       const combinedTests = [
         ...formData.requestedLabTests,
         ...recommendedOptions.filter(
-          (test) =>
-            !formData.requestedLabTests.some((t) => t.value === test.value)
+          (recTest) =>
+            !formData.requestedLabTests.some(
+              (existingTest) => existingTest.value === recTest.value
+            )
         ),
       ];
       handleTestSelection(combinedTests);
     } else {
-      // Remove only recommended tests
-      const recommendedOptions = getRecommendedTestOptions();
+      // Remove only the exact recommended tests
       const recommendedValues = recommendedOptions.map((test) => test.value);
       const filteredTests = formData.requestedLabTests.filter(
         (test) => !recommendedValues.includes(test.value)
@@ -485,7 +508,7 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
                       isMulti
                       options={availableLabTests}
                       getOptionLabel={(e) => e.label}
-                      getOptionValue={(e) => `${e.value}-${e.label}`} // Ensures uniqueness
+                      getOptionValue={(e) => e.value} // Simplified to just use value
                       placeholder="Select required lab tests"
                       onChange={handleTestSelection}
                       value={formData.requestedLabTests}
