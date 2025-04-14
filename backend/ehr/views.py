@@ -179,14 +179,20 @@ class EHRView(viewsets.ModelViewSet):
             )
         
         patient_id = request.query_params.get("patient")
-        if not patient_id:
+        patient_email = request.query_params.get("email")
+        
+        if not patient_id and not patient_email:
             return Response(
-                {"error": "Patient ID parameter is required (?patient=ID)"},
+                {"error": "Patient ID or Email is required."},
                 status=status.HTTP_400_BAD_REQUEST
             )
         
         try:
-            patient = Patient.objects.get(user_id=patient_id)
+            if patient_id:
+                patient = Patient.objects.get(user_id=patient_id)
+            else:
+                user = CustomUser.objects.get(email=patient_email)
+                patient = Patient.objects.get(user=user)
             ehr_records = EHR.objects.filter(
                 patient=patient,
                 recommended_lab_test__isnull=False

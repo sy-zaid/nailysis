@@ -41,19 +41,42 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
   const [patient, setPatient] = useState([]);
   const [includeRecommended, setIncludeRecommended] = useState(false);
 
+  // ----- APPOINTMENT FORM STATE
+  const [formData, setFormData] = useState({
+    labTechnicianId: "",
+    appointmentDate: "",
+    slotId: "",
+    specialization: "",
+    requestedLabTests: [],
+    fee: "0.00",
+    notes: "",
+    patientFirstName: "",
+    patientLastName: "",
+    date_of_birth: "",
+    gender: "",
+    phone: "",
+    email: "",
+  });
+
   // Fetch recommended tests
   useEffect(() => {
     const fetchData = async () => {
+      var response;
       try {
-        const response = await getRecommendedTests(curUser?.[0]?.user_id);
+        if (curUser[0].role === "lab_admin") {
+          response = await getRecommendedTests(formData.email,"lab_admin");
+        } else {
+          response = await getRecommendedTests(curUser?.[0]?.user_id,"patient");
+        }
         setRecommendedTests(response.data);
+        console.log(response.data)
       } catch (error) {
         console.error("Error fetching recommended tests:", error);
         setRecommendedTests([]);
       }
     };
     fetchData();
-  }, []);
+  }, [formData.email]);
 
   // Transform recommended tests to match Select component format
   const getRecommendedTestOptions = () => {
@@ -95,22 +118,7 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
       ); // Remove duplicates
   };
 
-  // ----- APPOINTMENT FORM STATE
-  const [formData, setFormData] = useState({
-    labTechnicianId: "",
-    appointmentDate: "",
-    slotId: "",
-    specialization: "",
-    requestedLabTests: [],
-    fee: "0.00",
-    notes: "",
-    patientFirstName: "",
-    patientLastName: "",
-    date_of_birth: "",
-    gender: "",
-    phone: "",
-    email: "",
-  });
+  
 
   // ----- HANDLERS
   const onInputChange = handleInputChange(setFormData);

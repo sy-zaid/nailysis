@@ -7,9 +7,14 @@ export const getLabTechnicianAppointments = async () => {
   const url = `${API_URL}/api/lab_technician_appointments/`;
   return axios.get(url, getHeaders());
 };
-export const getRecommendedTests = async (patient_id) => {
-  const url = `${API_URL}/api/ehr_records/recommended_tests/?patient=${patient_id}`;
-  return axios.get(url, getHeaders());
+export const getRecommendedTests = async (email_or_id, userRole) => {
+  if (userRole === "lab_admin") {
+    const url = `${API_URL}/api/ehr_records/recommended_tests/?email=${email_or_id}`;
+    return axios.get(url, getHeaders());
+  } else if (userRole === "patient") {
+    const url = `${API_URL}/api/ehr_records/recommended_tests/?patient=${email_or_id}`;
+    return axios.get(url, getHeaders());
+  }
 };
 export const getAvailableLabTests = async () => {
   const url = `${API_URL}/api/test_types/`;
