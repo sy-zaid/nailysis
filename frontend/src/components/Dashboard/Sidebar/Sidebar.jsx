@@ -231,23 +231,47 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
             <img src={"icon-menu-black.png"} alt={"menu button"} />
           </button>
           <div className={styles.floatingButtons}>
-            <div className={styles.floatingCircle}>
-              <img src="icon-dashboard-black.png" alt="" />
+            <div 
+              className={styles.floatingCircle} 
+              onClick={() => setView("")}
+              title="Dashboard"
+            >
+              <img src="icon-dashboard-black.png" alt="Dashboard" />
             </div>
-            <div className={styles.floatingCircle}>
-              <img src="icon-test-results-black.png" alt="" />
+            <div 
+              className={styles.floatingCircle}
+              onClick={() => setView("Test Results")}
+              title="Test Results"
+            >
+              <img src="icon-test-results-black.png" alt="Test Results" />
             </div>
-            <div className={styles.floatingCircle}>
-              <img src="icon-diagnostic-results-black.png" alt="" />
+            <div 
+              className={styles.floatingCircle}
+              onClick={() => setView("Diagnostic Results")}
+              title="Diagnostic Results"
+            >
+              <img src="icon-diagnostic-results-black.png" alt="Diagnostic Results" />
             </div>
-            <div className={styles.floatingCircle}>
-              <img src="icon-appointments-black.png" alt="" />
+            <div 
+              className={styles.floatingCircle}
+              onClick={() => setView("Appointments")}
+              title="Appointments"
+            >
+              <img src="icon-appointments-black.png" alt="Appointments" />
             </div>
-            <div className={styles.floatingCircle}>
-              <img src="icon-billing-black.png" alt="" />
+            <div 
+              className={styles.floatingCircle}
+              onClick={() => setView("Billing & Invoice")}
+              title="Billing & Invoice"
+            >
+              <img src="icon-billing-black.png" alt="Billing & Invoice" />
             </div>
-            <div className={styles.floatingCircle}>
-              <img src="icon-feedback-black.png" alt="" />
+            <div 
+              className={styles.floatingCircle}
+              onClick={() => setView("Feedbacks")}
+              title="Feedbacks"
+            >
+              <img src="icon-feedback-black.png" alt="Feedbacks" />
             </div>
           </div>
         </>
