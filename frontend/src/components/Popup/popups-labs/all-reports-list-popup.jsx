@@ -2,9 +2,10 @@ import React from "react";
 import styles from "./all-reports-list-popup.module.css";
 import Popup from "../Popup";
 import { useState, useEffect } from "react";
-// import { getPatientTests } from "../../../api/labsApi";
 import { toast } from "react-toastify";
 import { calculateAge, convertDjangoDateTime } from "../../../utils/utils";
+import { getTestResultsByPatientId } from "../../../api/labsApi";
+import { getAvailableLabTests } from "../../../api/labsApi";
 
 /**
  * PopupAllReportsList Component
@@ -21,13 +22,29 @@ const PopupAllReportsList = ({ patient_id, onClose }) => {
   const [patientData, setPatientData] = useState(null);
   const [patientTests, setPatientTests] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [availableLabTests, setAvailableLabTests] = useState([]);
+
+  // Fetch available tests on component mount
+  useEffect(() => {
+    const fetchLabTests = async () => {
+      try {
+        const response = await getAvailableLabTests();
+        setAvailableLabTests(response.data); // Store the original data, no need to transform here
+      } catch (error) {
+        console.error("Error fetching lab tests:", error);
+      }
+    };
+
+    fetchLabTests();
+  }, []);
+  console.log("AVT",availableLabTests)
 
   // Fetch patient tests and details on component mount
   useEffect(() => {
     const fetchPatientTests = async () => {
       try {
         setLoading(true);
-        const response = await getPatientTests(patient_id);
+        const response = await getTestResultsByPatientId(patient_id);
         setPatientData(response.data.patient);
         setPatientTests(response.data.tests);
       } catch (error) {
@@ -42,6 +59,22 @@ const PopupAllReportsList = ({ patient_id, onClose }) => {
 
     fetchPatientTests();
   }, [patient_id]);
+
+  /**
+   * Get test name and category from availableLabTests based on test type ID
+   * @param {number} testTypeId - ID of the test type
+   * @returns {Object} - Object containing name and category of the test
+   */
+  const getTestInfo = (testTypeId) => {
+    const test = availableLabTests.find((t) => t.id === testTypeId);
+    if (!test) return { name: "Unknown Test", category: "Unknown" };
+    
+    // Extract name from label (assuming format "Test Name | Price")
+    const name = test.label.split("|")[0].trim();
+    // For category, we can either add it to the availableLabTests data or derive it
+    // For now, I'll set a default category since it's not in your sample data
+    return { name, category: "Laboratory" }; // You may need to adjust this based on actual data
+  };
 
   /**
    * Handles opening a test report in a new tab
@@ -133,40 +166,37 @@ const PopupAllReportsList = ({ patient_id, onClose }) => {
                 </p>
               ) : (
                 <div className={styles.testListContainer}>
-                  {patientTests.map((test) => (
-                    <div key={test.id} className={styles.testItem}>
-                      <div className={styles.testInfo}>
-                        <span className={styles.testName}>
-                          {test.test_type.name} ({test.test_type.category})
-                        </span>
-                        <span className={styles.testDate}>
-                          {convertDjangoDateTime(test.created_at)}
-                        </span>
-                        <span
-                          className={`${styles.testStatus} ${
-                            styles[test.result_status.toLowerCase()]
-                          }`}
+                  {patientTests.map((test) => {
+                    const testInfo = getTestInfo(test.test_type);
+                    return (
+                      <div key={test.id} className={styles.testItem}>
+                        <div className={styles.testInfo}>
+                          <span className={styles.testName}>
+                            {testInfo.name} ({testInfo.category})
+                          </span>
+                          <span className={styles.testDate}>
+                            {convertDjangoDateTime(test.reviewed_at)}
+                          </span>
+                          <span
+                            className={`${styles.testStatus} ${
+                              styles[test.result_status.toLowerCase()]
+                            }`}
+                          >
+                            {test.result_status}
+                          </span>
+                        </div>
+                        <button
+                          className={styles.viewButton}
+                          onClick={() => handleViewReport(test.id)}
+                          disabled={test.result_status === "Pending"}
                         >
-                          {test.result_status}
-                        </span>
+                          View Report
+                        </button>
                       </div>
-                      <button
-                        className={styles.viewButton}
-                        onClick={() => handleViewReport(test.id)}
-                        disabled={test.result_status === "Pending"}
-                      >
-                        View Report
-                      </button>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
-            </div>
-
-            <div className={styles.actions}>
-              <button className={styles.closeButton} onClick={onClose}>
-                Close
-              </button>
             </div>
           </div>
         )}

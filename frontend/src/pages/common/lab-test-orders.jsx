@@ -102,7 +102,7 @@ const TestOrders = () => {
     } else if (action === "All Reports List") {
       setPopupContent(
         <PopupAllReportsList
-          patient_id={testOrderDetails.patient}
+          patient_id={testOrderDetails?.lab_technician_appointment?.patient?.user?.user_id}
           onClose={() => setShowPopup(false)}
         />
       );

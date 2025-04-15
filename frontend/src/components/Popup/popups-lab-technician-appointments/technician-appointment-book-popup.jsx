@@ -13,12 +13,12 @@ import {
 } from "../../../utils/utils.js";
 import {
   bookTechnicianAppointment,
-  getAvailableLabTests,
   getAvailableSlots,
   getTechnicianFromSpecialization,
   getTechnicianSpecializations,
   getRecommendedTests,
 } from "../../../api/appointmentsApi.js";
+import { getAvailableLabTests } from "../../../api/labsApi.js";
 
 const PopupBookTechnicianAppointment = ({ onClose }) => {
   // ----- TOKENS AND USER INFORMATION

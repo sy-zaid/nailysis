@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import styles from "../all-popups-styles.module.css"
+import styles from "../all-popups-styles.module.css";
 import Select from "react-select";
 import Popup from "../Popup.jsx";
 
@@ -7,10 +7,11 @@ import axios from "axios";
 
 import { handleInputChange, handleSelectChange } from "../../../utils/utils.js";
 import {
-  getAvailableLabTests,
   getAvailableSlots,
   rescheduleTechnicianAppointment,
 } from "../../../api/appointmentsApi.js";
+import { getAvailableLabTests } from "../../../api/labsApi.js";
+
 
 const PopupRescheduleTechnicianAppointment = ({
   onClose,
@@ -18,7 +19,7 @@ const PopupRescheduleTechnicianAppointment = ({
 }) => {
   // TOKENS & USER INFORMATION
   const token = localStorage.getItem("access");
-  
+
   // POPUPS & NAVIGATION
   const [popupTrigger, setPopupTrigger] = useState(true);
 
@@ -163,22 +164,26 @@ const PopupRescheduleTechnicianAppointment = ({
       onClose={onClose}
     >
       <div className={styles.formContainer}>
-        
         <div className={styles.headerSection}>
           <div className={styles.titleSection}>
-            <h2>Reschedule Your Appointment</h2> 
-            <p>Select a new appointment time and adjust other relevant details as needed.</p>
+            <h2>Reschedule Your Appointment</h2>
+            <p>
+              Select a new appointment time and adjust other relevant details as
+              needed.
+            </p>
           </div>
         </div>
 
         <hr />
 
         <form onSubmit={(e) => e.preventDefault()}>
-
           <div className={styles.popupBottom}>
             {/* Patient Information (Read-Only) */}
             <div className={styles.formSection}>
-              <h3><i className="fa-solid fa-circle fa-2xs"></i> Patient Information</h3>
+              <h3>
+                <i className="fa-solid fa-circle fa-2xs"></i> Patient
+                Information
+              </h3>
               <div className={styles.newFormGroup}>
                 <div>
                   <label>Name</label>
@@ -227,8 +232,11 @@ const PopupRescheduleTechnicianAppointment = ({
 
             {/* Appointment Details */}
             <div className={styles.formSection}>
-              <h3><i className="fa-solid fa-circle fa-2xs"></i> Appointment Details</h3>
-                        
+              <h3>
+                <i className="fa-solid fa-circle fa-2xs"></i> Appointment
+                Details
+              </h3>
+
               <div className={styles.formGroup}>
                 <div>
                   <label>Specialization</label>
@@ -286,7 +294,9 @@ const PopupRescheduleTechnicianAppointment = ({
                     disabled={availableSlots.length === 0}
                   >
                     <option value="">
-                      {availableSlots.length ? "Select a Slot" : "No slots available"}
+                      {availableSlots.length
+                        ? "Select a Slot"
+                        : "No slots available"}
                     </option>
                     {availableSlots.map((slot, index) => (
                       <option key={index} value={slot.id}>
