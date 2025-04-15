@@ -307,30 +307,40 @@ const ElectronicHealthRecord = () => {
         <div className={styles.appointmentsContainer}>
           {/* Filter buttons with dynamic active state */}
           <div className={styles.filters}>
-            {(curUserRole === "doctor" || curUserRole === "clinic_admin" || curUserRole === "patient") && (
+            {(curUserRole === "doctor" ||
+              curUserRole === "clinic_admin" ||
+              curUserRole === "patient") && (
               <>
                 <button
-                  className={`${styles.filterButton} ${activeButton === 0 ? styles.active : ""}`}
+                  className={`${styles.filterButton} ${
+                    activeButton === 0 ? styles.active : ""
+                  }`}
                   onClick={() => handleFilterClick(0)}
                 >
                   All
                 </button>
                 {curUserRole === "doctor" && (
                   <button
-                    className={`${styles.filterButton} ${activeButton === 3 ? styles.active : ""}`}
+                    className={`${styles.filterButton} ${
+                      activeButton === 3 ? styles.active : ""
+                    }`}
                     onClick={() => handleFilterClick(3)}
                   >
                     Your Patients
                   </button>
                 )}
                 <button
-                  className={`${styles.filterButton} ${activeButton === 1 ? styles.active : ""}`}
+                  className={`${styles.filterButton} ${
+                    activeButton === 1 ? styles.active : ""
+                  }`}
                   onClick={() => handleFilterClick(1)}
                 >
                   Abnormal Results
                 </button>
                 <button
-                  className={`${styles.filterButton} ${activeButton === 2 ? styles.active : ""}`}
+                  className={`${styles.filterButton} ${
+                    activeButton === 2 ? styles.active : ""
+                  }`}
                   onClick={() => handleFilterClick(2)}
                 >
                   Emergency
@@ -339,12 +349,16 @@ const ElectronicHealthRecord = () => {
                 <p>
                   Total Records: {filteredRecords.length}{" "}
                   {curUserRole === "doctor" && (
-                    <>| Your Patients:{" "}
-                      {filteredRecords.filter(
-                        (record) =>
-                          record.consulted_by?.toLowerCase() ===
-                          `${curUser[0]?.first_name.toLowerCase()} ${curUser[0]?.last_name.toLowerCase()}`
-                      ).length}</>
+                    <>
+                      | Your Patients:{" "}
+                      {
+                        filteredRecords.filter(
+                          (record) =>
+                            record.consulted_by?.toLowerCase() ===
+                            `${curUser[0]?.first_name.toLowerCase()} ${curUser[0]?.last_name.toLowerCase()}`
+                        ).length
+                      }
+                    </>
                   )}
                 </p>
               </>
