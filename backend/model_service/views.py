@@ -1,25 +1,46 @@
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets, permissions,status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser
 import requests
-from .models import NailDiseasePrediction, NailImage, Patient  # import your models
+from .models import NailDiseasePrediction, NailImage, Patient
+from .serializers import NailDiseasePredictionSerializer
+from users.serializers import PatientSerializer
+
 import json
 from django.utils import timezone
+from django.shortcuts import get_object_or_404
 from collections import defaultdict
 from .main import CLASS_NAMES
 class NailAnalysisViewSet(viewsets.ViewSet):
     parser_classes = [MultiPartParser]
-    permission_classes = [permissions.AllowAny]
-
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = NailDiseasePredictionSerializer
+    
     @action(detail=False, methods=['post'], url_path='analyze')
     def analyze(self, request):
+        user = self.request.user
+        # If user is not a patient, doctor or technician
+        if user.role not in ["patient","doctor","lab_technician"]:
+            return Response({"error":"Not authorized to perform nail analysis."},status=status.HTTP_401_UNAUTHORIZED)
+        # If user is a patient, get its object
+        if user.role == "patient":
+            patient = get_object_or_404(Patient,user=user)
+        
+        patient_id = request.data.get("patient_id")
+        
+        if user.role == "doctor" or user.role == "lab_technician":
+            if patient_id:
+                patient = get_object_or_404(Patient,user_id = patient_id)
+            else:
+                patient = None
+                
         if 'images' not in request.FILES:
             return Response({"error": "No image files provided"}, status=400)
 
         file_objs = request.FILES.getlist('images')
         if len(file_objs) < 1 or len(file_objs) > 5:
-            return Response({"error": "Please provide between 1 to 5 images"}, status=400)
+            return Response({"error": "Please provide between 3 to 5 images"}, status=400)
 
         predictions = []
         disease_confidences = defaultdict(list)  # Stores all confidence scores per disease
@@ -56,7 +77,7 @@ class NailAnalysisViewSet(viewsets.ViewSet):
                 confidence_class_pairs = [(conf, idx, CLASS_NAMES[idx]) 
                                         for idx, conf in enumerate(all_predictions)]
                 confidence_class_pairs.sort(reverse=True, key=lambda x: x[0])
-                print("\n1. Confidence Class Pairs",confidence_class_pairs)
+                # print("\n1. Confidence Class Pairs",confidence_class_pairs)
 
                 # Get top 3 predictions for this image
                 top_classes = [
@@ -66,7 +87,7 @@ class NailAnalysisViewSet(viewsets.ViewSet):
                 
                 # Store this image's predictions
                 predictions.append({"top_classes": top_classes})
-                print("\n2. Predictions",predictions)
+                # print("\n2. Predictions",predictions)
                 
                 # Add top prediction to vote count
                 top_prediction = top_classes[0]["predicted_class"]
@@ -96,14 +117,10 @@ class NailAnalysisViewSet(viewsets.ViewSet):
         # Determine final result using combined strategy
         final_results = self._combine_predictions(disease_votes, disease_confidences, all_top_predictions)
 
-        # Save to DB
-        try:
-            patient = getattr(request.user, 'patient', None)
-            if not patient:
-                # Fallback for unauthenticated users — optional
-                patient = Patient.objects.first()
-
-            prediction_obj = NailDiseasePrediction.objects.create(
+        # If patient object available, save the results in DB
+        if patient:
+            try:
+                prediction_obj = NailDiseasePrediction.objects.create(
                 patient=patient,
                 predicted_class=final_prediction,
                 confidence=highest_confidence,
@@ -111,22 +128,23 @@ class NailAnalysisViewSet(viewsets.ViewSet):
                 symptoms=request.data.get('symptoms', ''),
                 status='Completed',
                 timestamp=timezone.now()
-            )
-
-            for index, file_obj in enumerate(file_objs):
-                NailImage.objects.create(
-                    prediction=prediction_obj,
-                    image=file_obj,
-                    image_index=index
                 )
 
-        except Exception as e:
-            print("Failed to save prediction:", str(e))
-            # Optionally continue or return error
+                for index, file_obj in enumerate(file_objs):
+                    NailImage.objects.create(
+                        prediction=prediction_obj,
+                        image=file_obj,
+                        image_index=index
+                    )
+
+            except Exception as e:
+                # print("Failed to save prediction:", str(e))
+                return Response({"error":"Failed to save prediction results in database."},status=status.HTTP_400_BAD_REQUEST)
 
         return Response({
             "individual_predictions": predictions,
-            "combined_result": final_results
+            "combined_result": final_results,
+            "patient_details": PatientSerializer(patient).data if patient else None,
         })
 
     def _combine_predictions(self, disease_votes, disease_confidences, all_top_predictions):

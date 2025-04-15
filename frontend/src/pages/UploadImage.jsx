@@ -3,6 +3,7 @@ import styles from "./UploadImage.module.css";
 import Navbar from "../components/Dashboard/Navbar/Navbar";
 import Sidebar from "../components/Dashboard/Sidebar/Sidebar";
 import ImageGuide from "./ImageGuide";
+import NailysisReport from "./common/report";
 import axios from "axios";
 import { handleClosePopup, handleOpenPopup } from "../utils/utils";
 
@@ -130,8 +131,10 @@ const UploadImage = () => {
           },
         }
       );
-      console.log("RESULTS FROM MODEL PRED", response.data)
+      console.log("RESULTS FROM MODEL PRED", response.data);
       setAnalysisResults(response.data);
+      setPopupContent(<NailysisReport onClose={handleClosePopup} predictionResult={response.data}></NailysisReport>);
+      setShowPopup(true);
     } catch (error) {
       console.error("Upload error:", error);
       setUploadError("Failed to upload files. Please try again.");
@@ -139,9 +142,14 @@ const UploadImage = () => {
       setIsUploading(false);
     }
   };
+  // useEffect(() => {
+  //   setPopupContent(<NailysisReport predictionResult={analysisResults} />);
+  //   setShowPopup(true);
+  // }, []);
 
   return (
-    <>{showPopup && popupContent}
+    <>
+      {showPopup && popupContent}
       <div
         className={`${styles.pageContainer} ${isModalOpen ? styles.blur : ""}`}
       >
@@ -275,8 +283,8 @@ const UploadImage = () => {
         <div className={styles.modalWrapper}>
           <ImageGuide
             onClose={handleClosePopup(setShowPopup, setPopupContent)}
-          // files={files}
-          // results={analysisResults}
+            // files={files}
+            // results={analysisResults}
           />
         </div>
       )}

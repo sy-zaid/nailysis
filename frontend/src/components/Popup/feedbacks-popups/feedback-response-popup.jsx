@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 const API_BASE_URL = "http://localhost:8000/api/feedback_reponse"; // API URL
 import styles from "./popup-feedback.module.css";
 import useCurrentUserData from "../../../useCurrentUserData.jsx";
+import { toast } from "react-toastify";
 
 
 import {
@@ -71,6 +72,11 @@ const FeedbackResponse = ({ onClose, recordDetails }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!reply.trim()) {
+      toast.error("Response cannot be empty.");
+      return;
+    }
+
     const feedbackData = {
       description: reply, // Send the response text
       status: isResolved ? "Resolved" : "Pending",
@@ -79,7 +85,7 @@ const FeedbackResponse = ({ onClose, recordDetails }) => {
     const feedbackId = recordDetails?.id; // Ensure this is correctly passed
 
     if (!feedbackId) {
-      alert("Error: Feedback ID missing");
+      toast.error("Error: Feedback ID missing");
       return;
     }
 
@@ -94,14 +100,19 @@ const FeedbackResponse = ({ onClose, recordDetails }) => {
       });
 
       if (response?.status === 201) {
-        alert("Response submitted successfully!");
+        toast.success("Response submitted successfully!", {
+          className: "custom-toast",
+        });
         onClose(); // Close the popup
-      } else {
-        alert("Failed to submit response.");
-      }
+      } 
+
     } catch (error) {
       console.error("Error submitting response:", error.response?.data || error);
-      alert("Error submitting response. Please try again.");
+      if (error.response) {
+        toast.error(error.response.data.error || "Something went wrong.", {
+          className: "custom-toast",
+        });
+      } 
     }
   };
 

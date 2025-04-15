@@ -1,8 +1,10 @@
 from django.db import models
 from users.models import Patient
+from ehr.models import EHR
 
 class NailDiseasePrediction(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    ehr = models.ForeignKey(EHR,on_delete=models.CASCADE,null=True,blank=True)
     predicted_class = models.CharField(max_length=255)
     confidence = models.FloatField()
     all_predictions = models.JSONField()  # Can be list of predictions for all images

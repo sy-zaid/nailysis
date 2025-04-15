@@ -2,7 +2,7 @@ import React from "react";
 import styles from "./select-test-order-popup.module.css";
 import Popup from "../Popup";
 import { useState, useEffect } from "react";
-import { calculateAge, convertDjangoDateTime, getStatusClass } from "../../../utils/utils";
+import { calculateAge, convertDjangoDateTime, getStatusClass, handleClosePopup } from "../../../utils/utils";
 import BloodTestEntryPopup from "./blood-test-entry-popup";
 import UrineTestEntryPopup from "./urine-test-entry-popup";
 import { submitTestResults, getTestResults } from "../../../api/labsApi";
@@ -148,7 +148,7 @@ const PopupSelectTestOrder = ({ onClose, testOrderDetails }) => {
     };
 
     fetchTestResults();
-  }, [testOrderDetails?.id]);
+  }, [testOrderDetails?.id,showInnerPopup]);
 
   return (
     <Popup

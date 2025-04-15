@@ -1,7 +1,7 @@
 //lab-test-result.jsx
 import React, { useState, useEffect } from "react";
 import {
-  getTestResultsById,
+  getTestResultsByTestId,
   markResultFinalized,
   saveAdminComment,
 } from "../../api/labsApi";
@@ -27,7 +27,7 @@ const LabTestResult = () => {
   useEffect(() => {
     const fetchLabTestResult = async () => {
       try {
-        const response = await getTestResultsById(reportId);
+        const response = await getTestResultsByTestId(reportId);
         const resultData = response.data[0];
         setLabTestResult(resultData);
 

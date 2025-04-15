@@ -39,21 +39,21 @@
 }
 
 .reportContainer {
-  max-width: 900px;
+  max-width: 1000px;
   margin: 0 auto;
 }
 
 .reportTitle {
   font-size: 32px;
   font-weight: 600;
-  color: #212529;
+  color: #181818;
   margin-bottom: 8px;
   text-align: center;
 }
 
 .reportSubtitle {
   font-size: 16px;
-  color: #6c757d;
+  color: #4e4e4e;
   margin-bottom: 30px;
   text-align: center;
 }
@@ -83,14 +83,14 @@
 .clinicName {
   font-size: 24px;
   font-weight: 700;
-  color: #212529;
+  color: #181818;
   margin-bottom: 10px;
 }
 
 .clinicAddress {
   font-style: normal;
   font-size: 14px;
-  color: #6c757d;
+  color: #4e4e4e;
   line-height: 1.6;
 }
 
@@ -100,8 +100,8 @@
 
 .contactInfo {
   font-size: 14px;
-  color: #495057;
-  margin-bottom: 12px;
+  color: #4e4e4e;
+  /* margin-bottom: 12px; */
 }
 
 .logo img {
@@ -120,12 +120,15 @@
   margin-bottom: 30px;
 }
 
+.section p {
+  color: #4e4e4e;
+}
 .sectionTitle {
   display: flex;
   align-items: center;
   font-size: 18px;
   font-weight: 600;
-  color: #212529;
+  color: #181818;
   margin-bottom: 20px;
 }
 
@@ -140,6 +143,8 @@
 .infoGrid {
   display: flex;
   flex-wrap: wrap;
+  gap: 20px 60px; /* row gap: 20px, column gap: 60px */
+  align-items: flex-start; /* align all items to the top */
   margin-bottom: 20px;
 }
 
@@ -147,44 +152,46 @@
   flex: 1;
   min-width: 200px;
   margin-bottom: 15px;
+  margin-right: 100px;
   padding-right: 20px;
 }
 
 .infoItem h4 {
   font-size: 14px;
-  color: #6c757d;
+  color: #4e4e4e;
   margin-bottom: 5px;
   font-weight: 500;
 }
 
 .infoItem p {
   font-size: 16px;
-  color: #212529;
+  color: #181818;
   font-weight: 500;
 }
 
+/* Images and results section */
 .imagesGrid {
-  margin-top: 10px;
+  margin-top: 16px;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.imageResult {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 8px;
 }
 
 .imageBox {
   width: 100%;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 4/3;
   background-color: #f8f9fa;
-  border-radius: 10px;
+  border-radius: 6px;
   overflow: hidden;
   border: 1px solid #dee2e6;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.3s ease;
-}
-
-.imageBox:hover {
-  transform: scale(1.05);
+  margin-bottom: 4px;
 }
 
 .imageBox img {
@@ -193,18 +200,38 @@
   object-fit: cover;
 }
 
-.confidenceTitle {
-  font-size: 16px;
-  font-weight: 500;
-  margin: 25px 0 20px;
-  color: #212529;
+.progressContainer {
+  width: 100%;
+  height: 4px;
+  background-color: #e9ecef;
+  border-radius: 2px;
+  margin: 4px 0;
+}
+
+.progressBar {
+  height: 100%;
+  border-radius: 2px;
+}
+
+.imageLabel {
+  font-size: 13px;
+  color: #181818;
+  margin: 4px 0 0 0;
+}
+
+/* Confidence section */
+.predictionDescription {
+  font-size: 13px;
+  color: #6c757d;
+  font-style: italic;
+  margin-bottom: 24px;
 }
 
 .confidenceGrid {
   display: flex;
   justify-content: space-around;
   flex-wrap: wrap;
-  margin-bottom: 30px;
+  margin: 20px 0 24px;
 }
 
 .confidenceItem {
@@ -212,33 +239,193 @@
   flex-direction: column;
   align-items: center;
   position: relative;
-  margin: 0 10px 20px;
+  margin: 0 10px 16px;
 }
 
 .confidenceCircle {
-  width: 100px;
-  height: 100px;
-  border: 8px solid #0d6efd;
+  width: 150px;
+  height: 150px;
+  border: 8px solid #2196f3;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
+  margin-top: 12px;
 }
 
 .confidenceValue {
   font-size: 26px;
   font-weight: 600;
-  color: #212529;
+  color: #181818;
 }
 
 .confidenceItem p {
-  font-size: 16px;
-  color: #212529;
+  font-size: 15px;
+  color: #181818;
   font-weight: 500;
-  margin-top: 10px;
+  margin-top: 5px;
+  text-align: center;
 }
 
+.alertIndicator {
+  position: absolute;
+  top: 15px;
+  right: -5px;
+  width: 22px;
+  height: 22px;
+  background-color: #ff3b30;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  font-size: 20px;
+  font-weight: 600;
+  color: #181818;
+  margin-bottom: 16px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  background-color: #0d6efd;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+/* Section styling */
+.chartSection {
+  padding: 20px;
+  width: 100%;
+  max-width: 1200px; /* Increase the max width */
+  margin: 0 auto;
+}
+
+.chartTitle {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.chartDescription {
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+/* Main container for all charts */
+.chartContainer {
+  display: flex;
+  flex-direction: column; /* Stack children vertically */
+  gap: 40px; /* Space between the wrapper and Sankey chart */
+  margin-bottom: 30px;
+}
+
+/* Wrapper for the first two charts */
+.chartsWrapper {
+  display: flex;
+  gap: 20px; /* Space between the two charts */
+  justify-content: space-between; /* Distribute space evenly */
+  margin-top: 15px;
+}
+
+/* Individual chart wrapper */
+.chartWrapper {
+  flex: 1; /* Each chart takes up equal space */
+  min-width: 0; /* Prevent overflow issues */
+}
+
+/* Styling for the Sankey chart wrapper */
+.sankeyWrapper {
+  display: flex;
+  flex-direction: column; /* Stack content vertically */
+  gap: 10px; /* Space between elements inside the Sankey wrapper */
+}
+
+.chartSubtitle {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #333;
+  margin: 0 0 20px 0; /* Increase bottom margin */
+  text-align: center;
+}
+
+.chartContent {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 350px; /* Increase height to give more room for labels */
+  overflow: visible; /* Allow content to overflow if needed */
+}
+
+.sankeyContent {
+  height: 500px; /* More height for the complex Sankey */
+  width: 100%;
+}
+
+.sankeyDescription {
+  margin-top: 50px;
+  font-size: 0.9rem;
+  color: #666;
+  text-align: center;
+}
+.divider {
+  height: 1px;
+  background-color: #e9ecef;
+  margin: 24px 0;
+}
+
+.symptomsText {
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.symptomsText p {
+  font-size: 14px;
+  color: #495057;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .imagesGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .confidenceCircle {
+    width: 80px;
+    height: 80px;
+    border-width: 6px;
+  }
+
+  .confidenceValue {
+    font-size: 22px;
+  }
+}
+
+@media (max-width: 480px) {
+  .confidenceGrid {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .confidenceItem {
+    margin-bottom: 24px;
+  }
+}
 .alertIndicator {
   position: absolute;
   bottom: 35px;
@@ -259,7 +446,7 @@
 
 .disclaimer p {
   font-size: 14px;
-  color: #6c757d;
+  color: #4e4e4e;
   line-height: 1.5;
   margin: 0;
 }
@@ -281,7 +468,7 @@
 .disclaimerText {
   font-size: 14px;
   font-style: italic;
-  color: #6c757d;
+  color: #4e4e4e;
   margin-bottom: 20px;
 }
 
@@ -299,12 +486,12 @@
   margin: 0;
   font-size: 16px;
   font-weight: 500;
-  color: #212529;
+  color: #181818;
 }
 
 .credentials {
   font-size: 14px !important;
-  color: #6c757d !important;
+  color: #4e4e4e !important;
   font-weight: normal !important;
 }
 
@@ -315,64 +502,61 @@
 .actionButtons {
   display: flex;
   justify-content: space-between;
-  margin-top: 30px;
-  flex-wrap: wrap;
+  align-items: center;
+  margin-top: 40px;
+  padding: 0 24px;
+}
+
+.leftButtons {
+  display: flex;
+  gap: 20px;
 }
 
 .downloadButton,
 .shareButton,
 .appointmentButton {
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 24px;
+  padding: 12px 28px;
+  font-size: 1rem;
+  font-weight: 500;
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 12px 20px;
-  border-radius: 20px;
-  font-size: 16px;
-  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.08);
   cursor: pointer;
-  transition: all 0.2s ease;
-  min-width: 180px;
-  margin-bottom: 15px;
-}
-
-.downloadButton {
-  background-color: #0067ff;
-  color: #ffffff;
-  border: 1px solid #ced4da;
-}
-
-.shareButton {
-  background-color: #0067ff;
-  color: #ffffff;
-  border: 1px solidrgb(86, 88, 90);
-}
-
-.appointmentButton {
-  background-color: #0d6efd;
-  color: white;
-  border: none;
+  transition: background 0.2s;
 }
 
 .downloadButton:hover,
-.shareButton:hover {
-  background-color: #0b5ed7;
-}
-
+.shareButton:hover,
 .appointmentButton:hover {
-  background-color: #0b5ed7;
+  background: #1565c0;
 }
 
-/* .downloadIcon,
+.downloadIcon,
 .shareIcon {
-  /* margin-right: 8px; */
-/* width: 18px;
-  height: 18px;
-  color: #ffffff;
-} */
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+/* .downloadIcon {
+  background-image: url("/download-icon.svg"); /* Replace with your icon path */
+
+.shareIcon {
+  background-image: url("/share-icon.svg"); /* Replace with your icon path */
+}
 
 .feedbackLink {
   margin-top: 20px;
-  text-align: center;
+  margin-left: 15px;
+  /* text-align: center; */
+  justify-content: start;
 }
 
 .feedbackLink a {
@@ -452,4 +636,10 @@
   .teamTitle {
     text-align: center;
   }
+}
+
+.description {
+  margin-left: 20px;
+  color: #4e4e4e;
+  font-style: italic;
 }

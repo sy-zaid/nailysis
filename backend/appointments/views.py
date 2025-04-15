@@ -390,7 +390,7 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
         category = request.data.get("category", "General")
 
         ehr_data = [category, medical_conditions, current_medications, immunization_records, diagnoses, comments, family_history,recommended_lab_test]
-        print("EHRDATA",ehr_data)
+        # print("EHRDATA",ehr_data)
         try:
             appointment = DoctorAppointment.objects.get(pk=pk)
             appointment.complete_appointment_with_ehr(ehr_data=ehr_data)
@@ -403,6 +403,7 @@ class DoctorAppointmentViewset(viewsets.ModelViewSet):
                 {"error": "No matching appointment found."},
                 status=status.HTTP_404_NOT_FOUND
             )
+          
         
 class LabTechnicianAppointmentViewset(viewsets.ModelViewSet):
     """

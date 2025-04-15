@@ -22,6 +22,7 @@
   cursor: pointer;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
   transition: all 0.2s;
+  margin: 0;
 }
 
 .addButton:hover {
@@ -366,8 +367,10 @@ locationValue {
 
 .actions {
   display: flex;
-  justify-content: space-between;
-  margin-top: 20px;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 25px;
+  margin-bottom: 25px;
 }
 
 .newActions {
@@ -379,13 +382,14 @@ locationValue {
 
 .cancelButton {
   background-color: #dc3545;
+  padding: 8px 30px;
   color: white;
   border: none;
-  padding: 8px 16px;
   border-radius: 15px;
   cursor: pointer;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
-  transition: all 0.2s;
+  transition: all 0.1s;
+  height: 100%;
 }
 
 .confirmButton {

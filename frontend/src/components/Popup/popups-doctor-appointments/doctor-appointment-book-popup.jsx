@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import styles from "./doctor-appointment-book-popup.module.css";
 import Popup from "../Popup.jsx";
 import useCurrentUserData from "../../../useCurrentUserData.jsx";
+import { toast } from "react-toastify";
 import {
   calculateAge,
   visitPurposes,
@@ -42,6 +43,17 @@ const BookDoctorAppointmentPopup = ({ onClose }) => {
     email: "",
     notes: "",
   });
+
+  const getTodayDate = () => {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0'); // Months start at 0!
+    const dd = String(today.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  };
+
+
+
   useEffect(() => {
     if (curUserRole == "patient" && curUser && curUser.length > 0) {
       setPatient([curUser[0].patient.user, curUser[0].patient]); // Set patient data if available
@@ -119,6 +131,31 @@ const BookDoctorAppointmentPopup = ({ onClose }) => {
   const handleBookAppointment = async (e) => {
     e.preventDefault();
 
+    if (!formData.specialization) {
+      toast.error("Please Select Doctor Specialization");
+      return;
+    }
+  
+    if (!formData.doctorId) {
+      toast.error("Please Select Doctor");
+      return;
+    }
+  
+    if (!formData.appointmentDate) {
+      toast.error("Please Select Date");
+      return;
+    }
+  
+    if (!formData.slotId) {
+      toast.error("Please Select Appointment Slot");
+      return;
+    }
+  
+    if (!formData.appointmentType) {
+      toast.error("Please Select A Visit Purpose");
+      return;
+    }
+
     const appointmentData = {
       doctor_id: formData.doctorId,
       slot_id: formData.slotId,
@@ -138,12 +175,18 @@ const BookDoctorAppointmentPopup = ({ onClose }) => {
     try {
       const response = await bookAppointment(appointmentData);
       if (response.status === 200) {
-        alert("Appointment Booked Successfully");
+        toast.success("Appointment Booked Successfully!", {
+          className: "custom-toast",
+        });
+        onClose(); // Close the popup
       }
     } catch (error) {
-      alert("Failed to book appointment");
       console.error(error);
-      throw error;
+      if (error.response) {
+        toast.error(error.response.data.error || "Failed to book appointment", {
+          className: "custom-toast",
+        });
+      } 
     }
   };
   // Fetch Available Slots On Chosen Date
@@ -339,6 +382,7 @@ const BookDoctorAppointmentPopup = ({ onClose }) => {
                 name="appointmentDate"
                 value={formData.appointmentDate}
                 onChange={onInputChange}
+                min={getTodayDate()} // Prevent past date selection
               />
             </div>
 
@@ -427,7 +471,7 @@ const BookDoctorAppointmentPopup = ({ onClose }) => {
               type="submit"
               onClick={handleBookAppointment}
             >
-              Continue to Next Step
+              Book Appointment
             </button>
           </div>
           </div>
