@@ -10,6 +10,7 @@ import { handleOpenPopup, handleClosePopup } from "../../utils/utils";
 import Header from "../../components/Dashboard/Header/Header.jsx";
 import styles from "./feedbacks.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
+import { toast } from "react-toastify";
 
 // UTILS.JS FUNCTIONS
 import { getStatusClass, toggleActionMenu, getRole } from "../../utils/utils";
@@ -85,7 +86,10 @@ const SendFeedback = () => {
 
     try {
       const response = await deleteFeedback(feedbackId);
-      alert(`Feedback deleted successfully! ${feedbackId}`);
+      // alert(`Feedback deleted successfully! ${feedbackId}`);
+      toast.success(`Feedback deleted successfully!`, {
+        className: "custom-toast",
+      });
       setFeedbackList((prevList) =>
         prevList.filter((f) => f.id !== feedbackId)
       );
@@ -94,11 +98,15 @@ const SendFeedback = () => {
         "Failed to delete feedback:",
         error.response ? error.response.data : error.message
       );
-      alert(
-        `Failed to delete feedback: ${
-          error.response ? JSON.stringify(error.response.data) : error.message
-        }`
-      );
+      if (error.response) {
+        toast.error(error.response.data.error || "Failed to Delete Feedback.", {
+          className: "custom-toast",
+        });
+      } else {
+        toast.error("Network error! Please try again.", {
+          className: "custom-toast",
+        });
+      }
     }
   };
 
@@ -122,7 +130,8 @@ const SendFeedback = () => {
       setShowPopup(true);
     }
     if (action === "View Feedback Details") {
-      setPopupContent(<PopupFeedbackDetails onClose={handleClosePopup} />);
+      setPopupContent(
+        <PopupFeedbackDetails onClose={handleClosePopup} recordDetails={recordDetails}/>);
       setShowPopup(true);
     } else if (action === "Respond To Feedback") {
       setPopupContent(
@@ -287,33 +296,38 @@ const SendFeedback = () => {
                 All
               </button>
               {(curUserRole === "lab_admin" || curUserRole === "clinic_admin") && (
-                <>
-                  <button
-                    className={`${styles.filterButton} ${
-                      activeButton === 1 ? styles.active : ""
-                    }`}
-                    onClick={() => handleFilterClick(1)}
-                  >
-                    Patients
-                  </button>
-                  <button
-                    className={`${styles.filterButton} ${
-                      activeButton === 2 ? styles.active : ""
-                    }`}
-                    onClick={() => handleFilterClick(2)}
-                  >
-                    Doctors
-                  </button>
-                  <button
-                    className={`${styles.filterButton} ${
-                      activeButton === 3 ? styles.active : ""
-                    }`}
-                    onClick={() => handleFilterClick(3)}
-                  >
-                    Technician
-                  </button>
-                </>
+                <button
+                  className={`${styles.filterButton} ${
+                    activeButton === 1 ? styles.active : ""
+                  }`}
+                  onClick={() => handleFilterClick(1)}
+                >
+                  Patients
+                </button>
               )}
+
+              {curUserRole === "clinic_admin" && (
+                <button
+                  className={`${styles.filterButton} ${
+                    activeButton === 2 ? styles.active : ""
+                  }`}
+                  onClick={() => handleFilterClick(2)}
+                >
+                  Doctors
+                </button>
+              )}
+
+              {curUserRole === "lab_admin" && (
+                <button
+                  className={`${styles.filterButton} ${
+                    activeButton === 3 ? styles.active : ""
+                  }`}
+                  onClick={() => handleFilterClick(3)}
+                >
+                  Technician
+                </button>
+              )}
+
               <button
                 className={`${styles.filterButton} ${activeButton === 4 ? styles.active : ""}`}
                 onClick={() => handleFilterClick(4)}
