@@ -42,7 +42,7 @@ class LabTestOrderModelViewSet(viewsets.ModelViewSet):
         - Otherwise, returns all lab test orders.
         """
         user = self.request.user
-        if user.role not in ["lab_technician", "lab_admin"]:
+        if user.role not in ["lab_technician", "lab_admin","patient"]:
             return Response({"error": "Access denied. You do not have permission to view test orders."}, status=403)
         
         test_order_id = self.request.query_params.get("id")
@@ -138,30 +138,24 @@ class LabTestResultModelViewSet(viewsets.ModelViewSet):
             * `patient_id` - returns all finalized results for a patient
         """
         user = self.request.user
-        if user.role not in ["lab_technician", "lab_admin"]:
+        if user.role not in ["lab_technician", "lab_admin","patient","doctor","clinic_admin"]:
             raise PermissionDenied("Access denied: You are not authorized to view test results.")
 
         test_order_id = self.request.query_params.get("test_order_id")
         test_id = self.request.query_params.get("test_id")
-        patient_id = self.request.query_params.get("patient_id")
 
         if test_order_id:
             return LabTestResult.objects.filter(test_order_id=test_order_id)
         if test_id:
             return LabTestResult.objects.filter(id=test_id)
-        if patient_id:
-            # Corrected relationship path - TechnicianAppointment IS the Appointment
-            return LabTestResult.objects.filter(
-                test_order__lab_technician_appointment__patient_id=patient_id,
-                result_status="Finalized"
-            )
+        
         return LabTestResult.objects.all()
     
     @action(detail=False, methods=["get"], url_path="all_tests")
     def get_all_test_results(self, request):
         # Check user permissions
         user = request.user
-        if user.role not in ["lab_technician", "lab_admin"]:
+        if user.role not in ["lab_technician", "lab_admin","doctor"]:
             raise PermissionDenied("Access denied: You are not authorized to view test results.")
 
         patient_id = request.query_params.get("patient_id")
@@ -317,7 +311,6 @@ class LabTestResultModelViewSet(viewsets.ModelViewSet):
             return Response({"error": "Invalid format: test_entries must be a valid JSON array."}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({"error": f"Unexpected error: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
 
     @action(detail=True, methods=["get"], url_path="view_blood_report")
     def view_lab_report_html(self, request, pk=None):

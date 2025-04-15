@@ -103,7 +103,7 @@ const TestOrders = () => {
       setPopupContent(
         <PopupAllReportsList
           patient_id={testOrderDetails?.lab_technician_appointment?.patient?.user?.user_id}
-          onClose={() => setShowPopup(false)}
+          onClose={handleClosePopup}
         />
       );
     }

@@ -238,8 +238,6 @@ class DoctorAppointment(Appointment):
         if not self.fee:
             self.fee = DoctorAppointmentFee.get_fee(self.appointment_type) or 0.00
         super().save(*args, **kwargs)
-    
-
 
 class TechnicianAppointment(Appointment):
     """
@@ -299,7 +297,6 @@ class TechnicianAppointment(Appointment):
             str: Readable format showing the appointment ID and technician.
         """
         return f"Lab Appointment #{self.appointment_id} - Technician: {self.lab_technician}"
-
 
 class CancellationRequest(models.Model):
     STATUS_CHOICES = [
