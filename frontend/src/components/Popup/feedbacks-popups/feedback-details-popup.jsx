@@ -20,7 +20,7 @@ const FeedbackDetails = ({ onClose, recordDetails }) => {
   const feedbackId = recordDetails?.id;
   const [feedback, setFeedback] = useState([]);
 
-  
+
   // Fetch feedback details when the popup opens
   useEffect(() => {
     const fetchFeedbackDetails = async () => {
@@ -81,14 +81,18 @@ const FeedbackDetails = ({ onClose, recordDetails }) => {
           })}</span>
 
           <span className={styles.key} style={{ margin: "0 0 0 20px" }}> <i class='bx bx-calendar-check' ></i> Date Responded: </span>
-          <span className={styles.locationValue}>{new Date(recordDetails?.response?.date_submitted).toLocaleString("en-US", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-          })}</span>
+          <span className={styles.locationValue}>
+            {recordDetails?.response?.date_submitted
+              ? new Date(recordDetails.response.date_submitted).toLocaleString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+              })
+              : "N/A"}
+          </span>
         </p>
 
         <div className={styles.popupBottom}>
@@ -106,20 +110,20 @@ const FeedbackDetails = ({ onClose, recordDetails }) => {
               </div>
               <div>
                 <label>Age</label>
-                <p className={styles.subHeading}>{calculateAge(recordDetails?.user?.patient?.date_of_birth) || "No Age"}</p>
+                <p className={styles.subHeading}>{calculateAge(recordDetails?.user?.patient?.date_of_birth) || "N/A"}</p>
               </div>
               <div>
                 <label>Gender</label>
-                <p className={styles.subHeading}>{recordDetails?.user?.patient?.gender || "No Gender"}</p>
+                <p className={styles.subHeading}>{recordDetails?.user?.patient?.gender || "N/A"}</p>
               </div>
               <div>
                 <label>Phone Number</label>
-                <p className={styles.subHeading}>{recordDetails?.user?.phone || "No Phone"}</p>
+                <p className={styles.subHeading}>{recordDetails?.user?.phone || "N/A"}</p>
               </div>
 
               <div>
                 <label>Email Address</label>
-                <p className={styles.subHeading}>{recordDetails?.user?.email || "No Email"}</p>
+                <p className={styles.subHeading}>{recordDetails?.user?.email || "N/A"}</p>
               </div>
 
             </div>
