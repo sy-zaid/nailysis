@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
 import styles from "./contact.module.css";
+import { Link, useNavigate } from "react-router-dom";
 
 const ContactUs = () => {
   // Step 1: Declare refs using useRef
@@ -45,20 +46,27 @@ const ContactUs = () => {
               </span>
             </div>
           </div>
+         
           <ul className={styles.navLinks} id="nav-links" ref={navLinksRef}>
             <li onClick={handleLinkClick}>
-              <a href="/">Home</a>
+              <Link to="/">Home</Link>
             </li>
             <li onClick={handleLinkClick}>
-              <a href="/appointment">Book An Appointment</a>
+              <Link to="/login">Book An Appointment</Link>
             </li>
             <li onClick={handleLinkClick}>
-              <a href="/about">About</a>
+              <Link to="/about-us">About</Link>
             </li>
             <li onClick={handleLinkClick}>
-              <a href="/contact">Contact Us</a>
+              <Link to="/contact-us">Contact Us</Link>
             </li>
           </ul>
+
+          <div>
+            <button className={styles.loginButton}>
+              Login
+            </button>
+          </div>
           <div className={styles.navSearch}>
             <input type="text" placeholder="Search" />
             <i className="fa-solid fa-magnifying-glass fa-rotate-90"></i>
@@ -140,10 +148,18 @@ const ContactUs = () => {
           <div className={styles.stayInTouchMiddle}>
             <h3 className={styles.menuTitle}>Menu</h3>
             <ul className={styles.menuList}>
-              <li className={styles.menuItem}>Book An Appointment</li>
-              <li className={styles.menuItem}>About</li>
-              <li className={styles.menuItem}>Contact</li>
-              <li className={styles.menuItem}>Policy</li>
+              <li className={styles.menuItem}>
+                <Link to="/login">Book An Appointment</Link>
+              </li>
+              <li className={styles.menuItem}>
+                <Link to="/about-us">About</Link>
+              </li>
+              <li className={styles.menuItem}>
+                <Link to="/contact-us">Contact</Link>
+              </li>
+              <li className={styles.menuItem}>
+                <Link to="/policy">Policy</Link>
+              </li>
             </ul>
           </div>
 
