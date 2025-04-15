@@ -98,7 +98,7 @@ const SubmitFeedback = ({ onClose, isClinicFeedback }) => {
 
     <Popup trigger={popupTrigger} setTrigger={setPopupTrigger} onClose={onClose}>
 
-      <div className={styles.formContainer} style={{ marginTop: "-12%" }}>
+      <div className={styles.formContainer}>
 
         <div className={styles.headerSection}>
 
