@@ -3,7 +3,10 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser
 import requests
-from .models import NailDiseasePrediction, NailImage, Patient  # import your models
+from .models import NailDiseasePrediction, NailImage, Patient
+from .serializers import NailDiseasePredictionSerializer
+from users.serializers import PatientSerializer
+
 import json
 from django.utils import timezone
 from django.shortcuts import get_object_or_404
@@ -12,7 +15,7 @@ from .main import CLASS_NAMES
 class NailAnalysisViewSet(viewsets.ViewSet):
     parser_classes = [MultiPartParser]
     permission_classes = [permissions.IsAuthenticated]
-    
+    serializer_class = NailDiseasePredictionSerializer
     
     @action(detail=False, methods=['post'], url_path='analyze')
     def analyze(self, request):
@@ -74,7 +77,7 @@ class NailAnalysisViewSet(viewsets.ViewSet):
                 confidence_class_pairs = [(conf, idx, CLASS_NAMES[idx]) 
                                         for idx, conf in enumerate(all_predictions)]
                 confidence_class_pairs.sort(reverse=True, key=lambda x: x[0])
-                print("\n1. Confidence Class Pairs",confidence_class_pairs)
+                # print("\n1. Confidence Class Pairs",confidence_class_pairs)
 
                 # Get top 3 predictions for this image
                 top_classes = [
@@ -84,7 +87,7 @@ class NailAnalysisViewSet(viewsets.ViewSet):
                 
                 # Store this image's predictions
                 predictions.append({"top_classes": top_classes})
-                print("\n2. Predictions",predictions)
+                # print("\n2. Predictions",predictions)
                 
                 # Add top prediction to vote count
                 top_prediction = top_classes[0]["predicted_class"]
@@ -133,15 +136,15 @@ class NailAnalysisViewSet(viewsets.ViewSet):
                         image=file_obj,
                         image_index=index
                     )
-                return Response({"message":"Successfully saved prediction results in database."},status=status.HTTP_200_OK)
 
             except Exception as e:
-                print("Failed to save prediction:", str(e))
+                # print("Failed to save prediction:", str(e))
                 return Response({"error":"Failed to save prediction results in database."},status=status.HTTP_400_BAD_REQUEST)
 
         return Response({
             "individual_predictions": predictions,
-            "combined_result": final_results
+            "combined_result": final_results,
+            "patient_details": PatientSerializer(patient).data if patient else None,
         })
 
     def _combine_predictions(self, disease_votes, disease_confidences, all_top_predictions):

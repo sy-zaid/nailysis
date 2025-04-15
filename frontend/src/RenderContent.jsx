@@ -111,7 +111,7 @@ export const renderPatientContent = (view) => {
     case "Medical History & Notes":
       return <PatientMedicalHistory name="Medical History & Notes" />;
     case "Test Results":
-      return <Report name="Test Results" />;
+      return <NailysisReport name="Test Results" />;
     case "Samples":
       return <PlaceholderComponent name="Samples" />;
     case "Diagnostic Results":

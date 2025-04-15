@@ -16,81 +16,81 @@ import BoxPlotRes from "../../components/ReCharts/box-plot";
 import SankeyRes from "../../components/ReCharts/sankey";
 import PieChartVoteRes from "../../components/ReCharts/pie-charts-vote";
 import ProgressBarChart from "../../components/ReCharts/progress-bar";
-
-// const DiseaseVotesAndConfidenceComparisons = { combined, predictionResult };
+import { calculateAge } from "../../utils/utils";
 
 const NailysisReport = ({ onClose, predictionResult }) => {
-  predictionResult = {
-    individual_predictions: [
-      {
-        top_classes: [
-          {
-            class_index: 4,
-            predicted_class: "koilonychia",
-            confidence: 0.9999979734420776,
-          },
-          {
-            class_index: 8,
-            predicted_class: "onychogryphosis",
-            confidence: 0.00000195485404219653,
-          },
-          {
-            class_index: 10,
-            predicted_class: "onychomycosis",
-            confidence: 1.167044416661156e-7,
-          },
-        ],
-      },
-      {
-        top_classes: [
-          {
-            class_index: 5,
-            predicted_class: "melanoma",
-            confidence: 0.9999997615814209,
-          },
-          {
-            class_index: 6,
-            predicted_class: "muehrckes Lines",
-            confidence: 1.544823788890426e-7,
-          },
-          {
-            class_index: 1,
-            predicted_class: "bluish nails",
-            confidence: 7.614843156034112e-8,
-          },
-        ],
-      },
-    ],
-    combined_result: [
-      {
-        class_index: 5,
-        predicted_class: "melanoma",
-        confidence: 0.9999997615814209,
-        vote_count: 1,
-        max_confidence: 0.9999997615814209,
-      },
-      {
-        class_index: 4,
-        predicted_class: "koilonychia",
-        confidence: 0.9999979734420776,
-        vote_count: 1,
-        max_confidence: 0.9999979734420776,
-      },
-      {
-        class_index: 8,
-        predicted_class: "onychogryphosis",
-        confidence: 0.00000195485404219653,
-        vote_count: 0,
-        max_confidence: 0.00000195485404219653,
-      },
-    ],
-  };
+  // predictionResult = {
+  //   individual_predictions: [
+  //     {
+  //       top_classes: [
+  //         {
+  //           class_index: 4,
+  //           predicted_class: "koilonychia",
+  //           confidence: 0.9999979734420776,
+  //         },
+  //         {
+  //           class_index: 8,
+  //           predicted_class: "onychogryphosis",
+  //           confidence: 0.00000195485404219653,
+  //         },
+  //         {
+  //           class_index: 10,
+  //           predicted_class: "onychomycosis",
+  //           confidence: 1.167044416661156e-7,
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       top_classes: [
+  //         {
+  //           class_index: 5,
+  //           predicted_class: "melanoma",
+  //           confidence: 0.9999997615814209,
+  //         },
+  //         {
+  //           class_index: 6,
+  //           predicted_class: "muehrckes Lines",
+  //           confidence: 1.544823788890426e-7,
+  //         },
+  //         {
+  //           class_index: 1,
+  //           predicted_class: "bluish nails",
+  //           confidence: 7.614843156034112e-8,
+  //         },
+  //       ],
+  //     },
+  //   ],
+  //   combined_result: [
+  //     {
+  //       class_index: 5,
+  //       predicted_class: "melanoma",
+  //       confidence: 0.9999997615814209,
+  //       vote_count: 1,
+  //       max_confidence: 0.9999997615814209,
+  //     },
+  //     {
+  //       class_index: 4,
+  //       predicted_class: "koilonychia",
+  //       confidence: 0.9999979734420776,
+  //       vote_count: 1,
+  //       max_confidence: 0.9999979734420776,
+  //     },
+  //     {
+  //       class_index: 8,
+  //       predicted_class: "onychogryphosis",
+  //       confidence: 0.00000195485404219653,
+  //       vote_count: 0,
+  //       max_confidence: 0.00000195485404219653,
+  //     },
+  //   ],
+  // };
 
   // ----- POPUPS & NAVIGATION
-  const [popupTrigger, setPopupTrigger] = useState(true);
 
-  const combined = predictionResult.combined_result;
+  const [popupTrigger, setPopupTrigger] = useState(true);
   console.log("predictionResult", predictionResult);
+  const patient_details = predictionResult.patient_details;
+  const combined = predictionResult.combined_result;
   console.log("combined", combined);
   const diseaseConfidences = {};
 
@@ -153,23 +153,28 @@ const NailysisReport = ({ onClose, predictionResult }) => {
 
                   <div className={styles.infoGrid}>
                     <div className={styles.infoItem}>
-                      <h4>Medical Record ID</h4>
-                      <p>123456</p>
+                      <h4>Patient ID</h4>
+                      <p>{patient_details?.user?.user_id || "N/A"}</p>
                     </div>
                     <div className={styles.infoItem}>
                       <h4>Patient Name</h4>
-                      <p>Ms. Jane Doe</p>
+                      <p>
+                        {patient_details?.user?.first_name || "N/A"}{" "}
+                        {patient_details?.user?.last_name || "N/A"}
+                      </p>
                     </div>
                     <div className={styles.infoItem}>
                       <h4>Age</h4>
-                      <p>24 years</p>
+                      <p>
+                        {calculateAge(patient_details?.date_of_birth) || "N/A"}
+                      </p>
                     </div>
                   </div>
 
                   <div className={styles.infoGrid}>
                     <div className={styles.infoItem}>
                       <h4>Gender</h4>
-                      <p>Female</p>
+                      <p>{patient_details?.gender || "N/A"}</p>
                     </div>
                     <div className={styles.infoItem}>
                       <h4>Test Request</h4>

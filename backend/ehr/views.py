@@ -157,6 +157,71 @@ class EHRView(viewsets.ModelViewSet):
             return Response({"message":"Successfully Added to Medical History"}, status=status.HTTP_201_CREATED)
         return Response({"error":"User not authorized to add ehr to medical history"})
 
+    @action(detail=False, methods=["get"], url_path="recommended_tests")
+    def get_recommended_tests(self, request):
+        """
+        Get all unique recommended lab tests for a patient.
+        
+        Parameters:
+        - patient: Patient ID (required query parameter)
+        
+        Returns:
+        - List of unique recommended test names
+        - 403 if unauthorized
+        - 400 if missing patient ID
+        - 404 if patient not found
+        """
+        user = self.request.user
+        if user.role not in ["lab_admin", "patient"]:
+            return Response(
+                {"error": "Unauthorized access to recommended tests"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        patient_id = request.query_params.get("patient")
+        patient_email = request.query_params.get("email")
+        
+        if not patient_id and not patient_email:
+            return Response(
+                {"error": "Patient ID or Email is required."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        try:
+            if patient_id:
+                patient = Patient.objects.get(user_id=patient_id)
+            else:
+                user = CustomUser.objects.get(email=patient_email)
+                patient = Patient.objects.get(user=user)
+            ehr_records = EHR.objects.filter(
+                patient=patient,
+                recommended_lab_test__isnull=False
+            ).exclude(recommended_lab_test=[])
+            
+            recommended_tests = []
+            for record in ehr_records:
+                if isinstance(record.recommended_lab_test, list):
+                    recommended_tests.extend(
+                        test for test in record.recommended_lab_test 
+                        if test and isinstance(test, str)
+                    )
+            
+            # Remove duplicates (using set while preserving order)
+            seen = set()
+            unique_tests = [x for x in recommended_tests if not (x in seen or seen.add(x))]
+            
+            return Response(unique_tests) 
+            
+        except Patient.DoesNotExist:
+            return Response(
+                {"error": "Patient not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        except Exception as e:
+            return Response(
+                {"error": "Failed to retrieve recommended tests"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )       
 
 class MedicalHistoryView(viewsets.ModelViewSet):
     queryset = MedicalHistory.objects.all()

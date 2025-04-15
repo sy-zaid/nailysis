@@ -133,9 +133,7 @@ const UploadImage = () => {
       );
       console.log("RESULTS FROM MODEL PRED", response.data);
       setAnalysisResults(response.data);
-      setPopupContent(
-        <NailysisReport predictionResult={analysisResults}></NailysisReport>
-      );
+      setPopupContent(<NailysisReport onClose={handleClosePopup} predictionResult={response.data}></NailysisReport>);
       setShowPopup(true);
     } catch (error) {
       console.error("Upload error:", error);
