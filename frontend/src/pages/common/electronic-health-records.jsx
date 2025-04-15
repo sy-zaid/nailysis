@@ -128,8 +128,8 @@ const ElectronicHealthRecord = () => {
 
     if (sortConfig.key === "last_updated") {
       // Replace " | " with a space so the Date object can parse the string correctly.
-      valA = valA ? new Date(valA.replace(" | ", " ")) : new Date(0);
-      valB = valB ? new Date(valB.replace(" | ", " ")) : new Date(0);
+      valA = valA ? new Date(valA.replace(/\s*\|\s*/, " ")) : new Date(0);
+      valB = valB ? new Date(valB.replace(/\s*\|\s*/, " ")) : new Date(0);
     } else {
       valA = valA.toString().toLowerCase();
       valB = valB.toString().toLowerCase();
@@ -293,6 +293,8 @@ const ElectronicHealthRecord = () => {
     <div className={styles.pageContainer}>
       <Navbar />
 
+      {showPopup && popupContent}
+
       {/* Page Header */}
       <div className={styles.pageTop}>
         <Header
@@ -305,49 +307,48 @@ const ElectronicHealthRecord = () => {
         <div className={styles.appointmentsContainer}>
           {/* Filter buttons with dynamic active state */}
           <div className={styles.filters}>
-            <button
-              className={`${styles.filterButton} ${
-                activeButton === 0 ? styles.active : ""
-              }`}
-              onClick={() => handleFilterClick(0)}
-            >
-              All
-            </button>
-            <button
-              className={`${styles.filterButton} ${
-                activeButton === 3 ? styles.active : ""
-              }`}
-              onClick={() => handleFilterClick(3)}
-            >
-              Your Patients
-            </button>
-            <button
-              className={`${styles.filterButton} ${
-                activeButton === 1 ? styles.active : ""
-              }`}
-              onClick={() => handleFilterClick(1)}
-            >
-              Abnormal Results
-            </button>
-            <button
-              className={`${styles.filterButton} ${
-                activeButton === 2 ? styles.active : ""
-              }`}
-              onClick={() => handleFilterClick(2)}
-            >
-              Emergency
-            </button>
+            {(curUserRole === "doctor" || curUserRole === "clinic_admin" || curUserRole === "patient") && (
+              <>
+                <button
+                  className={`${styles.filterButton} ${activeButton === 0 ? styles.active : ""}`}
+                  onClick={() => handleFilterClick(0)}
+                >
+                  All
+                </button>
+                {curUserRole === "doctor" && (
+                  <button
+                    className={`${styles.filterButton} ${activeButton === 3 ? styles.active : ""}`}
+                    onClick={() => handleFilterClick(3)}
+                  >
+                    Your Patients
+                  </button>
+                )}
+                <button
+                  className={`${styles.filterButton} ${activeButton === 1 ? styles.active : ""}`}
+                  onClick={() => handleFilterClick(1)}
+                >
+                  Abnormal Results
+                </button>
+                <button
+                  className={`${styles.filterButton} ${activeButton === 2 ? styles.active : ""}`}
+                  onClick={() => handleFilterClick(2)}
+                >
+                  Emergency
+                </button>
 
-            <p>
-              Total Records: {filteredRecords.length} | Your Patients:{" "}
-              {
-                filteredRecords.filter(
-                  (record) =>
-                    record.consulted_by?.toLowerCase() ===
-                    `${curUser[0]?.first_name.toLowerCase()} ${curUser[0]?.last_name.toLowerCase()}`
-                ).length
-              }
-            </p>
+                <p>
+                  Total Records: {filteredRecords.length}{" "}
+                  {curUserRole === "doctor" && (
+                    <>| Your Patients:{" "}
+                      {filteredRecords.filter(
+                        (record) =>
+                          record.consulted_by?.toLowerCase() ===
+                          `${curUser[0]?.first_name.toLowerCase()} ${curUser[0]?.last_name.toLowerCase()}`
+                      ).length}</>
+                  )}
+                </p>
+              </>
+            )}
 
             {curUserRole === "doctor" && (
               <button
@@ -385,7 +386,7 @@ const ElectronicHealthRecord = () => {
               <input
                 className={styles.search}
                 type="text"
-                placeholder="Search by Patient Name, Doctor, Category, etc."
+                placeholder="Search"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />

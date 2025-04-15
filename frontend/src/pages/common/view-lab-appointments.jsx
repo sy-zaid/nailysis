@@ -317,11 +317,10 @@ const AppointmentTechnician = () => {
               </select>
               
               <select className={styles.sortBy} onChange={handleSortChange} value={sortOption}>
-                <option value="none">Sort By: None</option>
+                <option value="date-desc">Appointment Date (Latest First)</option>
+                <option value="date-asc">Appointment Date (Oldest First)</option>
                 <option value="fee-asc">Fee (Low to High)</option>
                 <option value="fee-desc">Fee (High to Low)</option>
-                <option value="date-asc">Appointment Date (Oldest First)</option>
-                <option value="date-desc">Appointment Date (Latest First)</option>
               </select>
 
               <input
