@@ -37,12 +37,24 @@ class LabTestOrderModelViewSet(viewsets.ModelViewSet):
         """
         Retrieve lab test orders based on user role and optional test order ID filter.
 
-        - Restricted to 'lab_technician' and 'lab_admin' roles.
-        - If a test order ID is provided, fetches the specific order.
-        - Otherwise, returns all lab test orders.
+        - Patients can only see their own lab test orders
+        - Restricted to 'lab_technician' and 'lab_admin' roles for all orders
+        - If a test order ID is provided, fetches the specific order (with permission check)
         """
         user = self.request.user
-        if user.role not in ["lab_technician", "lab_admin","patient"]:
+        patient = Patient()
+        if user.role == "patient":
+            try:
+                patient = Patient.objects.get(user=user)
+                return LabTestOrder.objects.filter(
+                    lab_technician_appointment__patient=patient,
+                    results_available=True,
+                    test_status="Completed"
+                )
+            except Patient.DoesNotExist:
+                return LabTestOrder.objects.none()
+            
+        if user.role not in ["lab_technician", "lab_admin"]:
             return Response({"error": "Access denied. You do not have permission to view test orders."}, status=403)
         
         test_order_id = self.request.query_params.get("id")

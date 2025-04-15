@@ -18,13 +18,11 @@ import { getFeedbackResponses } from "../../api/feedbacksApi";
 
 const API_BASE_URL = "http://localhost:8000/api/feedbacks";
 
-
 const SendFeedback = () => {
   // ----- TOKENS AND USER INFORMATION
-  const curUserRole = getRole(); 
+  const curUserRole = getRole();
   console.log("Current user role:", curUserRole);
 
-  
   // ----- POPUPS AND NAVIGATION
   const [popupContent, setPopupContent] = useState();
   const [showPopup, setShowPopup] = useState(false);
@@ -32,20 +30,20 @@ const SendFeedback = () => {
   const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
   const popupRef = useRef(null);
   const [menuOpen, setMenuOpen] = useState(null);
-  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });  
-  const menuRef = useRef(null);   // Close the action menu when clicking outside of it
-
+  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
+  const menuRef = useRef(null); // Close the action menu when clicking outside of it
 
   // ----- IMPORTANT DATA
   const [feedbackList, setFeedbackList] = useState([]);
   const [selectedRecords, setSelectedRecords] = useState([]);
 
-
-  // ----- SEARCHING, SORTING & FILTERING STATES 
+  // ----- SEARCHING, SORTING & FILTERING STATES
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortConfig, setSortConfig] = useState({ key: "date_submitted", direction: "desc" });
+  const [sortConfig, setSortConfig] = useState({
+    key: "date_submitted",
+    direction: "desc",
+  });
   const [activeButton, setActiveButton] = useState(0);
-
 
   // ----- HANDLERS
   const handleSelectRecord = (recordId) => {
@@ -64,16 +62,16 @@ const SendFeedback = () => {
 
   // Hide the popup when closing
   const handleClosePopup = () => {
-    setShowPopup(false); 
+    setShowPopup(false);
     onClose();
   };
 
   /**
    * SORT DROPDOWN HANDLER:
    * - The default sort is by date_submitted (latest first).
-   * - When the sort dropdown value is "date-desc", 
+   * - When the sort dropdown value is "date-desc",
    * - sort by date descending; "date-asc" will sort ascending.
-  */
+   */
   const handleSortChange = (e) => {
     const [key, direction] = e.target.value.split("-");
     setSortConfig({ key, direction });
@@ -136,7 +134,7 @@ const SendFeedback = () => {
       handleDeleteFeedback(recordDetails.id);
     }
   };
-  
+
   const togglePopup = (event, feedback) => {
     //  Accept feedback details
     setPopupPosition({
@@ -147,7 +145,6 @@ const SendFeedback = () => {
     setMenuOpen(feedback); //  Store selected feedback details
   };
 
-
   // ----- SEARCHING, SORTING & FILTERING LOGIC FUNCTIONS
 
   /**
@@ -155,7 +152,7 @@ const SendFeedback = () => {
    * - Use activeButton values:
    * - 0: All, 1: Patients, 2: Doctors, 3: Technician, 4: Pending, 5: Resolved
    * - If value matches then return true, else false
-  */
+   */
   const filteredFeedback = feedbackList.filter((feedback) => {
     if (activeButton === 1 && feedback.user.role.toLowerCase() !== "patient") {
       return false;
@@ -163,7 +160,10 @@ const SendFeedback = () => {
     if (activeButton === 2 && feedback.user.role.toLowerCase() !== "doctor") {
       return false;
     }
-    if (activeButton === 3 && feedback.user.role.toLowerCase() !== "technician") {
+    if (
+      activeButton === 3 &&
+      feedback.user.role.toLowerCase() !== "technician"
+    ) {
       return false;
     }
     if (activeButton === 4 && feedback.status.toLowerCase() !== "pending") {
@@ -180,8 +180,11 @@ const SendFeedback = () => {
     if (!searchQuery.trim()) return true;
     const searchValue = searchQuery.toLowerCase();
     // Combine some fields into one searchable string
-    const combinedFields =
-      `${feedback.id} ${feedback.user.role} ${new Date(feedback.date_submitted).toLocaleString()} ${feedback.category} ${feedback.description} ${feedback.status} ${feedback.response ? feedback.response.description : ""}`;
+    const combinedFields = `${feedback.id} ${feedback.user.role} ${new Date(
+      feedback.date_submitted
+    ).toLocaleString()} ${feedback.category} ${feedback.description} ${
+      feedback.status
+    } ${feedback.response ? feedback.response.description : ""}`;
     return combinedFields.toLowerCase().includes(searchValue);
   });
 
@@ -195,7 +198,6 @@ const SendFeedback = () => {
     if (aValue > bValue) return sortConfig.direction === "asc" ? 1 : -1;
     return 0;
   });
-
 
   // ----- USE EFFECTS
   useEffect(() => {
@@ -258,7 +260,6 @@ const SendFeedback = () => {
     };
   }, []);
 
-  
   return (
     <div className="p-5">
       {showPopup && popupContent}
@@ -286,7 +287,8 @@ const SendFeedback = () => {
               >
                 All
               </button>
-              {(curUserRole === "lab_admin" || curUserRole === "clinic_admin") && (
+              {(curUserRole === "lab_admin" ||
+                curUserRole === "clinic_admin") && (
                 <>
                   <button
                     className={`${styles.filterButton} ${
@@ -315,19 +317,25 @@ const SendFeedback = () => {
                 </>
               )}
               <button
-                className={`${styles.filterButton} ${activeButton === 4 ? styles.active : ""}`}
+                className={`${styles.filterButton} ${
+                  activeButton === 4 ? styles.active : ""
+                }`}
                 onClick={() => handleFilterClick(4)}
               >
                 Pending
               </button>
               <button
-                className={`${styles.filterButton} ${activeButton === 5 ? styles.active : ""}`}
+                className={`${styles.filterButton} ${
+                  activeButton === 5 ? styles.active : ""
+                }`}
                 onClick={() => handleFilterClick(5)}
               >
                 Resolved
               </button>
 
-              <p><p>Total Records: {sortedFeedback.length}</p></p>
+              <p>
+                <p>Total Records: {sortedFeedback.length}</p>
+              </p>
 
               <div className={styles.appointmentButtons}>
                 {/* Show 'Submit New Feedback' for patients, doctors, and lab technicians */}
@@ -391,9 +399,17 @@ const SendFeedback = () => {
                 </select>
 
                 {/* Sort Dropdown – default is "date-desc" (Latest First) */}
-                <select className={styles.sortBy} defaultValue="date-desc" onChange={handleSortChange}>
-                  <option value="date-desc">Sort By: Submitted At (Latest First)</option>
-                  <option value="date-asc">Sort By: Submitted At (Oldest First)</option>
+                <select
+                  className={styles.sortBy}
+                  defaultValue="date-desc"
+                  onChange={handleSortChange}
+                >
+                  <option value="date-desc">
+                    Sort By: Submitted At (Latest First)
+                  </option>
+                  <option value="date-asc">
+                    Sort By: Submitted At (Oldest First)
+                  </option>
                 </select>
 
                 {/* Dynamic Search */}
@@ -418,9 +434,8 @@ const SendFeedback = () => {
                         <input type="checkbox" />
                       </th>
                       <th>ID</th>
-                      {(curUserRole === "lab_admin" || curUserRole === "clinic_admin") && (
-                        <th>Feedback By</th>
-                      )}
+                      {(curUserRole === "lab_admin" ||
+                        curUserRole === "clinic_admin") && <th>Feedback By</th>}
                       <th>Submitted at</th>
                       <th>Category</th>
                       <th>Description</th>
@@ -442,15 +457,16 @@ const SendFeedback = () => {
                             />
                           </td>
                           <td>{f.id}</td>
-                          {(curUserRole === "lab_admin" || curUserRole === "clinic_admin") && (
+                          {(curUserRole === "lab_admin" ||
+                            curUserRole === "clinic_admin") && (
                             <td>
-                            {
-                              f.user.role.charAt(0).toUpperCase() +
-                                f.user.role.slice(1) // To capitalize the first letter
-                            }
+                              {
+                                f.user.role.charAt(0).toUpperCase() +
+                                  f.user.role.slice(1) // To capitalize the first letter
+                              }
                             </td>
                           )}
-                          
+
                           <td>{`${new Date(
                             f.date_submitted
                           ).toLocaleDateString()} | ${new Date(

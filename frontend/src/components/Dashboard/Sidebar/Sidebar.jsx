@@ -18,19 +18,6 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
   const menuItems = {
     clinic_admin: [
       {
-        icon: "icon-test-results-black.jpg",
-        label: "Electronic Health Records",
-        subItems: [
-          { label: "Patient Records" },
-          { label: "Medical History & Notes" },
-        ],
-      },
-      {
-        icon: "icon-diagnostic-results-black.jpg",
-        label: "Diagnostic Results",
-        subItems: [],
-      },
-      {
         icon: "icon-appointments-black.jpg",
         label: "Appointments",
         subItems: [
@@ -40,56 +27,11 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
         ],
       },
       {
-        icon: "icon-billing-black.jpg",
-        label: "Billing & Invoice",
-        subItems: [
-          { label: "Generate Invoice" },
-          { label: "View Payment History" },
-        ],
-      },
-      { icon: "icon-feedback-black.jpg", label: "Feedbacks", subItems: [] },
-    ],
-    doctor: [
-      {
         icon: "icon-test-results-black.jpg",
         label: "Electronic Health Records",
         subItems: [
-          { label: "Patient Records" },
-          { label: "Medical History & Notes" },
-        ],
-      },
-      {
-        icon: "icon-diagnostic-results-black.jpg",
-        label: "Diagnostic Results",
-        subItems: [],
-      },
-      {
-        icon: "icon-appointments-black.jpg",
-        label: "Appointments",
-        subItems: [
-          { label: "View Appointments" },
-          { label: "Appointments History" },
-          { label: "Manage Availability" },
-          { label: "Cancellation Requests" },
-        ],
-      },
-      {
-        icon: "icon-billing-black.jpg",
-        label: "Billing & Invoice",
-        subItems: [
-          { label: "Generate Invoice" },
-          { label: "View Payment History" },
-        ],
-      },
-      { icon: "icon-feedback-black.jpg", label: "Feedbacks", subItems: [] },
-    ],
-    patient: [
-      {
-        icon: "icon-test-results-black.jpg",
-        label: "Electronic Health Records",
-        subItems: [
-          { label: "Patient Records" },
-          { label: "Medical History & Notes" },
+          { label: "All Patients Records" },
+          { label: "All Medical Histories" },
         ],
       },
       {
@@ -97,21 +39,69 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
         label: "Test Results",
         subItems: [],
       },
+      { icon: "icon-feedback-black.jpg", label: "Feedbacks", subItems: [] },
       {
-        icon: "icon-diagnostic-results-black.jpg",
-        label: "Diagnostic Results",
-        subItems: [],
+        icon: "icon-billing-black.jpg",
+        label: "Billing & Invoice",
+        subItems: [
+          { label: "Generate Invoice" },
+          { label: "View Payment History" },
+        ],
       },
+    ],
+    doctor: [
       {
         icon: "icon-appointments-black.jpg",
         label: "Appointments",
         subItems: [
-          { label: "View Clinic Appointments" },
-          { label: "View Lab Appointments" },
+          { label: "My Appointments" },
           { label: "Appointments History" },
-          { label: "Cancellation Requests" },
+          { label: "Manage Availability" },
+          { label: "My Cancellation Requests" },
         ],
       },
+      {
+        icon: "icon-test-results-black.jpg",
+        label: "Electronic Health Records",
+        subItems: [
+          { label: "All Patients Records" },
+          { label: "All Medical Histories" },
+        ],
+      },
+
+      { icon: "icon-feedback-black.jpg", label: "Feedbacks", subItems: [] },
+      {
+        icon: "icon-billing-black.jpg",
+        label: "Billing & Invoice",
+        subItems: [
+          { label: "Generate Invoice" },
+          { label: "View Payment History" },
+        ],
+      },
+    ],
+    patient: [
+      {
+        icon: "icon-appointments-black.jpg",
+        label: "Appointments",
+        subItems: [
+          { label: "Clinic Appointments" },
+          { label: "Lab Appointments" },
+          { label: "Appointments History" },
+          { label: "My Cancellation Requests" },
+        ],
+      },
+      {
+        icon: "icon-test-results-black.jpg",
+        label: "Electronic Health Records",
+        subItems: [{ label: "My Records" }, { label: "My Medical History" }],
+      },
+      {
+        icon: "icon-test-results-black.jpg",
+        label: "Test Results",
+        subItems: [],
+      },
+
+      { icon: "icon-feedback-black.jpg", label: "Feedbacks", subItems: [] },
       {
         icon: "icon-billing-black.jpg",
         label: "Billing & Invoice",
@@ -120,24 +110,8 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
           { label: "View Billing History" },
         ],
       },
-      { icon: "icon-feedback-black.jpg", label: "Feedbacks", subItems: [] },
-      {
-        icon: "icon-test-request-black.jpg",
-        label: "Test Requests",
-        subItems: [],
-      },
     ],
     lab_admin: [
-      {
-        icon: "icon-test-results-black.jpg",
-        label: "Test Results",
-        subItems: [],
-      },
-      {
-        icon: "icon-diagnostic-results-black.jpg",
-        label: "Diagnostic Results",
-        subItems: [],
-      },
       {
         icon: "icon-appointments-black.jpg",
         label: "Appointments",
@@ -148,6 +122,26 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
         ],
       },
       {
+        icon: "icon-test-request-black.jpg",
+        label: "Test Requests",
+        subItems: [],
+      },
+      {
+        icon: "icon-test-results-black.jpg",
+        label: "Electronic Health Records",
+        subItems: [
+          { label: "All Patients Records" },
+          { label: "All Medical Histories" },
+        ],
+      },
+      // {
+      //   icon: "icon-test-results-black.jpg",
+      //   label: "Test Results",
+      //   subItems: [],
+      // },
+
+      { icon: "icon-feedback-black.jpg", label: "Feedbacks", subItems: [] },
+      {
         icon: "icon-billing-black.jpg",
         label: "Billing & Invoice",
         subItems: [
@@ -155,24 +149,8 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
           { label: "View Payment History" },
         ],
       },
-      { icon: "icon-feedback-black.jpg", label: "Feedbacks", subItems: [] },
-      {
-        icon: "icon-test-request-black.jpg",
-        label: "Test Requests",
-        subItems: [],
-      },
     ],
     lab_technician: [
-      {
-        icon: "icon-test-results-black.jpg",
-        label: "Test Results",
-        subItems: [],
-      },
-      {
-        icon: "icon-diagnostic-results-black.jpg",
-        label: "Diagnostic Results",
-        subItems: [],
-      },
       {
         icon: "icon-appointments-black.jpg",
         label: "Appointments",
@@ -180,9 +158,30 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
           { label: "View Appointments" },
           { label: "Appointments History" },
           { label: "Manage Availability" },
-          { label: "Cancellation Requests" },
+          { label: "My Cancellation Requests" },
         ],
       },
+      {
+        icon: "icon-test-request-black.jpg",
+        label: "Test Requests",
+        subItems: [],
+      },
+
+      {
+        icon: "icon-test-results-black.jpg",
+        label: "Electronic Health Records",
+        subItems: [
+          { label: "All Patients Records" },
+          { label: "All Medical Histories" },
+        ],
+      },
+      // {
+      //   icon: "icon-test-results-black.jpg",
+      //   label: "Test Results",
+      //   subItems: [],
+      // },
+
+      { icon: "icon-feedback-black.jpg", label: "Feedbacks", subItems: [] },
       {
         icon: "icon-billing-black.jpg",
         label: "Billing & Invoice",
@@ -191,18 +190,12 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
           { label: "View Payment History" },
         ],
       },
-      { icon: "icon-feedback-black.jpg", label: "Feedbacks", subItems: [] },
-      {
-        icon: "icon-test-request-black.jpg",
-        label: "Test Requests",
-        subItems: [],
-      },
     ],
   };
 
   const currentMenu = menuItems[userRole] || [];
 
-  // Handlers 
+  // Handlers
 
   const handleClosePopup = () => {
     setShowPopup(false); // Hide the popup when closing
@@ -212,14 +205,10 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
     console.log(`Action: ${action}`);
 
     if (action === "Edit Profile") {
-      setPopupContent(
-        <PopupEditProfile
-          onClose={handleClosePopup}
-        />
-      );
+      setPopupContent(<PopupEditProfile onClose={handleClosePopup} />);
       setShowPopup(true);
     }
-  }
+  };
 
   return (
     <div>
@@ -359,11 +348,19 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
                 <br />
                 <span>{item.email}</span>
               </h2>
-              
+
               {/* Links (hidden by default, shown on hover) */}
               <div className={styles.hiddenLinks}>
-                <span className={styles.editProfileLink}><i class="fa-solid fa-pen"></i><a onClick={() => handleActionClick("Edit Profile")}>Edit Profile</a></span>
-                <span className={styles.logoutLink}><i class="fa-solid fa-arrow-right-from-bracket"></i><a>Logout</a></span>
+                <span className={styles.editProfileLink}>
+                  <i class="fa-solid fa-pen"></i>
+                  <a onClick={() => handleActionClick("Edit Profile")}>
+                    Edit Profile
+                  </a>
+                </span>
+                <span className={styles.logoutLink}>
+                  <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                  <a>Logout</a>
+                </span>
               </div>
               {/* </div> */}
             </div>
