@@ -142,6 +142,10 @@ const UploadImage = () => {
       setIsUploading(false);
     }
   };
+  useEffect(() => {
+    setPopupContent(<NailysisReport predictionResult={analysisResults} />);
+    setShowPopup(true);
+  }, []);
 
   return (
     <>

@@ -32,6 +32,8 @@ import YourPatients from "./pages/admin-clinic/your-patients-clinic-admin";
 import PatientProfile from "./pages/admin-clinic/patient-profile-clinic-admin";
 import DoctorProfile from "./pages/admin-clinic/doctor-profile-clinic-admin";
 import BillingHistory from "./pages/admin-clinic/billing-history.jsx";
+import AboutUs from "./pages/common/about-us.jsx";
+import ContactUs from "./pages/common/contact.jsx";
 
 function Logout() {
   localStorage.clear();
@@ -216,6 +218,8 @@ function App() {
           <Route path="/logout" element={<Navigate to="/login" />} />
           <Route path="/register" element={<Register />} />
           <Route path="/add-appointment" element={<AddAppointment />} />
+          <Route path="/about-us" element={<AboutUs />} />
+          <Route path="/contact-us" element={<ContactUs />} />
           <Route
             path="/lab-test-result/:reportId"
             element={<LabTestResult />}

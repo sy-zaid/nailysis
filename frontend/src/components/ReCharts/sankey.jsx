@@ -15,6 +15,7 @@ const CustomNode = ({ x, y, width, height, index, payload, containerWidth }) => 
         fill={index === 0 ? "#8884d8" : "#82ca9d"}
         stroke="#333"
         strokeWidth={1}
+        
       />
       <text
         x={x + (index === 0 ? width + 10 : -10)} // Force left/right positioning

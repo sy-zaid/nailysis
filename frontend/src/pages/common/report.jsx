@@ -134,11 +134,11 @@ const NailysisReport = ({ onClose, predictionResult }) => {
                       <br />
                       Sindh 75300
                     </address>
-                  </div>
-                  <div className={styles.headerRight}>
                     <div className={styles.contactInfo}>
                       Contact: 021 12345678
                     </div>
+                  </div>
+                  <div className={styles.headerRight}>
                     <div className={styles.logo}>
                       <img src="nailysis-logo-small.png" alt="logo" />
                     </div>
@@ -221,66 +221,113 @@ const NailysisReport = ({ onClose, predictionResult }) => {
                 <div className={styles.divider}></div>
 
                 <section className={styles.section}>
-                  <h4>Uploaded Images</h4>
-                  <div className={styles.imagesGrid}>
-                    <div className={styles.imageBox}>
-                      <img src="right-thumb.png" alt="thumb" />
-                    </div>
-                    <div className={styles.imageBox}>
-                      {" "}
-                      <img src="left-thumb.png" alt="thumb" />
-                    </div>
-                    <div className={styles.imageBox}>
-                      <img src="right-fingers.png" alt="fingers" />
-                    </div>
-                    <div className={styles.imageBox}>
-                      <img src="left-fingers.png" alt="fingers" />
-                    </div>
-                  </div>
-
-                  <h4 className={styles.confidenceTitle}>Confidence Levels</h4>
-                  <div className="p-6">
-                    <div className={styles.confidenceGrid}>
-                      {combined.map((idx) => (
-                        <div>
-                          <PieChartRes data={idx} />
-
-                          <h1>{idx.predicted_class}</h1>
-                          <ProgressBarChart percentage={80} />
-                        </div>
-                      ))}
-                    </div>
-
-                    <h2>PieChartsVote Chart</h2>
-                    <PieChartVoteRes data={combined} />
-                    <h2>Radar Chart</h2>
-                    <RadarChartRes allClassConfidences={combined} />
-                    <h2>Sankey Chart</h2>
-                    <SankeyRes predictionResult={predictionResult} />
-                    <h2>Bar Chart</h2>
-                    <BarChartRes data={combined} />
-
-                    <h2>Stacked Bar Chart</h2>
-                    <BarChartStackedRes data={combined} />
-                  </div>
-
-                  <div className={styles.disclaimer}>
-                    <p>
-                      Note: It is not a definitive medical diagnosis and should
-                      be used to assist healthcare providers in identifying
-                      potential issues for further investigation. Clinical
-                      assessments and lab tests are required for accurate
-                      diagnosis.
-                    </p>
-                  </div>
-                </section>
-
-                <div className={styles.divider}></div>
-
-                <section className={styles.section}>
                   <h3 className={styles.sectionTitle}>
-                    <span className={styles.dot}></span> Symptoms Added
+                    <span className={styles.dot}></span> Uploaded Images and
+                    their individual results
                   </h3>
+                  <div className={styles.imagesGrid}>
+                    <div className={styles.imageResult}>
+                      <div className={styles.imageBox}>
+                        <img src="./right-fingers.png" alt="Right fingers" />
+                      </div>
+                      <div className={styles.progressContainer}>
+                        <div
+                          className={styles.progressBar}
+                          style={{ width: "90%", backgroundColor: "#2196F3" }}
+                        ></div>
+                      </div>
+                      <p className={styles.imageLabel}>Melanoma 90%</p>
+                    </div>
+                    <div className={styles.imageResult}>
+                      <div className={styles.imageBox}>
+                        <img src="./left-thumb.png" alt="left thumb" />
+                      </div>
+                      <div className={styles.progressContainer}>
+                        <div
+                          className={styles.progressBar}
+                          style={{ width: "90%", backgroundColor: "#2196F3" }}
+                        ></div>
+                      </div>
+                      <p className={styles.imageLabel}>Melanoma 90%</p>
+                    </div>
+                    <div className={styles.imageResult}>
+                      <div className={styles.imageBox}>
+                        <img src="./right-thumb.png" alt="Right thumb" />
+                      </div>
+                      <div className={styles.progressContainer}>
+                        <div
+                          className={styles.progressBar}
+                          style={{ width: "90%", backgroundColor: "#2196F3" }}
+                        ></div>
+                      </div>
+                      <p className={styles.imageLabel}>Melanoma 90%</p>
+                    </div>
+                    <div className={styles.imageResult}>
+                      <div className={styles.imageBox}>
+                        <img src="./left-fingers.png" alt="left fingers" />
+                      </div>
+                      <div className={styles.progressContainer}>
+                        <div
+                          className={styles.progressBar}
+                          style={{ width: "90%", backgroundColor: "#2196F3" }}
+                        ></div>
+                      </div>
+                      <p className={styles.imageLabel}>Koilonychia 90%</p>
+                    </div>
+                  </div>
+
+                  <div className={styles.divider}></div>
+
+                  <h3 className={styles.sectionTitle}>
+                    <span className={styles.dot}></span> Top Predictions Based
+                    On Confidence Scores
+                  </h3>
+                  <p className={styles.description}>
+                    Displays how confident the system is about each predicted
+                    disease individually. A full circle represents 100%
+                    confidence.
+                  </p>
+
+                  <div className={styles.confidenceGrid}>
+                    <div className={styles.confidenceItem}>
+                      <div
+                        className={styles.confidenceCircle}
+                        style={{ borderColor: "#2196F3" }}
+                      >
+                        <span className={styles.confidenceValue}>98%</span>
+                      </div>
+                      <div className={styles.alertIndicator}>!</div>
+                      <p>Onychomycosis</p>
+                    </div>
+
+                    <div className={styles.confidenceItem}>
+                      <div
+                        className={styles.confidenceCircle}
+                        style={{ borderColor: "#2196F3" }}
+                      >
+                        <span className={styles.confidenceValue}>73%</span>
+                      </div>
+                      <p>Beau's Lines</p>
+                    </div>
+
+                    <div className={styles.confidenceItem}>
+                      <div
+                        className={styles.confidenceCircle}
+                        style={{ borderColor: "#2196F3" }}
+                      >
+                        <span className={styles.confidenceValue}>42%</span>
+                      </div>
+                      <p>Clubbing</p>
+                    </div>
+                  </div>
+                  {/* 
+                  <div className={styles.divider}></div> */}
+
+                  <h3 style={{ fontStyle: "italic", color: "#4e4e4e" }}>
+                    {/* <span className={styles.dot}></span> */}
+                    Symptoms
+                  </h3>
+
                   <div className={styles.symptomsText}>
                     <p>
                       I've noticed that my toenails are starting to look
@@ -293,39 +340,165 @@ const NailysisReport = ({ onClose, predictionResult }) => {
                       rough.
                     </p>
                   </div>
+                </section>
 
-                  <div className={styles.signatures}>
-                    <p className={styles.disclaimerText}>
-                      This is a computer generate NailysisReport and does not
-                      require any signatures.
+                <div className={styles.divider}></div>
+
+                <div>
+                  <section className={styles.chartSection}>
+                    <h3 className={styles.sectionTitle}>
+                      <span className={styles.dot}></span>
+                      Disease Votes and Confidence Comparisons
+                    </h3>
+                    <p className={styles.description}>
+                      Shows how many votes each disease received and compares
+                      overall confidence levels across all diseases to highlight
+                      the most likely prediction.
                     </p>
 
+                    {/* Container for all charts */}
+                    <div className={styles.chartContainer}>
+                      {/* Wrapper for the first two charts */}
+                      <div className={styles.chartsWrapper}>
+                        {/* First chart */}
+                        <div className={styles.chartWrapper}>
+                          {/* <h2 className={styles.chartSubtitle}>
+                            Pie Chart Vote
+                          </h2> */}
+                          <div className={styles.chartContent}>
+                            <PieChartVoteRes data={combined} />
+                          </div>
+                        </div>
+
+                        {/* Second chart */}
+                        <div className={styles.chartWrapper}>
+                          {/* <h2 className={styles.chartSubtitle}>Radar Chart</h2> */}
+                          <div className={styles.chartContent}>
+                            <RadarChartRes allClassConfidences={combined} />
+                          </div>
+                        </div>
+                      </div>
+                      <div className={styles.divider}></div>
+
+                      {/* Third chart (Sankey Chart) in a separate div */}
+                      <div className={styles.sankeyWrapper}>
+                        <h3 className={styles.sectionTitle}>
+                          <span className={styles.dot}></span>
+                          Flow of possible diseases towards final result
+                        </h3>
+                        <p className={styles.description}>
+                          Visualizes the flow of confidence from all possible
+                          classes to the final prediction. It helps understand
+                          how votes and confidence are distributed.
+                        </p>
+                        <div
+                          className={`${styles.chartContent} ${styles.sankeyContent}`}
+                        >
+                          <SankeyRes predictionResult={predictionResult} />
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+                </div>
+                <div className={styles.divider}></div>
+                <section>
+                  <h3 className={styles.sectionTitle}>
+                    <span className={styles.dot}></span>
+                    Top Predictions
+                  </h3>
+                  <p className={styles.description}>
+                    Shows a vertical bar for each predicted disease with height
+                    based on confidence. Simple view to quickly identify top
+                    predictions.
+                  </p>
+                  <BarChartRes data={combined} />
+
+                  <div className={styles.divider}></div>
+                  <h3 className={styles.sectionTitle}>
+                    <span className={styles.dot}></span>
+                    Comparision of Predictions with Max Confidences
+                  </h3>
+                  <p className={styles.description}>
+                    Stacked bar chart to visualize the weight of predicted
+                    classes confidences and the max confidence.
+                  </p>
+                  <BarChartStackedRes data={combined} />
+                </section>
+                <div className={styles.divider}></div>
+                <div className={styles.disclaimer}>
+                  <p>
+                    Note: It is not a definitive medical diagnosis and should be
+                    used to assist healthcare providers in identifying potential
+                    issues for further investigation. Clinical assessments and
+                    lab tests are required for accurate diagnosis.
+                  </p>
+                  <br />
+                  <br />
+                  <p
+                    className={styles.disclaimerText}
+                    style={{ fontWeight: "bold" }}
+                  >
+                    This is a computer generate NailysisReport and does not
+                    require any signatures.
+                  </p>
+                </div>
+
+                <div className={styles.divider}></div>
+
+                <section className={styles.section}>
+                  <div className={styles.signatures}>
                     <div className={styles.signatureGrid}>
                       <div className={styles.signatureItem}>
-                        <p>Dr. Naeem Iqbal</p>
-                        <p className={styles.credentials}>MBBS, FCPS</p>
+                        <p style={{ fontStyle: "italic", color: "#4e4e4e" }}>
+                          Dr. Naeem Iqbal
+                        </p>
+                        <p
+                          style={{ fontStyle: "italic", color: "#4e4e4e" }}
+                          className={styles.credentials}
+                        >
+                          MBBS, FCPS
+                        </p>
                       </div>
                       <div className={styles.signatureItem}>
-                        <p>Dr. Sarah Zafar</p>
-                        <p className={styles.credentials}>MBBS, FCPS</p>
+                        <p style={{ fontStyle: "italic", color: "#4e4e4e" }}>
+                          Dr. Sarah Zafar
+                        </p>
+                        <p
+                          style={{ fontStyle: "italic", color: "#4e4e4e" }}
+                          className={styles.credentials}
+                        >
+                          MBBS, FCPS
+                        </p>
                       </div>
                       <div className={styles.signatureItem}>
-                        <p className={styles.teamTitle}>The Nailysis Team</p>
-                        <p className={styles.credentials}>Software Engineers</p>
+                        <p
+                          style={{ fontStyle: "italic", color: "#4e4e4e" }}
+                          className={styles.teamTitle}
+                        >
+                          The Nailysis Team
+                        </p>
+                        <p
+                          style={{ fontStyle: "italic", color: "#4e4e4e" }}
+                          className={styles.credentials}
+                        >
+                          Software Engineers
+                        </p>
                       </div>
                     </div>
                   </div>
                 </section>
               </div>
               <div className={styles.actionButtons}>
-                <button className={styles.downloadButton}>
-                  <span className={styles.downloadIcon}></span>
-                  Download PDF
-                </button>
-                <button className={styles.shareButton}>
-                  <span className={styles.shareIcon}></span>
-                  Share Report
-                </button>
+                <div className={styles.leftButtons}>
+                  <button className={styles.downloadButton}>
+                    <img src="./download.png" alt="" />
+                    Download PDF
+                  </button>
+                  <button className={styles.shareButton}>
+                    <img src="./share.png" alt="share" />
+                    Share Report
+                  </button>
+                </div>
                 <button className={styles.appointmentButton}>
                   Book Appointment
                 </button>
