@@ -133,7 +133,13 @@ const UploadImage = () => {
       );
       console.log("RESULTS FROM MODEL PRED", response.data);
       setAnalysisResults(response.data);
-      setPopupContent(<NailysisReport onClose={handleClosePopup} predictionResult={response.data}></NailysisReport>);
+      setPopupContent(
+        <NailysisReport
+          onClose={handleClosePopup}
+          analysisResult={response.data}
+          uploadedImages={previews} // Pass the previews as uploadedImages
+        />
+      );
       setShowPopup(true);
     } catch (error) {
       console.error("Upload error:", error);
@@ -143,7 +149,8 @@ const UploadImage = () => {
     }
   };
   // useEffect(() => {
-  //   setPopupContent(<NailysisReport predictionResult={analysisResults} />);
+  //   // setPopupContent(<NailysisReport analysisResult={analysisResults} />);
+  //   setPopupContent(<NailysisReport reportId={60} />);
   //   setShowPopup(true);
   // }, []);
 

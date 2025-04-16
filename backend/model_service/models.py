@@ -12,7 +12,7 @@ class NailDiseasePrediction(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20, default='Completed')  # Pending, Completed, Error
 
-class NailImage(models.Model):
-    prediction = models.ForeignKey(NailDiseasePrediction, on_delete=models.CASCADE, related_name='images')
+class NailImage(models.Model):  
+    prediction = models.ForeignKey(NailDiseasePrediction, on_delete=models.CASCADE, related_name='nail_images')
     image = models.ImageField(upload_to='nail_scans/')
     image_index = models.PositiveIntegerField(null=True, blank=True)

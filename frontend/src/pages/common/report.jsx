@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import styles from "./report.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
@@ -16,82 +16,75 @@ import BoxPlotRes from "../../components/ReCharts/box-plot";
 import SankeyRes from "../../components/ReCharts/sankey";
 import PieChartVoteRes from "../../components/ReCharts/pie-charts-vote";
 import ProgressBarChart from "../../components/ReCharts/progress-bar";
-import { calculateAge } from "../../utils/utils";
+import {
+  calculateAge,
+  getFormattedCurrentTime,
+  getRole,
+} from "../../utils/utils";
+import { getNailysisResultsFromId } from "../../api/nailysisApi";
 
-const NailysisReport = ({ onClose, predictionResult }) => {
-  // predictionResult = {
-  //   individual_predictions: [
-  //     {
-  //       top_classes: [
-  //         {
-  //           class_index: 4,
-  //           predicted_class: "koilonychia",
-  //           confidence: 0.9999979734420776,
-  //         },
-  //         {
-  //           class_index: 8,
-  //           predicted_class: "onychogryphosis",
-  //           confidence: 0.00000195485404219653,
-  //         },
-  //         {
-  //           class_index: 10,
-  //           predicted_class: "onychomycosis",
-  //           confidence: 1.167044416661156e-7,
-  //         },
-  //       ],
-  //     },
-  //     {
-  //       top_classes: [
-  //         {
-  //           class_index: 5,
-  //           predicted_class: "melanoma",
-  //           confidence: 0.9999997615814209,
-  //         },
-  //         {
-  //           class_index: 6,
-  //           predicted_class: "muehrckes Lines",
-  //           confidence: 1.544823788890426e-7,
-  //         },
-  //         {
-  //           class_index: 1,
-  //           predicted_class: "bluish nails",
-  //           confidence: 7.614843156034112e-8,
-  //         },
-  //       ],
-  //     },
-  //   ],
-  //   combined_result: [
-  //     {
-  //       class_index: 5,
-  //       predicted_class: "melanoma",
-  //       confidence: 0.9999997615814209,
-  //       vote_count: 1,
-  //       max_confidence: 0.9999997615814209,
-  //     },
-  //     {
-  //       class_index: 4,
-  //       predicted_class: "koilonychia",
-  //       confidence: 0.9999979734420776,
-  //       vote_count: 1,
-  //       max_confidence: 0.9999979734420776,
-  //     },
-  //     {
-  //       class_index: 8,
-  //       predicted_class: "onychogryphosis",
-  //       confidence: 0.00000195485404219653,
-  //       vote_count: 0,
-  //       max_confidence: 0.00000195485404219653,
-  //     },
-  //   ],
-  // };
-
-  // ----- POPUPS & NAVIGATION
-
+const NailysisReport = ({
+  onClose,
+  analysisResult,
+  reportId,
+  uploadedImages,
+}) => {
   const [popupTrigger, setPopupTrigger] = useState(true);
-  console.log("predictionResult", predictionResult);
+
+  // ----- USER INFORMATION
+  const curUserRole = getRole();
+  // ----- IMPORTANT DATA
+  const [predictionResult, setPredictionResult] = useState(() => ({
+    individual_predictions: [],
+    combined_result: [],
+    patient_details: null,
+    images: [],
+    other_details: {
+      final_prediction: "",
+      scanned_on: "",
+      scanned_by: "",
+      total_images: 0,
+      total_conditions_detected: 0,
+    },
+    ...(analysisResult || {}),
+  }));
+
+  const fetchNailysisReport = async (reportId) => {
+    try {
+      const response = await getNailysisResultsFromId(reportId);
+      console.log("FECTHING REPORT...", response.data);
+      setPredictionResult(response.data);
+    } catch (error) {
+      console.error("Error fetching report:", error);
+
+      // Handle different error cases
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        if (error.response.status === 404) {
+          throw new Error("Report not found");
+        } else if (error.response.status === 500) {
+          throw new Error("Server error while fetching report");
+        }
+      } else if (error.request) {
+        // The request was made but no response was received
+        throw new Error("No response from server");
+      } else {
+        // Something happened in setting up the request
+        throw new Error("Error setting up request");
+      }
+    }
+  };
+  useEffect(() => {
+    if (reportId) {
+      fetchNailysisReport(reportId);
+    }
+  }, []);
+  console.log("Prediction Result", predictionResult);
+  const imageData = predictionResult.images || [];
   const patient_details = predictionResult.patient_details;
   const combined = predictionResult.combined_result;
-  console.log("combined", combined);
+  const other_details = predictionResult.other_details;
+
   const diseaseConfidences = {};
 
   predictionResult.individual_predictions.forEach((prediction) => {
@@ -102,7 +95,7 @@ const NailysisReport = ({ onClose, predictionResult }) => {
       diseaseConfidences[classInfo.predicted_class].push(classInfo.confidence);
     });
   });
-  console.log(diseaseConfidences);
+
   return (
     <Popup
       trigger={popupTrigger}
@@ -146,42 +139,45 @@ const NailysisReport = ({ onClose, predictionResult }) => {
                 </div>
                 <div className={styles.divider}></div>
 
-                <section className={styles.section}>
-                  <h3 className={styles.sectionTitle}>
-                    <span className={styles.dot}></span> Patient Information
-                  </h3>
+                {patient_details && (
+                  <section className={styles.section}>
+                    <h3 className={styles.sectionTitle}>
+                      <span className={styles.dot}></span> Patient Information
+                    </h3>
 
-                  <div className={styles.infoGrid}>
-                    <div className={styles.infoItem}>
-                      <h4>Patient ID</h4>
-                      <p>{patient_details?.user?.user_id || "N/A"}</p>
+                    <div className={styles.infoGrid}>
+                      <div className={styles.infoItem}>
+                        <h4>Patient ID</h4>
+                        <p>{patient_details?.user?.user_id || "N/A"}</p>
+                      </div>
+                      <div className={styles.infoItem}>
+                        <h4>Patient Name</h4>
+                        <p>
+                          {patient_details?.user?.first_name || "N/A"}{" "}
+                          {patient_details?.user?.last_name || "N/A"}
+                        </p>
+                      </div>
+                      <div className={styles.infoItem}>
+                        <h4>Age</h4>
+                        <p>
+                          {calculateAge(patient_details?.date_of_birth) ||
+                            "N/A"}
+                        </p>
+                      </div>
                     </div>
-                    <div className={styles.infoItem}>
-                      <h4>Patient Name</h4>
-                      <p>
-                        {patient_details?.user?.first_name || "N/A"}{" "}
-                        {patient_details?.user?.last_name || "N/A"}
-                      </p>
-                    </div>
-                    <div className={styles.infoItem}>
-                      <h4>Age</h4>
-                      <p>
-                        {calculateAge(patient_details?.date_of_birth) || "N/A"}
-                      </p>
-                    </div>
-                  </div>
 
-                  <div className={styles.infoGrid}>
-                    <div className={styles.infoItem}>
-                      <h4>Gender</h4>
-                      <p>{patient_details?.gender || "N/A"}</p>
+                    <div className={styles.infoGrid}>
+                      <div className={styles.infoItem}>
+                        <h4>Gender</h4>
+                        <p>{patient_details?.gender || "N/A"}</p>
+                      </div>
+                      <div className={styles.infoItem}>
+                        <h4>Test Request</h4>
+                        <p>Nailysis Disease Detection</p>
+                      </div>
                     </div>
-                    <div className={styles.infoItem}>
-                      <h4>Test Request</h4>
-                      <p>Nailysis Disease Detection</p>
-                    </div>
-                  </div>
-                </section>
+                  </section>
+                )}
 
                 <div className={styles.divider}></div>
 
@@ -194,26 +190,28 @@ const NailysisReport = ({ onClose, predictionResult }) => {
                   <div className={styles.infoGrid}>
                     <div className={styles.infoItem}>
                       <h4>Current Result</h4>
-                      <p>Onychomycosis</p>
+                      <p>{other_details.final_prediction}</p>
                     </div>
                     <div className={styles.infoItem}>
                       <h4>Scanned On</h4>
-                      <p>10/10/2024 09:30 AM</p>
+                      <p>{other_details.scanned_on}</p>
                     </div>
-                    <div className={styles.infoItem}>
-                      <h4>Scanned By</h4>
-                      <p>Self-scanned</p>
-                    </div>
+                    {!reportId && (
+                      <div className={styles.infoItem}>
+                        <h4>Scanned By</h4>
+                        <p>{other_details.scanned_by}</p>
+                      </div>
+                    )}
                   </div>
 
                   <div className={styles.infoGrid}>
                     <div className={styles.infoItem}>
-                      <h4>Area Affected</h4>
-                      <p>Thumb Nails</p>
+                      <h4>Total Images Provided</h4>
+                      <p>{other_details.total_images}</p>
                     </div>
                     <div className={styles.infoItem}>
                       <h4>Total Conditions Detected</h4>
-                      <p>3</p>
+                      <p>{other_details.total_conditions_detected}</p>
                     </div>
                   </div>
                 </section>
@@ -225,120 +223,42 @@ const NailysisReport = ({ onClose, predictionResult }) => {
                     <span className={styles.dot}></span> Uploaded Images and
                     their individual results
                   </h3>
+                  {/* Image rendering part to use uploadedImages when url is null */}
                   <div className={styles.imagesGrid}>
-                    <div className={styles.imageResult}>
-                      <div className={styles.imageBox}>
-                        <img src="./right-fingers.png" alt="Right fingers" />
-                      </div>
-                      <div className={styles.progressContainer}>
-                        <div
-                          className={styles.progressBar}
-                          style={{ width: "90%", backgroundColor: "#2196F3" }}
-                        ></div>
-                      </div>
-                      <p className={styles.imageLabel}>Melanoma 90%</p>
-                    </div>
-                    <div className={styles.imageResult}>
-                      <div className={styles.imageBox}>
-                        <img src="./left-thumb.png" alt="left thumb" />
-                      </div>
-                      <div className={styles.progressContainer}>
-                        <div
-                          className={styles.progressBar}
-                          style={{ width: "90%", backgroundColor: "#2196F3" }}
-                        ></div>
-                      </div>
-                      <p className={styles.imageLabel}>Melanoma 90%</p>
-                    </div>
-                    <div className={styles.imageResult}>
-                      <div className={styles.imageBox}>
-                        <img src="./right-thumb.png" alt="Right thumb" />
-                      </div>
-                      <div className={styles.progressContainer}>
-                        <div
-                          className={styles.progressBar}
-                          style={{ width: "90%", backgroundColor: "#2196F3" }}
-                        ></div>
-                      </div>
-                      <p className={styles.imageLabel}>Melanoma 90%</p>
-                    </div>
-                    <div className={styles.imageResult}>
-                      <div className={styles.imageBox}>
-                        <img src="./left-fingers.png" alt="left fingers" />
-                      </div>
-                      <div className={styles.progressContainer}>
-                        <div
-                          className={styles.progressBar}
-                          style={{ width: "90%", backgroundColor: "#2196F3" }}
-                        ></div>
-                      </div>
-                      <p className={styles.imageLabel}>Koilonychia 90%</p>
-                    </div>
-                  </div>
+                    {imageData.map((image, index) => {
+                      // Get the top prediction for this image
+                      const topPrediction =
+                        predictionResult.individual_predictions[index]
+                          ?.top_classes[0];
+                      const confidencePercentage = topPrediction
+                        ? Math.round(topPrediction.confidence * 100)
+                        : 0;
+                      const diseaseName =
+                        topPrediction?.predicted_class || "Unknown";
 
-                  <div className={styles.divider}></div>
-
-                  <h3 className={styles.sectionTitle}>
-                    <span className={styles.dot}></span> Top Predictions Based
-                    On Confidence Scores
-                  </h3>
-                  <p className={styles.description}>
-                    Displays how confident the system is about each predicted
-                    disease individually. A full circle represents 100%
-                    confidence.
-                  </p>
-
-                  <div className={styles.confidenceGrid}>
-                    <div className={styles.confidenceItem}>
-                      <div
-                        className={styles.confidenceCircle}
-                        style={{ borderColor: "#2196F3" }}
-                      >
-                        <span className={styles.confidenceValue}>98%</span>
-                      </div>
-                      <div className={styles.alertIndicator}>!</div>
-                      <p>Onychomycosis</p>
-                    </div>
-
-                    <div className={styles.confidenceItem}>
-                      <div
-                        className={styles.confidenceCircle}
-                        style={{ borderColor: "#2196F3" }}
-                      >
-                        <span className={styles.confidenceValue}>73%</span>
-                      </div>
-                      <p>Beau's Lines</p>
-                    </div>
-
-                    <div className={styles.confidenceItem}>
-                      <div
-                        className={styles.confidenceCircle}
-                        style={{ borderColor: "#2196F3" }}
-                      >
-                        <span className={styles.confidenceValue}>42%</span>
-                      </div>
-                      <p>Clubbing</p>
-                    </div>
-                  </div>
-                  {/* 
-                  <div className={styles.divider}></div> */}
-
-                  <h3 style={{ fontStyle: "italic", color: "#4e4e4e" }}>
-                    {/* <span className={styles.dot}></span> */}
-                    Symptoms
-                  </h3>
-
-                  <div className={styles.symptomsText}>
-                    <p>
-                      I've noticed that my toenails are starting to look
-                      discolored and turning yellowish. They've also become
-                      thicker and brittle over the past few weeks. It's been
-                      harder to trim them, and one of the nails feels like it's
-                      separating from the nail bed. I don't have much pain, but
-                      sometimes there's a slight discomfort when I put pressure
-                      on the nail. There's no bleeding, but the texture feels
-                      rough.
-                    </p>
+                      return (
+                        <div key={index} className={styles.imageResult}>
+                          <div className={styles.imageBox}>
+                            {image.url ? (
+                              <img
+                                src={image.url}
+                                alt={`Uploaded nail ${index + 1}`}
+                              />
+                            ) : uploadedImages && uploadedImages[index] ? (
+                              <img
+                                src={uploadedImages[index].url}
+                                alt={`Uploaded nail ${index + 1}`}
+                              />
+                            ) : (
+                              <div className={styles.imagePlaceholder}>
+                                <span>Image {index + 1}</span>
+                              </div>
+                            )}
+                          </div>
+                          {/* ... rest of the image rendering code ... */}
+                        </div>
+                      );
+                    })}
                   </div>
                 </section>
 
