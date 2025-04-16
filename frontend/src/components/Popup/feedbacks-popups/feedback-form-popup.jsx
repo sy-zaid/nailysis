@@ -6,6 +6,8 @@ import { useNavigate } from "react-router-dom";
 const API_BASE_URL = "http://localhost:8000/api/feedback"; // Update with actual API URL
 import styles from "./popup-feedback.module.css";
 import useCurrentUserData from "../../../useCurrentUserData.jsx";
+import { toast } from "react-toastify";
+
 import {
   calculateAge,
   getAccessToken,
@@ -37,6 +39,21 @@ const SubmitFeedback = ({ onClose, isClinicFeedback }) => {
   const onInputChange = handleInputChange(setFormData);
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevents default form behavior
+
+    // Validation checks
+    if (!formData.category.trim()) {
+      toast.warning("Please select a feedback category.", {
+        className: "custom-toast",
+      });
+      return;
+    }
+
+    if (!formData.description.trim()) {
+      toast.warning("Please enter additional notes.", {
+        className: "custom-toast",
+      });
+      return;
+    }
   
     const feedbackData = {
       category: formData.category,
@@ -47,13 +64,18 @@ const SubmitFeedback = ({ onClose, isClinicFeedback }) => {
     try {
       const response = await submitFeedback(feedbackData);
       if (response.status === 201) {
-        alert("Feedback submitted successfully!");
-      } else {
-        alert("Failed to submit feedback.");
-      }
+        toast.success("Feedback Submitted Successfully", {
+          className: "custom-toast",
+        });
+        onClose(); // Close the popup
+      } 
     } catch (error) {
       console.error("Error submitting feedback:", error);
-      alert("Error submitting feedback. Please try again.");
+      if (error.response) {
+        toast.error(error.response.data.error || "Something went wrong.", {
+          className: "custom-toast",
+        });
+      } 
     }
   };
   

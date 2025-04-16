@@ -2,10 +2,11 @@ import React, { useState, useEffect } from "react";
 import styles from "../all-popups-styles.module.css";
 import Select from "react-select";
 import Popup from "../Popup.jsx";
+import { toast } from "react-toastify";
 
 import axios from "axios";
 
-import { handleInputChange, handleSelectChange } from "../../../utils/utils.js";
+import { handleInputChange, handleSelectChange, getTodayDate } from "../../../utils/utils.js";
 import {
   getAvailableSlots,
   rescheduleTechnicianAppointment,
@@ -53,22 +54,70 @@ const PopupRescheduleTechnicianAppointment = ({
 
   const handleRescheduleAppointment = async (e) => {
     e.preventDefault();
+  
+    if (!formData.specialization) {
+      toast.warning("Please select specialization");
+      return;
+    }
+  
+    if (!formData.labTechnicianId) {
+      toast.warning("Please select lab technician");
+      return;
+    }
+  
+    if (!formData.appointmentDate) {
+      toast.warning("Please select date");
+      return;
+    }
+  
+    if (!formData.slotId) {
+      toast.warning("Please select appointment slot");
+      return;
+    }
+  
+    if (!formData.requestedLabTests || formData.requestedLabTests.length === 0) {
+      toast.warning("Please select required lab test");
+      return;
+    }
+  
     const payload = {
       lab_technician_id: formData.labTechnicianId,
       slot_id: formData.slotId,
       requested_lab_tests: formData.requestedLabTests,
       fee: formData.fee,
     };
+  
     try {
       console.log("Sending this to update", payload);
-      await rescheduleTechnicianAppointment(
+      // Store the API response in a variable
+      const response = await rescheduleTechnicianAppointment(
         appointmentDetails.appointment_id,
         payload
       );
-      alert("Appointment Rescheduled Successfully");
+      
+      // Check for success status (e.g. 200)
+      if (response.status === 200) {
+        toast.success("Appointment Rescheduled Successfully!", {
+          className: "custom-toast",
+        });
+        onClose(); // Close the popup
+      } else {
+        toast.error("Failed to reschedule appointment", {
+          className: "custom-toast",
+        });
+      }
     } catch (error) {
-      alert("Failed to reschedule appointment");
       console.error(error);
+      if (error.response) {
+        toast.error(
+          error.response.data.error || "Failed to reschedule appointment",
+          { className: "custom-toast" }
+        );
+      } else {
+        toast.error("Network Error", {
+          className: "custom-toast",
+        });
+      }
     }
   };
 
@@ -281,6 +330,7 @@ const PopupRescheduleTechnicianAppointment = ({
                     name="appointmentDate"
                     value={formData.appointmentDate}
                     onChange={onInputChange}
+                    min={getTodayDate()}
                   />
                 </div>
 

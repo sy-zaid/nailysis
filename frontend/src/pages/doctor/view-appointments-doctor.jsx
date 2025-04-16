@@ -223,14 +223,7 @@ const AppointmentDoctor = () => {
       <div className={styles.mainContent}>
         <div className={styles.appointmentsContainer}>
           <div className={styles.filters}>
-            <button
-              className={`${styles.filterButton} ${
-                activeButton === 0 ? styles.active : ""
-              }`}
-              onClick={() => handleFilterClick(0)}
-            >
-              All
-            </button>
+            
             {["All", "Scheduled", "Emergency Visit", "Today"].map((filter) => (
               <button
                 key={filter}
@@ -255,15 +248,7 @@ const AppointmentDoctor = () => {
               className={styles.addButton}
               onClick={() => handleActionClick("Manage Availability")}
             >
-              Completed
-            </button>
-            <button
-              className={`${styles.filterButton} ${
-                activeButton === 3 ? styles.active : ""
-              }`}
-              onClick={() => handleFilterClick(3)}
-            >
-              Cancelled Manage Availability
+              Manage Availability
             </button>
           </div>
 

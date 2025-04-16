@@ -3,6 +3,7 @@ import Select from "react-select";
 import styles from "./doctor-appointment-book-popup.module.css";
 import Popup from "../Popup";
 import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 import {
   calculateAge,
   handleClosePopup,
@@ -57,6 +58,7 @@ const CheckinDoctorAppointmentPopup = ({ onClose, appointmentDetails }) => {
 
   // Handles the completion of appointment
   const handleCompleteAppointment = async () => {
+
     try {
       const formData = new FormData();
       Object.entries(ehrData).forEach(([key, value]) => {
@@ -71,17 +73,30 @@ const CheckinDoctorAppointmentPopup = ({ onClose, appointmentDetails }) => {
         appointmentDetails.appointment_id,
         formData
       );
-      alert("Successfully marked as completed");
+      toast.success("Successfully marked as completed", { className: "custom-toast" });
       stopTimer();
       onClose();
     } catch (error) {
       console.log(error);
-      alert("Failed to complete appointment");
+      if (error.response) {
+        toast.error(
+          error.response.data.error || "Failed to complete appointment",
+          { className: "custom-toast" }
+        );
+      } else {
+        toast.error("Network Error", {
+          className: "custom-toast",
+        });
+      }
     }
   };
 
   // Function to start the timer when consultation begins
   const startTimer = () => {
+    // Run validation checks
+    if (!validateEHRForm()) {
+      return; // Do not proceed if any field is invalid
+    }
     setIsConsultationStarted(true);
     const id = setInterval(() => {
       setTimer((prev) => prev + 1);
@@ -106,6 +121,32 @@ const CheckinDoctorAppointmentPopup = ({ onClose, appointmentDetails }) => {
       }
     }
   }, [popupTrigger]); // Runs when the popup state changes
+
+  // Validation helper before completing the appointment
+  const validateEHRForm = () => {
+    if (!ehrData.medical_conditions || ehrData.medical_conditions.length === 0) {
+      toast.warning("Please Select Medical Conditions", { className: "custom-toast" });
+      return false;
+    }
+    if (!ehrData.current_medications || ehrData.current_medications.length === 0) {
+      toast.warning("Please Select Current Medications", { className: "custom-toast" });
+      return false;
+    }
+    if (!ehrData.diagnoses || ehrData.diagnoses.length === 0) {
+      toast.warning("Please Select Diagnoses", { className: "custom-toast" });
+      return false;
+    }
+    if (!ehrData.category) {
+      toast.warning("Please Select Category", { className: "custom-toast" });
+      return false;
+    }
+    if (!ehrData.recommended_lab_test || ehrData.recommended_lab_test.length === 0) {
+      toast.warning("Please Select Recommended Tests", { className: "custom-toast" });
+      return false;
+    }
+    // All validations passed
+    return true;
+  };
 
   // Content to display as second screen (patient information)
   const renderPatientInfoContent = () => (
@@ -286,6 +327,7 @@ const CheckinDoctorAppointmentPopup = ({ onClose, appointmentDetails }) => {
         <Select
           isMulti
           options={[
+            { value: "None", label: "None" },
             { value: "Metformin", label: "Metformin" },
             { value: "Aspirin", label: "Aspirin" },
             { value: "Lisinopril", label: "Lisinopril" },
@@ -304,6 +346,7 @@ const CheckinDoctorAppointmentPopup = ({ onClose, appointmentDetails }) => {
         <Select
           isMulti
           options={[
+            { value: "None", label: "None" },
             { value: "Anemia", label: "Anemia" },
             { value: "Diabetes", label: "Diabetes" },
             { value: "Hypertension", label: "Hypertension" },

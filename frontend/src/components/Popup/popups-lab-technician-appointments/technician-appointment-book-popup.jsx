@@ -5,11 +5,13 @@ import Popup from "../Popup.jsx";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import usePatientData from "../../../useCurrentUserData.jsx";
+import { toast } from "react-toastify";
 import {
   calculateAge,
   calculateTotalFee,
   handleInputChange,
   handleSelectChange,
+  getTodayDate,
 } from "../../../utils/utils.js";
 import {
   bookTechnicianAppointment,
@@ -40,6 +42,7 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
   const [availableTestPrices, setAvailableTestPrices] = useState([]);
   const [patient, setPatient] = useState([]);
   const [includeRecommended, setIncludeRecommended] = useState(false);
+
 
   // ----- APPOINTMENT FORM STATE
   const [formData, setFormData] = useState({
@@ -173,6 +176,32 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
     const requestedLabTestIds = formData.requestedLabTests.map(
       (test) => test.value
     );
+
+    if (!formData.specialization) {
+      toast.warning("Please select specialization");
+      return;
+    }
+  
+    if (!formData.labTechnicianId) {
+      toast.warning("Please select lab technician");
+      return;
+    }
+  
+    if (!formData.appointmentDate) {
+      toast.warning("Please select date");
+      return;
+    }
+  
+    if (!formData.slotId) {
+      toast.warning("Please select appointment slot");
+      return;
+    }
+  
+    if (!formData.requestedLabTests || formData.requestedLabTests.length === 0) {
+      toast.warning("Please select required lab test");
+      return;
+    }
+
     const payload = {
       lab_technician_id: formData.labTechnicianId,
       slot_id: formData.slotId,
@@ -191,14 +220,24 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
 
     try {
       const response = await bookTechnicianAppointment(payload);
-      alert("Appointment Booked Successfully");
+      // alert("Appointment Booked Successfully");
       setAppointments([...appointments, response.data]);
       console.log("Sending this to book:", payload);
       navigate("");
+      if (response.status === 200) {
+        toast.success("Appointment Booked Successfully!", {
+          className: "custom-toast",
+        });
+        onClose(); 
+      }
     } catch (error) {
-      alert("Failed to book appointment");
       console.log("Sending this to book:", payload);
       console.error(error);
+      if (error.response) {
+        toast.error(error.response.data.error || "Failed to book appointment", {
+          className: "custom-toast",
+        });
+      } 
     }
   };
 
@@ -471,6 +510,7 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
                     name="appointmentDate"
                     value={formData.appointmentDate}
                     onChange={onInputChange}
+                    min={getTodayDate()}
                   />
                 </div>
 

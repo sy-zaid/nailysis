@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import Popup from "../../components/Popup/Popup";
 import styles from "./cancellation-request-form.module.css";
+import { toast } from "react-toastify";
 
 const CancellationRequestForm = ({ onClose, appointmentId }) => {
   const [reason, setReason] = useState("");
@@ -13,7 +14,7 @@ const CancellationRequestForm = ({ onClose, appointmentId }) => {
     e.preventDefault();
 
     if (!reason.trim()) {
-      setError("Please provide a reason for cancellation.");
+      toast.warning("Please Provide A Reason For Cancellation", { className: "custom-toast" });
       return;
     }
 
@@ -30,11 +31,18 @@ const CancellationRequestForm = ({ onClose, appointmentId }) => {
         }
       );
 
-      setMessage(response.data.message);
-      setError("");
+      toast.success("Cancellation Request Sent successfully!", {
+        className: "custom-toast",
+      });
+      onClose(); // Close the popup
     } catch (err) {
-      setError("Failed to submit cancellation request. Please try again.");
-      setMessage("");
+      if (err.response) {
+        toast.error(err.response.data.error || "Failed to Submit Cancellation Request. Please Try Again.", {
+          className: "custom-toast",
+        });
+      } else {
+        toast.error("Network Error", {className: "custom-toast"})
+      }
     }
   };
 
