@@ -208,6 +208,7 @@ export const urineTestParameters = {
  * @constant {Array<Object>}
  */
 export const medicalConditionsOptions = [
+  { value: "None", label: "None" },
   { value: "Diabetes", label: "Diabetes" },
   { value: "Hypertension", label: "Hypertension" },
   { value: "Heart Disease", label: "Heart Disease" },
@@ -241,6 +242,7 @@ export const diagnosesOptions = [
  * @constant {Array<Object>}
  */
 export const currentMedicationsOptions = [
+  { value: "None", label: "None" },
   { value: "Metformin", label: "Metformin" },
   { value: "Aspirin", label: "Aspirin" },
   { value: "Lisinopril", label: "Lisinopril" },
@@ -264,6 +266,7 @@ export const visitPurposes = [
  * @constant {Array<Object>}
  */
 export const testTypes = [
+  { value: "None", label: "None" },
   { value: "CBC", label: "Complete Blood Count (CBC)" },
   { value: "BloodSugar", label: "Blood Sugar Test" },
   { value: "HbA1c", label: "HbA1c (Diabetes Test)" },
@@ -664,4 +667,25 @@ export const handleRemoveParameter = (setTestEntries, index) => {
       ? prevEntries.filter((_, i) => i !== index)
       : prevEntries
   );
+};
+
+export const getFormattedCurrentTime = () => {
+  return new Date()
+    .toLocaleString("en-GB", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    })
+    .replace(",", ""); // optional: remove the comma if you want
+};
+
+export const getTodayDate = () => {
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, "0"); // Months start at 0!
+  const dd = String(today.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
 };

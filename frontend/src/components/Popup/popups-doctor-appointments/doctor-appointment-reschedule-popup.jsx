@@ -4,6 +4,7 @@ import Popup from "../Popup.jsx";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import useCurrentUserData from "../../../useCurrentUserData.jsx";
+import { toast } from "react-toastify";
 import {
   getAccessToken,
   handleInputChange,
@@ -88,6 +89,31 @@ const RescheduleAppointmentPopup = ({ onClose, appointmentDetails }) => {
   const handleRescheduleAppointment = async (e) => {
     e.preventDefault();
 
+    if (!formData.specialization) {
+      toast.warning("Please Select Specialization");
+      return;
+    }
+  
+    if (!formData.doctorId) {
+      toast.warning("Please Select Doctor");
+      return;
+    }
+  
+    if (!formData.appointmentDate) {
+      toast.warning("Please Select A Date");
+      return;
+    }
+  
+    if (!formData.startTime) {
+      toast.warning("Please Select Start Time");
+      return;
+    }
+
+    if (!formData.appointmentType) {
+      toast.warning("Please Select A Visit Purpose");
+      return;
+    }
+    
     const appointmentData = {
       doctor_id: formData.doctorId,
       appointment_date: formData.appointmentDate,
@@ -102,11 +128,30 @@ const RescheduleAppointmentPopup = ({ onClose, appointmentDetails }) => {
         appointmentDetails.appointment_id,
         appointmentData
       );
-      alert("Appointment Rescheduled Successfully");
+      if (response.status === 200) {
+        toast.success("Appointment Rescheduled Successfully!", {
+          className: "custom-toast",
+        });
+        onClose(); // Close the popup
+      } else {
+        toast.error("Failed to Reschedule Appointment", {
+          className: "custom-toast",
+        });
+      }
     } catch (error) {
-      alert("Failed to reschedule appointment");
       console.error(error);
+      if (error.response) {
+        toast.error(
+          error.response.data.error || "Failed to Reschedule Appointment",
+          { className: "custom-toast" }
+        );
+      } else {
+        toast.error("Network Error", {
+          className: "custom-toast",
+        });
+      }
     }
+    
   };
 
   return (

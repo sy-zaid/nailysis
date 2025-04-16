@@ -2,12 +2,14 @@ import React, { useState, useEffect } from "react";
 import styles from "./doctor-appointment-book-popup.module.css";
 import Popup from "../Popup.jsx";
 import useCurrentUserData from "../../../useCurrentUserData.jsx";
+import { toast } from "react-toastify";
 import {
   calculateAge,
   visitPurposes,
   getAccessToken,
   getRole,
   handleInputChange,
+  getTodayDate,
 } from "../../../utils/utils.js";
 import {
   bookAppointment,
@@ -42,6 +44,8 @@ const BookDoctorAppointmentPopup = ({ onClose }) => {
     email: "",
     notes: "",
   });
+
+
   useEffect(() => {
     if (curUserRole == "patient" && curUser && curUser.length > 0) {
       setPatient([curUser[0].patient.user, curUser[0].patient]); // Set patient data if available
@@ -119,6 +123,31 @@ const BookDoctorAppointmentPopup = ({ onClose }) => {
   const handleBookAppointment = async (e) => {
     e.preventDefault();
 
+    if (!formData.specialization) {
+      toast.warning("Please Select Doctor Specialization");
+      return;
+    }
+  
+    if (!formData.doctorId) {
+      toast.warning("Please Select Doctor");
+      return;
+    }
+  
+    if (!formData.appointmentDate) {
+      toast.warning("Please Select Date");
+      return;
+    }
+  
+    if (!formData.slotId) {
+      toast.warning("Please Select Appointment Slot");
+      return;
+    }
+  
+    if (!formData.appointmentType) {
+      toast.warning("Please Select A Visit Purpose");
+      return;
+    }
+
     const appointmentData = {
       doctor_id: formData.doctorId,
       slot_id: formData.slotId,
@@ -138,12 +167,18 @@ const BookDoctorAppointmentPopup = ({ onClose }) => {
     try {
       const response = await bookAppointment(appointmentData);
       if (response.status === 200) {
-        alert("Appointment Booked Successfully");
+        toast.success("Appointment Booked Successfully!", {
+          className: "custom-toast",
+        });
+        onClose(); // Close the popup
       }
     } catch (error) {
-      alert("Failed to book appointment");
       console.error(error);
-      throw error;
+      if (error.response) {
+        toast.error(error.response.data.error || "Failed to book appointment", {
+          className: "custom-toast",
+        });
+      } 
     }
   };
   // Fetch Available Slots On Chosen Date
@@ -339,6 +374,7 @@ const BookDoctorAppointmentPopup = ({ onClose }) => {
                 name="appointmentDate"
                 value={formData.appointmentDate}
                 onChange={onInputChange}
+                min={getTodayDate()} // Prevent past date selection
               />
             </div>
 
@@ -427,7 +463,7 @@ const BookDoctorAppointmentPopup = ({ onClose }) => {
               type="submit"
               onClick={handleBookAppointment}
             >
-              Continue to Next Step
+              Book Appointment
             </button>
           </div>
           </div>

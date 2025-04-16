@@ -124,8 +124,7 @@ label {
   display: block; /* Ensure it's a block element if you need vertical spacing */
 }
 
-
-input,
+.inputBox,
 select,
 textarea {
   width: 80%;

@@ -75,6 +75,7 @@ const BloodTestEntryPopup = ({
     try {
       console.log("SENDING THIS TO SAVE RESULTS", payload);
       const response = await saveTestResults(payload);
+      
       if (response.status === 201) {
         toast.success("Successfully Created Test Result", {
           className: "custom-toast",
@@ -85,6 +86,7 @@ const BloodTestEntryPopup = ({
         });
       }
     } catch (error) {
+      console.log(error)
       if (error.response) {
         toast.error(error.response.data.error || "Something went wrong.", {
           className: "custom-toast",
@@ -98,7 +100,7 @@ const BloodTestEntryPopup = ({
   };
 
   // ----- MAIN LOGIC FUNCTIONS
-  
+
   // ----- USE EFFECTS
   /**
    * Synchronizes the testEntries state with formData when testEntries changes.
@@ -162,7 +164,7 @@ const BloodTestEntryPopup = ({
               }
             </span>
             <span className={styles.secKey}> Status: </span>
-            <span className={getStatusClass("Pending")}>
+            <span className={getStatusClass("Pending", styles)}>
               {editable[0] === true ? editable[1] : "Pending"}
             </span>
           </p>
@@ -302,7 +304,7 @@ const BloodTestEntryPopup = ({
             >
               <button
                 className={styles.addButton}
-                onClick={() => handleAddParameter(setTestEntries,"Blood")}
+                onClick={() => handleAddParameter(setTestEntries, "Blood")}
                 style={{ zIndex: "100" }}
               >
                 <i className="bx bx-plus-circle"></i> Add More Parameters

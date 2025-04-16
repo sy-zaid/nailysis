@@ -1,4 +1,11 @@
 /* Floating buttons */
+.buttonContent {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
 .floatingButtons {
   position: fixed;
   top: 50%;

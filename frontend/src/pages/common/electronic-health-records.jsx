@@ -1,8 +1,7 @@
-//  Imports
+//  Importing Packages and Dependencies
 import React, { useState, useEffect, useRef } from "react";
 import styles from "./all-pages-styles.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
-import axios from "axios";
 import Header from "../../components/Dashboard/Header/Header.jsx";
 
 // Importing Popups for performing actions on EHR Records
@@ -10,6 +9,10 @@ import PopupEHREdit from "../../components/Popup/popups-electronic-health-record
 import PopupEHRDelete from "../../components/Popup/popups-electronic-health-records/popup-ehr-delete";
 import PopupEHRCreate from "../../components/Popup/popups-electronic-health-records/popup-ehr-create";
 
+// Importing Popups for actions
+import PopupAllReportsList from "../../components/Popup/popups-labs/all-reports-list-popup.jsx";
+
+// Importing Utility Functions
 import { useEhrUpdatesWS } from "../../sockets/ehrSocket";
 import {
   formatEhrRecords,
@@ -37,7 +40,10 @@ import useCurrentUserData from "../../useCurrentUserData";
  */
 const ElectronicHealthRecord = () => {
   // Default sort config: sorted by "last_updated" in descending order (latest first)
-  const [sortConfig, setSortConfig] = useState({ key: "last_updated", direction: "desc" });
+  const [sortConfig, setSortConfig] = useState({
+    key: "last_updated",
+    direction: "desc",
+  });
 
   const [menuOpen, setMenuOpen] = useState(null);
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
@@ -48,7 +54,7 @@ const ElectronicHealthRecord = () => {
 
   const { data: curUser } = useCurrentUserData(); // Fetch user data;
 
-  const [activeButton, setActiveButton] = useState(0); // Tracks which filter button is active 
+  const [activeButton, setActiveButton] = useState(0); // Tracks which filter button is active
   const [filteredRecords, setFilteredRecords] = useState([]); // Stores the records after applying filters and search queries.
   const [searchQuery, setSearchQuery] = useState(""); // Stores the current search input to filter records dynamically.
   const [selectAll, setSelectAll] = useState(false); // Tracks whether the "Select All" checkbox is checked.
@@ -66,7 +72,7 @@ const ElectronicHealthRecord = () => {
   const handleSelectAll = () => {
     setSelectAll(!selectAll);
     if (!selectAll) {
-      setSelectedRecords(sortedRecords.map(record => record.id)); // Select all
+      setSelectedRecords(sortedRecords.map((record) => record.id)); // Select all
     } else {
       setSelectedRecords([]); // Deselect all
     }
@@ -76,7 +82,7 @@ const ElectronicHealthRecord = () => {
   const handleSelectRecord = (id) => {
     setSelectedRecords((prevSelected) =>
       prevSelected.includes(id)
-        ? prevSelected.filter(recordId => recordId !== id)
+        ? prevSelected.filter((recordId) => recordId !== id)
         : [...prevSelected, id]
     );
   };
@@ -91,18 +97,21 @@ const ElectronicHealthRecord = () => {
 
     if (index === 1) {
       // Abnormal Results should check nail_image_analysis
-      updatedRecords = updatedRecords.filter(record =>
-        String(record.nail_image_analysis || "").toLowerCase().includes("abnormal")
+      updatedRecords = updatedRecords.filter((record) =>
+        String(record.nail_image_analysis || "")
+          .toLowerCase()
+          .includes("abnormal")
       );
     } else if (index === 2) {
       // Emergency Condition should check category field
-      updatedRecords = updatedRecords.filter(record =>
-        String(record.category || "").toLowerCase() === "emergency"
+      updatedRecords = updatedRecords.filter(
+        (record) => String(record.category || "").toLowerCase() === "emergency"
       );
     } else if (index === 3 && curUser?.length > 0) {
-      const fullName = `${curUser[0]?.first_name} ${curUser[0]?.last_name}`.toLowerCase();
-      updatedRecords = updatedRecords.filter(record =>
-        record.consulted_by?.toLowerCase() === fullName
+      const fullName =
+        `${curUser[0]?.first_name} ${curUser[0]?.last_name}`.toLowerCase();
+      updatedRecords = updatedRecords.filter(
+        (record) => record.consulted_by?.toLowerCase() === fullName
       );
     }
 
@@ -119,8 +128,8 @@ const ElectronicHealthRecord = () => {
 
     if (sortConfig.key === "last_updated") {
       // Replace " | " with a space so the Date object can parse the string correctly.
-      valA = valA ? new Date(valA.replace(" | ", " ")) : new Date(0);
-      valB = valB ? new Date(valB.replace(" | ", " ")) : new Date(0);
+      valA = valA ? new Date(valA.replace(/\s*\|\s*/, " ")) : new Date(0);
+      valB = valB ? new Date(valB.replace(/\s*\|\s*/, " ")) : new Date(0);
     } else {
       valA = valA.toString().toLowerCase();
       valB = valB.toString().toLowerCase();
@@ -142,7 +151,8 @@ const ElectronicHealthRecord = () => {
     } else {
       setSortConfig((prev) => ({
         key,
-        direction: prev.key === key && prev.direction === "asc" ? "desc" : "asc",
+        direction:
+          prev.key === key && prev.direction === "asc" ? "desc" : "asc",
       }));
     }
   };
@@ -178,25 +188,28 @@ const ElectronicHealthRecord = () => {
 
     // Apply filters based on active button selection
     if (activeButton === 1) {
-      updatedRecords = updatedRecords.filter(record =>
-        String(record.nail_image_analysis || "").toLowerCase().includes("abnormal")
+      updatedRecords = updatedRecords.filter((record) =>
+        String(record.nail_image_analysis || "")
+          .toLowerCase()
+          .includes("abnormal")
       );
     } else if (activeButton === 2) {
-      updatedRecords = updatedRecords.filter(record =>
-        String(record.category || "").toLowerCase() === "emergency"
+      updatedRecords = updatedRecords.filter(
+        (record) => String(record.category || "").toLowerCase() === "emergency"
       );
     } else if (activeButton === 3 && curUser?.length > 0) {
-      const fullName = `${curUser[0]?.first_name} ${curUser[0]?.last_name}`.toLowerCase();
-      updatedRecords = updatedRecords.filter(record =>
-        (record.consulted_by || "").toLowerCase() === fullName
+      const fullName =
+        `${curUser[0]?.first_name} ${curUser[0]?.last_name}`.toLowerCase();
+      updatedRecords = updatedRecords.filter(
+        (record) => (record.consulted_by || "").toLowerCase() === fullName
       );
     }
 
     // Apply dynamic search filter
     if (searchQuery.trim() !== "") {
       const lowerCaseQuery = searchQuery.toLowerCase();
-      updatedRecords = updatedRecords.filter(record => {
-        return Object.keys(record).some(key => {
+      updatedRecords = updatedRecords.filter((record) => {
+        return Object.keys(record).some((key) => {
           // Ensure value is a string before searching
           const value = record[key];
           return value && String(value).toLowerCase().includes(lowerCaseQuery);
@@ -263,6 +276,14 @@ const ElectronicHealthRecord = () => {
     } else if (action === "Add New Record") {
       setPopupContent(<PopupEHRCreate onClose={handleClosePopup} />);
       setShowPopup(true);
+    } else if (action === "All Reports List") {
+      setPopupContent(
+        <PopupAllReportsList
+          patient_id={recordDetails?.patient_id}
+          onClose={handleClosePopup}
+        />
+      );
+      setShowPopup(true);
     }
   };
 
@@ -272,52 +293,82 @@ const ElectronicHealthRecord = () => {
     <div className={styles.pageContainer}>
       <Navbar />
 
+      {showPopup && popupContent}
+
       {/* Page Header */}
       <div className={styles.pageTop}>
-        <Header 
-          mainHeading={'Electronic Health Records'}
-          subHeading={'View and manage patient health records'}
+        <Header
+          mainHeading={"Electronic Health Records"}
+          subHeading={"View and manage patient health records"}
         />
       </div>
-
+      {showPopup && popupContent}
       <div className={styles.mainContent}>
         <div className={styles.appointmentsContainer}>
           {/* Filter buttons with dynamic active state */}
           <div className={styles.filters}>
-            <button
-              className={`${styles.filterButton} ${activeButton === 0 ? styles.active : ''}`}
-              onClick={() => handleFilterClick(0)}
-            >
-              All
-            </button>
-            <button
-              className={`${styles.filterButton} ${activeButton === 3 ? styles.active : ''}`}
-              onClick={() => handleFilterClick(3)}
-            >
-              Your Patients
-            </button>
-            <button
-              className={`${styles.filterButton} ${activeButton === 1 ? styles.active : ''}`}
-              onClick={() => handleFilterClick(1)}
-            >
-              Abnormal Results
-            </button>
-            <button
-              className={`${styles.filterButton} ${activeButton === 2 ? styles.active : ''}`}
-              onClick={() => handleFilterClick(2)}
-            >
-              Emergency
-            </button>
+            {(curUserRole === "doctor" ||
+              curUserRole === "clinic_admin" ||
+              curUserRole === "patient") && (
+              <>
+                <button
+                  className={`${styles.filterButton} ${
+                    activeButton === 0 ? styles.active : ""
+                  }`}
+                  onClick={() => handleFilterClick(0)}
+                >
+                  All
+                </button>
+                {curUserRole === "doctor" && (
+                  <button
+                    className={`${styles.filterButton} ${
+                      activeButton === 3 ? styles.active : ""
+                    }`}
+                    onClick={() => handleFilterClick(3)}
+                  >
+                    Your Patients
+                  </button>
+                )}
+                <button
+                  className={`${styles.filterButton} ${
+                    activeButton === 1 ? styles.active : ""
+                  }`}
+                  onClick={() => handleFilterClick(1)}
+                >
+                  Abnormal Results
+                </button>
+                <button
+                  className={`${styles.filterButton} ${
+                    activeButton === 2 ? styles.active : ""
+                  }`}
+                  onClick={() => handleFilterClick(2)}
+                >
+                  Emergency
+                </button>
 
-            <p>
-              Total Records: {filteredRecords.length} | Your Patients:{" "}
-              {filteredRecords.filter(record =>
-                record.consulted_by?.toLowerCase() === `${curUser[0]?.first_name.toLowerCase()} ${curUser[0]?.last_name.toLowerCase()}`
-              ).length}
-            </p>
+                <p>
+                  Total Records: {filteredRecords.length}{" "}
+                  {curUserRole === "doctor" && (
+                    <>
+                      | Your Patients:{" "}
+                      {
+                        filteredRecords.filter(
+                          (record) =>
+                            record.consulted_by?.toLowerCase() ===
+                            `${curUser[0]?.first_name.toLowerCase()} ${curUser[0]?.last_name.toLowerCase()}`
+                        ).length
+                      }
+                    </>
+                  )}
+                </p>
+              </>
+            )}
 
             {curUserRole === "doctor" && (
-              <button className={styles.addButton} onClick={() => handleActionClick("Add New Record")}>
+              <button
+                className={styles.addButton}
+                onClick={() => handleActionClick("Add New Record")}
+              >
                 + Add New Record
               </button>
             )}
@@ -332,7 +383,10 @@ const ElectronicHealthRecord = () => {
               </select>
 
               {/* Sort Dropdown */}
-              <select className={styles.sortBy} onChange={(e) => handleSortChange(e.target.value)}>
+              <select
+                className={styles.sortBy}
+                onChange={(e) => handleSortChange(e.target.value)}
+              >
                 {/* Default option sorts by last_updated (latest first) */}
                 <option value="last_updated">Sort By: Last Updated</option>
                 <option value="patient_name">Patient Name (A-Z)</option>
@@ -346,7 +400,7 @@ const ElectronicHealthRecord = () => {
               <input
                 className={styles.search}
                 type="text"
-                placeholder="Search by Patient Name, Doctor, Category, etc."
+                placeholder="Search"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -361,7 +415,11 @@ const ElectronicHealthRecord = () => {
                   <tr>
                     {/* Select all checkbox */}
                     <th>
-                      <input type="checkbox" checked={selectAll} onChange={handleSelectAll} />
+                      <input
+                        type="checkbox"
+                        checked={selectAll}
+                        onChange={handleSelectAll}
+                      />
                     </th>
                     <th>#</th>
                     <th>Record ID</th>
@@ -373,11 +431,11 @@ const ElectronicHealthRecord = () => {
                     <th>Medications</th>
                     <th>Family History</th>
                     <th>Immunization</th>
-                    <th>Test Reports</th>
-                    <th>Nail Image Analysis</th>
                     <th>Consultation Notes</th>
                     <th>Diagnostics</th>
                     <th>Last Updated</th>
+                    <th>Nail Image Analysis</th>
+                    <th>Test Reports</th>
                     {curUserRole === "doctor" && <th>Actions</th>}
                   </tr>
                 </thead>
@@ -386,8 +444,8 @@ const ElectronicHealthRecord = () => {
                   {sortedRecords.map((record, index) => (
                     <tr key={record.id}>
                       <td>
-                        <input 
-                          type="checkbox" 
+                        <input
+                          type="checkbox"
                           checked={selectedRecords.includes(record.id)}
                           onChange={() => handleSelectRecord(record.id)}
                         />
@@ -402,25 +460,46 @@ const ElectronicHealthRecord = () => {
                       <td>{record.medications}</td>
                       <td>{record.family_history}</td>
                       <td>{record.immunization}</td>
-                      <td>{record.test_reports}</td>
-                      <td>{record.nail_image_analysis}</td>
                       <td>{record.notes}</td>
                       <td>{record.diagnoses}</td>
                       <td>{record.last_updated}</td>
-
+                      <td>{record.nail_image_analysis}</td>
+                      <td>
+                        <button
+                          className={styles.addButton}
+                          onClick={() =>
+                            handleActionClick("All Reports List", record)
+                          }
+                        >
+                          View Reports
+                        </button>
+                      </td>
                       {/* Action Buttons */}
                       {curUserRole === "doctor" && (
                         <td>
                           <button
-                            onClick={(event) => toggleActionMenu(record.id, menuOpen, setMenuOpen, setMenuPosition, event)}
+                            onClick={(event) =>
+                              toggleActionMenu(
+                                record.id,
+                                menuOpen,
+                                setMenuOpen,
+                                setMenuPosition,
+                                event
+                              )
+                            }
                             className={styles.moreActionsBtn}
                           >
-                            <img src="/icon-three-dots.png" alt="More Actions" className={styles.moreActionsIcon} />
+                            <img
+                              src="/icon-three-dots.png"
+                              alt="More Actions"
+                              className={styles.moreActionsIcon}
+                            />
                           </button>
 
                           {menuOpen && (
                             <div
-                              ref={menuRef} id={`menu-${record.id}`}
+                              ref={menuRef}
+                              id={`menu-${record.id}`}
                               className={styles.menu}
                               style={{
                                 top: `${menuPosition.top}px`,
@@ -429,14 +508,27 @@ const ElectronicHealthRecord = () => {
                               }}
                             >
                               <ul>
-                                <li onClick={() => handleActionClick("Edit", record)}>
+                                <li
+                                  onClick={() =>
+                                    handleActionClick("Edit", record)
+                                  }
+                                >
                                   <i className="fa-solid fa-pen"></i>Edit
                                 </li>
-                                <li onClick={() => handleActionClick("Delete", record)}>
+                                <li
+                                  onClick={() =>
+                                    handleActionClick("Delete", record)
+                                  }
+                                >
                                   <i className="fa-solid fa-trash"></i>Delete
                                 </li>
-                                <li onClick={() => handleActionClick("AddToMH", record.id)}>
-                                  <i className="fa-solid fa-plus"></i>Add to Medical History
+                                <li
+                                  onClick={() =>
+                                    handleActionClick("AddToMH", record.id)
+                                  }
+                                >
+                                  <i className="fa-solid fa-plus"></i>Add to
+                                  Medical History
                                 </li>
                               </ul>
                             </div>

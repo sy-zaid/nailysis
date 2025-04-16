@@ -25,7 +25,7 @@ import GenerateInvoice from "./pages/admin-clinic/invoice";
 import CancellationRequest from "./pages/admin-clinic/appointment-cancellation-request";
 import LabAppointmentHistory from "./pages/common/lab-appointment-history";
 import ClinicAppointmentHistory from "./pages/common/clinic-appointment-history";
-import Report from "./pages/common/report";
+import NailysisReport from "./pages/common/report";
 import LabTestReport from "./pages/common/lab-test-result-new";
 
 // FEEDBACKS
@@ -50,14 +50,12 @@ export const renderSystemAdminContent = (view) => {
 // Render function for Clinic Admin
 export const renderClinicAdminContent = (view) => {
   switch (view) {
-    case "Patient Records":
-      return <ElectronicHealthRecords name="Patient Records" />;
-    case "Medical History & Notes":
-      return <PatientMedicalHistory name="Medical History & Notes" />;
+    case "All Patients Records":
+      return <ElectronicHealthRecords name="All Patients Records" />;
+    case "All Medical Histories":
+      return <PatientMedicalHistory name="All Medical Histories" />;
     case "Analytics":
       return <PlaceholderComponent name="Reports & Analytics" />;
-    case "Diagnostic Results":
-      return <PlaceholderComponent name="Diagnostic Results" />;
     case "View Appointments":
       return <ViewAppointmentsClinicAdmin />;
     case "Appointments History":
@@ -68,8 +66,8 @@ export const renderClinicAdminContent = (view) => {
       return <BillingHistory name="View Payment History" />;
     case "Feedbacks":
       return <Feedbacks name="Feedbacks" />;
-    case "Test Requests":
-      return <PlaceholderComponent name="Test Requests" />;
+    case "Test Results":
+      return <LabTestOrders name="Test Results" />;
     case "Cancellation Requests":
       return <CancellationRequest name="Cancellation Requests" />;
     default:
@@ -80,24 +78,33 @@ export const renderClinicAdminContent = (view) => {
 // Render function for Doctor
 export const renderDoctorContent = (view) => {
   switch (view) {
-    case "Patient Records":
-      return <ElectronicHealthRecords name="Patient Records" />;
-    case "Medical History & Notes":
-      return <PatientMedicalHistory name="Medical History & Notes" />;
-    case "View Appointments":
-      return <ViewAppointmentsDoctor name="View Appointment" />;
+    // Appointments
+    case "My Appointments":
+      return <ViewAppointmentsDoctor name="My Appointments" />;
     case "Appointments History":
       return <ClinicAppointmentHistory name="Appointments History" />;
+    case "Manage Availability":
+      return <PlaceholderComponent name="Manage Availability" />;
+    case "My Cancellation Requests":
+      return <PlaceholderComponent name="My Cancellation Requests" />;
+
+    // Electronic Health Records
+    case "All Patients Records":
+      return <ElectronicHealthRecords name="All Patients Records" />;
+    case "All Medical Histories":
+      return <PatientMedicalHistory name="All Medical Histories" />;
+
+    // Feedbacks
+    case "Feedbacks":
+      return <Feedbacks name="Feedbacks" />;
+
+    // Billing & Invoice
     case "Generate Invoice":
       return <PlaceholderComponent name="Generate Invoice" />;
     case "View Payment History":
-      return <PlaceholderComponent name="Payment History" />;
-    case "Feedbacks":
-      return <Feedbacks name="Feedbacks" />;
-    case "Test Requests":
-      return <PlaceholderComponent name="Test Requests" />;
-    case "Appointments":
-      return <PlaceholderComponent name="Appointments" />;
+      return <PlaceholderComponent name="View Payment History" />;
+
+    // Default
     default:
       return <DoctorDashboard />;
   }
@@ -106,32 +113,37 @@ export const renderDoctorContent = (view) => {
 // Render function for Patient
 export const renderPatientContent = (view) => {
   switch (view) {
-    case "Patient Records":
-      return <ElectronicHealthRecords name="Patient Records" />;
-    case "Medical History & Notes":
-      return <PatientMedicalHistory name="Medical History & Notes" />;
-    case "Test Results":
-      return <Report name="Test Results" />;
-    case "Samples":
-      return <PlaceholderComponent name="Samples" />;
-    case "Diagnostic Results":
-      return <PatientDiagnosticResults />;
-    case "View Lab Appointments":
-      return <ViewTechnicianAppointments />;
-    case "View Clinic Appointments":
-      return <ViewAppointmentsPatient />;
+    // Appointments
+    case "Clinic Appointments":
+      return <ViewAppointmentsPatient name="Clinic Appointments" />;
+    case "Lab Appointments":
+      return <ViewTechnicianAppointments name="Lab Appointments" />;
     case "Appointments History":
       return <LabAppointmentHistory name="Appointments History" />;
-    case "Generate Invoice":
-      return <PatientInvoiceManagement />;
-    case "View Billing History":
-      return <PatientPaymentHistory />;
+    case "My Cancellation Requests":
+      return <PlaceholderComponent name="My Cancellation Requests" />;
+
+    // Electronic Health Records
+    case "My Records":
+      return <ElectronicHealthRecords name="My Records" />;
+    case "My Medical History":
+      return <PatientMedicalHistory name="My Medical History" />;
+
+    // Test Results
+    case "Test Results":
+      return <LabTestOrders name="Test Results" />;
+
+    // Feedbacks
     case "Feedbacks":
       return <Feedbacks name="Feedbacks" />;
-    case "Test Requests":
-      return <PlaceholderComponent name="Test Requests" />;
-    case "Appointments":
-      return <PlaceholderComponent name="Appointments" />;
+
+    // Billing & Invoice
+    case "Generate Invoice":
+      return <PatientInvoiceManagement name="Generate Invoice" />;
+    case "View Billing History":
+      return <PatientPaymentHistory name="View Billing History" />;
+
+    // Default fallback
     default:
       return <PatientDashboard />;
   }
@@ -140,24 +152,35 @@ export const renderPatientContent = (view) => {
 // Render function for Lab Admin
 export const renderLabAdminContent = (view) => {
   switch (view) {
-    case "Test Results":
-      return <PlaceholderComponent name="Test Results" />;
-    case "Diagnostic Results":
-      return <PlaceholderComponent name="Diagnostic Results" />;
+    // Appointments
     case "View Appointments":
-      return <ViewTechnicianAppointments name="View Appointment" />;
+      return <ViewTechnicianAppointments name="View Appointments" />;
     case "Appointments History":
       return <LabAppointmentHistory name="Appointments History" />;
+    case "Cancellation Requests":
+      return <PlaceholderComponent name="Cancellation Requests" />;
+
+    // Test Requests
+    case "Test Requests":
+      return <LabTestOrders name="Test Requests" />;
+
+    // Electronic Health Records
+    case "All Patients Records":
+      return <ElectronicHealthRecords name="All Patients Records" />;
+    case "All Medical Histories":
+      return <PatientMedicalHistory name="All Medical Histories" />;
+
+    // Feedbacks
+    case "Feedbacks":
+      return <Feedbacks name="Feedbacks" />;
+
+    // Billing & Invoice
     case "Generate Invoice":
       return <PlaceholderComponent name="Generate Invoice" />;
     case "View Payment History":
-      return <PlaceholderComponent name="Payment History" />;
-    case "Feedbacks":
-      return <Feedbacks name="Feedbacks" />;
-    case "Test Requests":
-      return <LabTestOrders name="Test Requests" />;
-    case "Appointments":
-      return <PlaceholderComponent name="Appointments" />;
+      return <PlaceholderComponent name="View Payment History" />;
+
+    // Default
     default:
       return <LabAdminDashboard />;
   }
@@ -166,25 +189,37 @@ export const renderLabAdminContent = (view) => {
 // Render function for Lab Technician
 export const renderLabTechnicianContent = (view) => {
   switch (view) {
-    case "Test Results":
-      return <PlaceholderComponent name="Test Results" />;
-    case "Diagnostic Results":
-      return <PlaceholderComponent name="Diagnostic Results" />;
+    // Appointments
     case "View Appointments":
-      return <ViewTechnicianAppointments />;
+      return <ViewTechnicianAppointments name="View Appointments" />;
     case "Appointments History":
       return <LabAppointmentHistory name="Appointments History" />;
+    case "Manage Availability":
+      return <PlaceholderComponent name="Manage Availability" />;
+    case "My Cancellation Requests":
+      return <PlaceholderComponent name="My Cancellation Requests" />;
+
+    // Test Requests
+    case "Test Requests":
+      return <LabTestOrders name="Test Requests" />;
+
+    // Electronic Health Records
+    case "All Patients Records":
+      return <ElectronicHealthRecords name="All Patients Records" />;
+    case "All Medical Histories":
+      return <PatientMedicalHistory name="All Medical Histories" />;
+
+    // Feedbacks
+    case "Feedbacks":
+      return <Feedbacks name="Feedbacks" />;
+
+    // Billing & Invoice
     case "Generate Invoice":
       return <PlaceholderComponent name="Generate Invoice" />;
     case "View Payment History":
-      return <PlaceholderComponent name="Payment History" />;
-    case "Feedbacks":
-      return <Feedbacks name="Feedbacks" />;
-    case "Test Requests":
-      return <LabTestOrders />;
-    case "Appointments":
-      return <PlaceholderComponent name="Appointments" />;
+      return <PlaceholderComponent name="View Payment History" />;
 
+    // Default
     default:
       return <LabTechnicianDashboard />;
   }

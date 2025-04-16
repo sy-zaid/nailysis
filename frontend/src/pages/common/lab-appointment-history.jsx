@@ -45,7 +45,7 @@ const LabAppointmentHistory = () => {
   const [filteredAppointments, setFilteredAppointments] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState("All");
-  const [sortOption, setSortOption] = useState("none");
+  const [sortOption, setSortOption] = useState("date-desc");
 
   const [totalRecords, setTotalRecords] = useState(0);
   const [scheduledCount, setScheduledCount] = useState(0);
@@ -59,23 +59,21 @@ const LabAppointmentHistory = () => {
   // Filtering Logic
   const handleFilterClick = (filter) => {
     setActiveFilter(filter);
-
     let filteredData = appointments;
 
-    if (filter === "Scheduled Appointments") {
-      filteredData = appointments.filter((app) => app.status === "Scheduled");
-    } else if (filter === "Pending Tests") {
+    if (filter === "Past Week") {
+      const oneWeekAgo = new Date();
+      oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
       filteredData = appointments.filter(
-        (app) => app.test_orders[0]?.test_status === "Pending"
+        (app) => new Date(app.checkin_datetime) >= oneWeekAgo
       );
-    } else if (filter === "Today") {
-      const today = new Date().toISOString().split("T")[0]; // Get today's date in YYYY-MM-DD
+    } else if (filter === "Past Month") {
+      const oneMonthAgo = new Date();
+      oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
       filteredData = appointments.filter(
-        (app) =>
-          new Date(app.checkin_datetime).toISOString().split("T")[0] === today
+        (app) => new Date(app.checkin_datetime) >= oneMonthAgo
       );
     }
-
     setFilteredAppointments(filteredData);
   };
 

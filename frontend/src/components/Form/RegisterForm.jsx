@@ -14,13 +14,11 @@ function RegisterForm({ route }) {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [phone, setPhone] = useState("");
   const [role, setRole] = useState("patient");
-  const [date_of_birth, setDateOfBirth] = useState("");
-  const [gender, setGender] = useState("");
 
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
- 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -44,8 +42,6 @@ function RegisterForm({ route }) {
         confirmPassword,
         phone,
         role,
-        date_of_birth,
-        gender,
       });
       console.log(response.data);
       navigate("/login");
@@ -108,73 +104,6 @@ function RegisterForm({ route }) {
               required
             />
           </div>
-
-
-          {/* Gender Radio Buttons */}
-          <div className={styles.inputGroup}>
-            <label>Gender</label>
-            <div className={styles.radioGroup}>
-              <label>
-                <input
-                  type="radio"
-                  name="gender"
-                  value="M"
-                  checked={gender === "M"}
-                  onChange={(e) => setGender(e.target.value)}
-                  required
-                />
-                Male
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  name="gender"
-                  value="F"
-                  checked={gender === "F"}
-                  onChange={(e) => setGender(e.target.value)}
-                  required
-                />
-                Female
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  name="gender"
-                  value="O"
-                  checked={gender === "O"}
-                  onChange={(e) => setGender(e.target.value)}
-                  required
-                />
-                Other
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  name="gender"
-                  value="P"
-                  checked={gender === "P"}
-                  onChange={(e) => setGender(e.target.value)}
-                  required
-                />
-                Prefer Not to Say
-              </label>
-            </div>
-          </div>
-
-          {/* Date of Birth Input */}
-          <div className={styles.inputGroup}>
-            <label htmlFor="date-of-birth">Date of Birth</label>
-            <input
-              type="date"
-              id="date-of-birth"
-              value={date_of_birth}
-              onChange={(e) => setDateOfBirth(e.target.value)}
-              required
-            />
-          </div>
-
-
-
           <div className={styles.inputGroup}>
             <label htmlFor="password">Password</label>
             <input
