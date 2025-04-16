@@ -87,7 +87,7 @@ function RegisterForm({ route }) {
 
     // Phone validation
     if (!phoneRegex.test(phone)) {
-      return toast.warning("Enter a valid phone number. 0300-1234567");
+      return toast.warning("Enter a valid phone number. 03001234567");
     }
 
     if (password.length < 8) {
