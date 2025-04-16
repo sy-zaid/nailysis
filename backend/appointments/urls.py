@@ -16,13 +16,14 @@ ViewSets Included:
 
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import DoctorAppointmentViewset, LabTechnicianAppointmentViewset, DoctorFeeViewset,DocAppointCancellationViewSet,TimeSlotViewSet
+from .views import DoctorAppointmentViewset, LabTechnicianAppointmentViewset, DoctorFeeViewset,DocAppointCancellationViewSet,LabTechnicianAppointCancellationViewSet,TimeSlotViewSet
 
 # Initialize DefaultRouter instance for appointment API endpoints
 router = DefaultRouter()
 router.register(r'doctor_appointments', DoctorAppointmentViewset, basename='doctor_appointments')
 router.register(r'lab_technician_appointments', LabTechnicianAppointmentViewset, basename='lab_technician_appointments')
 router.register(r'cancellation_requests', DocAppointCancellationViewSet, basename='cancellation_requests')
+router.register(r'tech_cancellation_requests', LabTechnicianAppointCancellationViewSet, basename='tech_cancellation_requests')
 router.register(r'doctor_fees', DoctorFeeViewset, basename='doctor_fees')
 
 router.register(r'time_slots', TimeSlotViewSet, basename='time_slots')

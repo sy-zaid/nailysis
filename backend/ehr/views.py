@@ -15,7 +15,7 @@ from appointments.models import (
 )
 from appointments.serializers import (
     AppointmentSerializer, DoctorAppointmentSerializer, 
-    TechnicianAppointmentSerializer, DoctorFeeSerializer, CancellationRequestSerializer
+    TechnicianAppointmentSerializer, DoctorFeeSerializer, DocCancelRequestSerializer
 )
 
 from .serializers import (EHRSerializer,MedicalHistorySerializer)

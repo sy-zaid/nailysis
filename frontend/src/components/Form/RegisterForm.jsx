@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import api from "../../api";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "../../constants";
+import { toast } from "react-toastify";
 
 function RegisterForm({ route }) {
   const [first_name, setFirstname] = useState("");
@@ -22,6 +23,77 @@ function RegisterForm({ route }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+
+    // ----- VALIDATIONS
+    if (!first_name.trim()) {
+      toast.warning("First name is required.");
+      setLoading(false);
+      return;
+    }
+  
+    if (!last_name.trim()) {
+      toast.warning("Last name is required.");
+      setLoading(false);
+      return;
+    }
+  
+    if (!email.trim()) {
+      toast.warning("Email is required.");
+      setLoading(false);
+      return;
+    }
+  
+    if (!phone.trim()) {
+      toast.warning("Phone number is required.");
+      setLoading(false);
+      return;
+    }
+  
+    if (!password) {
+      toast.warning("Password is required.");
+      setLoading(false);
+      return;
+    }
+  
+    if (!confirmPassword) {
+      toast.warning("Please confirm your password.");
+      setLoading(false);
+      return;
+    }
+  
+    if (password !== confirmPassword) {
+      toast.warning("Passwords do not match!");
+      setLoading(false);
+      return;
+    }
+
+    // Email regex pattern (basic)
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    // Phone number regex (only digits, 10 to 15 digits for flexibility)
+    const phoneRegex = /^\d{10,15}$/;
+
+    const nameRegex = /^[A-Za-z]+$/;
+
+    if (!nameRegex.test(first_name) || !nameRegex.test(last_name)) {
+      toast.warning("Names should only contain letters");
+      return;
+    }
+
+    // Email validation
+    if (!emailRegex.test(email)) {
+      return toast.warning("Enter a valid email address. name@example.com");
+    }
+
+    // Phone validation
+    if (!phoneRegex.test(phone)) {
+      return toast.warning("Enter a valid phone number. 03001234567");
+    }
+
+    if (password.length < 8) {
+      return toast.warning("Password must be at least 8 characters long.");
+    }
+
 
     // Debugging: Log form data
     console.log({ first_name, last_name, email, password, phone, role });
@@ -44,9 +116,19 @@ function RegisterForm({ route }) {
         role,
       });
       console.log(response.data);
+      toast.success("Registration Successful!", {
+        className: "custom-toast",
+      });
       navigate("/login");
     } catch (error) {
-      alert("Registration failed!" + error.message);
+      console.error(error);
+      if (error.response) {
+        toast.error(error.response.data.error || "User Already Exists", {
+          className: "custom-toast",
+        });
+      } else {
+        toast.error("Network Error")
+      }
     } finally {
       setLoading(false);
     }
