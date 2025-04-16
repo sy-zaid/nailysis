@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useMemo } from "react";
 import Select from "react-select";
-import styles from "../all-popups-styles.module.css";
+import styles from "../popup-appointment-book.module.css";
 import Popup from "../Popup.jsx";
 import { createEHR, getEHR } from "../../../api/ehrApi.js";
 import { useAllPatients } from "../../../api/usersApi.js";
 import { useEhrUpdatesWS } from "../../../sockets/ehrSocket.js";
+import { toast } from "react-toastify";
 import {
   handleSelectChange,
   handleInputChange,
@@ -25,6 +26,11 @@ const PopupEHRCreate = ({ onClose }) => {
   const [step, setStep] = useState(1); // Track the step of the form
 
   const handleNextStep = () => {
+    if (!selectedPatient) {
+      toast.warning("Please select a patient before proceeding.");
+      return; // prevent navigation
+    }
+
     if (step < 2) setStep(step + 1);
   };
 
@@ -95,6 +101,27 @@ const PopupEHRCreate = ({ onClose }) => {
   };
 
   const handleCreateEHR = async () => {
+    if (!ehrData.medical_conditions.length) {
+      toast.warning("Please select at least one medical condition.");
+      return;
+    }
+    if (!ehrData.current_medications.length) {
+      toast.warning("Please select at least one current medication.");
+      return;
+    }
+    if (!ehrData.diagnoses.length) {
+      toast.warning("Please select at least one diagnosis.");
+      return;
+    }
+    if (!ehrData.category) {
+      toast.warning("Please select a category.");
+      return;
+    }
+    if (!ehrData.visit_date) {
+      toast.warning("Please select a visit date.");
+      return;
+    }
+
     try {
       // Prepare request payload
       const payload = preparePayload(ehrData);
@@ -103,7 +130,8 @@ const PopupEHRCreate = ({ onClose }) => {
       const response = await createEHR(payload);
 
       if (response.status === 201) {
-        alert("EHR created successfully");
+        toast.success("EHR created successfully");
+        onClose();
 
         // Send WebSocket update with structured message
         if (socket && socket.readyState === WebSocket.OPEN) {
@@ -119,8 +147,12 @@ const PopupEHRCreate = ({ onClose }) => {
         }
       }
     } catch (error) {
-      alert("Failed to create new EHR");
       console.error(error);
+      if (error.response) {
+        toast.error(error.response.data.error || "Failed to Create New EHR", {
+          className: "custom-toast",
+        });
+      } 
     }
   };
 
@@ -533,10 +565,9 @@ const PopupEHRCreate = ({ onClose }) => {
           </button>
           :
           <button className={styles.addButton} onClick={() => {
-                                                      handleNextStep();
                                                       handleCreateEHR();
                                                     }}>
-            Save & Complete Appointment
+            Save & Add New Record
           </button>
           }
 

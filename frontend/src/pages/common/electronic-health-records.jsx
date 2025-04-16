@@ -8,7 +8,7 @@ import Header from "../../components/Dashboard/Header/Header.jsx";
 import PopupEHREdit from "../../components/Popup/popups-electronic-health-records/popup-ehr-edit";
 import PopupEHRDelete from "../../components/Popup/popups-electronic-health-records/popup-ehr-delete";
 import PopupEHRCreate from "../../components/Popup/popups-electronic-health-records/popup-ehr-create";
-
+import { toast } from "react-toastify";
 // Importing Popups for actions
 import PopupAllReportsList from "../../components/Popup/popups-labs/all-reports-list-popup.jsx";
 
@@ -272,7 +272,7 @@ const ElectronicHealthRecord = () => {
       console.log("Sending this to add medical history", recordDetails);
       addEHRToMedicalHistory(recordDetails);
 
-      alert("Updated Medical History with Selected Record");
+      toast.success("Updated Medical History with Selected Record");
     } else if (action === "Add New Record") {
       setPopupContent(<PopupEHRCreate onClose={handleClosePopup} />);
       setShowPopup(true);

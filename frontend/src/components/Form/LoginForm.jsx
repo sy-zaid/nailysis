@@ -104,6 +104,8 @@ function LoginForm({ route }) {
         toast.error("Invalid email or password.", {
           className: "custom-toast",
         });
+      } else {
+        toast.error ("Network Error");
       }
     } finally {
       setLoading(false);

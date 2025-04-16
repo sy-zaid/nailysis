@@ -3,6 +3,7 @@ import Select from "react-select";
 import styles from "../popups-doctor-appointments/doctor-appointment-book-popup.module.css";
 import Popup from "../Popup.jsx";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 import {
   medicalConditionsOptions,
@@ -75,6 +76,7 @@ const PopupEHREdit = ({ onClose, recordDetails }) => {
   };
 
   const handleSaveEdit = async () => {
+    
     try {
       const formattedData = {
         medical_conditions: ehrData.medical_conditions.map(
@@ -100,10 +102,11 @@ const PopupEHREdit = ({ onClose, recordDetails }) => {
         }
       );
 
-      alert("EHR Updated Successfully");
+      toast.success("EHR updated successfully");
+      onClose();
     } catch (error) {
-      alert("Failed to Update EHR");
       console.error(error);
+      toast.error(error.response.data.error || "Failed to update EHR");
     }
   };
 

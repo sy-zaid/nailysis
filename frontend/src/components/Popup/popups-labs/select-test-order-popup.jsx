@@ -80,6 +80,7 @@ const PopupSelectTestOrder = ({ onClose, testOrderDetails }) => {
         toast.success(" All test reports submitted to admin!", {
           className: "custom-toast",
         });
+        onClose();
       }
     } catch (error) {
       if (error.response) {
