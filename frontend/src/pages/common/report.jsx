@@ -10,12 +10,8 @@ import PieChartRes from "../../components/ReCharts/pie-chart";
 import BarChartRes from "../../components/ReCharts/bar-chart";
 import RadarChartRes from "../../components/ReCharts/radar-chart";
 import BarChartStackedRes from "../../components/ReCharts/bar-chart-stacked";
-import GaugeChartRes from "../../components/ReCharts/guage-chart";
-
-import BoxPlotRes from "../../components/ReCharts/box-plot";
 import SankeyRes from "../../components/ReCharts/sankey";
 import PieChartVoteRes from "../../components/ReCharts/pie-charts-vote";
-import ProgressBarChart from "../../components/ReCharts/progress-bar";
 import {
   calculateAge,
   getFormattedCurrentTime,
@@ -202,9 +198,6 @@ const NailysisReport = ({
                         <p>{other_details.scanned_by}</p>
                       </div>
                     )}
-                  </div>
-
-                  <div className={styles.infoGrid}>
                     <div className={styles.infoItem}>
                       <h4>Total Images Provided</h4>
                       <p>{other_details.total_images}</p>
@@ -214,6 +207,8 @@ const NailysisReport = ({
                       <p>{other_details.total_conditions_detected}</p>
                     </div>
                   </div>
+
+                  <div className={styles.infoGrid}></div>
                 </section>
 
                 <div className={styles.divider}></div>
@@ -226,7 +221,6 @@ const NailysisReport = ({
                   {/* Image rendering part to use uploadedImages when url is null */}
                   <div className={styles.imagesGrid}>
                     {imageData.map((image, index) => {
-                      // Get the top prediction for this image
                       const topPrediction =
                         predictionResult.individual_predictions[index]
                           ?.top_classes[0];
@@ -255,7 +249,18 @@ const NailysisReport = ({
                               </div>
                             )}
                           </div>
-                          {/* ... rest of the image rendering code ... */}
+
+                          <div className={styles.predictionLabel}>
+                            <strong>{diseaseName}</strong> (
+                            {confidencePercentage}% confidence)
+                          </div>
+
+                          <div className={styles.progressBarContainer}>
+                            <div
+                              className={styles.progressBar}
+                              style={{ width: `${confidencePercentage}%` }}
+                            />
+                          </div>
                         </div>
                       );
                     })}

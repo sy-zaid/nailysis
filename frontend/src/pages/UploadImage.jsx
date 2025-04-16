@@ -24,14 +24,14 @@ const UploadImage = () => {
   }, []);
 
   const handleFileChange = (e) => {
-    const selectedFiles = Array.from(e.target.files).slice(0, 3);
+    const selectedFiles = Array.from(e.target.files).slice(0, 5);
     processFiles(selectedFiles);
   };
 
   const processFiles = useCallback(
     (newFiles) => {
-      if (newFiles.length + files.length > 3) {
-        alert("You can upload a maximum of 3 files at a time");
+      if (newFiles.length + files.length > 5) {
+        alert("You can upload a maximum of 5 files at a time");
         return;
       }
 
@@ -164,7 +164,7 @@ const UploadImage = () => {
           <Navbar />
           <h1>Upload your nail images to get a health checkup</h1>
           <p>
-            Upload 2-3 clear images of your nails from different angles for best
+            Upload 3-5 clear images of your nails from different angles for best
             results.
           </p>
         </div>
@@ -175,12 +175,12 @@ const UploadImage = () => {
             <div className={styles.lst}>
               <ul>
                 <li>
-                  <strong>Capture Clear Images:</strong> Take 2-3 photos of each
+                  <strong>Capture Clear Images:</strong> Take 3-5 photos of each
                   nail from different angles in good lighting.
                 </li>
                 <li>
                   <strong>Upload Images:</strong> Drag and drop or click to
-                  select images (max 3 at a time).
+                  select images (max 5 at a time).
                 </li>
                 <li>
                   <strong>AI Analysis:</strong> Our system will analyze your
@@ -202,8 +202,8 @@ const UploadImage = () => {
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
               >
-                <span className={styles.uploadIcon}>&#x2913;</span>
-                <h4>Upload Nail Images (2-3 recommended)</h4>
+                <span className={styles.uploadIcon}>&#x2915;</span>
+                <h4>Upload Nail Images (3-5 recommended)</h4>
                 <p className={styles.supportedFormats}>
                   Supports JPG, PNG (Max 5MB each)
                 </p>
@@ -225,7 +225,7 @@ const UploadImage = () => {
 
                 {previews.length > 0 && (
                   <div className={styles.previewContainer}>
-                    <h5>Selected Files ({previews.length}/3):</h5>
+                    <h5>Selected Files ({previews.length}/5):</h5>
                     <div className={styles.previewGrid}>
                       {previews.map((preview) => (
                         <div key={preview.id} className={styles.previewItem}>

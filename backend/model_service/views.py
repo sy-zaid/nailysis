@@ -256,33 +256,6 @@ class NailAnalysisViewSet(viewsets.ViewSet):
                     str(requesting_user.id) == str(prediction.patient.user.id)):
                 return Response({"error": "Not authorized"}, status=status.HTTP_403_FORBIDDEN)
             
-            # images = []
-            # for nail_image in prediction.nail_images.all().order_by('image_index'):
-            #     try:
-            #         image_info = {
-            #             'url': request.build_absolute_uri(nail_image.image.url),
-            #             'name': os.path.basename(nail_image.image.name),
-            #             'index': nail_image.image_index,
-            #             'size': nail_image.image.size
-            #         }
-                    
-            #         # Safely get content type
-            #         if hasattr(nail_image.image.file, 'content_type'):
-            #             image_info['content_type'] = nail_image.image.file.content_type
-            #         else:
-            #             # Fallback to guessing from filename
-            #             import mimetypes
-            #             guessed_type = mimetypes.guess_type(nail_image.image.name)[0]
-            #             image_info['content_type'] = guessed_type or 'application/octet-stream'
-                    
-            #         images.append(image_info)
-            #     except Exception as e:
-            #         # Skip problematic images but continue with others
-            #         continue
-            
-            # # Reconstruct the combined result from stored predictions
-            # # combined_result = self._reconstruct_combined_result(prediction)
-            
             individual_predictions = prediction.all_predictions
             combined_result = self._reconstruct_combined_result(prediction)
 
@@ -290,12 +263,23 @@ class NailAnalysisViewSet(viewsets.ViewSet):
 
             # Collect image data + try to match what analyze returns
             images = []
+            individual_predictions = prediction.all_predictions
+
             for nail_image in prediction.nail_images.all().order_by('image_index'):
+                index = nail_image.image_index
+
+                # Attempt to get prediction for this image index
+                image_prediction = None
+                if (isinstance(individual_predictions, list) and 
+                    index < len(individual_predictions)):
+                    image_prediction = individual_predictions[index].get('top_classes')
+
                 image_info = {
                     'url': request.build_absolute_uri(nail_image.image.url),
                     'name': os.path.basename(nail_image.image.name),
-                    'index': nail_image.image_index,
-                    'size': nail_image.image.size
+                    'index': index,
+                    'size': nail_image.image.size,
+                    'predictions': image_prediction or []
                 }
                 images.append(image_info)
 
@@ -303,7 +287,7 @@ class NailAnalysisViewSet(viewsets.ViewSet):
                 "current_result": combined_result,
                 "final_prediction": prediction.predicted_class,
                 "scanned_on": prediction.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
-                "scanned_by": "N/A",  # Could store this in DB if needed
+                "scanned_by": prediction.patient.user.role if prediction.patient else "Unknown",
                 "total_images": len(images),
                 "total_conditions_detected": len(combined_result)
             }
@@ -320,42 +304,4 @@ class NailAnalysisViewSet(viewsets.ViewSet):
             return Response({"error": "Report not found"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"error": f"Error generating report: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    # @action(detail=False, methods=['get'], url_path='patient-reports/(?P<patient_id>[^/.]+)')
-    # def patient_reports(self, request, patient_id=None):
-        patient = get_object_or_404(Patient, user_id=patient_id)
-        
-        # Verify requesting user has permission to access these reports
-        requesting_user = request.user
-        if not (requesting_user.role == "doctor" or 
-                requesting_user.role == "lab_technician" or
-                str(requesting_user.id) == str(patient.user.id)):
-            return Response({"error": "Not authorized"}, status=status.HTTP_403_FORBIDDEN)
-        
-        reports = NailDiseasePrediction.objects.filter(
-            patient=patient
-        ).order_by('-timestamp').prefetch_related('nailimage_set')
-        
-        serialized_reports = []
-        for report in reports:
-            images = [{
-                'url': request.build_absolute_uri(img.image.url),
-                'name': img.image.name.split('/')[-1],
-                'index': img.image_index
-            } for img in report.nailimage_set.all()]
-            
-            serialized_reports.append({
-                'report_id': report.id,
-                'timestamp': report.timestamp,
-                'main_prediction': {
-                    'class': report.predicted_class,
-                    'confidence': report.confidence
-                },
-                'images': images,
-                'symptoms': report.symptoms,
-                'status': report.status
-            })
-        
-        return Response({
-            'patient': PatientSerializer(patient).data,
-            'reports': serialized_reports
-        })
+    

@@ -643,3 +643,32 @@
   color: #4e4e4e;
   font-style: italic;
 }
+
+.imageResult {
+  margin-bottom: 1rem;
+  padding: 10px;
+  border-radius: 12px;
+  background-color: #fff;
+}
+
+.predictionLabel {
+  margin-top: 8px;
+  font-size: 14px;
+  text-align: center;
+  color: #333;
+}
+
+.progressBarContainer {
+  margin-top: 6px;
+  height: 8px;
+  width: 100%;
+  background-color: #eee;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progressBar {
+  height: 100%;
+  background-color: #1565c0;
+  transition: width 0.5s ease-in-out;
+}
