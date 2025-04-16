@@ -10,20 +10,8 @@ import {
   getRole,
   handleInputChange,
 } from "../../../utils/utils.js";
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-const API_BASE_URL = "http://localhost:8000/api/feedback_reponse";
-
-import {
-  calculateAge,
-  getAccessToken,
-  getRole,
-  handleInputChange,
-} from "../../../utils/utils.js";
 import { getStatusClass } from "../../../utils/utils.js";
 
-const FeedbackDetails = ({ onClose, recordDetails }) => {
-  console.log("Record Details", recordDetails)
 const FeedbackDetails = ({ onClose, recordDetails }) => {
   console.log("Record Details", recordDetails)
   const [popupTrigger, setPopupTrigger] = useState(true);
@@ -32,7 +20,7 @@ const FeedbackDetails = ({ onClose, recordDetails }) => {
   const feedbackId = recordDetails?.id;
   const [feedback, setFeedback] = useState([]);
 
-  
+
   // Fetch feedback details when the popup opens
   useEffect(() => {
     const fetchFeedbackDetails = async () => {
@@ -62,7 +50,6 @@ const FeedbackDetails = ({ onClose, recordDetails }) => {
 
 
 
-
   return (
     <Popup trigger={popupTrigger} setTrigger={setPopupTrigger} onClose={onClose}>
 
@@ -71,7 +58,6 @@ const FeedbackDetails = ({ onClose, recordDetails }) => {
         <div className={styles.headerSection}>
 
           <div className={styles.titleSection}>
-            <h2 style={{ marginLeft: "20px" }}>Feedback Details</h2>
             <h2 style={{ marginLeft: "20px" }}>Feedback Details</h2>
             <p style={{ marginLeft: "20px" }}>View feedback details to understand user concerns and improve service quality.</p>
           </div>
@@ -83,18 +69,7 @@ const FeedbackDetails = ({ onClose, recordDetails }) => {
         <p className={styles.newSubHeading}>
           <span className={styles.key} style={{ margin: "0 0 0 20px" }}> <i className="fa-solid fa-circle-notch" style={{ fontSize: "14px" }}></i> Status: </span>
           <span className={getStatusClass(status, styles)} style={{ fontSize: "16px" }}>{recordDetails?.status}</span>
-          <span className={styles.key} style={{ margin: "0 0 0 20px" }}> <i className="fa-solid fa-circle-notch" style={{ fontSize: "14px" }}></i> Status: </span>
-          <span className={getStatusClass(status, styles)} style={{ fontSize: "16px" }}>{recordDetails?.status}</span>
 
-          <span className={styles.key} style={{ margin: "0 0 0 20px" }}> <i class='bx bx-calendar-alt'></i> Date Submitted: </span>
-          <span className={styles.locationValue}>{new Date(recordDetails?.date_submitted).toLocaleString("en-US", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-          })}</span>
           <span className={styles.key} style={{ margin: "0 0 0 20px" }}> <i class='bx bx-calendar-alt'></i> Date Submitted: </span>
           <span className={styles.locationValue}>{new Date(recordDetails?.date_submitted).toLocaleString("en-US", {
             year: "numeric",
@@ -151,7 +126,6 @@ const FeedbackDetails = ({ onClose, recordDetails }) => {
                 <p className={styles.subHeading}>{recordDetails?.user?.email || "N/A"}</p>
               </div>
 
-            </div>
             </div>
           </div>
 

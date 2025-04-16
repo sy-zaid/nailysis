@@ -22,10 +22,10 @@ const API_BASE_URL = "http://localhost:8000/api/feedbacks";
 
 const SendFeedback = () => {
   // ----- TOKENS AND USER INFORMATION
-  const curUserRole = getRole(); 
+  const curUserRole = getRole();
   console.log("Current user role:", curUserRole);
 
-  
+
   // ----- POPUPS AND NAVIGATION
   const [popupContent, setPopupContent] = useState();
   const [showPopup, setShowPopup] = useState(false);
@@ -33,7 +33,7 @@ const SendFeedback = () => {
   const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
   const popupRef = useRef(null);
   const [menuOpen, setMenuOpen] = useState(null);
-  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });  
+  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
   const menuRef = useRef(null);   // Close the action menu when clicking outside of it
 
 
@@ -65,7 +65,7 @@ const SendFeedback = () => {
 
   // Hide the popup when closing
   const handleClosePopup = () => {
-    setShowPopup(false); 
+    setShowPopup(false);
     onClose();
   };
 
@@ -131,7 +131,7 @@ const SendFeedback = () => {
     }
     if (action === "View Feedback Details") {
       setPopupContent(
-        <PopupFeedbackDetails onClose={handleClosePopup} recordDetails={recordDetails}/>);
+        <PopupFeedbackDetails onClose={handleClosePopup} recordDetails={recordDetails} />);
       setShowPopup(true);
     } else if (action === "Respond To Feedback") {
       setPopupContent(
@@ -145,7 +145,7 @@ const SendFeedback = () => {
       handleDeleteFeedback(recordDetails.id);
     }
   };
-  
+
   const togglePopup = (event, feedback) => {
     //  Accept feedback details
     setPopupPosition({
@@ -241,15 +241,6 @@ const SendFeedback = () => {
     fetchFeedbackData();
   }, []);
 
-  const [popupVisible, setPopupVisible] = useState(false);
-  const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
-  const popupRef = useRef(null);
-
-  // USE EFFECTS
-
-  // Close the action menu when clicking outside of it
-  const menuRef = useRef(null);
-
   useEffect(() => {
     const fetchFeedbackResponses = async () => {
       try {
@@ -290,80 +281,6 @@ const SendFeedback = () => {
     };
   }, []);
 
-  const handleFilterClick = (index) => {
-    setActiveButton(index); // Set the active button when clicked
-  };
-
-  const handleClosePopup = () => {
-    setShowPopup(false); // Hide the popup when closing
-    onClose();
-  };
-
-  const handleDeleteFeedback = async (feedbackId) => {
-    if (!window.confirm("Are you sure you want to delete this feedback?"))
-      return;
-
-    try {
-      const response = await deleteFeedback(feedbackId);
-      alert(`Feedback deleted successfully! ${feedbackId}`);
-      setFeedbackList((prevList) =>
-        prevList.filter((f) => f.id !== feedbackId)
-      );
-    } catch (error) {
-      console.error(
-        "Failed to delete feedback:",
-        error.response ? error.response.data : error.message
-      );
-      alert(
-        `Failed to delete feedback: ${error.response ? JSON.stringify(error.response.data) : error.message
-        }`
-      );
-    }
-  };
-
-  const togglePopup = (event, feedback) => { //   Accept feedback details
-    setPopupPosition({
-      top: event.target.getBoundingClientRect().top + window.scrollY + 5,
-      left: event.target.getBoundingClientRect().left + window.scrollX - 95,
-    });
-    setPopupVisible(!popupVisible);
-    setMenuOpen(feedback); //  Store selected feedback details
-  };
-
-  const handleActionClick = (action, recordDetails) => {
-    console.log(`Performing ${action} on`, recordDetails);
-    setPopupVisible(false); // Close popup after clicking any action
-
-    if (action === "Submit Clinic Feedback") {
-      setPopupContent(
-        <PopupFeedbackForm onClose={handleClosePopup} isClinicFeedback={true} />
-      );
-      setShowPopup(true);
-    }
-    if (action === "Submit Lab Feedback") {
-      setPopupContent(
-        <PopupFeedbackForm
-          onClose={handleClosePopup}
-          isClinicFeedback={false}
-        />
-      );
-      setShowPopup(true);
-    } if (action === "View Feedback Details") {
-      setPopupContent(
-        <PopupFeedbackDetails onClose={handleClosePopup} recordDetails={recordDetails}/>);
-      setShowPopup(true);
-    } else if (action === "Respond To Feedback") {
-      setPopupContent(
-        <PopupFeedbackResponse
-          onClose={handleClosePopup}
-          recordDetails={recordDetails}
-        />
-      );
-      setShowPopup(true);
-    } else if (action === "Delete Feedback") {
-      handleDeleteFeedback(recordDetails.id);
-    }
-  };
 
   return (
     <div className="p-5">
@@ -385,18 +302,16 @@ const SendFeedback = () => {
             {/* Filter buttons with dynamic active state */}
             <div className={styles.filters}>
               <button
-                className={`${styles.filterButton} ${
-                  activeButton === 0 ? styles.active : ""
-                }`}
+                className={`${styles.filterButton} ${activeButton === 0 ? styles.active : ""
+                  }`}
                 onClick={() => handleFilterClick(0)}
               >
                 All
               </button>
               {(curUserRole === "lab_admin" || curUserRole === "clinic_admin") && (
                 <button
-                  className={`${styles.filterButton} ${
-                    activeButton === 1 ? styles.active : ""
-                  }`}
+                  className={`${styles.filterButton} ${activeButton === 1 ? styles.active : ""
+                    }`}
                   onClick={() => handleFilterClick(1)}
                 >
                   Patients
@@ -405,9 +320,8 @@ const SendFeedback = () => {
 
               {curUserRole === "clinic_admin" && (
                 <button
-                  className={`${styles.filterButton} ${
-                    activeButton === 2 ? styles.active : ""
-                  }`}
+                  className={`${styles.filterButton} ${activeButton === 2 ? styles.active : ""
+                    }`}
                   onClick={() => handleFilterClick(2)}
                 >
                   Doctors
@@ -416,9 +330,8 @@ const SendFeedback = () => {
 
               {curUserRole === "lab_admin" && (
                 <button
-                  className={`${styles.filterButton} ${
-                    activeButton === 3 ? styles.active : ""
-                  }`}
+                  className={`${styles.filterButton} ${activeButton === 3 ? styles.active : ""
+                    }`}
                   onClick={() => handleFilterClick(3)}
                 >
                   Technician
@@ -555,13 +468,13 @@ const SendFeedback = () => {
                           <td>{f.id}</td>
                           {(curUserRole === "lab_admin" || curUserRole === "clinic_admin") && (
                             <td>
-                            {
-                              f.user.role.charAt(0).toUpperCase() +
+                              {
+                                f.user.role.charAt(0).toUpperCase() +
                                 f.user.role.slice(1) // To capitalize the first letter
-                            }
+                              }
                             </td>
                           )}
-                          
+
                           <td>{`${new Date(
                             f.date_submitted
                           ).toLocaleDateString()} | ${new Date(
@@ -655,69 +568,69 @@ const SendFeedback = () => {
 
                                   {(curUserRole === "lab_admin" ||
                                     curUserRole === "clinic_admin") && (
-                                    <li
-                                      style={{
-                                        padding: "8px 0",
-                                        cursor: "pointer",
-                                      }}
-                                      onClick={() => {
-                                        handleActionClick(
-                                          "Respond To Feedback",
-                                          f
-                                        );
-                                        setMenuOpen(null);
-                                      }}
-                                    >
-                                      <i
-                                        className="fa-solid fa-reply"
-                                        style={{ marginRight: "8px" }}
-                                      ></i>
-                                      View and Respond
-                                    </li>
-                                  )}
-
-                                  {(curUserRole === "lab_admin" ||
-                                    curUserRole === "clinic_admin") && (
-                                    <li
-                                      style={{
-                                        padding: "8px 0",
-                                        cursor: "pointer",
-                                      }}
-                                      onClick={() => {
-                                        // Add your Update Status handler here
-                                        setMenuOpen(null);
-                                      }}
-                                    >
-                                      <i
-                                        className="fa-solid fa-reply"
-                                        style={{ marginRight: "8px" }}
-                                      ></i>
-                                      Update Status
-                                    </li>
-                                  )}
-
-                                  {(curUserRole === "lab_admin" ||
-                                    curUserRole === "clinic_admin") && (
-                                    <li
-                                      style={{
-                                        padding: "8px 0",
-                                        cursor: "pointer",
-                                      }}
-                                      onClick={() => {
-                                        handleActionClick("Delete Feedback", f);
-                                        setMenuOpen(null);
-                                      }}
-                                    >
-                                      <i
-                                        className="fa-solid fa-trash"
+                                      <li
                                         style={{
-                                          color: "red",
-                                          marginRight: "8px",
+                                          padding: "8px 0",
+                                          cursor: "pointer",
                                         }}
-                                      ></i>
-                                      Delete Feedback
-                                    </li>
-                                  )}
+                                        onClick={() => {
+                                          handleActionClick(
+                                            "Respond To Feedback",
+                                            f
+                                          );
+                                          setMenuOpen(null);
+                                        }}
+                                      >
+                                        <i
+                                          className="fa-solid fa-reply"
+                                          style={{ marginRight: "8px" }}
+                                        ></i>
+                                        View and Respond
+                                      </li>
+                                    )}
+
+                                  {(curUserRole === "lab_admin" ||
+                                    curUserRole === "clinic_admin") && (
+                                      <li
+                                        style={{
+                                          padding: "8px 0",
+                                          cursor: "pointer",
+                                        }}
+                                        onClick={() => {
+                                          // Add your Update Status handler here
+                                          setMenuOpen(null);
+                                        }}
+                                      >
+                                        <i
+                                          className="fa-solid fa-reply"
+                                          style={{ marginRight: "8px" }}
+                                        ></i>
+                                        Update Status
+                                      </li>
+                                    )}
+
+                                  {(curUserRole === "lab_admin" ||
+                                    curUserRole === "clinic_admin") && (
+                                      <li
+                                        style={{
+                                          padding: "8px 0",
+                                          cursor: "pointer",
+                                        }}
+                                        onClick={() => {
+                                          handleActionClick("Delete Feedback", f);
+                                          setMenuOpen(null);
+                                        }}
+                                      >
+                                        <i
+                                          className="fa-solid fa-trash"
+                                          style={{
+                                            color: "red",
+                                            marginRight: "8px",
+                                          }}
+                                        ></i>
+                                        Delete Feedback
+                                      </li>
+                                    )}
                                 </ul>
                               </div>
                             )}
