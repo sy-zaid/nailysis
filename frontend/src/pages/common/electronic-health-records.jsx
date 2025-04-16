@@ -496,7 +496,7 @@ const ElectronicHealthRecord = () => {
                             />
                           </button>
 
-                          {menuOpen && (
+                          {menuOpen === record.id && (
                             <div
                               ref={menuRef}
                               id={`menu-${record.id}`}

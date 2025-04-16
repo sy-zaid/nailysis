@@ -35,7 +35,6 @@ class EHRView(viewsets.ModelViewSet):
             return EHR.objects.filter(patient_id=patient_id)  # Filter EHR records for that patient
         return EHR.objects.all()  # Return all records if no filter is applied
 
-    
     @action(detail=False, methods=['post'], url_path="create_record")
     def create_record(self, request):
         user = self.request.user
@@ -150,6 +149,7 @@ class EHRView(viewsets.ModelViewSet):
     @action(detail=True,methods=['post'],url_path="add_ehr_to_medical_history")
     def add_ehr_to_medical_history(self,request,pk = None):
         print("HELLLOOOOOOOOOOOOOOOO    ")
+        print("pk",pk)
         user = self.request.user
         if user.role == "doctor":
             ehr_record,created = EHR.objects.get_or_create(pk=pk)
