@@ -53,13 +53,22 @@ header {
   color: #3b82f6;
 }
 
+.loginButton{
+  width:120px;
+  height:35px;
+  border-radius:30px;
+  background-color: #0067FF;
+  margin-left:300px;
+}
+
 .navSearch {
   position: relative;
+  /* border-radius:30px; */
 }
 
 .navSearch input {
   padding: 0.5rem 2rem 0.5rem 1rem;
-  border-radius: 4px;
+  border-radius: 20px;
   border: 1px solid #ddd;
   outline: none;
 }
@@ -318,16 +327,20 @@ header {
 /* Footer styles */
 .footer {
   background-color: #f9f9f9;
-  /* White background as shown in design */
-  color: #333; /* Dark text for contrast */
-  padding: 2rem 4rem; /* Increase horizontal padding */
+  /* padding: 60px; */
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
 }
 
 .footerContent {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  max-width: 1200px;
+  max-width: 1300px;
   margin: 0 auto;
   padding: 1.5rem 0;
 }
@@ -445,12 +458,17 @@ header {
 
 /* Copyright bar */
 .copyright {
-  background-color: #0066cc;
+  background-color: #0067ff;
   color: white;
   text-align: center;
-  padding: 1rem;
+  padding: 16px 0;
   font-size: 0.9rem;
-  margin-top: 1rem;
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
 }
 
 /* Responsive adjustments */

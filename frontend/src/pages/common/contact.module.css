@@ -4,12 +4,12 @@
   max-width: 1440px;
   margin: 0 auto;
 }
-
+/* 
 header {
   padding: 1rem 2rem;
   width: 100%;
   background-color: white;
-}
+} */
 
 /* nav {
     display: flex;
@@ -52,13 +52,22 @@ header {
   color: #3b82f6;
 }
 
+.loginButton{
+  width:120px;
+  height:35px;
+  border-radius:30px;
+  background-color: #0067FF;
+  margin-left:300px;
+}
+
+
 .navSearch {
   position: relative;
 }
 
 .navSearch input {
   padding: 0.5rem 2rem 0.5rem 1rem;
-  border-radius: 4px;
+  border-radius: 30px;
   border: 1px solid #ddd;
   outline: none;
 }
@@ -164,6 +173,12 @@ header {
 .stayInTouch {
   background-color: #f9f9f9;
   padding: 60px 20px;
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
 }
 
 .stayInTouchContent {
@@ -229,6 +244,16 @@ header {
   color: #333;
 }
 
+.menuItem a {
+  text-decoration: none;
+  color: #333;
+  transition: color 0.3s ease;
+}
+
+.menuItem a:hover {
+  color: #0067FF;
+}
+
 /* Socials column */
 .stayInTouchRight {
   flex-basis: 25%;
@@ -269,6 +294,12 @@ header {
   text-align: center;
   padding: 16px 0;
   font-size: 0.9rem;
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
 }
 
 /* Responsive styles */

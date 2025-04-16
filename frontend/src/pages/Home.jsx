@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import styles from "./Home.module.css";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import ScrollReveal from "scrollreveal";
 
 const Home = () => {
@@ -97,20 +97,22 @@ const Home = () => {
               </span>
             </div>
           </div>
+    
           <ul className={styles.navLinks} id="nav-links" ref={navLinksRef}>
             <li onClick={handleLinkClick}>
-              <a href="#">Home</a>
+              <Link to="/">Home</Link>
             </li>
             <li onClick={handleLinkClick}>
-              <a href="#">Book an Appointment</a>
+              <Link to="/login">Book An Appointment</Link>
             </li>
             <li onClick={handleLinkClick}>
-              <a href="#">About</a>
+              <Link to="/about-us">About</Link>
             </li>
             <li onClick={handleLinkClick}>
-              <a href="#">Contact Us</a>
+              <Link to="/contact-us">Contact Us</Link>
             </li>
           </ul>
+
           <div className={styles.navSearch}>
             <input type="text" placeholder="Search" />
             <i class="fa-solid fa-magnifying-glass fa-rotate-90"></i>

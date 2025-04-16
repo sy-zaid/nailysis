@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import styles from "./about-us.module.css"; // Assuming we're using the same CSS module
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import ScrollReveal from "scrollreveal";
+
 
 const AboutUs = () => {
   const navigate = useNavigate();
@@ -85,23 +86,31 @@ const AboutUs = () => {
               </span>
             </div>
           </div>
+       
           <ul className={styles.navLinks} id="nav-links" ref={navLinksRef}>
             <li onClick={handleLinkClick}>
-              <a href="/">Home</a>
+              <Link to="/">Home</Link>
             </li>
             <li onClick={handleLinkClick}>
-              <a href="/appointment">Book An Appointment</a>
+              <Link to="/login">Book An Appointment</Link>
             </li>
             <li onClick={handleLinkClick}>
-              <a href="/about">About</a>
+              <Link to="/about-us">About</Link>
             </li>
             <li onClick={handleLinkClick}>
-              <a href="/contact">Contact Us</a>
+              <Link to="/contact-us">Contact Us</Link>
             </li>
           </ul>
+
+
+          <div>
+            <button className={styles.loginButton}>
+              Login
+            </button>
+          </div>
           <div className={styles.navSearch}>
             <input type="text" placeholder="Search" />
-            <i className="fa-solid fa-magnifying-glass fa-rotate-90"></i>
+            <i class="fa-solid fa-magnifying-glass fa-rotate-90"></i>
           </div>
         </nav>
       </header>
@@ -304,21 +313,21 @@ const AboutUs = () => {
             <p className={styles.contactInfo}>Mail: Nailysis@gmail.com</p>
           </div>
 
-          {/* Middle Column - Menu */}
-          <div className={styles.footerColumn}>
+                    {/* Middle Column - Menu */}
+                    <div className={styles.footerColumn}>
             <h4>Menu</h4>
             <ul className={styles.menuLinks}>
               <li>
-                <a href="/appointment">Book An Appointment</a>
+                <Link to="/login">Book An Appointment</Link>
               </li>
               <li>
-                <a href="/about">About</a>
+                <Link to="/about-us">About</Link>
               </li>
               <li>
-                <a href="/contact">Contact</a>
+                <Link to="/contact-us">Contact</Link>
               </li>
               <li>
-                <a href="/policy">Policy</a>
+                <Link to="/policy">Policy</Link>
               </li>
             </ul>
           </div>
