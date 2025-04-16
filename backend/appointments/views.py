@@ -19,11 +19,11 @@ from rest_framework.decorators import action
 
 from .models import (
     Appointment, DoctorAppointment, TechnicianAppointment,
-    DoctorAppointmentFee, CancellationRequest,TimeSlot
+    DoctorAppointmentFee, CancellationRequest,TimeSlot,TechnicianCancellationRequest
 )
 from .serializers import (
     AppointmentSerializer, DoctorAppointmentSerializer, TimeSlotSerializer,
-    TechnicianAppointmentSerializer, DoctorFeeSerializer, CancellationRequestSerializer
+    TechnicianAppointmentSerializer, DoctorFeeSerializer, DocCancelRequestSerializer,TechCancelRequestSerializer
 )   
 from users.models import Patient, Doctor, ClinicAdmin, CustomUser, LabTechnician, LabAdmin
 from labs.models import LabTestOrder,LabTestType
@@ -531,14 +531,14 @@ class LabTechnicianAppointmentViewset(viewsets.ModelViewSet):
         
         try:
             lab_technician = LabTechnician.objects.get(user=user)
-            appointment = TechnicianAppointment.objects.get(pk=pk,doctor=lab_technician)
+            appointment = TechnicianAppointment.objects.get(pk=pk,lab_technician=lab_technician)
         except(LabTechnician.DoesNotExist,TechnicianAppointment.DoesNotExist):
             return Response({"error":"No Appointment Found"},status=status.HTTP_404_NOT_FOUND)
         
         reason = request.data.get('reason','').strip()
         if not reason:
             return Response({"error":"Cancellation reason is required"},status=status.HTTP_400_BAD_REQUEST)
-        cancellation_request = CancellationRequest.objects.create(lab_technician=lab_technician,appointment=appointment,reason = reason,status="Pending")
+        cancellation_request = TechnicianCancellationRequest.objects.create(lab_technician=lab_technician,appointment=appointment,reason = reason,status="Pending")
         appointment.status = "Pending"
         appointment.save()
         return Response({"message":"Cancellation request sent successfully","request_id":cancellation_request.id},status=status.HTTP_201_CREATED)    
@@ -639,7 +639,7 @@ class DocAppointCancellationViewSet(viewsets.ModelViewSet):
     API endpoint for handling doctor appointment cancellation requests.
     """
     queryset = CancellationRequest.objects.all()
-    serializer_class = CancellationRequestSerializer
+    serializer_class = DocCancelRequestSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
@@ -679,8 +679,8 @@ class LabTechnicianAppointCancellationViewSet(viewsets.ModelViewSet):
     """
     API endpoint for handling lab technician appointment cancellation requests.
     """
-    queryset = CancellationRequest.objects.all()
-    serializer_class = CancellationRequestSerializer
+    queryset = TechnicianCancellationRequest.objects.all()
+    serializer_class = TechCancelRequestSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
@@ -689,8 +689,8 @@ class LabTechnicianAppointCancellationViewSet(viewsets.ModelViewSet):
         """
         user = self.request.user
         if user.role == "lab_admin":
-            return CancellationRequest.objects.all()
-        return CancellationRequest.objects.none()
+            return TechnicianCancellationRequest.objects.all()
+        return TechnicianCancellationRequest.objects.none()
 
     @action(detail=True, methods=['post'], url_path='review')
     def review_request(self, request, pk):
@@ -701,7 +701,7 @@ class LabTechnicianAppointCancellationViewSet(viewsets.ModelViewSet):
         if user.role != "lab_admin":
             return Response({"error": "Only admins can review requests."}, status=status.HTTP_403_FORBIDDEN)
 
-        cancellation_request = get_object_or_404(CancellationRequest, pk=pk, status="Pending")
+        cancellation_request = get_object_or_404(TechnicianCancellationRequest, pk=pk, status="Pending")
         action = request.data.get("action", "").lower()
 
         if action not in ["approve", "reject"]:

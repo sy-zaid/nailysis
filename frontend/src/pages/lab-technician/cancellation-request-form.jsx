@@ -22,7 +22,7 @@ const CancellationRequestForm = ({ onClose, appointmentId }) => {
       const response = await axios.post(
         `${
           import.meta.env.VITE_API_URL
-        }/api/doctor_appointments/${appointmentId}/request_cancellation/`,
+        }/api/lab_technician_appointments/${appointmentId}/request_cancellation/`,
         { reason },
         {
           headers: {

@@ -6,7 +6,7 @@ class RoleBasedRateThrottle(SimpleRateThrottle):
         'patient': '300/hour',
         'doctor': '1000/hour',
         'lab_technician': '1500/hour',
-        'default': '500/hour'  # Fallback rate
+        'default': '5000/hour'  # Fallback rate
     }
     
     # Set a dummy scope that exists in DEFAULT_THROTTLE_RATES

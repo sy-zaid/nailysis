@@ -222,3 +222,32 @@
   .defaultColor {
     color: #000;
   }
+
+  .actionButtons {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .approveButton {
+    background-color: #0067FF;
+    color: white;
+    border: none;
+    padding: 5px 14px;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 16px;
+    cursor: pointer;
+  }
+  
+  .rejectButton {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 5px 14px;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 16px;
+    cursor: pointer;
+  }

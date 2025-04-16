@@ -1,5 +1,5 @@
 from django.db import models
-from users.models import Patient, Doctor, LabTechnician, ClinicAdmin
+from users.models import Patient, Doctor, LabTechnician, ClinicAdmin,LabAdmin
 from ehr.models import EHR
 from django.utils.timezone import now
 from datetime import datetime
@@ -322,5 +322,28 @@ class CancellationRequest(models.Model):
     def __str__(self):
         return f"Request by {self.doctor} for {self.appointment} - {self.status}"
     
+class TechnicianCancellationRequest(models.Model):
+    STATUS_CHOICES = [
+        ('Pending', 'Pending'),
+        ('Approved', 'Approved'),
+        ('Rejected', 'Rejected'),
+    ]
 
+    lab_technician = models.ForeignKey(LabTechnician, on_delete=models.CASCADE, related_name="tech_cancellation_requests")
+    appointment = models.ForeignKey(TechnicianAppointment, on_delete=models.CASCADE, related_name="tech_cancellation_requests")
+    reviewed_by = models.ForeignKey(LabAdmin, on_delete=models.SET_NULL, null=True, blank=True)
+    reason = models.TextField()
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='Pending')
+    requested_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['appointment'],
+                name='unique_technician_cancellation_request_per_appointment'
+            )
+        ]
+    def __str__(self):
+        return f"Request by {self.lab_technician} for {self.appointment} - {self.status}"
+    
 

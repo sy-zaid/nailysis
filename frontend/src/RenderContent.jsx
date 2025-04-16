@@ -22,7 +22,8 @@ import ViewTechnicianAppointments from "./pages/common/view-lab-appointments";
 import PlaceholderComponent from "./components/PlaceholderComponent"; // Placeholder for missing views
 import BillingHistory from "./pages/admin-clinic/billing-history";
 import GenerateInvoice from "./pages/admin-clinic/invoice";
-import CancellationRequest from "./pages/admin-clinic/appointment-cancellation-request";
+import DocCancellationRequest from "./pages/admin-clinic/cancellation-requests-list";
+import TechCancellationRequest from "./pages/admin-lab/cancellation-requests-list";
 import LabAppointmentHistory from "./pages/common/lab-appointment-history";
 import ClinicAppointmentHistory from "./pages/common/clinic-appointment-history";
 import NailysisReport from "./pages/common/report";
@@ -69,7 +70,7 @@ export const renderClinicAdminContent = (view) => {
     case "Test Results":
       return <LabTestOrders name="Test Results" />;
     case "Cancellation Requests":
-      return <CancellationRequest name="Cancellation Requests" />;
+      return <DocCancellationRequest name="Cancellation Requests" />;
     default:
       return <ClinicAdminDashboard />;
   }
@@ -158,7 +159,7 @@ export const renderLabAdminContent = (view) => {
     case "Appointments History":
       return <LabAppointmentHistory name="Appointments History" />;
     case "Cancellation Requests":
-      return <PlaceholderComponent name="Cancellation Requests" />;
+      return <TechCancellationRequest name="Cancellation Requests" />;
 
     // Test Requests
     case "Test Requests":
