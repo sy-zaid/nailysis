@@ -123,6 +123,34 @@ const BookDoctorAppointmentPopup = ({ onClose }) => {
   const handleBookAppointment = async (e) => {
     e.preventDefault();
 
+    // Validate patient info ONLY IF editable (i.e., clinic_admin)
+    if (curUserRole === "clinic_admin") {
+      if (!formData.patientFirstName.trim()) {
+        toast.warning("Please enter patient's first name");
+        return;
+      }
+      if (!formData.patientLastName.trim()) {
+        toast.warning("Please enter patient's last name");
+        return;
+      }
+      if (!formData.age.trim()) {
+        toast.warning("Please enter patient's age");
+        return;
+      }
+      if (!formData.gender.trim()) {
+        toast.warning("Please enter patient's gender");
+        return;
+      }
+      if (!formData.phone.trim()) {
+        toast.warning("Please enter patient's phone number");
+        return;
+      }
+      if (!formData.email.trim()) {
+        toast.warning("Please enter patient's email");
+        return;
+      }
+    }
+
     if (!formData.specialization) {
       toast.warning("Please Select Doctor Specialization");
       return;
@@ -147,6 +175,7 @@ const BookDoctorAppointmentPopup = ({ onClose }) => {
       toast.warning("Please Select A Visit Purpose");
       return;
     }
+
 
     const appointmentData = {
       doctor_id: formData.doctorId,
@@ -263,7 +292,7 @@ const BookDoctorAppointmentPopup = ({ onClose }) => {
               <div>
                 <label>Age</label>
                 <input
-                  type="text"
+                  type="number"
                   name="age"
                   value={formData.age}
                   onChange={onInputChange}
@@ -273,6 +302,7 @@ const BookDoctorAppointmentPopup = ({ onClose }) => {
                       : "Enter Age"
                   }
                   disabled={curUserRole === "patient"}
+                  style={{ outline: "none" }}
                 />
               </div>
               <div>
