@@ -101,7 +101,7 @@ function LoginForm({ route }) {
     } catch (error) {
       console.error(error); // Display error message
       if (error.response && error.response.status === 401) {
-        toast.error("Invalid email or password.", {
+        toast.error("Incorrect email or password.", {
           className: "custom-toast",
         });
       } else {
