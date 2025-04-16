@@ -173,7 +173,6 @@ class Appointment(models.Model):
             return False  # Rescheduling failed
 
 
-
     def __str__(self):
         return f"Appointment {self.appointment_id} - {self.patient}"
 

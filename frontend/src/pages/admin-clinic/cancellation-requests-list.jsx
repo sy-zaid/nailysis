@@ -3,7 +3,7 @@ import axios from "axios";
 import Header from "../../components/Dashboard/Header/Header.jsx";
 import styles from "./appointment-cancellation-request.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
-import { convertDjangoDateTime } from "../../utils/utils.js";
+import { convertDjangoDateTime, getRole } from "../../utils/utils.js";
 
 const CancellationRequestsList = () => {
   const [requests, setRequests] = useState([]);
@@ -14,6 +14,7 @@ const CancellationRequestsList = () => {
   const [currentRequestId, setCurrentRequestId] = useState(null);
   const [refresh, setRefresh] = useState(false);
   const popupRef = useRef(null);
+  const curUserRole = getRole();
 
   useEffect(() => {
     const fetchRequests = async () => {
@@ -196,7 +197,7 @@ const CancellationRequestsList = () => {
                     <th>Appointment Date & Time</th>
                     <th>Reason</th>
                     <th>Status</th>
-                    <th>Action</th>
+                    {curUserRole === "clinic_admin" && <th>Action</th>}
                   </tr>
                 </thead>
                 <tbody>
@@ -226,26 +227,30 @@ const CancellationRequestsList = () => {
                       <td className={getStatusClass(request.status)}>
                         {request.status}
                       </td>
-                      <td>
-                        {request.status === "Pending" && (
-                          <div className={styles.actionButtons}>
-                            <button
-                              className={styles.approveButton}
-                              onClick={() =>
-                                handleReview(request.id, "approve")
-                              }
-                            >
-                              Approve
-                            </button>
-                            <button
-                              className={styles.rejectButton}
-                              onClick={() => handleReview(request.id, "reject")}
-                            >
-                              Reject
-                            </button>
-                          </div>
-                        )}
-                      </td>
+                      {curUserRole === "clinic_admin" && (
+                        <td>
+                          {request.status === "Pending" && (
+                            <div className={styles.actionButtons}>
+                              <button
+                                className={styles.approveButton}
+                                onClick={() =>
+                                  handleReview(request.id, "approve")
+                                }
+                              >
+                                Approve
+                              </button>
+                              <button
+                                className={styles.rejectButton}
+                                onClick={() =>
+                                  handleReview(request.id, "reject")
+                                }
+                              >
+                                Reject
+                              </button>
+                            </div>
+                          )}
+                        </td>
+                      )}
                     </tr>
                   ))}
                 </tbody>

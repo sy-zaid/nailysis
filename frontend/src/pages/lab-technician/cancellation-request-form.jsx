@@ -3,13 +3,14 @@ import axios from "axios";
 import Popup from "../../components/Popup/Popup";
 import styles from "./cancellation-request-form.module.css";
 import { toast } from "react-toastify";
+import { getRole } from "../../utils/utils";
 
 const CancellationRequestForm = ({ onClose, appointmentId }) => {
   const [reason, setReason] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [popupTrigger, setPopupTrigger] = useState(true);
-
+  const curUserRole = getRole();
   const handleSubmit = async (e) => {
     e.preventDefault();
 
