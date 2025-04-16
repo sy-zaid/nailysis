@@ -2,6 +2,7 @@ import React from "react";
 import styles from "./technician-appointment-checkin-popup.module.css";
 import Popup from "../Popup";
 import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 import {
   calculateAge,
   handleClosePopup,
@@ -30,9 +31,19 @@ const TechnicianAppointmentCheckinPopup = ({ onClose, appointmentDetails }) => {
   const handleCompleteAppointment = async (appointmentId) => {
     try {
       const response = await completeTechnicianAppointment(appointmentId);
-      alert("Successfully marked as completed");
+      if (response.status === 200) {
+        toast.success("Appointment Completed Successfully!", {
+          className: "custom-toast",
+        });
+      }
     } catch (error) {
       console.log(error);
+      if (error.response) {
+        toast.error(
+          error.response.data.error || "Failed to complete appointment",
+          { className: "custom-toast" }
+        );
+      }
     }
     handleClosePopup(onClose); // Closes popup as soon as completed
   };

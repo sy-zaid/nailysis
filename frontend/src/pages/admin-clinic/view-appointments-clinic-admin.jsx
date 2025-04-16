@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import api from "../../api";
 import Header from "../../components/Dashboard/Header/Header";
+import { toast } from "react-toastify";
 
 // UTILS.JS FUNCTIONS
 import { 
@@ -106,13 +107,27 @@ const AppointmentClinicAdmin = ( onClose ) => {
               },
             }
           );
-          alert(response.data.message); // Notify of success
+          // alert(response.data.message);
+          toast.success(response.data.message || "Appointment cancelled successfully", {
+            className: "custom-toast",
+          });
 
           // Fetch updated appointments after cancellation
           fetchAppointments();
           // Optionally, refetch the cancellation requests list to reflect changes
         } catch (err) {
           console.log("Failed cancellation request.");
+          if (err.response) {
+            toast.error(
+              err.response.data.error || "Failed cancellation request",
+              { className: "custom-toast" }
+            );
+          } else {
+            toast.error("Network Error", {
+              className: "custom-toast",
+            });
+          }
+
         }
       };
       handleCancellation(appointmentId, action);

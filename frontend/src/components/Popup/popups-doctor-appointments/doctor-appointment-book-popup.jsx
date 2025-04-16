@@ -9,6 +9,7 @@ import {
   getAccessToken,
   getRole,
   handleInputChange,
+  getTodayDate,
 } from "../../../utils/utils.js";
 import {
   bookAppointment,
@@ -43,15 +44,6 @@ const BookDoctorAppointmentPopup = ({ onClose }) => {
     email: "",
     notes: "",
   });
-
-  const getTodayDate = () => {
-    const today = new Date();
-    const yyyy = today.getFullYear();
-    const mm = String(today.getMonth() + 1).padStart(2, '0'); // Months start at 0!
-    const dd = String(today.getDate()).padStart(2, '0');
-    return `${yyyy}-${mm}-${dd}`;
-  };
-
 
 
   useEffect(() => {
@@ -132,27 +124,27 @@ const BookDoctorAppointmentPopup = ({ onClose }) => {
     e.preventDefault();
 
     if (!formData.specialization) {
-      toast.error("Please Select Doctor Specialization");
+      toast.warning("Please Select Doctor Specialization");
       return;
     }
   
     if (!formData.doctorId) {
-      toast.error("Please Select Doctor");
+      toast.warning("Please Select Doctor");
       return;
     }
   
     if (!formData.appointmentDate) {
-      toast.error("Please Select Date");
+      toast.warning("Please Select Date");
       return;
     }
   
     if (!formData.slotId) {
-      toast.error("Please Select Appointment Slot");
+      toast.warning("Please Select Appointment Slot");
       return;
     }
   
     if (!formData.appointmentType) {
-      toast.error("Please Select A Visit Purpose");
+      toast.warning("Please Select A Visit Purpose");
       return;
     }
 

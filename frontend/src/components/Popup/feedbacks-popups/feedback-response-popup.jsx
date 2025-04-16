@@ -73,7 +73,7 @@ const FeedbackResponse = ({ onClose, recordDetails }) => {
     e.preventDefault();
 
     if (!reply.trim()) {
-      toast.error("Response cannot be empty.");
+      toast.warning("Response cannot be empty.");
       return;
     }
 

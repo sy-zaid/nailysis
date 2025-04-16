@@ -6,6 +6,7 @@ import axios from "axios";
 import useCurrentUserData from "../../../useCurrentUserData.jsx";
 import { getAccessToken } from "../../../utils/utils.js";
 import { deleteAppointment } from "../../../api/appointmentsApi.js";
+import { toast } from "react-toastify";
 
 const DeleteAppointmentPopup = ({ onClose, appointmentDetails }) => {
   const [popupTrigger, setPopupTrigger] = useState(true);
@@ -16,11 +17,23 @@ const DeleteAppointmentPopup = ({ onClose, appointmentDetails }) => {
         appointmentDetails.appointment_id
       );
       if (response.status === 204) {
-        alert("Appointment Deleted Successfully");
+        toast.success("Appointment Deleted Successfully!", {
+          className: "custom-toast",
+        });
+        onClose();
       }
     } catch (error) {
-      alert("Failed to delete appointment");
       console.error(error);
+      if (error.response) {
+        toast.error(
+          error.response.data.error || "Failed to Delete Appointment",
+          { className: "custom-toast" }
+        );
+      } else {
+        toast.error("Network Error", {
+          className: "custom-toast",
+        });
+      }
     }
   };
 

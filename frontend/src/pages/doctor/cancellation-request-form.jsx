@@ -16,6 +16,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import Popup from "../../components/Popup/Popup"; // Reusable Popup component
+import { toast } from "react-toastify";
 
 /**
  * CancellationRequestForm Component
@@ -43,7 +44,7 @@ const CancellationRequestForm = ({ appointmentId, onClose }) => {
     e.preventDefault();
 
     if (!reason.trim()) {
-      setError("Please provide a reason for cancellation.");
+      toast.warning("Please Provide A Reason For Cancellation", { className: "custom-toast" });
       return;
     }
 
@@ -58,11 +59,19 @@ const CancellationRequestForm = ({ appointmentId, onClose }) => {
         }
       );
 
-      setMessage(response.data.message); // Success message from the API
-      setError(""); // Clear any previous errors
+      toast.success("Cancellation Request Sent successfully!", {
+        className: "custom-toast",
+      });
+      onClose(); // Close the popup
     } catch (err) {
-      setError("Failed to submit cancellation request. Please try again.");
-      setMessage(""); // Clear success message on failure
+      console.log(err);
+      if (err.response) {
+        toast.error(err.response.data.error || "Failed to Submit Cancellation Request. Please Try Again.", {
+          className: "custom-toast",
+        });
+      } else {
+        toast.error("Network Error", {className: "custom-toast"})
+      }
     }
   };
 

@@ -42,14 +42,14 @@ const SubmitFeedback = ({ onClose, isClinicFeedback }) => {
 
     // Validation checks
     if (!formData.category.trim()) {
-      toast.error("Please select a feedback category.", {
+      toast.warning("Please select a feedback category.", {
         className: "custom-toast",
       });
       return;
     }
 
     if (!formData.description.trim()) {
-      toast.error("Please enter additional notes.", {
+      toast.warning("Please enter additional notes.", {
         className: "custom-toast",
       });
       return;
