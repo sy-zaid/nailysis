@@ -124,7 +124,7 @@ const PopupEHRCreate = ({ onClose }) => {
     try {
       // Prepare request payload
       const payload = preparePayload(ehrData);
-      console.log("SENDING THIS TO CREATE",payload)
+      console.log("SENDING THIS TO CREATE", payload);
       // Send API request
       const response = await createEHR(payload);
 
@@ -151,7 +151,7 @@ const PopupEHRCreate = ({ onClose }) => {
         toast.error(error.response.data.error || "Failed to Create New EHR", {
           className: "custom-toast",
         });
-      } 
+      }
     }
   };
 
@@ -593,26 +593,29 @@ const PopupEHRCreate = ({ onClose }) => {
             Continue
           </button> */}
 
-          <button className={styles.cancelButton} style={{marginRight: "20px"}} onClick={onClose}>
-            Cancel
-          </button> 
-          
+            <button
+              className={styles.cancelButton}
+              style={{ marginRight: "20px" }}
+              onClick={onClose}
+            >
+              Cancel
+            </button>
 
-          {step === 1
-                ?
-          <button className={styles.addButton} onClick={handleNextStep}>
-            Continue
-          </button>
-          :
-          <button className={styles.addButton} onClick={() => {
-                                                      handleCreateEHR();
-                                                    }}>
-            Save & Add New Record
-          </button>
-          }
-
-          
-
+            {step === 1 ? (
+              <button className={styles.addButton} onClick={handleNextStep}>
+                Continue
+              </button>
+            ) : (
+              <button
+                className={styles.addButton}
+                onClick={() => {
+                  handleCreateEHR();
+                }}
+              >
+                Save & Add New Record
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </Popup>
