@@ -167,7 +167,7 @@ class LabTestResultModelViewSet(viewsets.ModelViewSet):
     def get_all_test_results(self, request):
         # Check user permissions
         user = request.user
-        if user.role not in ["lab_technician", "lab_admin","doctor"]:
+        if user.role not in ["lab_technician", "lab_admin","doctor","patient","clinic_admin"]:
             raise PermissionDenied("Access denied: You are not authorized to view test results.")
 
         patient_id = request.query_params.get("patient_id")

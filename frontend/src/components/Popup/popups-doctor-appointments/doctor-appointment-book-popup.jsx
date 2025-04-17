@@ -422,7 +422,7 @@ const BookDoctorAppointmentPopup = ({ onClose }) => {
                 </option>
                 {availableSlots.map((slot, index) => (
                   <option key={index} value={slot.id}>
-                    {slot.slot_id} - {slot.end_time}
+                    {slot.start_time} - {slot.end_time}
                   </option>
                 ))}
               </select>
