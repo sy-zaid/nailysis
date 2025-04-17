@@ -6,6 +6,7 @@ import PopupSelectTestOrder from "../../components/Popup/popups-labs/select-test
 import PopupViewTestOrder from "../../components/Popup/popups-labs/view-test-order-popup";
 import PopupDeleteTestOrder from "../../components/Popup/popups-labs/delete-test-order-popup";
 import PopupAllReportsList from "../../components/Popup/popups-labs/all-reports-list-popup";
+import { toast } from "react-toastify";
 
 import { getTestOrders } from "../../api/labsApi";
 
@@ -430,24 +431,17 @@ const TestOrders = () => {
                             }}
                           >
                             <ul>
-                              {row.lab_technician_appointment.status ===
-                                "Completed" && (
-                                <li
-                                  onClick={() =>
-                                    handleActionClick("Process Test Order", row)
-                                  }
-                                >
-                                  <i className="fa-solid fa-repeat"></i> Process
-                                  Test Order
-                                </li>
-                              )}
-                              <li
-                                onClick={() =>
-                                  handleActionClick("Edit Details", row)
-                                }
-                              >
-                                <i className="fa-solid fa-pen"></i> Edit Details
-                              </li>
+                                {curUser[0].role === "lab_technician" &&
+                                  row.lab_technician_appointment.status === "Completed" && (
+                                    <li onClick={() => handleActionClick("Process Test Order", row)}>
+                                      <i className="fa-solid fa-repeat"></i> Process Test Order
+                                    </li>
+                                )}
+                                {(curUser[0].role === "lab_technician" || curUser[0].role === "lab_admin") && (
+                                  <li onClick={() => handleActionClick("Edit Details", row)}>
+                                    <i className="fa-solid fa-pen"></i> Edit Details
+                                  </li>
+                                )}
                               {curUser[0].role === "lab_admin" && (
                                 <>
                                   <li
@@ -491,7 +485,7 @@ const TestOrders = () => {
                                       handleActionClick("All Reports List", row)
                                     }
                                   >
-                                    <i class="fa-solid fa-trash"></i>View All
+                                    <i class="fa-solid fa-eye"></i>View All
                                     Reports
                                   </li>
                                 </>

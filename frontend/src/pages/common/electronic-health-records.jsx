@@ -8,7 +8,7 @@ import Header from "../../components/Dashboard/Header/Header.jsx";
 import PopupEHREdit from "../../components/Popup/popups-electronic-health-records/popup-ehr-edit";
 import PopupEHRDelete from "../../components/Popup/popups-electronic-health-records/popup-ehr-delete";
 import PopupEHRCreate from "../../components/Popup/popups-electronic-health-records/popup-ehr-create";
-
+import { toast } from "react-toastify";
 // Importing Popups for actions
 import PopupAllReportsList from "../../components/Popup/popups-labs/all-reports-list-popup.jsx";
 
@@ -124,7 +124,7 @@ const ElectronicHealthRecord = () => {
 
     let valA = a[sortConfig.key];
     let valB = b[sortConfig.key];
-    console.log(valA, valB);
+    // console.log(valA, valB);
 
     if (sortConfig.key === "last_updated") {
       // Replace " | " with a space so the Date object can parse the string correctly.
@@ -272,7 +272,7 @@ const ElectronicHealthRecord = () => {
       console.log("Sending this to add medical history", recordDetails);
       addEHRToMedicalHistory(recordDetails);
 
-      alert("Updated Medical History with Selected Record");
+      toast.success("Updated Medical History with Selected Record");
     } else if (action === "Add New Record") {
       setPopupContent(<PopupEHRCreate onClose={handleClosePopup} />);
       setShowPopup(true);
@@ -434,7 +434,6 @@ const ElectronicHealthRecord = () => {
                     <th>Consultation Notes</th>
                     <th>Diagnostics</th>
                     <th>Last Updated</th>
-                    <th>Nail Image Analysis</th>
                     <th>Test Reports</th>
                     {curUserRole === "doctor" && <th>Actions</th>}
                   </tr>
@@ -463,10 +462,9 @@ const ElectronicHealthRecord = () => {
                       <td>{record.notes}</td>
                       <td>{record.diagnoses}</td>
                       <td>{record.last_updated}</td>
-                      <td>{record.nail_image_analysis}</td>
                       <td>
                         <button
-                          className={styles.addButton}
+                          className={styles.viewButton}
                           onClick={() =>
                             handleActionClick("All Reports List", record)
                           }
@@ -496,7 +494,7 @@ const ElectronicHealthRecord = () => {
                             />
                           </button>
 
-                          {menuOpen && (
+                          {menuOpen === record.id && (
                             <div
                               ref={menuRef}
                               id={`menu-${record.id}`}

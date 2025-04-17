@@ -248,7 +248,24 @@ export const currentMedicationsOptions = [
   { value: "Lisinopril", label: "Lisinopril" },
   { value: "Atorvastatin", label: "Atorvastatin" },
 ];
-
+/**
+ * Predefined immunization records options for react-select.
+ * @constant {Array<Object>}
+ */
+export const immunizationRecordsOptions = [
+  { value: "None", label: "None" },
+  { value: "BCG", label: "BCG (Tuberculosis)" },
+  { value: "Hepatitis B", label: "Hepatitis B" },
+  { value: "Polio", label: "Polio" },
+  { value: "DTP", label: "DTP (Diphtheria, Tetanus, Pertussis)" },
+  { value: "MMR", label: "MMR (Measles, Mumps, Rubella)" },
+  { value: "Varicella", label: "Varicella (Chickenpox)" },
+  { value: "Hepatitis A", label: "Hepatitis A" },
+  { value: "Typhoid", label: "Typhoid" },
+  { value: "HPV", label: "HPV (Human Papillomavirus)" },
+  { value: "COVID-19", label: "COVID-19" },
+  { value: "Influenza", label: "Influenza (Flu)" },
+];
 /**
  * Predefined visit purposes.
  * @constant {Array<string>}
@@ -433,7 +450,7 @@ export const formatEhrRecords = (response, type) => {
       : "No records",
     immunization:
       Array.isArray(record.immunization_records) &&
-      record.immunization_records.length > 1
+      record.immunization_records.length >= 1
         ? record.immunization_records.join(", ")
         : "No records",
     family_history: record.family_history || "No records",

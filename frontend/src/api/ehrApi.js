@@ -108,6 +108,7 @@ export const deleteEHR = async (ehrId) => {
 };
 
 export const addEHRToMedicalHistory = async (ehrId) => {
+  console.log("EHRID TO ADDING MH",ehrId)
   try {
     const response = await axios.post(
       `${API_URL}/api/ehr_records/${ehrId}/add_ehr_to_medical_history/`,

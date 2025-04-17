@@ -639,7 +639,7 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
                 type="submit"
                 onClick={handleBookAppointment}
               >
-                Continue to Next Step
+                Book Appointment
               </button>
             </div>
           </div>

@@ -9,6 +9,7 @@ class Feedback(models.Model):
         ('Lab Test Accuracy', 'Lab Test Accuracy'),
         ('Facilities & Cleanliness', 'Facilities & Cleanliness'),
         ('Technical Issue', 'Technical Issue'),
+        ('Nail Report Issue', 'Nail Report Issue'),
         ('Suggestions and Improvements', 'Suggestions and Improvements'),
     ]
     

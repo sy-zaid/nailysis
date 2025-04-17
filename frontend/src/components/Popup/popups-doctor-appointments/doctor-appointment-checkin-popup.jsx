@@ -29,7 +29,7 @@ const CheckinDoctorAppointmentPopup = ({ onClose, appointmentDetails }) => {
   const [popupTrigger, setPopupTrigger] = useState(true);
   const [status, setStatus] = useState("Pending");
   const { data: curUser } = useCurrentUserData();
-  console.log("DETAA",appointmentDetails)
+  console.log("DETAA", appointmentDetails);
   // Function to format time in HH:MM:SS format
   const formatTime = (time) => {
     const hours = String(Math.floor(time / 3600)).padStart(2, "0");
@@ -58,7 +58,6 @@ const CheckinDoctorAppointmentPopup = ({ onClose, appointmentDetails }) => {
 
   // Handles the completion of appointment
   const handleCompleteAppointment = async () => {
-
     try {
       const formData = new FormData();
       Object.entries(ehrData).forEach(([key, value]) => {
@@ -73,7 +72,9 @@ const CheckinDoctorAppointmentPopup = ({ onClose, appointmentDetails }) => {
         appointmentDetails.appointment_id,
         formData
       );
-      toast.success("Successfully marked as completed", { className: "custom-toast" });
+      toast.success("Successfully marked as completed", {
+        className: "custom-toast",
+      });
       stopTimer();
       onClose();
     } catch (error) {
@@ -124,12 +125,22 @@ const CheckinDoctorAppointmentPopup = ({ onClose, appointmentDetails }) => {
 
   // Validation helper before completing the appointment
   const validateEHRForm = () => {
-    if (!ehrData.medical_conditions || ehrData.medical_conditions.length === 0) {
-      toast.warning("Please Select Medical Conditions", { className: "custom-toast" });
+    if (
+      !ehrData.medical_conditions ||
+      ehrData.medical_conditions.length === 0
+    ) {
+      toast.warning("Please Select Medical Conditions", {
+        className: "custom-toast",
+      });
       return false;
     }
-    if (!ehrData.current_medications || ehrData.current_medications.length === 0) {
-      toast.warning("Please Select Current Medications", { className: "custom-toast" });
+    if (
+      !ehrData.current_medications ||
+      ehrData.current_medications.length === 0
+    ) {
+      toast.warning("Please Select Current Medications", {
+        className: "custom-toast",
+      });
       return false;
     }
     if (!ehrData.diagnoses || ehrData.diagnoses.length === 0) {
@@ -140,8 +151,13 @@ const CheckinDoctorAppointmentPopup = ({ onClose, appointmentDetails }) => {
       toast.warning("Please Select Category", { className: "custom-toast" });
       return false;
     }
-    if (!ehrData.recommended_lab_test || ehrData.recommended_lab_test.length === 0) {
-      toast.warning("Please Select Recommended Tests", { className: "custom-toast" });
+    if (
+      !ehrData.recommended_lab_test ||
+      ehrData.recommended_lab_test.length === 0
+    ) {
+      toast.warning("Please Select Recommended Tests", {
+        className: "custom-toast",
+      });
       return false;
     }
     // All validations passed
@@ -455,8 +471,8 @@ const CheckinDoctorAppointmentPopup = ({ onClose, appointmentDetails }) => {
           </p>
 
           {isConsultationStarted
-            ? renderPatientInfoContent()
-            : renderConsultationFormContent()}
+            ? renderConsultationFormContent()
+            : renderPatientInfoContent()}
 
           <div className={styles.newActions}>
             <button

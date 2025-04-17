@@ -644,11 +644,22 @@ class DocAppointCancellationViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         """
-        Allow only clinic admins to view all cancellation requests.
+        Return cancellation requests based on user role:
+        - Clinic admins see all requests.
+        - Doctors see their own requests.
+        - Patients see requests related to their own appointments.
         """
         user = self.request.user
+
         if user.role == "clinic_admin":
             return CancellationRequest.objects.all()
+
+        elif user.role == "doctor":
+            return CancellationRequest.objects.filter(doctor__user=user)
+
+        elif user.role == "patient":
+            return CancellationRequest.objects.filter(appointment__patient__user=user)
+
         return CancellationRequest.objects.none()
 
     @action(detail=True, methods=['post'], url_path='review')
@@ -685,13 +696,22 @@ class LabTechnicianAppointCancellationViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         """
-        Allow only lab admins to view all cancellation requests.
+        Allow lab admins to view all cancellation requests,
+        technicians to view their own requests,
+        and patients to view requests for their appointments.
         """
         user = self.request.user
+
         if user.role == "lab_admin":
             return TechnicianCancellationRequest.objects.all()
+        
+        elif user.role == "lab_technician":
+            return TechnicianCancellationRequest.objects.filter(lab_technician__user=user)
+        
+        elif user.role == "patient":
+            return TechnicianCancellationRequest.objects.filter(appointment__patient__user=user)
+        
         return TechnicianCancellationRequest.objects.none()
-
     @action(detail=True, methods=['post'], url_path='review')
     def review_request(self, request, pk):
         """

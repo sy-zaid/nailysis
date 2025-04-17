@@ -5,7 +5,8 @@ import Popup from "./Popup.jsx";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import useCurrentUserData from "../../useCurrentUserData.jsx";
-import popupEhrCreateConfirm from "./popup-ehr-create-confirm.jsx";
+import popupEhrCreateConfirm from "./popup-ehr-create-confirm.jsx"; 
+import { toast } from "react-toastify";
 
 
 const medicalConditionsOptions = [
@@ -211,6 +212,11 @@ const PopupEHRCreate = ({ onClose, appointmentDetails }) => {
   };
 
   const handleCreateEHR = async () => {
+    if (!selectedPatient) {
+      toast.error("Please select a patient before continuing.");
+      return;
+    }
+    
     try {
       popupEhrCreateConfirm(true);
       const formData = new FormData();
