@@ -80,6 +80,7 @@ const PopupSelectTestOrder = ({ onClose, testOrderDetails }) => {
         toast.success(" All test reports submitted to admin!", {
           className: "custom-toast",
         });
+        onClose();
       }
     } catch (error) {
       if (error.response) {
@@ -303,7 +304,7 @@ const PopupSelectTestOrder = ({ onClose, testOrderDetails }) => {
             </h3>
             <div className={styles.documentFormGroup}>
               <div>
-                <textarea style={{ border: "none" }} disabled>
+                <textarea style={{ border: "none", padding: "0", height: "20px" }} disabled>
                   {testOrderDetails.lab_technician_appointment?.notes || "N/A"}
                 </textarea>
               </div>

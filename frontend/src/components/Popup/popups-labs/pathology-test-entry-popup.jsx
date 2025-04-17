@@ -176,6 +176,26 @@ const PathologyTestEntryPopup = ({
       return;
     }
 
+    if (
+      testEntries.some((entry) => !entry.result || entry.result.trim() === "")
+    ) {
+      toast.warning("Please fill in all test result fields.", {
+        className: "custom-toast",
+      });
+      return;
+    }
+
+    const incompleteEntry = testEntries.some(
+      (entry) => !entry.result || entry.result.trim() === ""
+    );
+
+    if (incompleteEntry) {
+      toast.warning("Please fill in all test result fields.", {
+        className: "custom-toast",
+      });
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
@@ -246,18 +266,15 @@ const PathologyTestEntryPopup = ({
       onClose={onClose}
     >
       <div className={styles.formContainer}>
-
         <div className={styles.headerSection}>
-
           <div className={styles.titleSection}>
-              <h2>Enter Pathology Test Details For Patient</h2> 
-              <p>
-                Record and manage pathology test results with both quantitative
-                measurements and qualitative assessments. Upload supporting
-                documents when available.
-              </p>
+            <h2>Enter Pathology Test Details For Patient</h2>
+            <p>
+              Record and manage pathology test results with both quantitative
+              measurements and qualitative assessments. Upload supporting
+              documents when available.
+            </p>
           </div>
-
         </div>
 
         <hr />
@@ -464,7 +481,10 @@ const PathologyTestEntryPopup = ({
 
           <div className={styles.qualitativeSection}>
             <h3>
-              <i className="fa-solid fa-vial-circle-check" style={{ color: "#007bff", marginRight: "10px"}}></i>
+              <i
+                className="fa-solid fa-vial-circle-check"
+                style={{ color: "#007bff", marginRight: "10px" }}
+              ></i>
               Qualitative Tests
               <button
                 onClick={handleAddQualitativeParam}
@@ -615,7 +635,6 @@ const PathologyTestEntryPopup = ({
             </div>
           </div>
           <div className={styles.newActions}>
-
             <button className={styles.cancelButton} onClick={onClose}>
               Cancel
             </button>
@@ -627,7 +646,6 @@ const PathologyTestEntryPopup = ({
             >
               {loading ? "Saving..." : "Save Pathology Results"}
             </button>
-            
           </div>
         </div>
       </div>

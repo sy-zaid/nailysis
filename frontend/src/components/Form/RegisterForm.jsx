@@ -242,20 +242,55 @@ function RegisterForm({ route }) {
             />
           </div>
 
+          {/* Gender Radio Buttons */}
           <div className={styles.inputGroup}>
-            <label htmlFor="gender">Gender</label>
-            <select
-              id="gender"
-              value={gender}
-              onChange={(e) => setGender(e.target.value)}
-              required
-            >
-              <option value="">Select Gender</option>
-              <option value="M">Male</option>
-              <option value="F">Female</option>
-              <option value="O">Other</option>
-              <option value="P">Prefer Not To Say</option>
-            </select>
+            <label>Gender</label>
+            <div className={styles.radioGroup}>
+              <label>
+                <input
+                  type="radio"
+                  name="gender"
+                  value="M"
+                  checked={gender === "M"}
+                  onChange={(e) => setGender(e.target.value)}
+                  required
+                />
+                Male
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="gender"
+                  value="F"
+                  checked={gender === "F"}
+                  onChange={(e) => setGender(e.target.value)}
+                  required
+                />
+                Female
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="gender"
+                  value="O"
+                  checked={gender === "O"}
+                  onChange={(e) => setGender(e.target.value)}
+                  required
+                />
+                Other
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="gender"
+                  value="P"
+                  checked={gender === "P"}
+                  onChange={(e) => setGender(e.target.value)}
+                  required
+                />
+                Prefer Not to Say
+              </label>
+            </div>
           </div>
 
           <div className={styles.inputGroup}>
@@ -266,6 +301,19 @@ function RegisterForm({ route }) {
               onChange={(e) => setAddress(e.target.value)}
               placeholder="Enter your full address"
               required
+              style={{
+                all: "unset",
+                display: "block",
+                width: "98%",
+                padding: "0.5rem",
+                border: "1px solid #ccc",
+                borderRadius: "4px",
+                fontSize: "1rem",
+                lineHeight: "1.5",
+                backgroundColor: "#fff",
+                color: "#000",
+                overflowY: "none",
+              }}
             />
           </div>
 
