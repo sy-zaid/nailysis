@@ -10,6 +10,7 @@ import {
   handleInputChange,
   formatEhrRecords,
   preparePayload,
+  immunizationRecordsOptions,
 } from "../../../utils/utils.js";
 import {
   medicalConditionsOptions,
@@ -27,8 +28,6 @@ const PopupEHRCreate = ({ onClose }) => {
   const handleNextStep = () => {
     if (step < 2) setStep(step + 1);
   };
-
-
 
   const [ehrData, setEhrData] = useState({
     patient_id: "",
@@ -76,9 +75,9 @@ const PopupEHRCreate = ({ onClose }) => {
       try {
         const response = await getEHR(selected.value);
         // Formatting the response data to display on table
-        console.log("EHR_CREATE_DATA",response)
-        const formattedData = formatEhrRecords(response.data,"ehr_create")
-        
+        console.log("EHR_CREATE_DATA", response);
+        const formattedData = formatEhrRecords(response.data, "ehr_create");
+
         setRecords(formattedData);
 
         // Use setEhrData correctly to update state
@@ -98,7 +97,7 @@ const PopupEHRCreate = ({ onClose }) => {
     try {
       // Prepare request payload
       const payload = preparePayload(ehrData);
-
+      console.log("SENDING THIS TO CREATE",payload)
       // Send API request
       const response = await createEHR(payload);
 
@@ -136,7 +135,11 @@ const PopupEHRCreate = ({ onClose }) => {
     return <p>Error fetching user data</p>;
   }
   return (
-    <Popup trigger={popupTrigger} setTrigger={setPopupTrigger} onClose={onClose}>
+    <Popup
+      trigger={popupTrigger}
+      setTrigger={setPopupTrigger}
+      onClose={onClose}
+    >
       <div className={styles.formContainer}>
         <div className={styles.headerSection}>
           <div className={styles.titleSection}>
@@ -145,9 +148,15 @@ const PopupEHRCreate = ({ onClose }) => {
             <div style={{ display: "flex", alignItems: "center" }}>
               {/* Show back button only on step 2 */}
               {step === 2 && (
-                <i 
+                <i
                   className="fa-solid fa-angle-left"
-                  style={{ cursor: "pointer", fontSize: "20px", position: "absolute", left: "18px", top: "24px" }}
+                  style={{
+                    cursor: "pointer",
+                    fontSize: "20px",
+                    position: "absolute",
+                    left: "18px",
+                    top: "24px",
+                  }}
                   onClick={() => setStep(1)} // Go back to step 1 when clicked
                 ></i>
               )}
@@ -155,14 +164,11 @@ const PopupEHRCreate = ({ onClose }) => {
               <h2 style={{ marginLeft: "20px" }}>Add New EHR Record</h2>
             </div>
 
-
-            <p style={{ marginLeft: "20px" }}>{step === 1
+            <p style={{ marginLeft: "20px" }}>
+              {step === 1
                 ? "Choose a patient from list to add new record"
-                : 
-                "Add details for a new electronic health record"}
+                : "Add details for a new electronic health record"}
             </p>
-
-            
           </div>
           {/* <button className={styles.closeButton} onClick={() => setPopupTrigger(false)}>
             <span>×</span>
@@ -171,135 +177,141 @@ const PopupEHRCreate = ({ onClose }) => {
         <hr />
 
         <div className={styles.popupBottom}>
-
-        {/* Patient Selection Dropdown */}
-        {step === 1
-                ?    
-        <div className={styles.patientSelectSection}>
-          <label>Select Patient</label>
-          <div className={styles.dropdown}>
-            
-          <Select
-            options={patients}
-            isSearchable
-            onChange={handlePatientChange}
-            placeholder="Search & select patient"
-            styles={{
-              control: (base) => ({
-                ...base,
-                border: "none", 
-                borderBottom: "2px solid #1E68F8",
-                borderRadius: "none", 
-                padding: "0", 
-                outline: "none",
-              }),
-              option: (base, state) => ({
-                ...base,
-                color: state.isSelected ? "white" : "black", // Change text color
-                cursor: "pointer",
-                outline: "none",
-                padding: "5px",
-              }),
-            }}
-          />
-
-
-
-          </div>
-        </div>
-        : <p style={{ margin: "10px 0 30px 0", color: "#4E4E4E"}}>Patient # PAT001 | Mr John Doe</p> }
-
-
-
-        {step === 1 ? (
-          <>
-                
-            {/* Patient Information Section */}
-            <div className={styles.infoSection}>
-              <div className={styles.sectionHeader}>
-                <div className={styles.bullet}></div>
-                <h3>Patient Information</h3>
-              </div>
-
-              <div className={styles.patientInfoGrid}>
-                <div className={styles.infoColumn}>
-                  <div className={styles.infoLabel}>Patient ID</div>
-                  <div className={styles.infoValue}>{selectedPatient?.value || "N/A"}</div>
-                </div>
-                <div className={styles.infoColumn}>
-                  <div className={styles.infoLabel}>Patient Name</div>
-                  <div className={styles.infoValue}>{selectedPatient?.label || "N/A"}</div>
-                </div>
-                <div className={styles.infoColumn}>
-                  <div className={styles.infoLabel}>Age</div>
-                  <div className={styles.infoValue}>{selectedPatient?.details.age || "N/A"}</div>
-                </div>
-                <div className={styles.infoColumn}>
-                  <div className={styles.infoLabel}>Gender</div>
-                  <div className={styles.infoValue}>{selectedPatient?.details.gender || "N/A"}</div>
-                </div>
-                <div className={styles.infoColumn}>
-                  <div className={styles.infoLabel}>Phone Number</div>
-                  <div className={styles.infoValue}>{selectedPatient?.details.phone || "N/A"}</div>
-                </div>
-              </div>
-
-              <div className={styles.emailSection}>
-                <div className={styles.infoLabel}>Email Address</div>
-                <div className={styles.infoValue}>{selectedPatient?.details.email || "N/A"}</div>
+          {/* Patient Selection Dropdown */}
+          {step === 1 ? (
+            <div className={styles.patientSelectSection}>
+              <label>Select Patient</label>
+              <div className={styles.dropdown}>
+                <Select
+                  options={patients}
+                  isSearchable
+                  onChange={handlePatientChange}
+                  placeholder="Search & select patient"
+                  styles={{
+                    control: (base) => ({
+                      ...base,
+                      border: "none",
+                      borderBottom: "2px solid #1E68F8",
+                      borderRadius: "none",
+                      padding: "0",
+                      outline: "none",
+                    }),
+                    option: (base, state) => ({
+                      ...base,
+                      color: state.isSelected ? "white" : "black", // Change text color
+                      cursor: "pointer",
+                      outline: "none",
+                      padding: "5px",
+                    }),
+                  }}
+                />
               </div>
             </div>
+          ) : (
+            <p style={{ margin: "10px 0 30px 0", color: "#4E4E4E" }}>
+              Patient # PAT001 | Mr John Doe
+            </p>
+          )}
 
-            <br />
+          {step === 1 ? (
+            <>
+              {/* Patient Information Section */}
+              <div className={styles.infoSection}>
+                <div className={styles.sectionHeader}>
+                  <div className={styles.bullet}></div>
+                  <h3>Patient Information</h3>
+                </div>
 
-            {/* Current Available Records Section */}
-            <div className={styles.recordsSection}>
-              <div className={styles.sectionHeader}>
-                <div className={styles.bullet}></div>
-                <h3>Current Available Records</h3>
+                <div className={styles.patientInfoGrid}>
+                  <div className={styles.infoColumn}>
+                    <div className={styles.infoLabel}>Patient ID</div>
+                    <div className={styles.infoValue}>
+                      {selectedPatient?.value || "N/A"}
+                    </div>
+                  </div>
+                  <div className={styles.infoColumn}>
+                    <div className={styles.infoLabel}>Patient Name</div>
+                    <div className={styles.infoValue}>
+                      {selectedPatient?.label || "N/A"}
+                    </div>
+                  </div>
+                  <div className={styles.infoColumn}>
+                    <div className={styles.infoLabel}>Age</div>
+                    <div className={styles.infoValue}>
+                      {selectedPatient?.details.age || "N/A"}
+                    </div>
+                  </div>
+                  <div className={styles.infoColumn}>
+                    <div className={styles.infoLabel}>Gender</div>
+                    <div className={styles.infoValue}>
+                      {selectedPatient?.details.gender || "N/A"}
+                    </div>
+                  </div>
+                  <div className={styles.infoColumn}>
+                    <div className={styles.infoLabel}>Phone Number</div>
+                    <div className={styles.infoValue}>
+                      {selectedPatient?.details.phone || "N/A"}
+                    </div>
+                  </div>
+                </div>
+
+                <div className={styles.emailSection}>
+                  <div className={styles.infoLabel}>Email Address</div>
+                  <div className={styles.infoValue}>
+                    {selectedPatient?.details.email || "N/A"}
+                  </div>
+                </div>
               </div>
 
-              <div className={styles.tableContainer}>
-                <table className={styles.recordsTable}>
-                  <thead>
-                    <tr>
-                      <th>Record ID</th>
-                      <th>Patient Name</th>
-                      <th>Consulted By</th>
-                      <th>Category</th>
-                      <th>Medical Conditions</th>
-                      <th>Medications</th>
-                      <th>Family History</th>
-                      <th>Immunization</th>
-                      <th>Test Reports</th>
-                      <th>Nail Image Analysis</th>
-                      <th>Consultation Notes</th>
-                      <th>Diagnostics</th>
-                      <th>Last Updated</th>
-                    </tr>
-                  </thead>
-                  
-                    
-                  <tbody>
-                  {records?.map((record, index) => (
-                    <tr key={record.id}>
-                      <td>{index + 1}</td>
+              <br />
 
-                      <td>{record.id}</td>
-                      <td>{record.patient_name}</td>
-                      <td>{record.consulted_by}</td>
-                      <td>{record.category}</td>
-                      <td>{record.medical_conditions}</td>
-                      <td>{record.medications}</td>
-                      <td>{record.family_history}</td>
-                      <td>{record.immunization}</td>
-                      <td>{record.test_reports}</td>
-                      <td>{record.nail_image_analysis}</td>
-                      <td>{record.notes}</td>
-                      <td>{record.diagnoses}</td>
-                      <td>{record.last_updated}</td>
+              {/* Current Available Records Section */}
+              <div className={styles.recordsSection}>
+                <div className={styles.sectionHeader}>
+                  <div className={styles.bullet}></div>
+                  <h3>Current Available Records</h3>
+                </div>
 
-                      {/* <td>
+                <div className={styles.tableContainer}>
+                  <table className={styles.recordsTable}>
+                    <thead>
+                      <tr>
+                        <th>Record ID</th>
+                        <th>Patient Name</th>
+                        <th>Consulted By</th>
+                        <th>Category</th>
+                        <th>Medical Conditions</th>
+                        <th>Medications</th>
+                        <th>Family History</th>
+                        <th>Immunization</th>
+                        <th>Test Reports</th>
+                        <th>Nail Image Analysis</th>
+                        <th>Consultation Notes</th>
+                        <th>Diagnostics</th>
+                        <th>Last Updated</th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      {records?.map((record, index) => (
+                        <tr key={record.id}>
+                          <td>{index + 1}</td>
+
+                          <td>{record.id}</td>
+                          <td>{record.patient_name}</td>
+                          <td>{record.consulted_by}</td>
+                          <td>{record.category}</td>
+                          <td>{record.medical_conditions}</td>
+                          <td>{record.medications}</td>
+                          <td>{record.family_history}</td>
+                          <td>{record.immunization}</td>
+                          <td>{record.test_reports}</td>
+                          <td>{record.nail_image_analysis}</td>
+                          <td>{record.notes}</td>
+                          <td>{record.diagnoses}</td>
+                          <td>{record.last_updated}</td>
+
+                          {/* <td>
                         <button onClick={() => toggleActionMenu(record.id)}>⋮</button>
                         {menuOpen === record.id && (
                           <div className={styles.menu}>
@@ -318,233 +330,262 @@ const PopupEHRCreate = ({ onClose }) => {
                           </div>
                         )}
                       </td> */}
-                    </tr>
-                  ))}
-                </tbody>
-
-                </table>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
-            </div>
+            </>
+          ) : (
+            isPatientConfirmed &&
+            ehrData && (
+              <div className={styles.infoSection}>
+                <div className={styles.sectionHeader}>
+                  <div className={styles.bullet}></div>
+                  <h3>Enter Electronic Health Records</h3>
+                </div>
 
-        </>
-        ) : (
-          
-          isPatientConfirmed && ehrData && (
-        
-          <div className={styles.infoSection}>
-              <div className={styles.sectionHeader}>
-                <div className={styles.bullet}></div>
-                <h3>Enter Electronic Health Records</h3>
+                <div className={styles.ehrRecodsGrid}>
+                  {/* Show details only after confirming patient */}
+
+                  {/* Medical Conditions */}
+                  <div className={styles.ehrRecordsColumn}>
+                    <div className={styles.infoLabel}>Medical Conditions</div>
+                    <Select
+                      isMulti
+                      options={medicalConditionsOptions}
+                      onChange={(selected) =>
+                        onSelectChange("medical_conditions", selected)
+                      }
+                      styles={{
+                        control: (base) => ({
+                          ...base,
+                          border: "none",
+                          borderBottom: "2px solid #1E68F8",
+                          borderRadius: "none",
+                          padding: "0",
+                          outline: "none",
+
+                          width: "80%",
+                        }),
+                        option: (base, state) => ({
+                          ...base,
+                          color: state.isSelected ? "white" : "black", // Change text color
+                          cursor: "pointer",
+                          outline: "none",
+                          padding: "5px",
+                        }),
+                        menu: (base) => ({
+                          ...base,
+                          width: "80%", // Set dropdown width
+                        }),
+                      }}
+                    />
+                  </div>
+
+                  {/* Current Medications */}
+                  <div className={styles.ehrRecordsColumn}>
+                    <div className={styles.infoLabel}>Current Medications</div>
+                    <Select
+                      isMulti
+                      options={currentMedicationsOptions}
+                      placeholder="Select or add medications"
+                      onChange={(selected) =>
+                        onSelectChange("current_medications", selected)
+                      }
+                      styles={{
+                        control: (base) => ({
+                          ...base,
+                          border: "none",
+                          borderBottom: "2px solid #1E68F8",
+                          borderRadius: "none",
+                          padding: "0",
+                          outline: "none",
+
+                          width: "80%",
+                        }),
+                        option: (base, state) => ({
+                          ...base,
+                          color: state.isSelected ? "white" : "black", // Change text color
+                          cursor: "pointer",
+                          outline: "none",
+                          padding: "5px",
+                        }),
+                        menu: (base) => ({
+                          ...base,
+                          width: "80%", // Set dropdown width
+                        }),
+                      }}
+                    />
+                  </div>
+
+                  {/* Immunization Records */}
+                  <div className={styles.ehrRecordsColumn}>
+                    <div className={styles.infoLabel}>Immunization Records</div>
+                    <Select
+                      isMulti
+                      options={immunizationRecordsOptions}
+                      placeholder="Select or add immunization records"
+                      onChange={(selected) =>
+                        onSelectChange("immunization_records", selected)
+                      }
+                      styles={{
+                        control: (base) => ({
+                          ...base,
+                          border: "none",
+                          borderBottom: "2px solid #1E68F8",
+                          borderRadius: "none",
+                          padding: "0",
+                          outline: "none",
+
+                          width: "80%",
+                        }),
+                        option: (base, state) => ({
+                          ...base,
+                          color: state.isSelected ? "white" : "black", // Change text color
+                          cursor: "pointer",
+                          outline: "none",
+                          padding: "5px",
+                        }),
+                        menu: (base) => ({
+                          ...base,
+                          width: "80%", // Set dropdown width
+                        }),
+                      }}
+                    />
+                  </div>
+
+                  {/* Diagnoses */}
+                  <div className={styles.ehrRecordsColumn}>
+                    <div className={styles.infoLabel}>Diagnoses</div>
+                    <Select
+                      isMulti
+                      options={diagnosesOptions}
+                      placeholder="Select diagnoses"
+                      onChange={(selected) =>
+                        onSelectChange("diagnoses", selected)
+                      }
+                      styles={{
+                        control: (base) => ({
+                          ...base,
+                          border: "none",
+                          borderBottom: "2px solid #1E68F8",
+                          borderRadius: "none",
+                          padding: "0",
+                          outline: "none",
+
+                          width: "80%",
+                        }),
+                        option: (base, state) => ({
+                          ...base,
+                          color: state.isSelected ? "white" : "black", // Change text color
+                          cursor: "pointer",
+                          outline: "none",
+                          padding: "5px",
+                        }),
+                        menu: (base) => ({
+                          ...base,
+                          width: "80%", // Set dropdown width
+                        }),
+                      }}
+                    />
+                  </div>
+
+                  {/* Category */}
+                  <div className={styles.ehrRecordsColumn}>
+                    <div className={styles.infoLabel}>Category</div>
+                    <Select
+                      options={categoryOptions}
+                      defaultValue={categoryOptions[3]}
+                      onChange={(selected) =>
+                        setEhrData({ ...ehrData, category: selected.value })
+                      }
+                      styles={{
+                        control: (base) => ({
+                          ...base,
+                          border: "none",
+                          borderBottom: "2px solid #1E68F8",
+                          borderRadius: "none",
+                          padding: "0",
+                          outline: "none",
+
+                          width: "80%",
+                        }),
+                        option: (base, state) => ({
+                          ...base,
+                          color: state.isSelected ? "white" : "black", // Change text color
+                          cursor: "pointer",
+                          outline: "none",
+                          padding: "5px",
+                        }),
+                        menu: (base) => ({
+                          ...base,
+                          width: "80%", // Set dropdown width
+                        }),
+                      }}
+                    />
+                  </div>
+
+                  {/* Family History */}
+                  <div className={styles.ehrRecordsColumn}>
+                    <div className={styles.infoLabel}>Family History</div>
+                    <textarea
+                      name="family_history"
+                      placeholder="Enter relevant family medical history"
+                      value={ehrData.family_history || ""}
+                      onChange={onInputChange}
+                      className={styles.textarea}
+                    />
+                  </div>
+
+                  {/* Comments */}
+                  <div className={styles.ehrRecordsColumn}>
+                    <div className={styles.infoLabel}>Comments</div>
+                    <textarea
+                      name="comments"
+                      placeholder="Add any additional comments"
+                      value={ehrData.comments || ""}
+                      onChange={onInputChange}
+                      className={styles.textarea}
+                    />
+                  </div>
+                </div>
               </div>
+            )
+          )}
 
-              <div className={styles.ehrRecodsGrid}>
-                {/* Show details only after confirming patient */}
-        
-                {/* Medical Conditions */}
-                <div className={styles.ehrRecordsColumn}>
-                <div className={styles.infoLabel}>Medical Conditions</div>
-                  <Select
-                    isMulti
-                    options={medicalConditionsOptions}
-                    onChange={(selected) =>
-                      onSelectChange("medical_conditions", selected)
-                    }
-                    styles={{
-                      control: (base) => ({
-                        ...base,
-                        border: "none", 
-                        borderBottom: "2px solid #1E68F8",
-                        borderRadius: "none", 
-                        padding: "0", 
-                        outline: "none",
-                        
-                        width: "80%",
-                      }),
-                      option: (base, state) => ({
-                        ...base,
-                        color: state.isSelected ? "white" : "black", // Change text color
-                        cursor: "pointer",
-                        outline: "none",
-                        padding: "5px",
-                      }),
-                      menu: (base) => ({
-                        ...base,
-                        width: "80%", // Set dropdown width
-                      }),
-                    }}
-                  />
-                </div>
-
-
-                {/* Current Medications */}
-                <div className={styles.ehrRecordsColumn}>
-                  <div className={styles.infoLabel}>Current Medications</div>
-                  <Select
-                    isMulti
-                    options={currentMedicationsOptions}
-                    placeholder="Select or add medications"
-                    onChange={(selected) =>
-                      onSelectChange("current_medications", selected)
-                    }
-                    styles={{
-                      control: (base) => ({
-                        ...base,
-                        border: "none", 
-                        borderBottom: "2px solid #1E68F8",
-                        borderRadius: "none", 
-                        padding: "0", 
-                        outline: "none",
-                    
-                        width: "80%",
-                      }),
-                      option: (base, state) => ({
-                        ...base,
-                        color: state.isSelected ? "white" : "black", // Change text color
-                        cursor: "pointer",
-                        outline: "none",
-                        padding: "5px",
-                      }),
-                      menu: (base) => ({
-                        ...base,
-                        width: "80%", // Set dropdown width
-                      }),
-                    }}
-                  />
-                </div>
-
-                {/* Diagnoses */}
-                <div className={styles.ehrRecordsColumn}>
-                <div className={styles.infoLabel}>Diagnoses</div>
-                <Select
-                  isMulti
-                  options={diagnosesOptions}
-                  placeholder="Select diagnoses"
-                  onChange={(selected) => onSelectChange("diagnoses", selected)}
-                  styles={{
-                    control: (base) => ({
-                      ...base,
-                      border: "none", 
-                      borderBottom: "2px solid #1E68F8",
-                      borderRadius: "none", 
-                      padding: "0", 
-                      outline: "none",
-                      
-                      width: "80%",
-                    }),
-                    option: (base, state) => ({
-                      ...base,
-                      color: state.isSelected ? "white" : "black", // Change text color
-                      cursor: "pointer",
-                      outline: "none",
-                      padding: "5px",
-                    }),
-                    menu: (base) => ({
-                      ...base,
-                      width: "80%", // Set dropdown width
-                    }),
-                  }}
-                />
-                </div>
-
-                {/* Category */}
-                <div className={styles.ehrRecordsColumn}>
-                  <div className={styles.infoLabel}>Category</div>
-                  <Select
-                    options={categoryOptions}
-                    defaultValue={categoryOptions[3]}
-                    onChange={(selected) =>
-                    setEhrData({ ...ehrData, category: selected.value })                 
-                    }
-                    styles={{
-                      control: (base) => ({
-                        ...base,
-                        border: "none", 
-                        borderBottom: "2px solid #1E68F8",
-                        borderRadius: "none", 
-                        padding: "0", 
-                        outline: "none",
-                        
-                        width: "80%",
-                      }),
-                      option: (base, state) => ({
-                        ...base,
-                        color: state.isSelected ? "white" : "black", // Change text color
-                        cursor: "pointer",
-                        outline: "none",
-                        padding: "5px",
-                      }),
-                      menu: (base) => ({
-                        ...base,
-                        width: "80%", // Set dropdown width
-                      }),
-                    }}
-                  /> 
-                </div>
-
-                {/* Family History */}
-                <div className={styles.ehrRecordsColumn}>
-                  <div className={styles.infoLabel}>Family History</div>
-                  <textarea
-                    name="family_history"
-                    placeholder="Enter relevant family medical history"
-                    value={ehrData.family_history || ""}
-                    onChange={onInputChange}
-                    className={styles.textarea}
-                  />
-                </div>
-
-                {/* Comments */}
-                <div className={styles.ehrRecordsColumn}>
-                  <div className={styles.infoLabel}>Comments</div>
-                  <textarea
-                    name="comments"
-                    placeholder="Add any additional comments"
-                    value={ehrData.comments || ""}
-                    onChange={onInputChange}
-                    className={styles.textarea}
-                  />
-                </div>
-
-              </div>
-
-            </div>
-
-          )
-        )}
-
-
-
-
-        {/* Continue Button */}
-        <div className={styles.actionSection}>
-          {/* <button className={styles.continueButton} onClick={handleCreateEHR}>
+          {/* Continue Button */}
+          <div className={styles.actionSection}>
+            {/* <button className={styles.continueButton} onClick={handleCreateEHR}>
             Continue
           </button> */}
 
-          <button className={styles.cancelButton} style={{marginRight: "20px"}} onClick={onClose}>
-            Cancel
-          </button> 
-          
+            <button
+              className={styles.cancelButton}
+              style={{ marginRight: "20px" }}
+              onClick={onClose}
+            >
+              Cancel
+            </button>
 
-          {step === 1
-                ?
-          <button className={styles.addButton} onClick={handleNextStep}>
-            Continue
-          </button>
-          :
-          <button className={styles.addButton} onClick={() => {
-                                                      handleNextStep();
-                                                      handleCreateEHR();
-                                                    }}>
-            Save & Complete Appointment
-          </button>
-          }
-
-          
-
+            {step === 1 ? (
+              <button className={styles.addButton} onClick={handleNextStep}>
+                Continue
+              </button>
+            ) : (
+              <button
+                className={styles.addButton}
+                onClick={() => {
+                  handleNextStep();
+                  handleCreateEHR();
+                }}
+              >
+                Save & Complete Appointment
+              </button>
+            )}
+          </div>
         </div>
-      </div>
-
       </div>
     </Popup>
   );

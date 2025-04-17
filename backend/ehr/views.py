@@ -148,8 +148,6 @@ class EHRView(viewsets.ModelViewSet):
     
     @action(detail=True,methods=['post'],url_path="add_ehr_to_medical_history")
     def add_ehr_to_medical_history(self,request,pk = None):
-        print("HELLLOOOOOOOOOOOOOOOO    ")
-        print("pk",pk)
         user = self.request.user
         if user.role == "doctor":
             ehr_record,created = EHR.objects.get_or_create(pk=pk)

@@ -7,8 +7,8 @@ class EHR(models.Model):
     medical_conditions = models.JSONField(blank=True, null=True)
     current_medications = models.JSONField(blank=True, null=True)
     immunization_records = models.JSONField(blank=True, null=True)
-    nail_image_analysis = models.JSONField(blank=True, null=True)
-    test_results = models.JSONField(blank=True, null=True)
+    # nail_image_analysis = models.JSONField(blank=True, null=True)
+    # test_results = models.JSONField(blank=True, null=True)
     diagnoses = models.JSONField(blank=True, null=True)
     recommended_lab_test = models.JSONField(blank=True,null=True,default=list)
     # Appointment and Visit Details
@@ -130,10 +130,20 @@ class EHR(models.Model):
                 if immunization not in history.immunization_history:
                     history.immunization_history.append(immunization)
 
+        # Add family history if it exists in the EHR
+        if self.family_history:
+            # Only update if the MedicalHistory doesn't have family history yet
+            # or if we want to append the new information
+            if not history.family_history:
+                history.family_history = self.family_history
+            else:
+                # Optional: Append new family history to existing one
+                history.family_history += f"\n\n{self.family_history}"
+
         history.last_updated = self.last_updated
         history.save()
         
-        # **Save the EHR record after updating the field**
+        # Save the EHR record after updating the field
         self.added_to_medical_history = True
         self.save()
 

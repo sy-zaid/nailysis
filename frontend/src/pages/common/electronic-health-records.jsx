@@ -124,7 +124,7 @@ const ElectronicHealthRecord = () => {
 
     let valA = a[sortConfig.key];
     let valB = b[sortConfig.key];
-    console.log(valA, valB);
+    // console.log(valA, valB);
 
     if (sortConfig.key === "last_updated") {
       // Replace " | " with a space so the Date object can parse the string correctly.
@@ -434,7 +434,6 @@ const ElectronicHealthRecord = () => {
                     <th>Consultation Notes</th>
                     <th>Diagnostics</th>
                     <th>Last Updated</th>
-                    <th>Nail Image Analysis</th>
                     <th>Test Reports</th>
                     {curUserRole === "doctor" && <th>Actions</th>}
                   </tr>
@@ -463,10 +462,9 @@ const ElectronicHealthRecord = () => {
                       <td>{record.notes}</td>
                       <td>{record.diagnoses}</td>
                       <td>{record.last_updated}</td>
-                      <td>{record.nail_image_analysis}</td>
                       <td>
                         <button
-                          className={styles.addButton}
+                          className={styles.viewButton}
                           onClick={() =>
                             handleActionClick("All Reports List", record)
                           }
