@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Popup from "../Popup.jsx";
 import useCurrentUserData from "../../../useCurrentUserData.jsx";
-import { getHeaders } from "../../../utils/utils.js";
+import { getHeaders, getTodayDate, } from "../../../utils/utils.js";
+import styles from "../popups-doctor-appointments/manage-slots-popup.module.css";
+import { toast } from "react-toastify";
 
 const ManageSlotsPopup = ({onClose}) => {
   const [popupTrigger, setPopupTrigger] = useState(true);
@@ -39,7 +41,13 @@ const ManageSlotsPopup = ({onClose}) => {
 
   const generateSlots = () => {
     if (!startTime || !endTime || !slotDuration) {
-      alert("Please enter all time fields.");
+      toast.warning("Please enter all time fields.");
+      return;
+    }
+
+    const slotDur = parseInt(slotDuration, 10);
+    if (slotDur <= 0) {
+      toast.warning("Slot duration must be greater than 0 minutes.");
       return;
     }
 
@@ -68,6 +76,7 @@ const ManageSlotsPopup = ({onClose}) => {
 
     console.log("Generated Slots:", slots);
     setCalculatedSlots(slots);
+    toast.success("Slots generated successfully!");
   };
 
   const handleSubmit = async (event) => {
@@ -80,12 +89,12 @@ const ManageSlotsPopup = ({onClose}) => {
       !endTime ||
       !slotDuration
     ) {
-      alert("Please fill all fields.");
+      toast.warning("Please fill all fields.");
       return;
     }
 
     if (calculatedSlots.length === 0) {
-      alert("Invalid slot configuration.");
+      toast.warning("Invalid slot configuration.");
       return;
     }
 
@@ -125,23 +134,44 @@ const ManageSlotsPopup = ({onClose}) => {
         payload,
         getHeaders()
       );
+      toast.success("Availability set successfully!", {className: "custom-toast",});
+      onClose();
       alert("Availability set successfully!");
     } catch (error) {
       console.error("Error setting availability:", error);
+      if (error.response) {
+        toast.error(error.response.data.error || "Failed to book appointment", {
+          className: "custom-toast",
+        });
+      } 
     }
   };
 
+  const getMonthValue = (offset = 0) => {
+    const now = new Date();
+    now.setMonth(now.getMonth() + offset);
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    return `${year}-${month}`;
+  };
+  
+  const minMonth = getMonthValue(0); 
+  const maxMonth = getMonthValue(2);
+
   return (
     <Popup trigger={popupTrigger} setTrigger={setPopupTrigger} onClose={onClose}>
-      <div>
+      <div className={styles.modalContent}>
         <h2>Manage Availability</h2>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className={styles.form}>
           <label>Select Month:</label>
           <input
             type="month"
             value={month}
             onChange={(e) => setMonth(e.target.value)}
             required
+            className={styles.formInput}
+            min={minMonth}
+            max={maxMonth}
           />
 
           <label>Select Consulting Days:</label>
@@ -151,6 +181,9 @@ const ManageSlotsPopup = ({onClose}) => {
                 type="button"
                 key={day}
                 onClick={() => toggleDaySelection(day)}
+                className={`${styles.dayButton} ${
+                  weekdays.includes(day) ? styles.dayActive : ""
+                }`}
                 style={{
                   margin: "5px",
                   padding: "5px 10px",
@@ -160,6 +193,7 @@ const ManageSlotsPopup = ({onClose}) => {
                   borderRadius: "5px",
                   cursor: "pointer",
                 }}
+                
               >
                 {day}
               </button>
@@ -171,6 +205,7 @@ const ManageSlotsPopup = ({onClose}) => {
             type="time"
             value={startTime}
             onChange={(e) => setStartTime(e.target.value)}
+            className={styles.formInput}
             required
           />
 
@@ -179,6 +214,7 @@ const ManageSlotsPopup = ({onClose}) => {
             type="time"
             value={endTime}
             onChange={(e) => setEndTime(e.target.value)}
+            className={styles.formInput}
             required
           />
 
@@ -187,13 +223,17 @@ const ManageSlotsPopup = ({onClose}) => {
             type="number"
             value={slotDuration}
             onChange={(e) => setSlotDuration(e.target.value)}
+            className={styles.formInput}
             min="5"
             required
           />
 
-          <button type="button" onClick={generateSlots}>
-            Generate Slots
-          </button>
+          <div className={styles.generateButtonWrap}>
+            <button type="button" onClick={generateSlots}>
+              Generate Slots
+            </button>
+          </div>
+          
 
           {calculatedSlots.length > 0 && (
             <div>

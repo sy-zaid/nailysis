@@ -87,7 +87,8 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
           { label: "Clinic Appointments" },
           { label: "Lab Appointments" },
           { label: "Appointments History" },
-          { label: "My Cancellation Requests" },
+          // { label: "My Clinic Cancellation Requests" },
+          // { label: "My Lab Cancellation Requests" },
         ],
       },
       {

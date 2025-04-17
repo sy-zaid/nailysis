@@ -33,9 +33,9 @@ const ImagingTestEntryPopup = ({
   const handleFileChange = (event) => {
     const files = Array.from(event.target.files);
     setResultFile(files);
-    
+
     // Create preview URLs
-    const urls = files.map(file => URL.createObjectURL(file));
+    const urls = files.map((file) => URL.createObjectURL(file));
     setPreviewUrls(urls);
   };
 
@@ -51,9 +51,10 @@ const ImagingTestEntryPopup = ({
     }
 
     if (!resultFile || resultFile.length === 0) {
-      setError("Please upload at least one image or report.");
+      toast.warning("Please upload at least one image or report.");
       return;
     }
+
 
     setLoading(true);
     setError(null);
@@ -64,9 +65,9 @@ const ImagingTestEntryPopup = ({
     payload.append("test_category", "Imaging");
     payload.append("technician_id", curUser[0]?.user_id);
     payload.append("comments", formData.comments);
-    
+
     // Append all files
-    resultFile.forEach(file => {
+    resultFile.forEach((file) => {
       payload.append("result_file", file);
     });
 
@@ -97,7 +98,7 @@ const ImagingTestEntryPopup = ({
   // Clean up preview URLs when component unmounts
   useEffect(() => {
     return () => {
-      previewUrls.forEach(url => URL.revokeObjectURL(url));
+      previewUrls.forEach((url) => URL.revokeObjectURL(url));
     };
   }, [previewUrls]);
 
@@ -220,9 +221,9 @@ const ImagingTestEntryPopup = ({
                     <div className={styles.previewContainer}>
                       {previewUrls.map((url, index) => (
                         <div key={index} className={styles.previewItem}>
-                          {resultFile[index].type.includes('image') ? (
-                            <img 
-                              src={url} 
+                          {resultFile[index].type.includes("image") ? (
+                            <img
+                              src={url}
                               alt={`Preview ${index}`}
                               className={styles.previewImage}
                             />

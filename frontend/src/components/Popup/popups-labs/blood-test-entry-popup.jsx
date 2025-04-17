@@ -64,6 +64,25 @@ const BloodTestEntryPopup = ({
       );
       return;
     }
+
+    if (testEntries.some((entry) => !entry.result || entry.result.trim() === "")) {
+      toast.warning("Please fill in all test result fields.", {
+        className: "custom-toast",
+      });
+      return;
+    }
+  
+    const incompleteEntry = testEntries.some(
+      (entry) => !entry.result || entry.result.trim() === ""
+    );
+  
+    if (incompleteEntry) {
+      toast.warning("Please fill in all test result fields.", {
+        className: "custom-toast",
+      });
+      return;
+    }
+
     const payload = {
       test_order_id: testOrderDetails.id,
       test_type_id: testDetails.id,
@@ -80,10 +99,12 @@ const BloodTestEntryPopup = ({
         toast.success("Successfully Created Test Result", {
           className: "custom-toast",
         });
+        onClose();
       } else if (response.status === 200) {
         toast.success("Successfully Edited Test Result", {
           className: "custom-toast",
         });
+        onClose();
       }
     } catch (error) {
       console.log(error)

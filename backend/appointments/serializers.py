@@ -10,10 +10,11 @@ These serializers ensure proper data validation and transformation for API inter
 """
 
 from rest_framework import serializers
-from appointments.models import Appointment, DoctorAppointment,TimeSlot, TechnicianAppointment, DoctorAppointmentFee,CancellationRequest
+from .models import Appointment, DoctorAppointment,TimeSlot, TechnicianAppointment, DoctorAppointmentFee,CancellationRequest,TechnicianCancellationRequest
 from users.models import Doctor,LabTechnician
 from users.serializers import PatientSerializer, DoctorSerializer, LabTechnicianSerializer
 from labs.serializers import LabTestOrderSerializer
+
 
 class AppointmentSerializer(serializers.ModelSerializer):
     """
@@ -40,7 +41,8 @@ class TimeSlotSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = TimeSlot
-        fields = "__all__"   
+        fields = "__all__" 
+          
 class DoctorAppointmentSerializer(serializers.ModelSerializer):
     """
     Serializer for doctor-specific appointments.
@@ -80,9 +82,6 @@ class DoctorAppointmentSerializer(serializers.ModelSerializer):
             patient=patient, doctor=doctor, **validated_data
         )
 
-
-
-
 class TechnicianAppointmentSerializer(serializers.ModelSerializer):
     """
     Serializer for lab technician-specific appointments.
@@ -112,8 +111,14 @@ class TechnicianAppointmentSerializer(serializers.ModelSerializer):
             patient = patient, lab_technician=lab_technician, **validated_data
         )
         
-
-class CancellationRequestSerializer(serializers.ModelSerializer):
+class DocCancelRequestSerializer(serializers.ModelSerializer):
+    appointment = DoctorAppointmentSerializer(read_only=True)
     class Meta:
         model = CancellationRequest
+        fields = "__all__" 
+        
+class TechCancelRequestSerializer(serializers.ModelSerializer):
+    appointment = TechnicianAppointmentSerializer(read_only=True)
+    class Meta:
+        model = TechnicianCancellationRequest
         fields = "__all__" 

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import api from "../../api";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "../../constants";
+import { toast } from "react-toastify";
 
 import styles from "./Form.module.css";
 
@@ -36,6 +37,22 @@ function LoginForm({ route }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+
+    if (!email && !password) {
+      toast.error("Email & Password are required.");
+      setLoading(false);
+      return;
+    }
+    if (!email) {
+      toast.error("Email is required.");
+      setLoading(false);
+      return;
+    }
+    if (!password) {
+      toast.error("Password is required.");
+      setLoading(false);
+      return;
+    }
 
     try {
       // API call to authenticate user
@@ -77,8 +94,19 @@ function LoginForm({ route }) {
           navigate("/login"); // Redirect to login on unknown role
           break;
       }
+      toast.success("Login Successful!", {
+        className: "custom-toast",
+      });
+
     } catch (error) {
-      alert(error); // Display error message
+      console.error(error); // Display error message
+      if (error.response && error.response.status === 401) {
+        toast.error("Incorrect email or password.", {
+          className: "custom-toast",
+        });
+      } else {
+        toast.error ("Network Error");
+      }
     } finally {
       setLoading(false);
     }

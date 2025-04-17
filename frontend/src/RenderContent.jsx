@@ -22,7 +22,8 @@ import ViewTechnicianAppointments from "./pages/common/view-lab-appointments";
 import PlaceholderComponent from "./components/PlaceholderComponent"; // Placeholder for missing views
 import BillingHistory from "./pages/admin-clinic/billing-history";
 import GenerateInvoice from "./pages/admin-clinic/invoice";
-import CancellationRequest from "./pages/admin-clinic/appointment-cancellation-request";
+import DocCancellationRequest from "./pages/admin-clinic/cancellation-requests-list";
+import TechCancellationRequest from "./pages/admin-lab/cancellation-requests-list";
 import LabAppointmentHistory from "./pages/common/lab-appointment-history";
 import ClinicAppointmentHistory from "./pages/common/clinic-appointment-history";
 import NailysisReport from "./pages/common/report";
@@ -69,7 +70,7 @@ export const renderClinicAdminContent = (view) => {
     case "Test Results":
       return <LabTestOrders name="Test Results" />;
     case "Cancellation Requests":
-      return <CancellationRequest name="Cancellation Requests" />;
+      return <DocCancellationRequest name="Cancellation Requests" />;
     default:
       return <ClinicAdminDashboard />;
   }
@@ -86,7 +87,7 @@ export const renderDoctorContent = (view) => {
     case "Manage Availability":
       return <PlaceholderComponent name="Manage Availability" />;
     case "My Cancellation Requests":
-      return <PlaceholderComponent name="My Cancellation Requests" />;
+      return <DocCancellationRequest name="My Cancellation Requests" />;
 
     // Electronic Health Records
     case "All Patients Records":
@@ -120,9 +121,10 @@ export const renderPatientContent = (view) => {
       return <ViewTechnicianAppointments name="Lab Appointments" />;
     case "Appointments History":
       return <LabAppointmentHistory name="Appointments History" />;
-    case "My Cancellation Requests":
-      return <PlaceholderComponent name="My Cancellation Requests" />;
-
+    case "My Clinic Cancellation Requests":
+      return <DocCancellationRequest name="My Cancellation Requests" />;
+    case "My Lab Cancellation Requests":
+      return <TechCancellationRequest name="My Cancellation Requests" />;
     // Electronic Health Records
     case "My Records":
       return <ElectronicHealthRecords name="My Records" />;
@@ -158,7 +160,7 @@ export const renderLabAdminContent = (view) => {
     case "Appointments History":
       return <LabAppointmentHistory name="Appointments History" />;
     case "Cancellation Requests":
-      return <PlaceholderComponent name="Cancellation Requests" />;
+      return <TechCancellationRequest name="Cancellation Requests" />;
 
     // Test Requests
     case "Test Requests":
@@ -197,7 +199,7 @@ export const renderLabTechnicianContent = (view) => {
     case "Manage Availability":
       return <PlaceholderComponent name="Manage Availability" />;
     case "My Cancellation Requests":
-      return <PlaceholderComponent name="My Cancellation Requests" />;
+      return <TechCancellationRequest name="My Cancellation Requests" />;
 
     // Test Requests
     case "Test Requests":

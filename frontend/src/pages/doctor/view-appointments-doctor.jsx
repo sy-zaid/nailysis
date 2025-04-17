@@ -10,7 +10,11 @@ import PopupManageSlotsDoctor from "../../components/Popup/popups-doctor-appoint
 import Header from "../../components/Dashboard/Header/Header";
 
 // UTILS.JS FUNCTIONS
-import { getStatusClass, toggleActionMenu } from "../../utils/utils";
+import {
+  convertDjangoDateTime,
+  getStatusClass,
+  toggleActionMenu,
+} from "../../utils/utils";
 
 const AppointmentDoctor = () => {
   // ----- TOKENS AND USER INFORMATION
@@ -223,7 +227,6 @@ const AppointmentDoctor = () => {
       <div className={styles.mainContent}>
         <div className={styles.appointmentsContainer}>
           <div className={styles.filters}>
-            
             {["All", "Scheduled", "Emergency Visit", "Today"].map((filter) => (
               <button
                 key={filter}
@@ -325,8 +328,14 @@ const AppointmentDoctor = () => {
                       <td>{row.patient?.gender || "N/A"}</td>
                       <td>{row.appointment_type || "N/A"}</td>
                       <td>
-                        {row.time_slot?.slot_date} | {row.time_slot?.start_time}{" "}
-                        - {row.time_slot?.end_time}
+                        {row.time_slot ? (
+                          <>
+                            {row.time_slot.slot_date} |{" "}
+                            {row.time_slot.start_time}
+                          </>
+                        ) : (
+                          convertDjangoDateTime(row.checkin_datetime)
+                        )}
                       </td>
                       <td className={getStatusClass(row.status, styles)}>
                         {row.status}

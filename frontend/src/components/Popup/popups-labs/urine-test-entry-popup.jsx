@@ -44,15 +44,26 @@ const UrineTestEntryPopup = ({
 
   const handleSaveResults = async (e) => {
     e.preventDefault();
+
     if (!isChecked) {
       toast.warning(
         "Please confirm that the results are accurate and complete before submitting.",
-        {
-          className: "custom-toast",
-        }
+        { className: "custom-toast" }
       );
       return;
     }
+  
+    const incompleteEntry = testEntries.some(
+      (entry) => !entry.result || entry.result.trim() === ""
+    );
+  
+    if (incompleteEntry) {
+      toast.warning("Please fill in all test result fields.", {
+        className: "custom-toast",
+      });
+      return;
+    }
+  
     const payload = {
       test_order_id: testOrderDetails.id,
       test_type_id: testDetails.id,
@@ -66,10 +77,12 @@ const UrineTestEntryPopup = ({
         toast.success("Successfully Created Test Result", {
           className: "custom-toast",
         });
+        onClose();
       } else if (response.status === 200) {
         toast.success("Successfully Edited Test Result", {
           className: "custom-toast",
         });
+        onClose();
       }
     } catch (error) {
       toast.error(error.response?.data.error || "Something went wrong.", {

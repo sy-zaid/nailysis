@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import Header from "../../components/Dashboard/Header/Header.jsx";
-import styles from "./appointment-cancellation-request.module.css";
-import Navbar from "../../components/Dashboard/Navbar/Navbar";
+import styles from "../admin-clinic/appointment-cancellation-request.module.css";
+import Navbar from "../../components/Dashboard/Navbar/Navbar.jsx";
 import { convertDjangoDateTime, getRole } from "../../utils/utils.js";
 
 const CancellationRequestsList = () => {
@@ -20,7 +20,7 @@ const CancellationRequestsList = () => {
     const fetchRequests = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}/api/cancellation_requests/`,
+          `${import.meta.env.VITE_API_URL}/api/tech_cancellation_requests/`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("access")}`,
@@ -43,7 +43,7 @@ const CancellationRequestsList = () => {
       const response = await axios.post(
         `${
           import.meta.env.VITE_API_URL
-        }/api/cancellation_requests/${requestId}/review/`,
+        }/api/tech_cancellation_requests/${requestId}/review/`,
         { action },
         {
           headers: {
@@ -166,7 +166,7 @@ const CancellationRequestsList = () => {
 
               <select className={styles.sortBy}>
                 <option value="">Sort By: None</option>
-                <option value="doctor">Doctor</option>
+                <option value="lab_technician">Lab Technician</option>
                 <option value="status">Status</option>
               </select>
 
@@ -189,15 +189,15 @@ const CancellationRequestsList = () => {
                       <input type="checkbox" />
                     </th>
                     <th>#</th>
-                    <th>Doctor ID</th>
-                    <th>Doctor Name</th>
+                    <th>Lab Technician ID</th>
+                    <th>Lab Technician Name</th>
                     <th>Patient ID</th>
                     <th>Patient Name</th>
                     <th>Appointment ID</th>
                     <th>Appointment Date & Time</th>
                     <th>Reason</th>
                     <th>Status</th>
-                    {curUserRole === "clinic_admin" && <th>Action</th>}
+                    {curUserRole === "lab_admin" && <th>Action</th>}
                   </tr>
                 </thead>
                 <tbody>
@@ -207,10 +207,10 @@ const CancellationRequestsList = () => {
                         <input type="checkbox" />
                       </td>
                       <td>{index + 1}</td>
-                      <td>{request.doctor}</td>
+                      <td>{request.lab_technician}</td>
                       <td>
-                        {request.appointment?.doctor?.user?.first_name}{" "}
-                        {request.appointment?.doctor?.user?.last_name}
+                        {request.appointment?.lab_technician?.user?.first_name}{" "}
+                        {request.appointment?.lab_technician?.user?.last_name}
                       </td>
                       <td>{request.appointment?.patient?.user?.user_id}</td>
                       <td>
@@ -227,7 +227,7 @@ const CancellationRequestsList = () => {
                       <td className={getStatusClass(request.status)}>
                         {request.status}
                       </td>
-                      {curUserRole === "clinic_admin" && (
+                      {curUserRole === "lab_admin" && (
                         <td>
                           {request.status === "Pending" && (
                             <div className={styles.actionButtons}>
