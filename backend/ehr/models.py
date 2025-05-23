@@ -1,5 +1,6 @@
 from django.db import models
 from users.models import Patient
+from datetime import timezone
 
 class EHR(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
@@ -110,56 +111,174 @@ class EHR(models.Model):
     
     def add_to_medical_history(self):
         """
-        Adds relevant details from this EHR record to Medical History.
-        Prevents duplicate entries.
+        Processes EHR data into structured medical history
+        Handles both JSON and string formatted data
         """
-        history, created = MedicalHistory.objects.get_or_create(patient=self.patient)
+        try:
+            # Process medical conditions
+            if self.medical_conditions:
+                conditions = self._parse_field(self.medical_conditions)
+                for condition in conditions:
+                    self._create_condition(condition)
 
-        # Prevent duplicate chronic conditions, immunizations, etc.
-        if self.diagnoses:
-            if not history.chronic_conditions:
-                history.chronic_conditions = []
-            for condition in self.diagnoses:
-                if condition not in history.chronic_conditions:
-                    history.chronic_conditions.append(condition)
+            # Process current medications
+            if self.current_medications:
+                medications = self._parse_field(self.current_medications)
+                for medication in medications:
+                    self._create_medication(medication)
 
-        if self.immunization_records:
-            if not history.immunization_history:
-                history.immunization_history = []
-            for immunization in self.immunization_records:
-                if immunization not in history.immunization_history:
-                    history.immunization_history.append(immunization)
+            # Process family history
+            if self.family_history:
+                self._update_family_history()
+ 
+            # Process immunizations
+            if self.immunization_records:
+                immunizations = self._parse_field(self.immunization_records)
+                for immunization in immunizations:
+                    self._create_immunization(immunization)
 
-        # Add family history if it exists in the EHR
-        if self.family_history:
-            # Only update if the MedicalHistory doesn't have family history yet
-            # or if we want to append the new information
-            if not history.family_history:
-                history.family_history = self.family_history
-            else:
-                # Optional: Append new family history to existing one
-                history.family_history += f"\n\n{self.family_history}"
+            # Process diagnoses
+            if self.diagnoses:
+                diagnoses = self._parse_field(self.diagnoses)
+                for diagnosis in diagnoses:
+                    self._create_diagnosis(diagnosis)
 
-        history.last_updated = self.last_updated
-        history.save()
-        
-        # Save the EHR record after updating the field
-        self.added_to_medical_history = True
-        self.save()
+            self.added_to_medical_history = True
+            self.save()
+            return True
+        except Exception as e:
+            logger.error(f"Failed to add to medical history: {str(e)}", exc_info=True)
+            return False
 
+    def _parse_field(self, field_data):
+        """Helper to parse both JSON and string formatted fields""" 
+        if isinstance(field_data, str):
+            return [item.strip() for item in field_data.split(',') if item.strip()]
+        elif isinstance(field_data, list):
+            return field_data
+        elif isinstance(field_data, dict):
+            return [field_data]  # Convert single dict to list
+        return []
 
-class MedicalHistory(models.Model):
-    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
-    family_history = models.TextField(null=True, blank=True)
-    chronic_conditions = models.JSONField(null=True, blank=True)
-    surgeries = models.JSONField(null=True, blank=True)
-    immunization_history = models.JSONField(null=True, blank=True)  # Added
-    injuries = models.JSONField(null=True, blank=True)
-    allergies = models.JSONField(null=True, blank=True)  # Added
+    def _create_condition(self, condition_data):
+        """Create or update a medical condition record"""
+        if isinstance(condition_data, dict):
+            name = condition_data.get('name', 'Unknown Condition')
+            description = f"Added from appointment on {self.visit_date} by {self.consulted_by}."
+        else:
+            name = str(condition_data)
+            description = ''
 
-    date_created = models.DateTimeField(auto_now_add=True)
-    last_updated = models.DateTimeField(auto_now=True)
+        MedicalHistory.objects.get_or_create(
+            patient=self.patient,
+            episode_type="Condition",
+            title=name,
+            defaults={
+                'description': description,
+                'start_date': self.visit_date or timezone.now().date(),
+                'is_ongoing': True,
+                'added_from_ehr': self
+            }
+        )
+
+    def _create_medication(self, medication_data):
+        """Create or update a medication record"""
+        if isinstance(medication_data, dict):
+            name = medication_data.get('name', 'Unknown Medication')
+            description = f"Dosage: {medication_data.get('dosage', '')}, Frequency: {medication_data.get('frequency', '')}"
+        else:
+            name = str(medication_data)
+            description = ''
+
+        MedicalHistory.objects.get_or_create(
+            patient=self.patient,
+            episode_type="Medication",
+            title=name,
+            defaults={
+                'description': description,
+                'start_date': self.visit_date or timezone.now().date(),
+                'is_ongoing': True,
+                'added_from_ehr': self
+            }
+        )
+
+    def _update_family_history(self):
+        """Update family history record"""
+        history, created = MedicalHistory.objects.get_or_create(
+            patient=self.patient,
+            episode_type="Family",
+            title="Family History",
+            defaults={
+                'description': self.family_history,
+                'start_date': self.visit_date or timezone.now().date(),
+                'is_ongoing': False,
+                'added_from_ehr': self
+            }
+        ) 
+        if not created:
+            history.description += f"\n\n{self.family_history}"
+            history.save()
+
+    def _create_immunization(self, immunization_data):
+        """Create immunization record"""
+        if isinstance(immunization_data, dict):
+            name = immunization_data.get('name', 'Unknown Immunization')
+            description = f"Lot: {immunization_data.get('lot_number', '')}, Administered by: {immunization_data.get('administered_by', '')}"
+        else:
+            name = str(immunization_data)
+            description = ''
+
+        MedicalHistory.objects.get_or_create(
+            patient=self.patient,
+            episode_type="Immunization",
+            title=name,
+            defaults={
+                'description': description,
+                'start_date': self.visit_date or timezone.now().date(),
+                'is_ongoing': False,
+                'added_from_ehr': self
+            }
+        )
+
+    def _create_diagnosis(self, diagnosis_data):
+        """Create diagnosis record"""
+        if isinstance(diagnosis_data, dict):
+            name = diagnosis_data.get('name', 'Unknown Diagnosis')
+            description = diagnosis_data.get('description', '')
+        else:
+            name = str(diagnosis_data)
+            description = ''
+
+        MedicalHistory.objects.get_or_create(
+            patient=self.patient,
+            episode_type="Diagnosis",
+            title=name,
+            defaults={
+                'description': description,
+                'start_date': self.visit_date or timezone.now().date(),
+                'is_ongoing': True,
+                'added_from_ehr': self
+            }
+        )
 
     def __str__(self):
-        return f"Medical History of {self.patient.first_name} {self.patient.last_name}"
+        return f"EHR Record for {self.patient.first_name} {self.patient.last_name}"
+    
+class MedicalHistory(models.Model):
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    episode_type = models.CharField(max_length=50, choices=[
+        ('Condition', 'Condition'),
+        ('Surgery', 'Surgery'),
+        ('Injury', 'Injury'),
+        ('Allergy', 'Allergy'),
+        ('Immunization', 'Immunization'),
+        ('Other', 'Other'),
+    ])
+    title = models.CharField(max_length=255)  # e.g., "Type 2 Diabetes"
+    description = models.TextField(blank=True, null=True)
+    start_date = models.DateField()
+    end_date = models.DateField(blank=True, null=True)
+    is_ongoing = models.BooleanField(default=True)
+    added_from_ehr = models.ForeignKey(EHR, on_delete=models.SET_NULL, null=True, blank=True)
+    last_updated = models.DateTimeField(auto_now=True)
 
