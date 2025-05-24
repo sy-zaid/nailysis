@@ -151,23 +151,19 @@ class EHR(models.Model):
             return False
 
     def _parse_field(self, field_data):
-        """Helper to parse both JSON and string formatted fields""" 
+        """Helper to ensure consistent list format from string, list, or dict input"""
         if isinstance(field_data, str):
             return [item.strip() for item in field_data.split(',') if item.strip()]
         elif isinstance(field_data, list):
             return field_data
         elif isinstance(field_data, dict):
-            return [field_data]  # Convert single dict to list
+            return [field_data]  # For consistency if single dict is passed
         return []
 
-    def _create_condition(self, condition_data):
-        """Create or update a medical condition record"""
-        if isinstance(condition_data, dict):
-            name = condition_data.get('name', 'Unknown Condition')
-            description = f"Added from appointment on {self.visit_date} by {self.consulted_by}."
-        else:
-            name = str(condition_data)
-            description = ''
+    def _create_condition(self, condition_name):
+        """Create a medical condition record with auto-description"""
+        name = str(condition_name)
+        description = f"Condition '{name}' recorded on {self.visit_date} during consultation by Dr. {self.consulted_by}."
 
         MedicalHistory.objects.get_or_create(
             patient=self.patient,
@@ -181,14 +177,10 @@ class EHR(models.Model):
             }
         )
 
-    def _create_medication(self, medication_data):
-        """Create or update a medication record"""
-        if isinstance(medication_data, dict):
-            name = medication_data.get('name', 'Unknown Medication')
-            description = f"Dosage: {medication_data.get('dosage', '')}, Frequency: {medication_data.get('frequency', '')}"
-        else:
-            name = str(medication_data)
-            description = ''
+    def _create_medication(self, medication_name):
+        """Create a medication record with auto-description"""
+        name = str(medication_name)
+        description = f"Medication '{name}' prescribed on {self.visit_date} by Dr. {self.consulted_by}."
 
         MedicalHistory.objects.get_or_create(
             patient=self.patient,
@@ -203,7 +195,7 @@ class EHR(models.Model):
         )
 
     def _update_family_history(self):
-        """Update family history record"""
+        """Update or append to family history record"""
         history, created = MedicalHistory.objects.get_or_create(
             patient=self.patient,
             episode_type="Family",
@@ -214,19 +206,15 @@ class EHR(models.Model):
                 'is_ongoing': False,
                 'added_from_ehr': self
             }
-        ) 
+        )
         if not created:
-            history.description += f"\n\n{self.family_history}"
+            history.description += f"\n\nUpdate on {self.visit_date}: {self.family_history}"
             history.save()
 
-    def _create_immunization(self, immunization_data):
-        """Create immunization record"""
-        if isinstance(immunization_data, dict):
-            name = immunization_data.get('name', 'Unknown Immunization')
-            description = f"Lot: {immunization_data.get('lot_number', '')}, Administered by: {immunization_data.get('administered_by', '')}"
-        else:
-            name = str(immunization_data)
-            description = ''
+    def _create_immunization(self, immunization_name):
+        """Create an immunization record with auto-description"""
+        name = str(immunization_name)
+        description = f"Immunization '{name}' recorded on {self.visit_date} by Dr. {self.consulted_by}."
 
         MedicalHistory.objects.get_or_create(
             patient=self.patient,
@@ -240,14 +228,10 @@ class EHR(models.Model):
             }
         )
 
-    def _create_diagnosis(self, diagnosis_data):
-        """Create diagnosis record"""
-        if isinstance(diagnosis_data, dict):
-            name = diagnosis_data.get('name', 'Unknown Diagnosis')
-            description = diagnosis_data.get('description', '')
-        else:
-            name = str(diagnosis_data)
-            description = ''
+    def _create_diagnosis(self, diagnosis_name):
+        """Create a diagnosis record with auto-description"""
+        name = str(diagnosis_name)
+        description = f"Diagnosis '{name}' made on {self.visit_date} by Dr. {self.consulted_by}."
 
         MedicalHistory.objects.get_or_create(
             patient=self.patient,
@@ -260,6 +244,7 @@ class EHR(models.Model):
                 'added_from_ehr': self
             }
         )
+
 
     def __str__(self):
         return f"EHR Record for {self.patient.first_name} {self.patient.last_name}"
