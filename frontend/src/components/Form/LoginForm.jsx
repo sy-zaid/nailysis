@@ -120,7 +120,9 @@ function LoginForm({ route }) {
           <div className={styles.inputGroup}>
             <label htmlFor="email">Email</label>
             <input
+              id="email"
               type="text"
+              name="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter Email"
@@ -129,7 +131,9 @@ function LoginForm({ route }) {
           <div className={styles.inputGroup}>
             <label htmlFor="password">Password</label>
             <input
+              id="password"
               type="password"
+              name="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter Password"
