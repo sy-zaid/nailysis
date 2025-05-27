@@ -36,7 +36,7 @@ import useCurrentUserData from "../../useCurrentUserData";
  * - Provides action buttons for doctors to manage records.
  * - Displays EHR details in a formatted table.
  *
- * @component
+ * @component 
  */
 const ElectronicHealthRecord = () => {
   // Default sort config: sorted by "last_updated" in descending order (latest first)

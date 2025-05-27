@@ -1,4 +1,4 @@
-import React from "react";
+import React from "react"; 
 import styles from "./Navbar.module.css";
 import { useNavigate } from "react-router-dom";
 
@@ -14,10 +14,10 @@ const Navbar = () => {
 
   return (
     <nav className={styles.container}>
-      
-      <span className={styles.search}>
-        <h5>Search...</h5>
-        <img src="icon-search-black.png" alt="search icon" />
+
+      <span className={styles.searchBar}>
+        <input type="search" placeholder="Search" />
+        <i class="fa-solid fa-magnifying-glass"></i>
       </span>
       <div className={styles.navSide}>
         <button onClick={handleScanNailsClick}>
