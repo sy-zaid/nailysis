@@ -116,7 +116,7 @@ function LoginForm({ route }) {
     <div className={styles.form}>
       <section className={styles.main}>
         <h2>Login to your account</h2>
-        <form onSubmit={handleSubmit} className="form-container">
+        <form role="form" onSubmit={handleSubmit} className="form-container">
           <div className={styles.inputGroup}>
             <label htmlFor="email">Email</label>
             <input

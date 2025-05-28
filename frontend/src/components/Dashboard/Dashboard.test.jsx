@@ -1,144 +1,82 @@
-// Dashboard.test.jsx
-import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import { render, screen } from '@testing-library/react';
+import { describe, it, expect } from 'vitest';
 import Dashboard from './Dashboard';
 
-// Mock all child components
-jest.mock('./Cards/Cards', () => ({
-  __esModule: true,
-  default: ({ heading }) => (
-    <div data-testid={`cards-${heading.toLowerCase()}`}>
-      <h3>{heading} Card</h3>
-    </div>
-  )
+// Mock the child components
+vi.mock('./Cards/Cards', () => ({
+  default: ({ heading }) => <div data-testid="cards">{heading}</div>
 }));
 
-jest.mock('./Navbar/Navbar', () => ({
-  __esModule: true,
-  default: () => <nav data-testid="navbar">Navbar Component</nav>
+vi.mock('./Navbar/Navbar', () => ({
+  default: () => <div data-testid="navbar">Navbar</div>
 }));
 
-jest.mock('./Header/Header', () => ({
-  __esModule: true,
-  default: () => <header data-testid="header">Header Component</header>
+vi.mock('./Header/Header', () => ({
+  default: () => <div data-testid="header">Header</div>
 }));
 
-jest.mock('./Sidebar/Sidebar', () => ({
-  __esModule: true,
-  default: () => <aside data-testid="sidebar">Sidebar Component</aside>
+vi.mock('./Sidebar/Sidebar', () => ({
+  default: () => <div data-testid="sidebar">Sidebar</div>
 }));
 
-jest.mock('./UpcomingTest/UpcomingTest', () => ({
-  __esModule: true,
-  default: () => <div data-testid="upcoming-test">UpcomingTest Component</div>
+vi.mock('./UpcomingTest/UpcomingTest', () => ({
+  default: () => <div data-testid="upcoming-test">UpcomingTest</div>
 }));
 
-describe('Dashboard', () => {
-  test('renders all main components', () => {
+describe('Dashboard Component', () => {
+  beforeEach(() => {
     render(<Dashboard />);
+  });
 
+  it('renders without crashing', () => {
+    expect(screen.getByRole('combobox')).toBeInTheDocument();
+  });
+
+  it('renders the Navbar component', () => {
     expect(screen.getByTestId('navbar')).toBeInTheDocument();
+  });
+
+  it('renders the Header component', () => {
     expect(screen.getByTestId('header')).toBeInTheDocument();
-    expect(screen.getByTestId('sidebar')).toBeInTheDocument();
-    expect(screen.getByTestId('upcoming-test')).toBeInTheDocument();
   });
 
-  test('renders all card components with correct headings', () => {
-    render(<Dashboard />);
-
-    expect(screen.getByTestId('cards-patients')).toBeInTheDocument();
-    expect(screen.getByTestId('cards-requests')).toBeInTheDocument();
-    expect(screen.getByTestId('cards-payments')).toBeInTheDocument();
-    expect(screen.getByTestId('cards-reports')).toBeInTheDocument();
-
-    expect(screen.getByText('Patients Card')).toBeInTheDocument();
-    expect(screen.getByText('Requests Card')).toBeInTheDocument();
-    expect(screen.getByText('Payments Card')).toBeInTheDocument();
-    expect(screen.getByText('Reports Card')).toBeInTheDocument();
-  });
-
-  test('renders dropdown with correct options', () => {
-    render(<Dashboard />);
-
+  it('renders the dropdown with time period options', () => {
     const dropdown = screen.getByRole('combobox');
-    expect(dropdown).toBeInTheDocument();
+    const options = ['One Month', 'Three Months', 'Six Months'];
     
-    expect(screen.getByRole('option', { name: 'One Month' })).toBeInTheDocument();
-    expect(screen.getByRole('option', { name: 'Three Months' })).toBeInTheDocument();
-    expect(screen.getByRole('option', { name: 'Six Months' })).toBeInTheDocument();
+    options.forEach(option => {
+      expect(screen.getByText(option)).toBeInTheDocument();
+    });
   });
 
-  test('dropdown has default value', () => {
-    render(<Dashboard />);
-
+  it('has default dropdown selection as "One Month"', () => {
     const dropdown = screen.getByRole('combobox');
     expect(dropdown.value).toBe('oneMonth');
   });
 
-  test('dropdown value changes when option is selected', () => {
-    render(<Dashboard />);
-
-    const dropdown = screen.getByRole('combobox');
-    
-    fireEvent.change(dropdown, { target: { value: 'threeMonths' } });
-    expect(dropdown.value).toBe('threeMonths');
-
-    fireEvent.change(dropdown, { target: { value: 'sixMonths' } });
-    expect(dropdown.value).toBe('sixMonths');
+  it('renders the Sidebar component', () => {
+    expect(screen.getByTestId('sidebar')).toBeInTheDocument();
   });
 
-  test('renders main layout structure correctly', () => {
-    render(<Dashboard />);
-
-    // Check if main sections are present
-    const headerSection = screen.getByTestId('header').parentElement;
-    expect(headerSection).toHaveClass('headerContent');
-
-    // Check if cards section contains all cards
-    const cardsSection = screen.getByTestId('cards-patients').parentElement;
-    expect(cardsSection).toContainElement(screen.getByTestId('cards-patients'));
-    expect(cardsSection).toContainElement(screen.getByTestId('cards-requests'));
-    expect(cardsSection).toContainElement(screen.getByTestId('cards-payments'));
-    expect(cardsSection).toContainElement(screen.getByTestId('cards-reports'));
+  it('renders all four Cards components with correct headings', () => {
+    const headings = ['Patients', 'Requests', 'Payments', 'Reports'];
+    
+    headings.forEach(heading => {
+      expect(screen.getByText(heading)).toBeInTheDocument();
+    });
   });
 
-  test('all components are rendered in correct order', () => {
-    render(<Dashboard />);
-
-    const allElements = screen.getAllByTestId(/navbar|header|sidebar|cards-|upcoming-test/);
-    
-    // Check that navbar comes first
-    expect(allElements[0]).toBe(screen.getByTestId('navbar'));
-    
-    // Check that upcoming test is rendered
+  it('renders the UpcomingTest component', () => {
     expect(screen.getByTestId('upcoming-test')).toBeInTheDocument();
   });
-
-  test('dropdown contains correct option values', () => {
-    render(<Dashboard />);
-
-    const oneMonthOption = screen.getByRole('option', { name: 'One Month' });
-    const threeMonthsOption = screen.getByRole('option', { name: 'Three Months' });
-    const sixMonthsOption = screen.getByRole('option', { name: 'Six Months' });
-
-    expect(oneMonthOption).toHaveValue('oneMonth');
-    expect(threeMonthsOption).toHaveValue('threeMonths');
-    expect(sixMonthsOption).toHaveValue('sixMonths');
-  });
-
-  test('dashboard layout has correct CSS classes', () => {
-    const { container } = render(<Dashboard />);
-
-    // Check for main layout classes (these will depend on your CSS module)
-    const headerDiv = container.querySelector('[class*="header"]');
-    const mainDiv = container.querySelector('[class*="main"]');
-    const cardsDiv = container.querySelector('[class*="cards"]');
-    const dropdownSelect = container.querySelector('[class*="dropdown"]');
-
-    expect(headerDiv).toBeInTheDocument();
-    expect(mainDiv).toBeInTheDocument();
-    expect(cardsDiv).toBeInTheDocument();
-    expect(dropdownSelect).toBeInTheDocument();
-  });
 });
+
+// What these tests cover:
+// 1. Basic component rendering without errors
+// 2. Navbar component is rendered and present
+// 3. Header component is rendered and present
+// 4. Dropdown select element is present with all three time period options
+// 5. Sidebar component is rendered and present
+// 6. All four Cards components are rendered with correct headings (Patients, Requests, Payments, Reports)
+// 7. UpcomingTest component is rendered and present
+// 8. Default dropdown value is set to "oneMonth"

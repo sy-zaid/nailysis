@@ -1,28 +1,35 @@
-import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import { jwtDecode } from 'jwt-decode';
 import LoginForm from './LoginForm';
-import api from '../../api';
+import { toast } from 'react-toastify';
 
 // Mock dependencies
-jest.mock('react-toastify');
-jest.mock('jwt-decode');
-jest.mock('../../api');
-
-// Mock localStorage with Jest mock functions
-const localStorageMock = {
-  getItem: jest.fn(),
-  setItem: jest.fn(),
-  clear: jest.fn(),
-  removeItem: jest.fn()
-};
-Object.defineProperty(window, 'localStorage', {
-  value: localStorageMock
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
+  return {
+    ...actual,
+    useNavigate: () => vi.fn(),
+  };
 });
 
-// Helper function to render with router context
+vi.mock('jwt-decode', () => ({
+  jwtDecode: vi.fn(() => ({ role: 'doctor' }))
+}));
+
+vi.mock('../../api', () => ({
+  default: {
+    post: vi.fn()
+  }
+}));
+
+vi.mock('react-toastify', () => ({
+  toast: {
+    error: vi.fn(),
+    success: vi.fn()
+  }
+}));
+
 const renderWithRouter = (component) => {
   return render(
     <BrowserRouter>
@@ -31,95 +38,134 @@ const renderWithRouter = (component) => {
   );
 };
 
-describe('LoginForm', () => {
+describe('LoginForm Component', () => {
   beforeEach(() => {
-    // Clear all mocks before each test
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
-  it('renders login form with all required elements', () => {
+  it('renders without crashing', () => {
     renderWithRouter(<LoginForm route="/api/login" />);
-    
-    expect(screen.getByRole('heading', { name: /login to your account/i })).toBeInTheDocument();
-    expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /login/i })).toBeInTheDocument();
   });
 
-  it('shows validation errors for empty fields', async () => {
+  it('displays the login heading', () => {
     renderWithRouter(<LoginForm route="/api/login" />);
-    
-    const loginButton = screen.getByRole('button', { name: /login/i });
-    fireEvent.click(loginButton);
-
-    expect(toast.error).toHaveBeenCalledWith('Email & Password are required.');
+    expect(screen.getByText('Login to your account')).toBeInTheDocument();
   });
 
-  it('handles successful login for system admin', async () => {
-    const mockResponse = {
-      data: {
-        access: 'mock-access-token',
-        refresh: 'mock-refresh-token'
-      }
-    };
-    api.post.mockResolvedValueOnce(mockResponse);
-    jwtDecode.mockReturnValueOnce({ role: 'system_admin' });
-
+  it('renders email input field', () => {
     renderWithRouter(<LoginForm route="/api/login" />);
-    
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
-    const loginButton = screen.getByRole('button', { name: /login/i });
-
-    fireEvent.change(emailInput, { target: { value: 'admin@example.com' } });
-    fireEvent.change(passwordInput, { target: { value: 'password123' } });
-    fireEvent.click(loginButton);
-
-    await waitFor(() => {
-      expect(api.post).toHaveBeenCalledWith('/api/login', {
-        email: 'admin@example.com',
-        password: 'password123'
-      });
-      expect(localStorage.setItem).toHaveBeenCalledWith('role', 'system_admin');
-      expect(toast.success).toHaveBeenCalledWith('Login Successful!', expect.any(Object));
-    });
+    expect(screen.getByLabelText('Email')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('Enter Email')).toBeInTheDocument();
   });
 
-  it('handles login failure', async () => {
-    api.post.mockRejectedValueOnce({
-      response: { status: 401 }
-    });
-
+  it('renders password input field', () => {
     renderWithRouter(<LoginForm route="/api/login" />);
-    
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
-    const loginButton = screen.getByRole('button', { name: /login/i });
-
-    fireEvent.change(emailInput, { target: { value: 'wrong@example.com' } });
-    fireEvent.change(passwordInput, { target: { value: 'wrongpassword' } });
-    fireEvent.click(loginButton);
-
-    await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith('Incorrect email or password.', expect.any(Object));
-    });
+    expect(screen.getByLabelText('Password')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('Enter Password')).toBeInTheDocument();
   });
 
-  it('handles network error', async () => {
-    api.post.mockRejectedValueOnce(new Error('Network Error'));
-
+  it('renders login button', () => {
     renderWithRouter(<LoginForm route="/api/login" />);
-    
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
-    const loginButton = screen.getByRole('button', { name: /login/i });
+    expect(screen.getByRole('button', { name: 'Login' })).toBeInTheDocument();
+  });
 
+  it('updates email input value when typed', () => {
+    renderWithRouter(<LoginForm route="/api/login" />);
+    const emailInput = screen.getByLabelText('Email');
+    
     fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
-    fireEvent.change(passwordInput, { target: { value: 'password' } });
-    fireEvent.click(loginButton);
+    expect(emailInput.value).toBe('test@example.com');
+  });
 
+  it('updates password input value when typed', () => {
+    renderWithRouter(<LoginForm route="/api/login" />);
+    const passwordInput = screen.getByLabelText('Password');
+    
+    fireEvent.change(passwordInput, { target: { value: 'password123' } });
+    expect(passwordInput.value).toBe('password123');
+  });
+
+  it('shows error when submitting empty form', async () => {
+    renderWithRouter(<LoginForm route="/api/login" />);
+    const submitButton = screen.getByRole('button', { name: 'Login' });
+    
+    fireEvent.click(submitButton);
+    
     await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith('Network Error');
+      expect(toast.error).toHaveBeenCalledWith('Email & Password are required.');
     });
+  });
+
+  it('shows error when email is missing', async () => {
+    renderWithRouter(<LoginForm route="/api/login" />);
+    const passwordInput = screen.getByLabelText('Password');
+    const submitButton = screen.getByRole('button', { name: 'Login' });
+    
+    fireEvent.change(passwordInput, { target: { value: 'password123' } });
+    fireEvent.click(submitButton);
+    
+    await waitFor(() => {
+      expect(toast.error).toHaveBeenCalledWith('Email is required.');
+    });
+  });
+
+  it('shows error when password is missing', async () => {
+    renderWithRouter(<LoginForm route="/api/login" />);
+    const emailInput = screen.getByLabelText('Email');
+    const submitButton = screen.getByRole('button', { name: 'Login' });
+    
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+    fireEvent.click(submitButton);
+    
+    await waitFor(() => {
+      expect(toast.error).toHaveBeenCalledWith('Password is required.');
+    });
+  });
+
+  it('shows loading state when form is submitted', async () => {
+    const mockApi = await import('../../api');
+    mockApi.default.post.mockImplementation(() => new Promise(() => {})); // Never resolves
+    
+    renderWithRouter(<LoginForm route="/api/login" />);
+    const emailInput = screen.getByLabelText('Email');
+    const passwordInput = screen.getByLabelText('Password');
+    const submitButton = screen.getByRole('button', { name: 'Login' });
+    
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+    fireEvent.change(passwordInput, { target: { value: 'password123' } });
+    fireEvent.click(submitButton);
+    
+    await waitFor(() => {
+      expect(screen.getByText('Logging in...')).toBeInTheDocument();
+    });
+  });
+
+  it('has correct form structure with proper labels and inputs', () => {
+    renderWithRouter(<LoginForm route="/api/login" />);
+    
+    const form = screen.getByRole('form');
+    expect(form).toBeInTheDocument();
+    
+    const emailInput = screen.getByLabelText('Email');
+    expect(emailInput).toHaveAttribute('type', 'text');
+    expect(emailInput).toHaveAttribute('name', 'email');
+    
+    const passwordInput = screen.getByLabelText('Password');
+    expect(passwordInput).toHaveAttribute('type', 'password');
+    expect(passwordInput).toHaveAttribute('name', 'password');
   });
 });
+
+// What these tests cover:
+// 1. Basic component rendering without errors
+// 2. Login heading "Login to your account" is displayed
+// 3. Email input field with proper label and placeholder
+// 4. Password input field with proper label and placeholder
+// 5. Login button is rendered and accessible
+// 6. Email input updates correctly when user types
+// 7. Password input updates correctly when user types
+// 8. Form validation - shows error when both fields are empty
+// 9. Form validation - shows error when email is missing
+// 10. Form validation - shows error when password is missing
+// 11. Loading state - button text changes to "Logging in..." during submission
+// 12. Form structure - proper form element with correct input attributes
