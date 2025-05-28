@@ -409,9 +409,6 @@ const AppointmentDoctor = (props) => {
   );
 };
 
-// Then set defaultProps
-AppointmentDoctor.defaultProps = {
-  apiUrl: process.env.VITE_API_URL || 'http://localhost:8000'
-};
+
 
 export default AppointmentDoctor;
