@@ -181,13 +181,16 @@ function RegisterForm({ route }) {
     <div className={styles.form}>
       <section className={`${styles.main} ${styles.scrollablediv}`}>
         <h2>Create Your Account</h2>
-        <form onSubmit={handleSubmit} className="form-container">
+        <form
+          className="form-container"
+          role="form"
+        >
           <div className={styles.inputRow}>
             <div className={`${styles.inputGroup} ${styles.halfWidth}`}>
               <label htmlFor="first_name">First Name</label>
               <input
                 type="text"
-                id="first-name"
+                id="first_name"
                 value={first_name}
                 onChange={(e) => setFirstname(e.target.value)}
                 placeholder="Enter your first name"
@@ -198,7 +201,7 @@ function RegisterForm({ route }) {
               <label htmlFor="last_name">Last Name</label>
               <input
                 type="text"
-                id="last-name"
+                id="last_name"
                 value={last_name}
                 onChange={(e) => setLastname(e.target.value)}
                 placeholder="Enter your last name"
@@ -246,8 +249,9 @@ function RegisterForm({ route }) {
           <div className={styles.inputGroup}>
             <label>Gender</label>
             <div className={styles.radioGroup}>
-              <label>
+              <label htmlFor="male">
                 <input
+                id="male"
                   type="radio"
                   name="gender"
                   value="M"
@@ -257,8 +261,9 @@ function RegisterForm({ route }) {
                 />
                 Male
               </label>
-              <label>
+              <label htmlFor="female">
                 <input
+                id="female"
                   type="radio"
                   name="gender"
                   value="F"
@@ -268,8 +273,9 @@ function RegisterForm({ route }) {
                 />
                 Female
               </label>
-              <label>
+              <label htmlFor="other">
                 <input
+                id="other"
                   type="radio"
                   name="gender"
                   value="O"
@@ -279,8 +285,9 @@ function RegisterForm({ route }) {
                 />
                 Other
               </label>
-              <label>
+              <label htmlFor="preferNotToSay">
                 <input
+                id="preferNotToSay"
                   type="radio"
                   name="gender"
                   value="P"
@@ -341,10 +348,10 @@ function RegisterForm({ route }) {
             />
           </div>
           <div className={styles.inputGroup}>
-            <label htmlFor="confirm-password">Confirm Password</label>
+            <label htmlFor="confirm_password">Confirm Password</label>
             <input
               type="password"
-              id="confirm-password"
+              id="confirm_password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="Confirm your password"

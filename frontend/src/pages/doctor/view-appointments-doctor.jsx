@@ -16,7 +16,9 @@ import {
   toggleActionMenu,
 } from "../../utils/utils";
 
-const AppointmentDoctor = () => {
+// Add at the top of the file:
+// First define the component
+const AppointmentDoctor = (props) => {
   // ----- TOKENS AND USER INFORMATION
   const token = localStorage.getItem("access");
 
@@ -145,7 +147,7 @@ const AppointmentDoctor = () => {
 
     const newSelectedAppointments = {};
     if (newSelectAll) {
-      sortedAppointments.forEach((appointment) => {
+      sotedAppointments.forEach((appointment) => {
         newSelectedAppointments[appointment.appointment_id] = true;
       });
     }
@@ -177,7 +179,7 @@ const AppointmentDoctor = () => {
     const fetchAppointments = async () => {
       try {
         const response = await api.get(
-          `${import.meta.env.VITE_API_URL}/api/doctor_appointments/`,
+          `${props.apiUrl}/api/doctor_appointments/`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -406,5 +408,7 @@ const AppointmentDoctor = () => {
     </div>
   );
 };
+
+
 
 export default AppointmentDoctor;

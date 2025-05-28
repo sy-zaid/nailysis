@@ -89,6 +89,7 @@ const Home = () => {
             <div
               className={styles.navMenuBtn}
               id="menu-btn"
+              data-testid="menu-btn"
               ref={menuBtnRef}
               onClick={handleMenuClick}
             >
@@ -98,7 +99,12 @@ const Home = () => {
             </div>
           </div>
     
-          <ul className={styles.navLinks} id="nav-links" ref={navLinksRef}>
+          <ul 
+            className={styles.navLinks} 
+            id="nav-links" 
+            data-testid="nav-links"
+            ref={navLinksRef}
+          >
             <li onClick={handleLinkClick}>
               <Link to="/">Home</Link>
             </li>
@@ -115,7 +121,7 @@ const Home = () => {
 
           <div className={styles.navSearch}>
             <input type="text" placeholder="Search" />
-            <i class="fa-solid fa-magnifying-glass fa-rotate-90"></i>
+            <i className="fa-solid fa-magnifying-glass fa-rotate-90"></i>
           </div>
         </nav>
       </header>
@@ -264,7 +270,7 @@ const Home = () => {
               </div>
             </div>
             <div className={styles.serviceCard4}>
-              <i class="fa-solid fa-headset"></i>
+              <i className="fa-solid fa-headset"></i>
               <div className={styles.serviceCardContent}>
                 <h2 className={styles.serviceCardHeading}>24/7  Online Support</h2>
                 <p className={styles.serviceCardText}>Round-the-clock assistance for users.</p>
@@ -379,9 +385,9 @@ const Home = () => {
             <h4>Socials</h4>
 
             <div className={styles.footerSocialItems}>
-              <p><i class='bx bxl-facebook-square' style={{ color: "#3B5998" }}  ></i> <span>Facebook</span> </p>
-              <p><i class='bx bxl-twitter' style={{ color: "#24A4F2" }} ></i> <span>Twitter</span> </p>
-              <p><i class='bx bxl-instagram-alt' style={{ color: "#FE0895" }} ></i> <span>Instagram</span></p>
+              <p><i className='bx bxl-facebook-square' style={{ color: "#3B5998" }}  ></i> <span>Facebook</span> </p>
+              <p><i className='bx bxl-twitter' style={{ color: "#24A4F2" }} ></i> <span>Twitter</span> </p>
+              <p><i className='bx bxl-instagram-alt' style={{ color: "#FE0895" }} ></i> <span>Instagram</span></p>
             </div>
           </div>
 
