@@ -706,3 +706,72 @@ export const getTodayDate = () => {
   const dd = String(today.getDate()).padStart(2, "0");
   return `${yyyy}-${mm}-${dd}`;
 };
+
+
+export const formatMedicalHistoryEpisodes = (responseData) => {
+  // Handle case where we might get the full Axios response object
+  const episodesData = Array.isArray(responseData) ? responseData : 
+                     (responseData?.data || []);
+
+  if (!Array.isArray(episodesData)) {
+    console.error('Invalid data format received:', responseData);
+    return { formattedEpisodes: [], uniquePatients: [] };
+  }
+
+  const formattedEpisodes = [];
+  const patientsMap = new Map();
+
+  episodesData.forEach(episode => {
+    try {
+      // Skip if episode is null/undefined
+      if (!episode) return;
+
+      // Extract patient information with safety checks
+      const patient = episode.patient?.user || {};
+      const patientId = patient.user_id || 'unknown';
+      const patientName = `${patient.first_name || ''} ${patient.last_name || ''}`.trim() || 'Unknown Patient';
+
+      // Add patient to map if valid
+      if (patientId && !patientsMap.has(patientId)) {
+        patientsMap.set(patientId, {
+          id: patientId,
+          name: patientName,
+          rawData: episode.patient // Store complete patient data if needed
+        });
+      }
+
+      // Format dates with fallbacks
+      const startDate = episode.start_date ? new Date(episode.start_date) : new Date();
+      const endDate = episode.end_date ? new Date(episode.end_date) : null;
+      const lastUpdated = episode.last_updated ? new Date(episode.last_updated) : new Date();
+
+      // Skip invalid entries
+      if (!episode.episode_type || (episode.title && episode.title.toLowerCase() === 'none')) return;
+
+      formattedEpisodes.push({
+        id: episode.id,
+        patient_id: patientId,
+        patient_name: patientName,
+        episode_type: episode.episode_type,
+        title: episode.title || `Untitled ${episode.episode_type}`,
+        description: episode.description || '',
+        start_date: startDate.toLocaleDateString(),
+        end_date: endDate?.toLocaleDateString() || null,
+        is_ongoing: Boolean(episode.is_ongoing),
+        added_from_ehr: episode.added_from_ehr || null,
+        last_updated: lastUpdated.toLocaleString(),
+        // Additional fields for UI
+        isSelected: false,
+        isExpanded: false
+      });
+    } catch (error) {
+      console.error('Error processing episode:', episode, error);
+    }
+  });
+
+  return {
+    formattedEpisodes: formattedEpisodes.sort((a, b) => 
+      new Date(b.start_date) - new Date(a.start_date)), // Sort by newest first
+    uniquePatients: Array.from(patientsMap.values())
+  };
+};

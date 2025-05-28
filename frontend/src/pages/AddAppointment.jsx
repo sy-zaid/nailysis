@@ -28,20 +28,20 @@ const AddAppointment = () => {
              
               <div className={styles.formGroup}>
                 <div>
-                  <label>Name</label>
-                  <input className={styles.inputBox} type="text" placeholder="John Doe" />
+                  <label htmlFor="name">Name</label>
+                  <input id="name" className={styles.inputBox} type="text" placeholder="John Doe" />
                 </div>
                 <div>
-                  <label>Age</label>
-                  <input className={styles.inputBox} type="number" placeholder="21" />
+                  <label htmlFor="age">Age</label>
+                  <input id="age" className={styles.inputBox} type="number" placeholder="21" />
                 </div>
                 <div>
-                  <label>Gender</label>
-                  <input className={styles.inputBox} type="text" placeholder="Male" />
+                  <label htmlFor="gender">Gender</label>
+                  <input id="gender" className={styles.inputBox} type="text" placeholder="Male" />
                 </div>
                 <div>
-                  <label>Phone Number</label>
-                  <input className={styles.inputBox} type="tel" placeholder="+92 12345678" />
+                  <label htmlFor="phone">Phone Number</label>
+                  <input id="phone" className={styles.inputBox} type="tel" placeholder="+92 12345678" />
                 </div>
               </div>
             </div>
@@ -50,24 +50,24 @@ const AddAppointment = () => {
               <h3>Appointment Details</h3>
               <div className={styles.formGroup}>
                 <div>
-                  <label>Technician</label>
-                  <select>
+                  <label htmlFor="technician">Technician</label>
+                  <select id="technician">
                     <option>Dr. Jane Doe</option>
                   </select>
                 </div>
                 <div>
-                  <label>Date & Time</label>
-                  <input type="datetime-local" />
+                  <label htmlFor="datetime">Date & Time</label>
+                  <input id="datetime" type="datetime-local" />
                 </div>
                 <div>
-                  <label>Visit Purpose</label>
-                  <select>
+                  <label htmlFor="visitPurpose">Visit Purpose</label>
+                  <select id="visitPurpose">
                     <option>Lab Test</option>
                   </select>
                 </div>
                 <div>
-                  <label>Test Type</label>
-                  <select>
+                  <label htmlFor="testType">Test Type</label>
+                  <select id="testType">
                     <option>Lab Test</option>
                   </select>
                 </div>
@@ -78,29 +78,32 @@ const AddAppointment = () => {
               <h3>Payment Details</h3>
               <div className={styles.formGroup}>
                 <div>
-                  <label>Discount</label>
-                  <select>
+                  <label htmlFor="discount">Discount</label>
+                  <select id="discount">
                     <option>No Discount</option>
                   </select>
                 </div>
                 <div>
-                  <label>Test Fee</label>
-                  <input type="text" placeholder="5000" />
+                  <label htmlFor="testFee">Test Fee</label>
+                  <input id="testFee" type="text" placeholder="5000" />
                 </div>
                 <div>
-                  <label>Amount Paid</label>
-                  <input type="text" placeholder="4000" />
+                  <label htmlFor="amountPaid">Amount Paid</label>
+                  <input id="amountPaid" type="text" placeholder="4000" />
                 </div>
                 <div>
-                  <label>Payment Method</label>
-                  <select>
+                  <label htmlFor="paymentMethod">Payment Method</label>
+                  <select id="paymentMethod">
                     <option>Cash</option>
                   </select>
                 </div>
               </div>
               <div>
-                <label className={styles.commentLabel} >Comments</label>
-                <textarea placeholder="Payment of PKR 5000 received for Invoice ID 'INV-98765'"></textarea>
+                <label htmlFor="comments" className={styles.commentLabel}>Comments</label>
+                <textarea
+                  id="comments"
+                  placeholder="Payment of PKR 5000 received for Invoice ID 'INV-98765'"
+                ></textarea>
               </div>
             </div>
 

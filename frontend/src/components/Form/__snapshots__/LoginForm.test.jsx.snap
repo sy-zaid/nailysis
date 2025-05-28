@@ -1,0 +1,53 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`LoginForm Snapshots matches snapshot 1`] = `
+<div
+  class="form"
+>
+  <section
+    class="main"
+  >
+    <h2>
+      Login to your account
+    </h2>
+    <form
+      class="form-container"
+    >
+      <div
+        class="inputGroup"
+      >
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          placeholder="Enter Email"
+          type="text"
+          value=""
+        />
+      </div>
+      <div
+        class="inputGroup"
+      >
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          placeholder="Enter Password"
+          type="password"
+          value=""
+        />
+      </div>
+      <button
+        class="submitButton"
+        type="submit"
+      >
+        Login
+      </button>
+    </form>
+  </section>
+</div>
+`;
