@@ -1,6 +1,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import styles from "../common/all-pages-styles.module.css";
+import mediaStyles from "../common/media.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import Header from "../../components/Dashboard/Header/Header";
 import Sidebar from "../../components/Dashboard/Sidebar/Sidebar";
@@ -86,9 +87,9 @@ const DiagnosticResults = (props) => {
 
   return ( 
     
-    <div className={styles.pageContainer}>
+    <div className={`${styles.pageContainer} ${mediaStyles.pageContainer}`}>
 
-      <div className={styles.pageTop}>
+      <div className={`${styles.pageTop} ${mediaStyles.pageTop}`}>
         <Navbar />
         <Header 
             mainHeading={'Review Diagnostic Results'}
@@ -97,52 +98,52 @@ const DiagnosticResults = (props) => {
       </div>
 
 
-      <div className={styles.mainContent}>
+      <div className={`${styles.mainContent} ${mediaStyles.mainContent}`}>
 
         <div className={styles.appointmentsContainer}>
-          <div className={styles.filters}>
+          <div className={`${styles.filters} ${mediaStyles.filters}`}>
             <button
-              className={`${styles.filterButton} ${activeButton === 0 ? styles.active : ''}`}
+              className={`${styles.filterButton} ${mediaStyles.filterButton} ${activeButton === 0 ? styles.active : ''}`}
               onClick={() => handleFilterClick(0)}
             >
               All
             </button>
             <button
-              className={`${styles.filterButton} ${activeButton === 1 ? styles.active : ''}`}
+              className={`${styles.filterButton} ${mediaStyles.filterButton} ${activeButton === 1 ? styles.active : ''}`}
               onClick={() => handleFilterClick(1)}
             >
               Pending
             </button>
             <button
-              className={`${styles.filterButton} ${activeButton === 2 ? styles.active : ''}`}
+              className={`${styles.filterButton} ${mediaStyles.filterButton} ${activeButton === 2 ? styles.active : ''}`}
               onClick={() => handleFilterClick(2)}
             >
               Completed
             </button>
             <button
-              className={`${styles.filterButton} ${activeButton === 3 ? styles.active : ''}`}
+              className={`${styles.filterButton} ${mediaStyles.filterButton} ${activeButton === 3 ? styles.active : ''}`}
               onClick={() => handleFilterClick(3)}
             >
               Cancelled
             </button>
             <p>50 completed, 4 pending</p>
             
-            <button className={styles.addButton}>
+            <button className={`${styles.addButton} ${mediaStyles.addButton}`}>
               <i className='bx bx-plus-circle'></i> Book New Test
             </button>
 
           </div>
           
           <div className={styles.tableContainer}>
-            <div className={styles.controls}>
-              <select className={styles.bulkAction}>
+            <div className={`${styles.controls} ${mediaStyles.controls}`}>
+              <select className={`${styles.bulkAction} ${mediaStyles.bulkAction}`}>
                 <option>Bulk Action: Delete</option>
               </select>
-              <select className={styles.sortBy}>
+              <select className={`${styles.sortBy} ${mediaStyles.sortBy}`}>
                 <option>Sort By: Ordered Today</option>
               </select>
               <input
-                className={styles.search}
+                className={`${styles.search} ${mediaStyles.search}`}
                 type="text"
                 placeholder="Search By Patient Name" 
               /> 
@@ -150,8 +151,8 @@ const DiagnosticResults = (props) => {
             <hr />
             <br />
 
-            <div className={styles.tableWrapper}>
-              <table className={styles.table}>
+            <div className={`${styles.tableWrapper} ${mediaStyles.tableWrapper}`}>
+              <table className={`${styles.table} ${mediaStyles.table}`}>
                 <thead>
                   <tr>
                     <th>

@@ -210,9 +210,9 @@ const InvoiceManagement = (props) => {
                     <td>
                       <button
                         onClick={(event) => toggleActionMenu(row.id, menuOpen, setMenuOpen, setMenuPosition, event)}
-                        className={styles.moreActionsBtn}
+                        className={`${styles.moreActionsBtn} ${mediaStyles.moreActionsBtn}`}
                       >
-                        <img src="/icon-three-dots.png" alt="More Actions" className={styles.moreActionsIcon} />
+                        <img src="/icon-three-dots.png" alt="More Actions" className={`${styles.moreActionsIcon} ${mediaStyles.moreActionsIcon}`} />
                       </button>
 
                       {menuOpen && (

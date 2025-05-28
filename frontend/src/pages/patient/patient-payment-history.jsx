@@ -1,6 +1,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import styles from "../common/all-pages-styles.module.css";
+import mediaStyles from "../common/media.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import Header from "../../components/Dashboard/Header/Header";
 import Sidebar from "../../components/Dashboard/Sidebar/Sidebar";
