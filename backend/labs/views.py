@@ -11,6 +11,8 @@ from weasyprint import HTML
 
 from .models import LabTestType,LabTestOrder,LabTestResult
 from .serializers import LabTestTypeSerializer,LabTestOrderSerializer,LabTestResultSerializer
+from users.serializers import PatientSerializer
+from users.models import Patient
 from users.models import LabTechnician
 import json
 
@@ -35,11 +37,23 @@ class LabTestOrderModelViewSet(viewsets.ModelViewSet):
         """
         Retrieve lab test orders based on user role and optional test order ID filter.
 
-        - Restricted to 'lab_technician' and 'lab_admin' roles.
-        - If a test order ID is provided, fetches the specific order.
-        - Otherwise, returns all lab test orders.
+        - Patients can only see their own lab test orders
+        - Restricted to 'lab_technician' and 'lab_admin' roles for all orders
+        - If a test order ID is provided, fetches the specific order (with permission check)
         """
         user = self.request.user
+        patient = Patient()
+        if user.role == "patient":
+            try:
+                patient = Patient.objects.get(user=user)
+                return LabTestOrder.objects.filter(
+                    lab_technician_appointment__patient=patient,
+                    results_available=True,
+                    test_status="Completed"
+                )
+            except Patient.DoesNotExist:
+                return LabTestOrder.objects.none()
+            
         if user.role not in ["lab_technician", "lab_admin"]:
             return Response({"error": "Access denied. You do not have permission to view test orders."}, status=403)
         
@@ -130,10 +144,13 @@ class LabTestResultModelViewSet(viewsets.ModelViewSet):
         Retrieves lab test results based on user role.
 
         - Lab technicians and lab admins can access test results.
-        - Supports filtering by `test_order_id` or `test_id` via query parameters.
+        - Supports filtering by:
+            * `test_order_id` - returns results for specific order
+            * `test_id` - returns specific test result
+            * `patient_id` - returns all finalized results for a patient
         """
         user = self.request.user
-        if user.role not in ["lab_technician", "lab_admin"]:
+        if user.role not in ["lab_technician", "lab_admin","patient","doctor","clinic_admin"]:
             raise PermissionDenied("Access denied: You are not authorized to view test results.")
 
         test_order_id = self.request.query_params.get("test_order_id")
@@ -145,7 +162,46 @@ class LabTestResultModelViewSet(viewsets.ModelViewSet):
             return LabTestResult.objects.filter(id=test_id)
         
         return LabTestResult.objects.all()
+    
+    @action(detail=False, methods=["get"], url_path="all_tests")
+    def get_all_test_results(self, request):
+        # Check user permissions
+        user = request.user
+        if user.role not in ["lab_technician", "lab_admin","doctor","patient","clinic_admin"]:
+            raise PermissionDenied("Access denied: You are not authorized to view test results.")
 
+        patient_id = request.query_params.get("patient_id")
+        if not patient_id:
+            return Response(
+                {"error": "patient_id parameter is required"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            # Get patient and their test results
+            patient = get_object_or_404(Patient, user_id=patient_id)
+            all_test_results = LabTestResult.objects.filter(
+                test_order__lab_technician_appointment__patient_id=patient_id,
+                result_status="Finalized"
+            ).select_related(
+                'test_order',
+                'test_order__lab_technician_appointment',
+                'test_type'
+            )
+
+            serializer = LabTestResultSerializer(all_test_results, many=True)
+            
+            return Response({
+                "tests": serializer.data,
+                "patient": PatientSerializer(patient).data
+            })
+
+        except Exception as e:
+            return Response(
+                {"error": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+    
     @action(detail=False, methods=["post"], url_path="save_results")
     def save_results(self, request):
         """
@@ -156,11 +212,12 @@ class LabTestResultModelViewSet(viewsets.ModelViewSet):
         - Only lab technicians can create or update test results.
         """
         user = self.request.user
+        result_files = []
+        
         if user.role != "lab_technician":
             return Response({"error": "Access denied: Only lab technicians can create test results."}, status=status.HTTP_403_FORBIDDEN)
 
         test_category = request.data.get("test_category")
-        
         # Check for pathology or imaging category
         if test_category == "Pathology" or test_category == "Imaging":
             # Get multiple files for imaging tests (result_file can be a list of files)
@@ -221,6 +278,7 @@ class LabTestResultModelViewSet(viewsets.ModelViewSet):
             return Response({"error": "Invalid format: test_entries must be a valid JSON array."}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({"error": f"Unexpected error: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
     @action(detail=False, methods=["put"], url_path="edit_results")
     def edit_results(self, request):
         """
@@ -265,7 +323,6 @@ class LabTestResultModelViewSet(viewsets.ModelViewSet):
             return Response({"error": "Invalid format: test_entries must be a valid JSON array."}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({"error": f"Unexpected error: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
 
     @action(detail=True, methods=["get"], url_path="view_blood_report")
     def view_lab_report_html(self, request, pk=None):

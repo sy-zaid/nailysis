@@ -208,6 +208,7 @@ export const urineTestParameters = {
  * @constant {Array<Object>}
  */
 export const medicalConditionsOptions = [
+  { value: "None", label: "None" },
   { value: "Diabetes", label: "Diabetes" },
   { value: "Hypertension", label: "Hypertension" },
   { value: "Heart Disease", label: "Heart Disease" },
@@ -241,12 +242,30 @@ export const diagnosesOptions = [
  * @constant {Array<Object>}
  */
 export const currentMedicationsOptions = [
+  { value: "None", label: "None" },
   { value: "Metformin", label: "Metformin" },
   { value: "Aspirin", label: "Aspirin" },
   { value: "Lisinopril", label: "Lisinopril" },
   { value: "Atorvastatin", label: "Atorvastatin" },
 ];
-
+/**
+ * Predefined immunization records options for react-select.
+ * @constant {Array<Object>}
+ */
+export const immunizationRecordsOptions = [
+  { value: "None", label: "None" },
+  { value: "BCG", label: "BCG (Tuberculosis)" },
+  { value: "Hepatitis B", label: "Hepatitis B" },
+  { value: "Polio", label: "Polio" },
+  { value: "DTP", label: "DTP (Diphtheria, Tetanus, Pertussis)" },
+  { value: "MMR", label: "MMR (Measles, Mumps, Rubella)" },
+  { value: "Varicella", label: "Varicella (Chickenpox)" },
+  { value: "Hepatitis A", label: "Hepatitis A" },
+  { value: "Typhoid", label: "Typhoid" },
+  { value: "HPV", label: "HPV (Human Papillomavirus)" },
+  { value: "COVID-19", label: "COVID-19" },
+  { value: "Influenza", label: "Influenza (Flu)" },
+];
 /**
  * Predefined visit purposes.
  * @constant {Array<string>}
@@ -264,6 +283,7 @@ export const visitPurposes = [
  * @constant {Array<Object>}
  */
 export const testTypes = [
+  { value: "None", label: "None" },
   { value: "CBC", label: "Complete Blood Count (CBC)" },
   { value: "BloodSugar", label: "Blood Sugar Test" },
   { value: "HbA1c", label: "HbA1c (Diabetes Test)" },
@@ -430,7 +450,7 @@ export const formatEhrRecords = (response, type) => {
       : "No records",
     immunization:
       Array.isArray(record.immunization_records) &&
-      record.immunization_records.length > 1
+      record.immunization_records.length >= 1
         ? record.immunization_records.join(", ")
         : "No records",
     family_history: record.family_history || "No records",
@@ -664,4 +684,94 @@ export const handleRemoveParameter = (setTestEntries, index) => {
       ? prevEntries.filter((_, i) => i !== index)
       : prevEntries
   );
+};
+
+export const getFormattedCurrentTime = () => {
+  return new Date()
+    .toLocaleString("en-GB", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    })
+    .replace(",", ""); // optional: remove the comma if you want
+};
+
+export const getTodayDate = () => {
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, "0"); // Months start at 0!
+  const dd = String(today.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
+};
+
+
+export const formatMedicalHistoryEpisodes = (responseData) => {
+  // Handle case where we might get the full Axios response object
+  const episodesData = Array.isArray(responseData) ? responseData : 
+                     (responseData?.data || []);
+
+  if (!Array.isArray(episodesData)) {
+    console.error('Invalid data format received:', responseData);
+    return { formattedEpisodes: [], uniquePatients: [] };
+  }
+
+  const formattedEpisodes = [];
+  const patientsMap = new Map();
+
+  episodesData.forEach(episode => {
+    try {
+      // Skip if episode is null/undefined
+      if (!episode) return;
+
+      // Extract patient information with safety checks
+      const patient = episode.patient?.user || {};
+      const patientId = patient.user_id || 'unknown';
+      const patientName = `${patient.first_name || ''} ${patient.last_name || ''}`.trim() || 'Unknown Patient';
+
+      // Add patient to map if valid
+      if (patientId && !patientsMap.has(patientId)) {
+        patientsMap.set(patientId, {
+          id: patientId,
+          name: patientName,
+          rawData: episode.patient // Store complete patient data if needed
+        });
+      }
+
+      // Format dates with fallbacks
+      const startDate = episode.start_date ? new Date(episode.start_date) : new Date();
+      const endDate = episode.end_date ? new Date(episode.end_date) : null;
+      const lastUpdated = episode.last_updated ? new Date(episode.last_updated) : new Date();
+
+      // Skip invalid entries
+      if (!episode.episode_type || (episode.title && episode.title.toLowerCase() === 'none')) return;
+
+      formattedEpisodes.push({
+        id: episode.id,
+        patient_id: patientId,
+        patient_name: patientName,
+        episode_type: episode.episode_type,
+        title: episode.title || `Untitled ${episode.episode_type}`,
+        description: episode.description || '',
+        start_date: startDate.toLocaleDateString(),
+        end_date: endDate?.toLocaleDateString() || null,
+        is_ongoing: Boolean(episode.is_ongoing),
+        added_from_ehr: episode.added_from_ehr || null,
+        last_updated: lastUpdated.toLocaleString(),
+        // Additional fields for UI
+        isSelected: false,
+        isExpanded: false
+      });
+    } catch (error) {
+      console.error('Error processing episode:', episode, error);
+    }
+  });
+
+  return {
+    formattedEpisodes: formattedEpisodes.sort((a, b) => 
+      new Date(b.start_date) - new Date(a.start_date)), // Sort by newest first
+    uniquePatients: Array.from(patientsMap.values())
+  };
 };

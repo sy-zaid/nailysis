@@ -30,13 +30,17 @@ export const getTestResults = async (test_order_id) => {
   const url = `${API_URL}/api/test_results/?test_order_id=${test_order_id}`;
   return axios.get(url, getHeaders());
 };
+export const getTestResultsByPatientId = async (patient_id) => {
+  const url = `${API_URL}/api/test_results/all_tests/?patient_id=${patient_id}`;
+  return axios.get(url, getHeaders());
+};
 
 /**
  * Fetches test results by test ID.
  * @param {number} test_id - The ID of the test.
  * @returns {Promise} Axios GET request promise.
  */
-export const getTestResultsById = async (test_id) => {
+export const getTestResultsByTestId = async (test_id) => {
   const url = `${API_URL}/api/test_results/?test_id=${test_id}`;
   return axios.get(url, getHeaders());
 };
@@ -100,4 +104,10 @@ export const saveAdminComment = async (reportId, payload) => {
 export const markResultFinalized = async (reportId) => {
   const url = `${API_URL}/api/test_results/${reportId}/mark_finalized/`;
   return axios.post(url, {}, getHeaders());
+};
+
+
+export const getAvailableLabTests = async () => {
+  const url = `${API_URL}/api/test_types/`;
+  return axios.get(url, getHeaders());
 };

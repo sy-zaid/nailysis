@@ -2,13 +2,14 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 import time
+time.sleep(0)
 
 # User credentials
 users = [
     # {"email": "admin@gmail.com", "password": "admin"},
-    {"email": "clinic_admin0@example.com", "password": "cli"},
-    {"email": "lab_technician0@example.com", "password": "tech"},
-    {"email": "la@e.com", "password": "la"},
+    {"email": "clinic_admin@example.com", "password": "cli"},
+    {"email": "labtech0@example.com", "password": "tech"},
+    {"email": "lab_admin@example.com", "password": "lab"},
     {"email": "doctor0@example.com", "password": "doc"},
     {"email": "patient0@example.com", "password": "pat"}
 ]

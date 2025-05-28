@@ -64,6 +64,25 @@ const BloodTestEntryPopup = ({
       );
       return;
     }
+
+    if (testEntries.some((entry) => !entry.result || entry.result.trim() === "")) {
+      toast.warning("Please fill in all test result fields.", {
+        className: "custom-toast",
+      });
+      return;
+    }
+  
+    const incompleteEntry = testEntries.some(
+      (entry) => !entry.result || entry.result.trim() === ""
+    );
+  
+    if (incompleteEntry) {
+      toast.warning("Please fill in all test result fields.", {
+        className: "custom-toast",
+      });
+      return;
+    }
+
     const payload = {
       test_order_id: testOrderDetails.id,
       test_type_id: testDetails.id,
@@ -75,16 +94,20 @@ const BloodTestEntryPopup = ({
     try {
       console.log("SENDING THIS TO SAVE RESULTS", payload);
       const response = await saveTestResults(payload);
+      
       if (response.status === 201) {
         toast.success("Successfully Created Test Result", {
           className: "custom-toast",
         });
+        onClose();
       } else if (response.status === 200) {
         toast.success("Successfully Edited Test Result", {
           className: "custom-toast",
         });
+        onClose();
       }
     } catch (error) {
+      console.log(error)
       if (error.response) {
         toast.error(error.response.data.error || "Something went wrong.", {
           className: "custom-toast",
@@ -98,7 +121,7 @@ const BloodTestEntryPopup = ({
   };
 
   // ----- MAIN LOGIC FUNCTIONS
-  
+
   // ----- USE EFFECTS
   /**
    * Synchronizes the testEntries state with formData when testEntries changes.
@@ -162,7 +185,7 @@ const BloodTestEntryPopup = ({
               }
             </span>
             <span className={styles.secKey}> Status: </span>
-            <span className={getStatusClass("Pending")}>
+            <span className={getStatusClass("Pending", styles)}>
               {editable[0] === true ? editable[1] : "Pending"}
             </span>
           </p>
@@ -302,7 +325,7 @@ const BloodTestEntryPopup = ({
             >
               <button
                 className={styles.addButton}
-                onClick={() => handleAddParameter(setTestEntries,"Blood")}
+                onClick={() => handleAddParameter(setTestEntries, "Blood")}
                 style={{ zIndex: "100" }}
               >
                 <i className="bx bx-plus-circle"></i> Add More Parameters

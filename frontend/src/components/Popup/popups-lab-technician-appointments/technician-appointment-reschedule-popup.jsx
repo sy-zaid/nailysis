@@ -1,16 +1,22 @@
 import React, { useState, useEffect } from "react";
-import styles from "../all-popups-styles.module.css"
+import styles from "../all-popups-styles.module.css";
 import Select from "react-select";
 import Popup from "../Popup.jsx";
+import { toast } from "react-toastify";
 
 import axios from "axios";
 
-import { handleInputChange, handleSelectChange } from "../../../utils/utils.js";
 import {
-  getAvailableLabTests,
+  handleInputChange,
+  handleSelectChange,
+  getTodayDate,
+  calculateAge,
+} from "../../../utils/utils.js";
+import {
   getAvailableSlots,
   rescheduleTechnicianAppointment,
 } from "../../../api/appointmentsApi.js";
+import { getAvailableLabTests } from "../../../api/labsApi.js";
 
 const PopupRescheduleTechnicianAppointment = ({
   onClose,
@@ -18,7 +24,7 @@ const PopupRescheduleTechnicianAppointment = ({
 }) => {
   // TOKENS & USER INFORMATION
   const token = localStorage.getItem("access");
-  
+  console.log("APDET", appointmentDetails);
   // POPUPS & NAVIGATION
   const [popupTrigger, setPopupTrigger] = useState(true);
 
@@ -52,22 +58,73 @@ const PopupRescheduleTechnicianAppointment = ({
 
   const handleRescheduleAppointment = async (e) => {
     e.preventDefault();
+
+    if (!formData.specialization) {
+      toast.warning("Please select specialization");
+      return;
+    }
+
+    if (!formData.labTechnicianId) {
+      toast.warning("Please select lab technician");
+      return;
+    }
+
+    if (!formData.appointmentDate) {
+      toast.warning("Please select date");
+      return;
+    }
+
+    if (!formData.slotId) {
+      toast.warning("Please select appointment slot");
+      return;
+    }
+
+    if (
+      !formData.requestedLabTests ||
+      formData.requestedLabTests.length === 0
+    ) {
+      toast.warning("Please select required lab test");
+      return;
+    }
+
     const payload = {
       lab_technician_id: formData.labTechnicianId,
       slot_id: formData.slotId,
       requested_lab_tests: formData.requestedLabTests,
       fee: formData.fee,
     };
+
     try {
       console.log("Sending this to update", payload);
-      await rescheduleTechnicianAppointment(
+      // Store the API response in a variable
+      const response = await rescheduleTechnicianAppointment(
         appointmentDetails.appointment_id,
         payload
       );
-      alert("Appointment Rescheduled Successfully");
+
+      // Check for success status (e.g. 200)
+      if (response.status === 200) {
+        toast.success("Appointment Rescheduled Successfully!", {
+          className: "custom-toast",
+        });
+        onClose(); // Close the popup
+      } else {
+        toast.error("Failed to reschedule appointment", {
+          className: "custom-toast",
+        });
+      }
     } catch (error) {
-      alert("Failed to reschedule appointment");
       console.error(error);
+      if (error.response) {
+        toast.error(
+          error.response.data.error || "Failed to reschedule appointment",
+          { className: "custom-toast" }
+        );
+      } else {
+        toast.error("Network Error", {
+          className: "custom-toast",
+        });
+      }
     }
   };
 
@@ -163,22 +220,26 @@ const PopupRescheduleTechnicianAppointment = ({
       onClose={onClose}
     >
       <div className={styles.formContainer}>
-        
         <div className={styles.headerSection}>
           <div className={styles.titleSection}>
-            <h2>Reschedule Your Appointment</h2> 
-            <p>Select a new appointment time and adjust other relevant details as needed.</p>
+            <h2>Reschedule Your Appointment</h2>
+            <p>
+              Select a new appointment time and adjust other relevant details as
+              needed.
+            </p>
           </div>
         </div>
 
         <hr />
 
         <form onSubmit={(e) => e.preventDefault()}>
-
           <div className={styles.popupBottom}>
             {/* Patient Information (Read-Only) */}
             <div className={styles.formSection}>
-              <h3><i className="fa-solid fa-circle fa-2xs"></i> Patient Information</h3>
+              <h3>
+                <i className="fa-solid fa-circle fa-2xs"></i> Patient
+                Information
+              </h3>
               <div className={styles.newFormGroup}>
                 <div>
                   <label>Name</label>
@@ -186,7 +247,9 @@ const PopupRescheduleTechnicianAppointment = ({
                     type="text"
                     name="patientName"
                     value={
-                      patient[0]?.first_name + " " + patient[0]?.last_name || ""
+                      appointmentDetails?.patient?.user?.first_name +
+                        " " +
+                        appointmentDetails?.patient?.user?.last_name || ""
                     }
                     disabled
                   />
@@ -196,7 +259,10 @@ const PopupRescheduleTechnicianAppointment = ({
                   <input
                     type="text"
                     name="age"
-                    value={patient[1]?.age || ""}
+                    value={
+                      calculateAge(appointmentDetails.patient?.date_of_birth) ||
+                      ""
+                    }
                     disabled
                   />
                 </div>
@@ -205,7 +271,7 @@ const PopupRescheduleTechnicianAppointment = ({
                   <input
                     type="tel"
                     name="phone"
-                    value={patient[0]?.phone || ""}
+                    value={appointmentDetails.patient?.user?.phone || "N/A"}
                     disabled
                   />
                 </div>
@@ -214,7 +280,7 @@ const PopupRescheduleTechnicianAppointment = ({
                   <input
                     type="text"
                     name="email"
-                    value={patient[0]?.email || ""}
+                    value={appointmentDetails.patient?.user?.email || ""}
                     disabled
                   />
                 </div>
@@ -227,8 +293,11 @@ const PopupRescheduleTechnicianAppointment = ({
 
             {/* Appointment Details */}
             <div className={styles.formSection}>
-              <h3><i className="fa-solid fa-circle fa-2xs"></i> Appointment Details</h3>
-                        
+              <h3>
+                <i className="fa-solid fa-circle fa-2xs"></i> Appointment
+                Details
+              </h3>
+
               <div className={styles.formGroup}>
                 <div>
                   <label>Specialization</label>
@@ -273,6 +342,7 @@ const PopupRescheduleTechnicianAppointment = ({
                     name="appointmentDate"
                     value={formData.appointmentDate}
                     onChange={onInputChange}
+                    min={getTodayDate()}
                   />
                 </div>
 
@@ -286,11 +356,13 @@ const PopupRescheduleTechnicianAppointment = ({
                     disabled={availableSlots.length === 0}
                   >
                     <option value="">
-                      {availableSlots.length ? "Select a Slot" : "No slots available"}
+                      {availableSlots.length
+                        ? "Select a Slot"
+                        : "No slots available"}
                     </option>
                     {availableSlots.map((slot, index) => (
                       <option key={index} value={slot.id}>
-                        {slot.slot_id} - {slot.end_time}
+                        {slot.start_time} - {slot.end_time}
                       </option>
                     ))}
                   </select>

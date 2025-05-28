@@ -5,6 +5,7 @@
   max-width: 1100px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
   position: relative;
+  height: 95vh;
   max-height: 95vh;
   overflow-y: hidden;
   top: -2%;
@@ -16,6 +17,7 @@
   align-items: flex-start;
   margin-bottom: 15px;
 }
+
 
 .titleSection h2 {
   font-size: 28px;
@@ -33,13 +35,17 @@
 
 
 .popupBottom {
+  max-height: 72vh;
   overflow-y: auto;
   scroll-behavior: smooth;
   overflow-x: hidden;
+  padding-right: 20px;
   margin-left: 20px;
+  padding-bottom: 20px;
 }
 
 .formSection {
+  display: block;
   margin: 30px 0 30px 0;
 }
 

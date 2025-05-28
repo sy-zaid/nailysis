@@ -1,5 +1,5 @@
 from django.db import models
-from users.models import Patient, Doctor, LabTechnician, ClinicAdmin
+from users.models import Patient, Doctor, LabTechnician, ClinicAdmin,LabAdmin
 from ehr.models import EHR
 from django.utils.timezone import now
 from datetime import datetime
@@ -74,6 +74,7 @@ class Appointment(models.Model):
         
     def mark_completed(self):
         """Mark appointment as Completed when the consultation is done."""
+        print("MARK COMPLETED")
         if self.status != "Completed":
             self.status = "Completed"
 
@@ -104,11 +105,12 @@ class Appointment(models.Model):
             self.save()
 
     def complete_appointment_with_ehr(self,ehr_data):
-        
+        print(f"Current status: {self.status}")
         """Handle the creation of EHR when appointment is Completed."""
         if self.status != 'Completed':  # Ensure appointment is not already completed
             
-
+            print("COMPLETING APP")
+            print(ehr_data[7])
             # Create EHR for the patient
             ehr_record = EHR.objects.create(
                 patient=self.patient,  # Assuming patient is available through the Appointment model
@@ -171,7 +173,6 @@ class Appointment(models.Model):
             return False  # Rescheduling failed
 
 
-
     def __str__(self):
         return f"Appointment {self.appointment_id} - {self.patient}"
 
@@ -227,7 +228,6 @@ class DoctorAppointment(Appointment):
     
     follow_up = models.BooleanField(default=False)
     fee = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    recommended_tests = models.JSONField(null=True,blank=True)
     
     # Field for linking every appointment with EHR record
     ehr = models.OneToOneField(EHR,on_delete=models.SET_NULL,blank=True, null=True,related_name="doc_appointment_ehr")
@@ -237,8 +237,6 @@ class DoctorAppointment(Appointment):
         if not self.fee:
             self.fee = DoctorAppointmentFee.get_fee(self.appointment_type) or 0.00
         super().save(*args, **kwargs)
-    
-
 
 class TechnicianAppointment(Appointment):
     """
@@ -299,7 +297,6 @@ class TechnicianAppointment(Appointment):
         """
         return f"Lab Appointment #{self.appointment_id} - Technician: {self.lab_technician}"
 
-
 class CancellationRequest(models.Model):
     STATUS_CHOICES = [
         ('Pending', 'Pending'),
@@ -324,5 +321,28 @@ class CancellationRequest(models.Model):
     def __str__(self):
         return f"Request by {self.doctor} for {self.appointment} - {self.status}"
     
+class TechnicianCancellationRequest(models.Model):
+    STATUS_CHOICES = [
+        ('Pending', 'Pending'),
+        ('Approved', 'Approved'),
+        ('Rejected', 'Rejected'),
+    ]
 
+    lab_technician = models.ForeignKey(LabTechnician, on_delete=models.CASCADE, related_name="tech_cancellation_requests")
+    appointment = models.ForeignKey(TechnicianAppointment, on_delete=models.CASCADE, related_name="tech_cancellation_requests")
+    reviewed_by = models.ForeignKey(LabAdmin, on_delete=models.SET_NULL, null=True, blank=True)
+    reason = models.TextField()
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='Pending')
+    requested_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['appointment'],
+                name='unique_technician_cancellation_request_per_appointment'
+            )
+        ]
+    def __str__(self):
+        return f"Request by {self.lab_technician} for {self.appointment} - {self.status}"
+    
 

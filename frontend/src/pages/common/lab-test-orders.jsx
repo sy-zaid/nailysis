@@ -5,12 +5,14 @@ import Header from "../../components/Dashboard/Header/Header";
 import PopupSelectTestOrder from "../../components/Popup/popups-labs/select-test-order-popup";
 import PopupViewTestOrder from "../../components/Popup/popups-labs/view-test-order-popup";
 import PopupDeleteTestOrder from "../../components/Popup/popups-labs/delete-test-order-popup";
+import PopupAllReportsList from "../../components/Popup/popups-labs/all-reports-list-popup";
+import { toast } from "react-toastify";
 
 import { getTestOrders } from "../../api/labsApi";
 
 import {
   getAccessToken,
-  getStatusClass, 
+  getStatusClass,
   getResultsClass,
   convertDjangoDateTime,
   handleClosePopup,
@@ -62,7 +64,6 @@ const TestOrders = () => {
   // Sort options: "last-updated" (default), "oldest", "price-asc", "price-desc"
   const [sortOption, setSortOption] = useState("last-updated");
 
-
   // ----- MAIN LOGIC FUNCTIONS
   const fetchTestOrders = async () => {
     try {
@@ -99,6 +100,13 @@ const TestOrders = () => {
           testOrderDetails={testOrderDetails}
         />
       );
+    } else if (action === "All Reports List") {
+      setPopupContent(
+        <PopupAllReportsList
+          patient_id={testOrderDetails?.lab_technician_appointment?.patient?.user?.user_id}
+          onClose={handleClosePopup}
+        />
+      );
     }
     setShowPopup(true);
   };
@@ -129,8 +137,7 @@ const TestOrders = () => {
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
-    return () =>
-      document.removeEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   // Fetch test orders on mount or when popup closes
@@ -148,8 +155,7 @@ const TestOrders = () => {
     // Filter based on activeFilter
     if (activeFilter === "Scheduled Appointments") {
       data = data.filter(
-        (order) =>
-          order.lab_technician_appointment?.status === "Scheduled"
+        (order) => order.lab_technician_appointment?.status === "Scheduled"
       );
     } else if (activeFilter === "Pending Tests") {
       data = data.filter((order) => order.test_status === "Pending");
@@ -161,14 +167,22 @@ const TestOrders = () => {
     // Search filter (across all fields)
     if (searchQuery) {
       data = data.filter((order) => {
-        const firstName = order.lab_technician_appointment?.patient?.user?.first_name || "";
-        const lastName = order.lab_technician_appointment?.patient?.user?.last_name || "";
+        const firstName =
+          order.lab_technician_appointment?.patient?.user?.first_name || "";
+        const lastName =
+          order.lab_technician_appointment?.patient?.user?.last_name || "";
         const fullName = `${firstName} ${lastName}`.toLowerCase();
 
-        const technician = order.lab_technician_appointment?.technician_name?.toLowerCase() || "";
+        const technician =
+          order.lab_technician_appointment?.technician_name?.toLowerCase() ||
+          "";
         const orderId = String(order.id);
-        const testNames = order.test_types.map((test) => test.label).join(", ").toLowerCase();
-        const status = order.lab_technician_appointment?.status?.toLowerCase() || "";
+        const testNames = order.test_types
+          .map((test) => test.label)
+          .join(", ")
+          .toLowerCase();
+        const status =
+          order.lab_technician_appointment?.status?.toLowerCase() || "";
         const testStatus = order.test_status?.toLowerCase() || "";
         const price = String(order.lab_technician_appointment?.fee || "");
         const resultStatus = order.results_available ? "yes" : "no";
@@ -186,27 +200,24 @@ const TestOrders = () => {
       });
     }
 
-
     // Sorting
     if (sortOption === "last-updated") {
       // Latest first (descending by updated_at)
-      data.sort(
-        (a, b) => new Date(b.updated_at) - new Date(a.updated_at)
-      );
+      data.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
     } else if (sortOption === "oldest") {
       // Oldest first (ascending by updated_at)
-      data.sort(
-        (a, b) => new Date(a.updated_at) - new Date(b.updated_at)
-      );
+      data.sort((a, b) => new Date(a.updated_at) - new Date(b.updated_at));
     } else if (sortOption === "price-asc") {
       data.sort(
         (a, b) =>
-          (a.lab_technician_appointment?.fee || 0) - (b.lab_technician_appointment?.fee || 0)
+          (a.lab_technician_appointment?.fee || 0) -
+          (b.lab_technician_appointment?.fee || 0)
       );
     } else if (sortOption === "price-desc") {
       data.sort(
         (a, b) =>
-          (b.lab_technician_appointment?.fee || 0) - (a.lab_technician_appointment?.fee || 0)
+          (b.lab_technician_appointment?.fee || 0) -
+          (a.lab_technician_appointment?.fee || 0)
       );
     }
 
@@ -236,12 +247,11 @@ const TestOrders = () => {
   }, [menuOpen]);
 
   const inProgressCount = filteredTestOrders.filter(
-    order => order.test_status === "In Progress"
+    (order) => order.test_status === "In Progress"
   ).length;
   const completedCount = filteredTestOrders.filter(
-    order => order.test_status === "Completed"
+    (order) => order.test_status === "Completed"
   ).length;
-  
 
   return (
     <div className={styles.pageContainer}>
@@ -258,7 +268,12 @@ const TestOrders = () => {
         <div className={styles.appointmentsContainer}>
           {/* Filters */}
           <div className={styles.filters}>
-            {["All", "Scheduled Appointments", "Pending Tests", "Review Required"].map((filter, index) => (
+            {[
+              "All",
+              "Scheduled Appointments",
+              "Pending Tests",
+              "Review Required",
+            ].map((filter, index) => (
               <button
                 key={index}
                 className={`${styles.filterButton} ${
@@ -269,9 +284,10 @@ const TestOrders = () => {
                 {filter}
               </button>
             ))}
-                <p>
-                  Total Records: {filteredTestOrders.length} | In-Progress: {inProgressCount} | Completed: {completedCount}
-                </p>
+            <p>
+              Total Records: {filteredTestOrders.length} | In-Progress:{" "}
+              {inProgressCount} | Completed: {completedCount}
+            </p>
           </div>
 
           {/* Controls: Bulk Action, Sorting and Search */}
@@ -280,7 +296,11 @@ const TestOrders = () => {
               <select className={styles.bulkAction}>
                 <option>Bulk Action: Delete</option>
               </select>
-              <select className={styles.sortBy} onChange={handleSortChange} value={sortOption}>
+              <select
+                className={styles.sortBy}
+                onChange={handleSortChange}
+                value={sortOption}
+              >
                 <option value="last-updated">Sort By: Last Updated</option>
                 <option value="oldest">Sort By: Oldest First</option>
                 <option value="price-asc">Price (Low to High)</option>
@@ -326,8 +346,14 @@ const TestOrders = () => {
                       <td data-label="#">{index + 1}</td>
                       <td data-label="Order ID">{row.id}</td>
                       <td data-label="Patient Name">
-                        {row.lab_technician_appointment?.patient?.user?.first_name}{" "}
-                        {row.lab_technician_appointment?.patient?.user?.last_name}
+                        {
+                          row.lab_technician_appointment?.patient?.user
+                            ?.first_name
+                        }{" "}
+                        {
+                          row.lab_technician_appointment?.patient?.user
+                            ?.last_name
+                        }
                       </td>
                       <td data-label="Technician Name">
                         {row.lab_technician_appointment?.technician_name}
@@ -350,7 +376,10 @@ const TestOrders = () => {
                       </td>
                       <td
                         data-label="Status"
-                        className={getStatusClass(row.lab_technician_appointment.status, styles)}
+                        className={getStatusClass(
+                          row.lab_technician_appointment.status,
+                          styles
+                        )}
                       >
                         {row.lab_technician_appointment.status}
                       </td>
@@ -361,7 +390,12 @@ const TestOrders = () => {
                         {row.test_status}
                       </td>
                       <td data-label="Status">
-                        <span className={getResultsClass(row.results_available, styles)}>
+                        <span
+                          className={getResultsClass(
+                            row.results_available,
+                            styles
+                          )}
+                        >
                           {row.results_available ? "Yes" : "No"}
                         </span>
                       </td>
@@ -369,7 +403,13 @@ const TestOrders = () => {
                       <td>
                         <button
                           onClick={(event) =>
-                            toggleActionMenu(row.id, menuOpen, setMenuOpen, setMenuPosition, event)
+                            toggleActionMenu(
+                              row.id,
+                              menuOpen,
+                              setMenuOpen,
+                              setMenuPosition,
+                              event
+                            )
                           }
                           className={styles.moreActionsBtn}
                         >
@@ -388,38 +428,67 @@ const TestOrders = () => {
                               top: `${menuPosition.top}px`,
                               left: `${menuPosition.left - 20}px`,
                               position: "absolute",
-                            }} 
+                            }}
                           >
                             <ul>
-                              {row.lab_technician_appointment.status === "Completed" && (
-                                <li onClick={() => handleActionClick("Process Test Order", row)}>
-                                  <i className="fa-solid fa-repeat"></i> Process Test Order
-                                </li>
-                              )}
-                              <li onClick={() => handleActionClick("Edit Details", row)}>
-                                <i className="fa-solid fa-pen"></i> Edit Details
-                              </li>
+                                {curUser[0].role === "lab_technician" &&
+                                  row.lab_technician_appointment.status === "Completed" && (
+                                    <li onClick={() => handleActionClick("Process Test Order", row)}>
+                                      <i className="fa-solid fa-repeat"></i> Process Test Order
+                                    </li>
+                                )}
+                                {(curUser[0].role === "lab_technician" || curUser[0].role === "lab_admin") && (
+                                  <li onClick={() => handleActionClick("Edit Details", row)}>
+                                    <i className="fa-solid fa-pen"></i> Edit Details
+                                  </li>
+                                )}
                               {curUser[0].role === "lab_admin" && (
                                 <>
-                                  <li onClick={() => handleActionClick("View Test Order", row)}>
-                                    <i className="fa-solid fa-eye"></i>{" "}
-                                    View Order
+                                  <li
+                                    onClick={() =>
+                                      handleActionClick("View Test Order", row)
+                                    }
+                                  >
+                                    <i className="fa-solid fa-eye"></i> View
+                                    Order
                                   </li>
-                                  <li onClick={() => handleActionClick("Download as PDF", row)}>
-                                    <i className="fa-regular fa-file-pdf"></i> Download as PDF
+                                  <li
+                                    onClick={() =>
+                                      handleActionClick("Download as PDF", row)
+                                    }
+                                  >
+                                    <i className="fa-regular fa-file-pdf"></i>{" "}
+                                    Download as PDF
                                   </li>
-                                  <li onClick={() => handleActionClick("Print Code", row)}>
+                                  <li
+                                    onClick={() =>
+                                      handleActionClick("Print Code", row)
+                                    }
+                                  >
                                     <i className="bx bx-qr-scan"></i> Print Code
                                   </li>
-                                  <li onClick={() => handleActionClick("Delete Order", row)}>
-                                    <i class="fa-solid fa-trash"></i>{" "}
-                                    Delete Order
+                                  <li
+                                    onClick={() =>
+                                      handleActionClick("Delete Order", row)
+                                    }
+                                  >
+                                    <i class="fa-solid fa-trash"></i> Delete
+                                    Order
                                   </li>
                                 </>
                               )}
                               {curUser[0].role !== "lab_admin" && (
                                 // If needed, add additional actions for other roles
-                                <></>
+                                <>
+                                  <li
+                                    onClick={() =>
+                                      handleActionClick("All Reports List", row)
+                                    }
+                                  >
+                                    <i class="fa-solid fa-eye"></i>View All
+                                    Reports
+                                  </li>
+                                </>
                               )}
                             </ul>
                           </div>

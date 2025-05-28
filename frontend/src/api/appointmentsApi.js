@@ -7,12 +7,19 @@ export const getLabTechnicianAppointments = async () => {
   const url = `${API_URL}/api/lab_technician_appointments/`;
   return axios.get(url, getHeaders());
 };
-
-export const getAvailableLabTests = async () => {
-  const url = `${API_URL}/api/test_types/`;
+export const getRecommendedTests = async (email_or_id, userRole) => {
+  if (userRole === "lab_admin") {
+    const url = `${API_URL}/api/ehr_records/recommended_tests/?email=${email_or_id}`;
+    return axios.get(url, getHeaders());
+  } else if (userRole === "patient") {
+    const url = `${API_URL}/api/ehr_records/recommended_tests/?patient=${email_or_id}`;
+    return axios.get(url, getHeaders());
+  }
+};
+export const getDoctorAppointments = async () => {
+  const url = `${API_URL}/api/doctor_appointments/`;
   return axios.get(url, getHeaders());
 };
-
 export const bookAppointment = (appointmentData) => {
   const url = `${API_URL}/api/doctor_appointments/book_appointment/`;
   return axios.post(url, appointmentData, getHeaders());
@@ -98,5 +105,5 @@ export const cancelTechnicianAppointment = async (appointmentId) => {
 
 export const completeTechnicianAppointment = async (appointmentId) => {
   const url = `${API_URL}/api/lab_technician_appointments/${appointmentId}/complete_appointment/`;
-  return axios.post(url, {},getHeaders());
+  return axios.post(url, {}, getHeaders());
 };

@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import styles from "../common/all-pages-styles.module.css";
+import mediaStyles from "../common/media.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import Header from "../../components/Dashboard/Header/Header";
 import PopupDoctorAppointmentBook from "../../components/Popup/popups-doctor-appointments/doctor-appointment-book-popup";
@@ -26,7 +27,10 @@ const AppointmentPatients = () => {
   const [activeFilter, setActiveFilter] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   // Set default sort to appointment date (latest first)
-  const [sortConfig, setSortConfig] = useState({ key: "date", direction: "desc" });
+  const [sortConfig, setSortConfig] = useState({
+    key: "date",
+    direction: "desc",
+  });
   const [selectAll, setSelectAll] = useState(false);
   const [selectedAppointments, setSelectedAppointments] = useState({});
 
@@ -97,9 +101,16 @@ const AppointmentPatients = () => {
 
     const searchValue = searchQuery.toLowerCase();
     const matchesSearch =
-      appointment.appointment_id?.toString().toLowerCase().includes(searchValue) ||
-      appointment.doctor?.user?.first_name?.toLowerCase().includes(searchValue) ||
-      appointment.doctor?.user?.last_name?.toLowerCase().includes(searchValue) ||
+      appointment.appointment_id
+        ?.toString()
+        .toLowerCase()
+        .includes(searchValue) ||
+      appointment.doctor?.user?.first_name
+        ?.toLowerCase()
+        .includes(searchValue) ||
+      appointment.doctor?.user?.last_name
+        ?.toLowerCase()
+        .includes(searchValue) ||
       appointment.doctor?.specialization?.toLowerCase().includes(searchValue) ||
       appointment.time_slot?.slot_date?.toLowerCase().includes(searchValue) ||
       appointment.time_slot?.start_time?.toLowerCase().includes(searchValue) ||
@@ -109,7 +120,10 @@ const AppointmentPatients = () => {
       (appointment.fee &&
         `PKR ${appointment.fee}`.toLowerCase().includes(searchValue)) ||
       (appointment.doctor?.years_of_experience &&
-        appointment.doctor?.years_of_experience.toString().toLowerCase().includes(searchValue)) ||
+        appointment.doctor?.years_of_experience
+          .toString()
+          .toLowerCase()
+          .includes(searchValue)) ||
       appointment.notes?.toLowerCase().includes(searchValue);
 
     return matchesSearch;
@@ -189,8 +203,12 @@ const AppointmentPatients = () => {
 
   return (
     <div className={styles.pageContainer}>
-      {showDoctorPopup && <PopupDoctorAppointmentBook onClose={handleCloseDoctorPopup} />}
-      {showLabPopup && <PopupTechnicianAppointmentBook onClose={handleCloseLabPopup} />}
+      {showDoctorPopup && (
+        <PopupDoctorAppointmentBook onClose={handleCloseDoctorPopup} />
+      )}
+      {showLabPopup && (
+        <PopupTechnicianAppointmentBook onClose={handleCloseLabPopup} />
+      )}
 
       <AppointmentDetailsPopup></AppointmentDetailsPopup>
 
@@ -210,7 +228,9 @@ const AppointmentPatients = () => {
             {["All", "Scheduled", "Emergency Visit", "Today"].map((filter) => (
               <button
                 key={filter}
-                className={`${styles.filterButton} ${activeFilter === filter ? styles.active : ""}`}
+                className={`${styles.filterButton} ${
+                  activeFilter === filter ? styles.active : ""
+                }`}
                 onClick={() => setActiveFilter(filter)}
               >
                 {filter}
@@ -218,20 +238,18 @@ const AppointmentPatients = () => {
             ))}
             <p>
               Total Records: {filteredAppointments.length} | Scheduled:{" "}
-              {filteredAppointments.filter((app) => app.status === "Scheduled").length}
+              {
+                filteredAppointments.filter((app) => app.status === "Scheduled")
+                  .length
+              }
             </p>
 
             <div className={styles.appointmentButtons}>
-              <button className={styles.addButton}>
-                <i className="fa-solid fa-download"></i> Download Visit Summary
-              </button>
-
-              <button className={styles.addButton} onClick={handleOpenDoctorPopup}>
+              <button
+                className={styles.addButton}
+                onClick={handleOpenDoctorPopup}
+              >
                 <i className="bx bx-plus-circle"></i> Book Doctor Appointment
-              </button>
-
-              <button className={styles.addButton} onClick={handleOpenLabPopup}>
-                <i className="bx bx-plus-circle"></i> Book Lab Technician Appointment
               </button>
             </div>
           </div>
@@ -251,12 +269,20 @@ const AppointmentPatients = () => {
                 }}
               >
                 <option value="">Sort By: None</option>
-                <option value="experience-asc">Doctor Experience (Low to High)</option>
-                <option value="experience-desc">Doctor Experience (High to Low)</option>
+                <option value="experience-asc">
+                  Doctor Experience (Low to High)
+                </option>
+                <option value="experience-desc">
+                  Doctor Experience (High to Low)
+                </option>
                 <option value="fee-asc">Fee (Low to High)</option>
                 <option value="fee-desc">Fee (High to Low)</option>
-                <option value="date-asc">Appointment Date (Oldest First)</option>
-                <option value="date-desc">Appointment Date (Latest First)</option>
+                <option value="date-asc">
+                  Appointment Date (Oldest First)
+                </option>
+                <option value="date-desc">
+                  Appointment Date (Latest First)
+                </option>
               </select>
 
               <input
@@ -309,9 +335,12 @@ const AppointmentPatients = () => {
                         {row.doctor?.user?.first_name || "No first name"}{" "}
                         {row.doctor?.user?.last_name || "No last name"}
                       </td>
-                      <td>{row.doctor?.specialization || "No specialization"}</td>
                       <td>
-                        {row.time_slot?.slot_date} | {row.time_slot?.start_time} - {row.time_slot?.end_time}
+                        {row.doctor?.specialization || "No specialization"}
+                      </td>
+                      <td>
+                        {row.time_slot?.slot_date} | {row.time_slot?.start_time}{" "}
+                        - {row.time_slot?.end_time}
                       </td>
                       <td>{row.appointment_type || "N/A"}</td>
                       <td>{row.status}</td>

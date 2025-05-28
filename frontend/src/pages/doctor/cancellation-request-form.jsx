@@ -16,6 +16,8 @@
 import React, { useState } from "react";
 import axios from "axios";
 import Popup from "../../components/Popup/Popup"; // Reusable Popup component
+import { toast } from "react-toastify";
+import styles from "../lab-technician/cancellation-request-form.module.css";
 
 /**
  * CancellationRequestForm Component
@@ -43,7 +45,7 @@ const CancellationRequestForm = ({ appointmentId, onClose }) => {
     e.preventDefault();
 
     if (!reason.trim()) {
-      setError("Please provide a reason for cancellation.");
+      toast.warning("Please Provide A Reason For Cancellation", { className: "custom-toast" });
       return;
     }
 
@@ -58,46 +60,78 @@ const CancellationRequestForm = ({ appointmentId, onClose }) => {
         }
       );
 
-      setMessage(response.data.message); // Success message from the API
-      setError(""); // Clear any previous errors
+      toast.success("Cancellation Request Sent successfully!", {
+        className: "custom-toast",
+      });
+      onClose(); // Close the popup
     } catch (err) {
-      setError("Failed to submit cancellation request. Please try again.");
-      setMessage(""); // Clear success message on failure
+      console.log(err);
+      if (err.response) {
+        toast.error(err.response.data.error || "Failed to Submit Cancellation Request. Please Try Again.", {
+          className: "custom-toast",
+        });
+      } else {
+        toast.error("Network Error", {className: "custom-toast"})
+      }
     }
   };
 
   return (
     <Popup trigger={popupTrigger} setTrigger={setPopupTrigger} onClose={onClose}>
-      <div>
-        <h2>Request Appointment Cancellation</h2>
-        {message && <div className="success">{message}</div>}
-        {error && <div className="error">{error}</div>}
-
-        {/* Cancellation form */}
-        <form onSubmit={handleSubmit}>
-          <div>
-            <label htmlFor="reason">Reason for Cancellation:</label>
-            <textarea
-              id="reason"
-              value={reason}
-              onChange={(e) => setReason(e.target.value)}
-              required
-            />
+      <div className={styles.formContainer}>
+        <div className={styles.headerSection}>
+          <div className={styles.titleSection}>
+            <h2 style={{ marginLeft: "20px" }}>Request Appointment Cancellation</h2>
+            <p style={{ marginLeft: "20px" }}>
+              Please provide a reason for requesting cancellation of this
+              appointment.
+            </p>
           </div>
-          <button type="submit">Submit Cancellation Request</button>
-        </form>
+        </div>
+
+        <hr />
+
+        <div className={styles.popupBottom}>
+          {message && <div className={styles.success}>{message}</div>}
+          {error && <div className={styles.error}>{error}</div>}
+
+          <div className={styles.formSection}>
+            <h3>
+              <i className="fa-solid fa-circle fa-2xs"></i> Cancellation Request
+              Details
+            </h3>
+
+            <form onSubmit={handleSubmit}>
+              <div>
+                <label htmlFor="reason" style={{ marginLeft: "26px" }}>
+                  Reason for Cancellation:
+                </label>
+                <textarea
+                  id="reason"
+                  value={reason}
+                  onChange={(e) => setReason(e.target.value)}
+                  placeholder="Please explain in detail why you need to cancel this appointment..."
+                  required
+                  style={{ marginLeft: "26px", width: "calc(100% - 52px)" }}
+                />
+              </div>
+
+              <div className={styles.actions}>
+                <button type="submit">Submit Request</button>
+                <button
+                  type="button"
+                  className={styles.cancelButton}
+                  onClick={onClose}
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       </div>
     </Popup>
   );
 };
 
 export default CancellationRequestForm;
-
-/**
- * USAGE:
- * 
- * <CancellationRequestForm appointmentId="12345" />
- * 
- * This component should be used in a page where doctors or staff can request 
- * appointment cancellations, and it will send the request to the backend API.
- */

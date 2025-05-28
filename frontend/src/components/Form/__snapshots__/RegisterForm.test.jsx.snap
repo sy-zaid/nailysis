@@ -1,0 +1,238 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`RegisterForm Snapshots matches snapshot 1`] = `
+<div
+  class="form"
+>
+  <section
+    class="main scrollablediv"
+  >
+    <h2>
+      Create Your Account
+    </h2>
+    <form
+      class="form-container"
+    >
+      <div
+        class="inputRow"
+      >
+        <div
+          class="inputGroup halfWidth"
+        >
+          <label
+            for="first_name"
+          >
+            First Name
+          </label>
+          <input
+            id="first_name"
+            placeholder="Enter your first name"
+            required=""
+            type="text"
+            value=""
+          />
+        </div>
+        <div
+          class="inputGroup halfWidth"
+        >
+          <label
+            for="last_name"
+          >
+            Last Name
+          </label>
+          <input
+            id="last_name"
+            placeholder="Enter your last name"
+            required=""
+            type="text"
+            value=""
+          />
+        </div>
+      </div>
+      <div
+        class="inputGroup"
+      >
+        <label
+          for="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          placeholder="Enter your email"
+          required=""
+          type="email"
+          value=""
+        />
+      </div>
+      <div
+        class="inputGroup"
+      >
+        <label
+          for="phone"
+        >
+          Phone
+        </label>
+        <input
+          id="phone"
+          placeholder="Enter your phone number"
+          required=""
+          type="tel"
+          value=""
+        />
+      </div>
+      <div
+        class="inputGroup"
+      >
+        <label
+          for="date_of_birth"
+        >
+          Date of Birth
+        </label>
+        <input
+          id="date_of_birth"
+          required=""
+          type="date"
+          value=""
+        />
+      </div>
+      <div
+        class="inputGroup"
+      >
+        <label>
+          Gender
+        </label>
+        <div
+          class="radioGroup"
+        >
+          <label
+            for="male"
+          >
+            <input
+              id="male"
+              name="gender"
+              required=""
+              type="radio"
+              value="M"
+            />
+            Male
+          </label>
+          <label
+            for="female"
+          >
+            <input
+              id="female"
+              name="gender"
+              required=""
+              type="radio"
+              value="F"
+            />
+            Female
+          </label>
+          <label
+            for="other"
+          >
+            <input
+              id="other"
+              name="gender"
+              required=""
+              type="radio"
+              value="O"
+            />
+            Other
+          </label>
+          <label
+            for="preferNotToSay"
+          >
+            <input
+              id="preferNotToSay"
+              name="gender"
+              required=""
+              type="radio"
+              value="P"
+            />
+            Prefer Not to Say
+          </label>
+        </div>
+      </div>
+      <div
+        class="inputGroup"
+      >
+        <label
+          for="address"
+        >
+          Address
+        </label>
+        <textarea
+          id="address"
+          placeholder="Enter your full address"
+          required=""
+          style="all: unset; display: block; width: 98%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem; line-height: 1.5; background-color: rgb(255, 255, 255); color: rgb(0, 0, 0); overflow-y: none;"
+        />
+      </div>
+      <div
+        class="inputGroup"
+      >
+        <label
+          for="emergency_contact"
+        >
+          Emergency Contact
+        </label>
+        <input
+          id="emergency_contact"
+          placeholder="Enter emergency contact number"
+          required=""
+          type="tel"
+          value=""
+        />
+      </div>
+      <div
+        class="inputGroup"
+      >
+        <label
+          for="password"
+        >
+          Password
+        </label>
+        <input
+          id="password"
+          placeholder="Enter your password"
+          required=""
+          type="password"
+          value=""
+        />
+      </div>
+      <div
+        class="inputGroup"
+      >
+        <label
+          for="confirm_password"
+        >
+          Confirm Password
+        </label>
+        <input
+          id="confirm_password"
+          placeholder="Confirm your password"
+          required=""
+          type="password"
+          value=""
+        />
+      </div>
+      <button
+        class="submitButton"
+        type="submit"
+      >
+        Submit
+      </button>
+    </form>
+    <p>
+      or
+    </p>
+    <div
+      data-testid="social-login"
+    >
+      Social Login Component
+    </div>
+  </section>
+</div>
+`;

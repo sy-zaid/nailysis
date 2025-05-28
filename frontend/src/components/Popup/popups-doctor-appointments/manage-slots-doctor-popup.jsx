@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Popup from "../Popup.jsx";
 import useCurrentUserData from "../../../useCurrentUserData.jsx";
-import { getHeaders } from "../../../utils/utils.js";
+import { getHeaders, getTodayDate, } from "../../../utils/utils.js";
 import styles from "./manage-slots-popup.module.css";
+import { toast } from "react-toastify";
 
 const ManageSlotsPopup = ({ onClose }) => {
   const [popupTrigger, setPopupTrigger] = useState(true);
@@ -40,7 +41,13 @@ const ManageSlotsPopup = ({ onClose }) => {
 
   const generateSlots = () => {
     if (!startTime || !endTime || !slotDuration) {
-      alert("Please enter all time fields.");
+      toast.warning("Please enter all time fields.");
+      return;
+    }
+
+    const slotDur = parseInt(slotDuration, 10);
+    if (slotDur <= 0) {
+      toast.warning("Slot duration must be greater than 0 minutes.");
       return;
     }
 
@@ -69,6 +76,7 @@ const ManageSlotsPopup = ({ onClose }) => {
 
     console.log("Generated Slots:", slots);
     setCalculatedSlots(slots);
+    toast.success("Slots generated successfully!");
   };
 
   const handleSubmit = async (event) => {
@@ -81,12 +89,12 @@ const ManageSlotsPopup = ({ onClose }) => {
       !endTime ||
       !slotDuration
     ) {
-      alert("Please fill all fields.");
+      toast.warning("Please fill all fields.");
       return;
     }
 
     if (calculatedSlots.length === 0) {
-      alert("Invalid slot configuration.");
+      toast.warning("Invalid slot configuration.");
       return;
     }
 
@@ -126,11 +134,29 @@ const ManageSlotsPopup = ({ onClose }) => {
         payload,
         getHeaders()
       );
-      alert("Availability set successfully!");
+      toast.success("Availability set successfully!", {className: "custom-toast",});
+      onClose();
     } catch (error) {
       console.error("Error setting availability:", error);
+      if (error.response) {
+        toast.error(error.response.data.error || "Failed to book appointment", {
+          className: "custom-toast",
+        });
+      } 
     }
   };
+
+  const getMonthValue = (offset = 0) => {
+    const now = new Date();
+    now.setMonth(now.getMonth() + offset);
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    return `${year}-${month}`;
+  };
+  
+  const minMonth = getMonthValue(0); 
+  const maxMonth = getMonthValue(2); 
+  
 
   return (
     <Popup
@@ -149,6 +175,8 @@ const ManageSlotsPopup = ({ onClose }) => {
               onChange={(e) => setMonth(e.target.value)}
               required
               className={styles.formInput}
+              min={minMonth}
+              max={maxMonth}
             />
           </div>
 

@@ -1,50 +1,54 @@
-import React, { useState } from "react";
 import Popup from "../Popup.jsx";
 import styles from "./popup-feedback.module.css";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+const API_BASE_URL = "http://localhost:8000/api/feedback_reponse";
+
+import {
+  calculateAge,
+  getAccessToken,
+  getRole,
+  handleInputChange,
+} from "../../../utils/utils.js";
 import { getStatusClass } from "../../../utils/utils.js";
 
-const FeedbackDetails = ({ onClose }) => {
+const FeedbackDetails = ({ onClose, recordDetails }) => {
+  console.log("Record Details", recordDetails)
   const [popupTrigger, setPopupTrigger] = useState(true);
   const [status, setStatus] = useState("Resolved");
+  const token = getAccessToken();
+  const feedbackId = recordDetails?.id;
+  const [feedback, setFeedback] = useState([]);
 
-  // Static feedback data (2 sample rows)
-  const data = [
-    {
-        id: 1,
-        feedbackID: "123456",
-        feedbackBy: "John",
-        role: "patient",
-        dateAndTimeofFeedback: "10/10/2024 09:30 AM",
-        category: "Service Issues",
-        feedbackComments: "Lorem Ipsum è un testo segnaposto utilizzato nel settore ...",
-        response: "xyz lorem ipsum",
-        respondedBy: "CA/LA",
-        status: "Resolved",
-    },
 
-    {
-        id: 2,
-        feedbackID: "123456",
-        feedbackBy: "John",
-        role: "patient",
-        dateAndTimeofFeedback: "10/10/2024 09:30 AM",
-        category: "Technical Issues",
-        feedbackComments: "Lorem Ipsum è un testo segnaposto utilizzato nel settore ...",
-        response: "N/a",
-        respondedBy: "N/a",
-        status: "Pending",
-    },
-  ];
+  // Fetch feedback details when the popup opens
+  useEffect(() => {
+    const fetchFeedbackDetails = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/${feedbackId}/`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setFeedback(response.data);
+      } catch (error) {
+        console.error("Error fetching feedback details:", error);
+      }
+    };
+
+    if (feedbackId) {
+      fetchFeedbackDetails();
+    }
+  }, [feedbackId, token]);
 
 
   // Using the first feedback entry for display (for now)
-  const feedback = data[0];
 
   const handleResponse = () => {
     console.log("Response Submitted:", { response, status });
   };
 
- 
+
 
   return (
     <Popup trigger={popupTrigger} setTrigger={setPopupTrigger} onClose={onClose}>
@@ -54,7 +58,7 @@ const FeedbackDetails = ({ onClose }) => {
         <div className={styles.headerSection}>
 
           <div className={styles.titleSection}>
-            <h2 style={{ marginLeft: "20px" }}>Feedback Details</h2> 
+            <h2 style={{ marginLeft: "20px" }}>Feedback Details</h2>
             <p style={{ marginLeft: "20px" }}>View feedback details to understand user concerns and improve service quality.</p>
           </div>
 
@@ -63,81 +67,99 @@ const FeedbackDetails = ({ onClose }) => {
         <hr />
 
         <p className={styles.newSubHeading}>
-            <span className={styles.key} style={{margin: "0 0 0 20px"}}> <i className="fa-solid fa-circle-notch" style={{ fontSize: "14px" }}></i> Status: </span>
-            <span className={getStatusClass(status, styles)} style={{ fontSize: "16px" }}>{feedback.status}</span>
+          <span className={styles.key} style={{ margin: "0 0 0 20px" }}> <i className="fa-solid fa-circle-notch" style={{ fontSize: "14px" }}></i> Status: </span>
+          <span className={getStatusClass(status, styles)} style={{ fontSize: "16px" }}>{recordDetails?.status}</span>
 
-            <span className={styles.key} style={{margin: "0 0 0 20px"}}> <i class='bx bx-calendar-alt'></i> Date Submitted: </span>
-            <span className={styles.locationValue}>{feedback.dateAndTimeofFeedback}</span>
+          <span className={styles.key} style={{ margin: "0 0 0 20px" }}> <i class='bx bx-calendar-alt'></i> Date Submitted: </span>
+          <span className={styles.locationValue}>{new Date(recordDetails?.date_submitted).toLocaleString("en-US", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+          })}</span>
 
-            <span className={styles.key} style={{margin: "0 0 0 20px"}}> <i class='bx bx-calendar-check' ></i> Date Responded: </span>
-            <span className={styles.locationValue}>10/10/2024 09:30 AM</span>
+          <span className={styles.key} style={{ margin: "0 0 0 20px" }}> <i class='bx bx-calendar-check' ></i> Date Responded: </span>
+          <span className={styles.locationValue}>
+            {recordDetails?.response?.date_submitted
+              ? new Date(recordDetails.response.date_submitted).toLocaleString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+              })
+              : "N/A"}
+          </span>
         </p>
 
         <div className={styles.popupBottom}>
 
           <div className={styles.formSection}>
-                    <h3><i className="fa-solid fa-circle fa-2xs"></i> Feedback Submitted By</h3>
-                    <div className={styles.newFormGroup}>
-                      <div>
-                        <label>Patient ID</label>
-                        <p className={styles.subHeading}>123456</p>
-                      </div>
-                      <div>
-                        <label>Patient Name</label>
-                        <p className={styles.subHeading}>Mr. John Doe</p>
-                      </div>
-                      <div>
-                        <label>Age</label>
-                        <p className={styles.subHeading}>32</p>
-                      </div>
-                      <div>
-                        <label>Gender</label>
-                        <p className={styles.subHeading}>Male</p>
-                      </div>
-                      <div>
-                        <label>Phone Number</label>
-                        <p className={styles.subHeading}>+92 12345678</p>
-                      </div>
+            <h3><i className="fa-solid fa-circle fa-2xs"></i> Feedback Submitted By</h3>
+            <div className={styles.newFormGroup}>
+              <div>
+                <label>Patient ID</label>
+                <p className={styles.subHeading}>{recordDetails?.user?.user_id}</p>
+              </div>
+              <div>
+                <label>Patient Name</label>
+                <p className={styles.subHeading}>{recordDetails?.user?.first_name}{" "}{recordDetails?.user?.last_name}</p>
+              </div>
+              <div>
+                <label>Age</label>
+                <p className={styles.subHeading}>{calculateAge(recordDetails?.user?.patient?.date_of_birth) || "N/A"}</p>
+              </div>
+              <div>
+                <label>Gender</label>
+                <p className={styles.subHeading}>{recordDetails?.user?.patient?.gender || "N/A"}</p>
+              </div>
+              <div>
+                <label>Phone Number</label>
+                <p className={styles.subHeading}>{recordDetails?.user?.phone || "N/A"}</p>
+              </div>
 
-                      <div>
-                        <label>Email Address</label>
-                        <p className={styles.subHeading}>patient@gmail.com</p>
-                      </div>
+              <div>
+                <label>Email Address</label>
+                <p className={styles.subHeading}>{recordDetails?.user?.email || "N/A"}</p>
+              </div>
 
-                    </div>
+            </div>
           </div>
 
           <hr />
 
           <div className={styles.formSection}>
-              <h3><i className="fa-solid fa-circle fa-2xs"></i> Comments/Feedback</h3>
+            <h3><i className="fa-solid fa-circle fa-2xs"></i> Comments/Feedback</h3>
+            <div>
               <div>
-                <div>
-                  <textarea defaultValue="Very good technician" disabled></textarea>
-                </div>
+                <textarea value={recordDetails?.description || "No feedback yet"} disabled></textarea>
               </div>
+            </div>
           </div>
 
           <hr />
 
           <div className={styles.formSection}>
-              <h3><i className="fa-solid fa-circle fa-2xs"></i> Response By Clinic Admin/Lab Admin</h3>
+            <h3><i className="fa-solid fa-circle fa-2xs"></i> Response By Clinic Admin/Lab Admin</h3>
+            <div>
               <div>
-                <div>
-                  <textarea defaultValue="Thank You!" disabled></textarea>
-                </div>
+                <textarea value={recordDetails?.response?.description || "No response yet"} disabled></textarea>
               </div>
+            </div>
           </div>
 
           <hr />
 
           <div className={styles.actions}>
 
-            <button 
+            <button
               className={styles.cancelButton}
               onClick={onClose}
-              >
-                Close
+            >
+              Close
             </button>
 
           </div>

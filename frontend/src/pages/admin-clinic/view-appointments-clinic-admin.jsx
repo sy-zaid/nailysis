@@ -8,6 +8,9 @@ import DeleteAppointmentPopup from "../../components/Popup/popups-doctor-appoint
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import api from "../../api";
+import Header from "../../components/Dashboard/Header/Header";
+import { toast } from "react-toastify";
+
 // UTILS.JS FUNCTIONS
 import { 
   getStatusClass, 
@@ -15,41 +18,30 @@ import {
 } from "../../utils/utils";
 
 const AppointmentClinicAdmin = ( onClose ) => {
+  // ----- TOKENS AND USER INFORMATION
+  const token = localStorage.getItem("access");
+
+
+  // ----- POPUPS AND NAVIGATION
   const navigate = useNavigate(); 
   const [appointments, setAppointments] = useState([]);
-  const token = localStorage.getItem("access");
   const [popupContent, setPopupContent] = useState();
   const [showPopup, setShowPopup] = useState(false);
   const [activeButton, setActiveButton] = useState(0); 
   const [menuOpen, setMenuOpen] = useState(null);
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
+
   
-  const fetchAppointments = async () => {
-    try {
-      const response = await api.get(
-        `${import.meta.env.VITE_API_URL}/api/doctor_appointments/`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      setAppointments(response.data);
-      console.log("Response from doctor appointment", response.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  useEffect(() => {
-    if (!token) {
-      console.log("No token found, Redirecting to login");
-      navigate("/login");
-      return;
-    }
+  // ----- SEARCHING, SORTING & FILTERING STATES
+  const [activeFilter, setActiveFilter] = useState("All");
+  const [searchQuery, setSearchQuery] = useState("");
+  // Set default sort to appointment date (latest first)
+  const [sortConfig, setSortConfig] = useState({ key: "date", direction: "desc" });
+  const [selectAll, setSelectAll] = useState(false);
+  const [selectedAppointments, setSelectedAppointments] = useState({});
 
-    fetchAppointments();
-  }, [token, navigate]);
-
+  
+  // ----- HANDLERS
   const handleFilterClick = (index) => {
     setActiveButton(index); // Set the active button when clicked
   };
@@ -62,6 +54,33 @@ const AppointmentClinicAdmin = ( onClose ) => {
     setShowPopup(false); // Hide the popup when closing
   };
 
+  // Handles checkbox selection
+  const handleSelectAll = () => {
+    const newSelectAll = !selectAll;
+    setSelectAll(newSelectAll);
+
+    const newSelectedAppointments = {};
+    if (newSelectAll) {
+      sortedAppointments.forEach((appointment) => {
+        newSelectedAppointments[appointment.appointment_id] = true;
+      });
+    }
+    setSelectedAppointments(newSelectedAppointments);
+  };
+
+  // Handle individual checkbox click
+  const handleSelectOne = (appointmentId) => {
+    setSelectedAppointments((prev) => {
+      const updated = { ...prev, [appointmentId]: !prev[appointmentId] };
+
+      const allChecked =
+        sortedAppointments.length > 0 &&
+        sortedAppointments.every((app) => updated[app.appointment_id]);
+      setSelectAll(allChecked);
+
+      return updated;
+    });
+  };
 
   // Handle the action when an item is clicked in the menu
   const handleActionClick = (action, appointmentId) => {
@@ -88,13 +107,27 @@ const AppointmentClinicAdmin = ( onClose ) => {
               },
             }
           );
-          alert(response.data.message); // Notify of success
+          // alert(response.data.message);
+          toast.success(response.data.message || "Appointment cancelled successfully", {
+            className: "custom-toast",
+          });
 
           // Fetch updated appointments after cancellation
           fetchAppointments();
           // Optionally, refetch the cancellation requests list to reflect changes
         } catch (err) {
           console.log("Failed cancellation request.");
+          if (err.response) {
+            toast.error(
+              err.response.data.error || "Failed cancellation request",
+              { className: "custom-toast" }
+            );
+          } else {
+            toast.error("Network Error", {
+              className: "custom-toast",
+            });
+          }
+
         }
       };
       handleCancellation(appointmentId, action);
@@ -122,6 +155,92 @@ const AppointmentClinicAdmin = ( onClose ) => {
     // Add logic for other actions like 'Edit' and 'Reschedule' if needed
   };
 
+
+  // ----- MAIN LOGIC FUNCTIONS
+  const fetchAppointments = async () => {
+    try {
+      const response = await api.get(
+        `${import.meta.env.VITE_API_URL}/api/doctor_appointments/`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setAppointments(response.data);
+      console.log("Response from doctor appointment", response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // Filtering Logic
+  const filteredAppointments = appointments.filter((appointment) => {
+    const today = new Date().toISOString().split("T")[0];
+
+    if (activeFilter === "Scheduled" && appointment.status !== "Scheduled")
+      return false;
+    if (
+      activeFilter === "Emergency Visit" &&
+      appointment.appointment_type !== "Emergency Visit"
+    )
+      return false;
+    if (activeFilter === "Today" && appointment.time_slot?.slot_date !== today)
+      return false;
+
+    // Searching Logic
+    const searchValue = searchQuery.toLowerCase();
+    const matchesSearch =
+      appointment.appointment_id?.toString().toLowerCase().includes(searchValue) ||
+      appointment.doctor?.user?.first_name?.toLowerCase().includes(searchValue) ||
+      appointment.doctor?.user?.last_name?.toLowerCase().includes(searchValue) ||
+      appointment.doctor?.specialization?.toLowerCase().includes(searchValue) ||
+      appointment.time_slot?.slot_date?.toLowerCase().includes(searchValue) ||
+      appointment.time_slot?.start_time?.toLowerCase().includes(searchValue) ||
+      appointment.time_slot?.end_time?.toLowerCase().includes(searchValue) ||
+      appointment.appointment_type?.toLowerCase().includes(searchValue) ||
+      appointment.status?.toLowerCase().includes(searchValue) ||
+      (appointment.fee &&
+        `PKR ${appointment.fee}`.toLowerCase().includes(searchValue)) ||
+      (appointment.doctor?.years_of_experience &&
+        appointment.doctor?.years_of_experience.toString().toLowerCase().includes(searchValue)) ||
+      appointment.notes?.toLowerCase().includes(searchValue);
+
+    return matchesSearch;
+  });
+
+  // Sorting Logic
+  const sortedAppointments = [...filteredAppointments].sort((a, b) => {
+    if (!sortConfig.key) return 0;
+  
+    const aValue =
+      sortConfig.key === "fee"
+        ? a.fee || 0
+        : new Date(a.time_slot?.slot_date).getTime();
+  
+    const bValue =
+      sortConfig.key === "fee"
+        ? b.fee || 0
+        : new Date(b.time_slot?.slot_date).getTime();
+  
+    if (aValue < bValue) return sortConfig.direction === "asc" ? -1 : 1;
+    if (aValue > bValue) return sortConfig.direction === "asc" ? 1 : -1;
+    return 0;
+  });
+
+
+  // ----- USE EFFECTS
+  useEffect(() => {
+    if (!token) {
+      console.log("No token found, Redirecting to login");
+      navigate("/login");
+      return;
+    }
+
+    fetchAppointments();
+  }, [token, navigate]);
+
+  
   // Close the action menu when clicking outside of it
   const menuRef = useRef(null);
 
@@ -149,37 +268,29 @@ const AppointmentClinicAdmin = ( onClose ) => {
 
       <div className={styles.pageTop}>
         <Navbar />
-        <h1>Appointments</h1>
-        <p>Here you can view and manage all the booked appointments</p>
+        <Header
+          mainHeading={"Appointments"}
+          subHeading={
+            "Here you can view and manage all the booked appointments"
+          }
+        />
       </div>
       <div className={styles.mainContent}>
         <div className={styles.appointmentsContainer}>
           <div className={styles.filters}>
-            <button
-              className={`${styles.filterButton} ${activeButton === 0 ? styles.active : ''}`}
-              onClick={() => handleFilterClick(0)}
-            >
-              All
-            </button>
-            <button
-              className={`${styles.filterButton} ${activeButton === 1 ? styles.active : ''}`}
-              onClick={() => handleFilterClick(1)}
-            >
-              Pending
-            </button>
-            <button
-              className={`${styles.filterButton} ${activeButton === 2 ? styles.active : ''}`}
-              onClick={() => handleFilterClick(2)}
-            >
-              Completed
-            </button>
-            <button
-              className={`${styles.filterButton} ${activeButton === 3 ? styles.active : ''}`}
-              onClick={() => handleFilterClick(3)}
-            >
-              Cancelled
-            </button>
-            <p>50 completed, 4 pending</p>
+            {["All", "Scheduled", "Emergency Visit", "Today"].map((filter) => (
+              <button
+                key={filter}
+                className={`${styles.filterButton} ${activeFilter === filter ? styles.active : ""}`}
+                onClick={() => setActiveFilter(filter)}
+              >
+                {filter}
+              </button>
+            ))}
+            <p>
+              Total Records: {filteredAppointments.length} | Scheduled:{" "}
+              {filteredAppointments.filter((app) => app.status === "Scheduled").length}
+            </p>
             
             <button
               className={styles.addButton}
@@ -194,14 +305,28 @@ const AppointmentClinicAdmin = ( onClose ) => {
               <select className={styles.bulkAction}>
                 <option>Bulk Action: Delete</option>
               </select>
-              <select className={styles.sortBy}>
-                <option>Sort By: Ordered Today</option>
+
+              <select
+                className={styles.sortBy}
+                defaultValue="date-desc"
+                onChange={(e) => {
+                  const [key, direction] = e.target.value.split("-");
+                  setSortConfig({ key, direction });
+                }}
+              >
+                <option value="date-desc">Appointment Date (Latest First)</option>
+                <option value="date-asc">Appointment Date (Oldest First)</option>
+                <option value="fee-asc">Fee (Low to High)</option>
+                <option value="fee-desc">Fee (High to Low)</option>
               </select>
+
               <input
-                className={styles.search}
                 type="text"
-                placeholder="Search By Patient Name" 
-              /> 
+                className={styles.search}
+                placeholder="Search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
             </div>
             <hr />
             <br />
@@ -226,7 +351,7 @@ const AppointmentClinicAdmin = ( onClose ) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {appointments.map((row, index) => (
+                  {sortedAppointments.map((row, index) => (
                     <tr
                       key={row.appointment_id}
                     >

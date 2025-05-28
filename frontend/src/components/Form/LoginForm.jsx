@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import api from "../../api";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "../../constants";
+import { toast } from "react-toastify";
 
 import styles from "./Form.module.css";
 
@@ -36,6 +37,22 @@ function LoginForm({ route }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+
+    if (!email && !password) {
+      toast.error("Email & Password are required.");
+      setLoading(false);
+      return;
+    }
+    if (!email) {
+      toast.error("Email is required.");
+      setLoading(false);
+      return;
+    }
+    if (!password) {
+      toast.error("Password is required.");
+      setLoading(false);
+      return;
+    }
 
     try {
       // API call to authenticate user
@@ -77,8 +94,19 @@ function LoginForm({ route }) {
           navigate("/login"); // Redirect to login on unknown role
           break;
       }
+      toast.success("Login Successful!", {
+        className: "custom-toast",
+      });
+
     } catch (error) {
-      alert(error); // Display error message
+      console.error(error); // Display error message
+      if (error.response && error.response.status === 401) {
+        toast.error("Incorrect email or password.", {
+          className: "custom-toast",
+        });
+      } else {
+        toast.error ("Network Error");
+      }
     } finally {
       setLoading(false);
     }
@@ -88,11 +116,13 @@ function LoginForm({ route }) {
     <div className={styles.form}>
       <section className={styles.main}>
         <h2>Login to your account</h2>
-        <form onSubmit={handleSubmit} className="form-container">
+        <form role="form" onSubmit={handleSubmit} className="form-container">
           <div className={styles.inputGroup}>
             <label htmlFor="email">Email</label>
             <input
+              id="email"
               type="text"
+              name="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter Email"
@@ -101,7 +131,9 @@ function LoginForm({ route }) {
           <div className={styles.inputGroup}>
             <label htmlFor="password">Password</label>
             <input
+              id="password"
               type="password"
+              name="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter Password"

@@ -2,18 +2,20 @@ import React, { useState } from "react";
 import axios from "axios";
 import Popup from "../../components/Popup/Popup";
 import styles from "./cancellation-request-form.module.css";
+import { toast } from "react-toastify";
+import { getRole } from "../../utils/utils";
 
 const CancellationRequestForm = ({ onClose, appointmentId }) => {
   const [reason, setReason] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [popupTrigger, setPopupTrigger] = useState(true);
-
+  const curUserRole = getRole();
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!reason.trim()) {
-      setError("Please provide a reason for cancellation.");
+      toast.warning("Please Provide A Reason For Cancellation", { className: "custom-toast" });
       return;
     }
 
@@ -21,7 +23,7 @@ const CancellationRequestForm = ({ onClose, appointmentId }) => {
       const response = await axios.post(
         `${
           import.meta.env.VITE_API_URL
-        }/api/doctor_appointments/${appointmentId}/request_cancellation/`,
+        }/api/lab_technician_appointments/${appointmentId}/request_cancellation/`,
         { reason },
         {
           headers: {
@@ -30,11 +32,18 @@ const CancellationRequestForm = ({ onClose, appointmentId }) => {
         }
       );
 
-      setMessage(response.data.message);
-      setError("");
+      toast.success("Cancellation Request Sent successfully!", {
+        className: "custom-toast",
+      });
+      onClose(); // Close the popup
     } catch (err) {
-      setError("Failed to submit cancellation request. Please try again.");
-      setMessage("");
+      if (err.response) {
+        toast.error(err.response.data.error || "Failed to Submit Cancellation Request. Please Try Again.", {
+          className: "custom-toast",
+        });
+      } else {
+        toast.error("Network Error", {className: "custom-toast"})
+      }
     }
   };
 

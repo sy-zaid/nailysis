@@ -1,4 +1,11 @@
 /* Floating buttons */
+.buttonContent {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
 .floatingButtons {
   position: fixed;
   top: 50%;
@@ -413,4 +420,25 @@
 
 .logoutLink:hover {
   color: #b12937;
+}
+
+/* sidebar fully off-screen when closed on phones/tablets */
+@media screen and (max-width: 768px) {
+  /* ensure the sidebar starts completely hidden */
+  .sidePanel {
+    /* push it all the way left, not just −22% */
+    left: -100% !important;
+    width: 200px;           /* your mobile width */
+    transition: left 0.3s ease;
+  }
+
+  /* open brings it back to 0 */
+  .sidePanel.open {
+    left: 0 !important;
+  }
+
+  /* optionally hide floating buttons under the menu icon */
+  .floatingButtons {
+    display: none;
+  }
 }
