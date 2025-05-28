@@ -1,41 +1,62 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./Cards.module.css";
 
-const Cards = (props) => {
-  const isFirstCard = props.heading === "Patients";
+const Cards = ({ heading, count, percentage, text }) => {
+  const isPrimaryCard = heading === "Patients"; // You can change logic as needed
+  const [displayedCount, setDisplayedCount] = useState(0);
+
+  useEffect(() => {
+    let start = 0;
+    const end = parseInt(count);
+    if (start === end) return;
+
+    let incrementTime = 20;
+    let step = Math.ceil(end / 50); // Speed of counting
+
+    const timer = setInterval(() => {
+      start += step;
+      if (start >= end) {
+        setDisplayedCount(end.toLocaleString());
+        clearInterval(timer);
+      } else {
+        setDisplayedCount(start.toLocaleString());
+      }
+    }, incrementTime);
+
+    return () => clearInterval(timer);
+  }, [count]);
 
   const cardStyle = {
-    backgroundColor: isFirstCard ? "#0067ff" : "#ffffff",
-    color: isFirstCard ? "#ffffff" : "#000000",
+    backgroundColor: isPrimaryCard ? "#0067ff" : "#ffffff",
+    color: isPrimaryCard ? "#ffffff" : "#000000",
   };
 
   const percentStyle = {
-    backgroundColor: isFirstCard ? "#ffffff" : "#0067ff",
+    backgroundColor: isPrimaryCard ? "#ffffff" : "#0067ff",
   };
 
   const percentColor = {
-    color: isFirstCard ? "#000000" : "#FFFFFF",
+    color: isPrimaryCard ? "#000000" : "#ffffff",
   };
 
   return (
     <div className={styles.contain} style={cardStyle}>
       <div className={styles.head}>
         <div className={styles.imgDiv}>
-          <img src="icon-stocks-black.png" alt="stocks icon" />
+          <img src="icon-stocks-black.png" alt="icon" />
         </div>
-        <h2 className={styles.title}>{props.heading}</h2>
+        <h2 className={styles.title}>{heading}</h2>
       </div>
+
       <div className={styles.main}>
-        <h1 className={styles.count}>20,549</h1>
+        <h1 className={styles.count}>{displayedCount}</h1>
         <div className={styles.percent} style={percentStyle}>
-          <h3>+15%</h3>
+          <h3 style={percentColor}>+{percentage}%</h3>
         </div>
       </div>
+
       <div className={styles.foot}>
-        <p>
-          Data obtained from the past 7 days from 5,768 patients to 15,981
-          patients.
-        </p>
+        <p>{text}</p>
       </div>
     </div>
   );
