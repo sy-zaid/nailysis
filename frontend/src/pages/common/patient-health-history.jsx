@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo } from "react";
 import styles from "./patient-health-history.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
+import Header from "../../components/Dashboard/Header/Header.jsx";
 import {
   formatMedicalHistoryEpisodes,
   toggleActionMenu,

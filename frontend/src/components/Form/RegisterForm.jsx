@@ -184,6 +184,7 @@ function RegisterForm({ route }) {
         <form
           className="form-container"
           role="form"
+          onSubmit={handleSubmit}
         >
           <div className={styles.inputRow}>
             <div className={`${styles.inputGroup} ${styles.halfWidth}`}>
