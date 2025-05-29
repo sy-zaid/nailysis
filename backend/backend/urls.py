@@ -83,12 +83,9 @@ urlpatterns = [
     # MODEL SERVICE API endpoints
     path("api/", include(model_service_router.urls)),  # Registers viewsets using Django REST Framework's router
     *model_service_urls,   # Additional model_service-related URLs
-]
-
-# Add this at the end of your existing urlpatterns:
-urlpatterns += [
-    # Catch-all route for frontend
-    re_path(r'^(?!api/|admin/|static/|media/).*$', 
+    
+    # Catch-all must be LAST
+    re_path(r'^(?!static/|media/|api/|admin/).*$', 
             TemplateView.as_view(template_name='index.html')),
 ]
 
