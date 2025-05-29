@@ -1,15 +1,23 @@
 import tensorflow as tf
 
-# Load the original Keras model
-model = tf.keras.models.load_model("D:/UNI/FYP\App/backend/model_service/cnn_model_final-v1.keras")
+# Path to your Keras model
+model_path = "D:/UNI/FYP/App/backend/model_service/cnn_model_final-v1.keras"
 
+# Load the model
+model = tf.keras.models.load_model(model_path)
 
-# Convert to TFLite
+# Set up the converter
 converter = tf.lite.TFLiteConverter.from_keras_model(model)
+
+# Apply dynamic range quantization
+converter.optimizations = [tf.lite.Optimize.DEFAULT]
+
+# Convert the model
 tflite_model = converter.convert()
 
-# Save to file
-with open("cnn_model_final-v1.tflite", "wb") as f:
+# Save the quantized model
+output_path = "cnn_model_final-v1.tflite"
+with open(output_path, "wb") as f:
     f.write(tflite_model)
 
-print("✅ Model successfully converted to cnn_model_final-v1.tflite")
+print(f"✅ Quantized TFLite model saved to: {output_path}")
