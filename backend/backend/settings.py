@@ -28,7 +28,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-=osq=fzvtoxkr2n9rel0t_4%v55cmn8%-*9nw0@@3*6!i^7w8h'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False  # In production!
 
 ALLOWED_HOSTS = ["*"]
 
@@ -99,7 +99,7 @@ ROOT_URLCONF = 'backend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'frontend/dist')],  # Add this line
+        'DIRS': [os.path.join(BASE_DIR, '../frontend/dist')],  # Adjusted path
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -167,10 +167,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'),
-                    os.path.join(BASE_DIR, 'frontend/dist'),  # Add path to React build
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, '../frontend/dist'),  # Adjusted path
+    os.path.join(BASE_DIR, 'static'),
 ]
-
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Default primary key field type
@@ -178,7 +178,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOWS_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # Your frontend URL
