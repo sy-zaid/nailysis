@@ -2,10 +2,10 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
 export default defineConfig({
-  plugins: [react()],
-  test: {
-    globals: true,
-    environment: 'jsdom',
-    setupFiles: './src/test/setup.js',
-  },
+  base: '/static/',  // This is critical for Django
+  build: {
+    outDir: '../backend/staticfiles',  // Build directly into Django's staticfiles
+    emptyOutDir: true,
+    manifest: true,
+  }
 })
