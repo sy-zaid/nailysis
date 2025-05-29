@@ -14,7 +14,13 @@ This module defines URL patterns for the Nailysis application's backend, includi
 """
 
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
+
+
+from django.views.generic import TemplateView
+from django.conf import settings
+from django.conf.urls.static import static
+
 from api.views import CreateUserView, CustomerTokenObtainViewSerializer
 from rest_framework_simplejwt.views import TokenRefreshView
 from appointments.urls import urlpatterns as appointment_urls
@@ -78,7 +84,14 @@ urlpatterns = [
     path("api/", include(model_service_router.urls)),  # Registers viewsets using Django REST Framework's router
     *model_service_urls,   # Additional model_service-related URLs
 ]
-from django.conf import settings
-from django.conf.urls.static import static
+
+# Add this at the end of your existing urlpatterns:
+urlpatterns += [
+    # Catch-all route for frontend
+    re_path(r'^(?!api/|admin/|static/|media/).*$', 
+            TemplateView.as_view(template_name='index.html')),
+]
+
+# Keep your debug static/media files configuration
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
