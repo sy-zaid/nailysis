@@ -34,7 +34,16 @@ MODEL_PATH = BASE_DIR / 'cnn_model_final-v1.keras'
 # Load the trained Keras model
 # NOTE: Ensure the path is correct and accessible
 # Load the model
-model = tf.keras.models.load_model(str(MODEL_PATH))
+# model = tf.keras.models.load_model(str(MODEL_PATH))
+
+model = None
+
+def get_model():
+    global model
+    if model is None:
+        model = tf.keras.models.load_model(str(MODEL_PATH))
+    return model
+
 
 # Define class names (same as in your training code)
 CLASS_NAMES = [
@@ -93,7 +102,7 @@ async def predict(file: UploadFile = File(...)):
         preprocessed_img = preprocess_image(img)
         
         # Make prediction
-        predictions = model.predict(preprocessed_img)
+        predictions = get_model().predict(preprocessed_img)
         predicted_index = np.argmax(predictions)
         predicted_class = CLASS_NAMES[predicted_index]
         confidence = float(predictions[0][predicted_index])
