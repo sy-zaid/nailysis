@@ -34,9 +34,9 @@ ALLOWED_HOSTS = ["*"]
 
 
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
-    ),
+    # "DEFAULT_AUTHENTICATION_CLASSES": (
+    #     "rest_framework_simplejwt.authentication.JWTAuthentication",
+    # ),
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
     ],
@@ -77,12 +77,14 @@ INSTALLED_APPS = [
     'feedbacks', 
     'labs',
     'model_service.apps.ModelServiceConfig',
-    
+    'whitenoise.runserver_nostatic',  # Add this
+
 ]
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Add this for static files
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -97,7 +99,7 @@ ROOT_URLCONF = 'backend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'frontend/dist')],  # Add this line
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -165,7 +167,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'),
+                    os.path.join(BASE_DIR, 'frontend/dist'),  # Add path to React build
+]
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
@@ -178,6 +182,8 @@ CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWS_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # Your frontend URL
+    "https://nailysis.onrender.com",  # Add your Render URL
+
 ]
 AUTH_USER_MODEL = "users.CustomUser"
 
@@ -209,3 +215,6 @@ CHANNEL_LAYERS = {
         # Use Redis in production: "BACKEND": "channels_redis.core.RedisChannelLayer",
     },
 }
+
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
