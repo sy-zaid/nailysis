@@ -51,7 +51,7 @@ urlpatterns = [
     ),  # Endpoint for user registration
 
     path(
-        "token/", CustomerTokenObtainViewSerializer.as_view(), name="get_token"
+        "api/token/", CustomerTokenObtainViewSerializer.as_view(), name="get_token"
     ),  # Endpoint for obtaining JWT access and refresh tokens
 
     path(
@@ -88,8 +88,7 @@ urlpatterns = [
 # Add this at the end of your existing urlpatterns:
 urlpatterns += [
     # Catch-all route for frontend
-    re_path(r'^(?!api/|admin/|static/|media/).*$', 
-            TemplateView.as_view(template_name='index.html')),
+    re_path(r'^(?!admin/|static/|media/).*$', TemplateView.as_view(...))
 ]
 
 # Keep your debug static/media files configuration
