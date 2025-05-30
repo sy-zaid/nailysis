@@ -23,7 +23,7 @@ class FeedbackViewSetTests(APITestCase):
         response = self.client.get(reverse('feedbacks-list'))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         for fb in response.data:
-            self.assertEqual(fb['user_id'], self.patient_user.id)
+            self.assertEqual(fb['user_id'], self.patient_user.user_id)
 
     def test_get_queryset_clinic_admin_sees_clinic_feedback_only(self):
         self.client.force_authenticate(user=self.clinic_admin_user)

@@ -124,6 +124,10 @@ DATABASES = {
         'PASSWORD': 'mrI2DkT9YWqeEPUimuUIlwbcykKsJ0nK',
         'HOST': 'dpg-d0qs9tumcj7s73eboqug-a.singapore-postgres.render.com',
         'PORT': '5432',
+        'TEST': {
+            'NAME': 'test_nailysis_db',  # Explicit test database name
+            'TEMPLATE': 'template0',    # Use template0 to avoid potential encoding issues
+        },
     }
 }
 
