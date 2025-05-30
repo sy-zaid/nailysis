@@ -51,7 +51,7 @@ urlpatterns = [
     ),  # Endpoint for user registration
 
     path(
-        "api/token/", CustomerTokenObtainViewSerializer.as_view(), name="get_token"
+        "token/", CustomerTokenObtainViewSerializer.as_view(), name="get_token"
     ),  # Endpoint for obtaining JWT access and refresh tokens
 
     path(
