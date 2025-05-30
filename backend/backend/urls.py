@@ -47,48 +47,48 @@ urlpatterns = [
 
     # User authentication and registration
     path(
-        "user/register/", CreateUserView.as_view(), name="register"
+        "api/user/register/", CreateUserView.as_view(), name="register"
     ),  # Endpoint for user registration
 
     path(
-        "token/", CustomerTokenObtainViewSerializer.as_view(), name="get_token"
+        "api/token/", CustomerTokenObtainViewSerializer.as_view(), name="get_token"
     ),  # Endpoint for obtaining JWT access and refresh tokens
 
     path(
-        "token/refresh/", TokenRefreshView.as_view(), name="refresh"
+        "api/token/refresh/", TokenRefreshView.as_view(), name="refresh"
     ),  # Endpoint for refreshing JWT access tokens
 
     # API authentication using Django REST Framework's browsable API
     path("api-auth/", include("rest_framework.urls")),  # Provides login/logout views
 
     # Appointment API endpoints
-    path("", include(router.urls)),  # Registers viewsets using Django REST Framework's router
+    path("api/", include(router.urls)),  # Registers viewsets using Django REST Framework's router
     *appointment_urls,   # Additional appointment-related URLs (e.g., doctor-specific endpoints)
 
-    path('', include(user_router.urls)),
+    path('api/', include(user_router.urls)),
     *users_urls,
     
     # EHR API endpoints
-    path("", include(ehr_router.urls)),  # Registers viewsets using Django REST Framework's router
+    path("api/", include(ehr_router.urls)),  # Registers viewsets using Django REST Framework's router
     *ehr_urls,   # Additional ehr-related URLs
 
     # feedbacks API endpoints
-    path("", include(feedbacks_router.urls)),  # Registers viewsets using Django REST Framework's router
+    path("api/", include(feedbacks_router.urls)),  # Registers viewsets using Django REST Framework's router
     *feedbacks_urls,   # Additional feedbacks-related URLs
     
     # LABS API endpoints
-    path("", include(labs_router.urls)),  # Registers viewsets using Django REST Framework's router
+    path("api/", include(labs_router.urls)),  # Registers viewsets using Django REST Framework's router
     *labs_urls,   # Additional labs-related URLs
     
     # MODEL SERVICE API endpoints
-    path("", include(model_service_router.urls)),  # Registers viewsets using Django REST Framework's router
+    path("api/", include(model_service_router.urls)),  # Registers viewsets using Django REST Framework's router
     *model_service_urls,   # Additional model_service-related URLs
 ]
 
 # Add this at the end of your existing urlpatterns:
 # urlpatterns += [
 #     # Catch-all route for frontend
-#     re_path(r'^(?!|admin/|static/|media/).*$', 
+#     re_path(r'^(?!api/|admin/|static/|media/).*$', 
 #             TemplateView.as_view(template_name='index.html')),
 # ]
 
