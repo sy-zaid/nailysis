@@ -1,11 +1,11 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
 
 export default defineConfig({
-  base: '/static/',  // This is critical for Django
+  base: "/static/", // Important - matches Django's STATIC_URL
   build: {
-    outDir: '../backend/staticfiles',  // Build directly into Django's staticfiles
+    outDir: "../frontend/dist", // Where Django expects the files
     emptyOutDir: true,
-    manifest: true,
-  }
-})
+    manifest: true, // Helps with cache busting
+  },
+});
