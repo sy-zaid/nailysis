@@ -86,11 +86,11 @@ urlpatterns = [
 ]
 
 # Add this at the end of your existing urlpatterns:
-urlpatterns += [
-    # Catch-all route for frontend
-    re_path(r'^(?!admin/|static/|media/).*$', 
-            TemplateView.as_view(template_name='index.html')),
-]
+# urlpatterns += [
+#     # Catch-all route for frontend
+#     re_path(r'^(?!api/|admin/|static/|media/).*$', 
+#             TemplateView.as_view(template_name='index.html')),
+# ]
 
 # Keep your debug static/media files configuration
 if settings.DEBUG:
