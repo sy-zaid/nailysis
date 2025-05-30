@@ -66,7 +66,7 @@ class NailAnalysisViewSet(viewsets.ViewSet):
             
             try:
                 response = requests.post(
-                    "http://localhost:8001/predict",
+                    "https://nailysis.onrender.com/predict",
                     files={'file': (file_obj.name, file_obj, file_obj.content_type)},
                     timeout=15
                 )
