@@ -99,10 +99,7 @@ ROOT_URLCONF = 'backend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [
-            os.path.join(BASE_DIR, 'frontend_dist'),  # Vite build output
-            os.path.join(BASE_DIR, 'templates')  # Fallback
-        ],
+        'DIRS': [os.path.join(BASE_DIR, '../frontend/dist')],  # Adjusted path
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -171,7 +168,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'frontend_dist/assets'),  # Adjusted path
+    os.path.join(BASE_DIR, '../frontend/dist'),  # Adjusted path
     os.path.join(BASE_DIR, 'static'),
 ]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
@@ -223,5 +220,5 @@ CHANNEL_LAYERS = {
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Add this at the bottom of settings.py
+WHITENOISE_ROOT = os.path.join(BASE_DIR, '../frontend/dist')  # Path to your Vite build output
 WHITENOISE_INDEX_FILE = True  # Allow WhiteNoise to serve index.html
-WHITENOISE_ROOT = os.path.join(BASE_DIR, 'frontend_dist')  # Path to your Vite build output
