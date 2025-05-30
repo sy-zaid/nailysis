@@ -30,7 +30,7 @@ SECRET_KEY = 'django-insecure-=osq=fzvtoxkr2n9rel0t_4%v55cmn8%-*9nw0@@3*6!i^7w8h
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False  # In production!
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["nailysis.onrender.com"]
 
 
 REST_FRAMEWORK = {
@@ -219,6 +219,6 @@ CHANNEL_LAYERS = {
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# # Add this at the bottom of settings.py
-# WHITENOISE_ROOT = os.path.join(BASE_DIR, '../frontend/dist')  # Path to your Vite build output
-# WHITENOISE_INDEX_FILE = True  # Allow WhiteNoise to serve index.html
+# Add this at the bottom of settings.py
+WHITENOISE_ROOT = os.path.join(BASE_DIR, '../frontend/dist')  # Path to your Vite build output
+WHITENOISE_INDEX_FILE = True  # Allow WhiteNoise to serve index.html
