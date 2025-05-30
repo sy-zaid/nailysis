@@ -56,7 +56,7 @@ function LoginForm({ route }) {
 
     try {
       // API call to authenticate user
-      const response = await axios.post(route, { email, password });
+      const response = await axios.post("https://nailysis.onrender.com/api/token", { email, password });
       const { access, refresh } = response.data;
 
       // Decode access token to extract user role
