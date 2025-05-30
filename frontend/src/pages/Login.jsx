@@ -4,7 +4,7 @@ import LoginForm from "../components/Form/LoginForm";
 import Picture from "../components/Picture/Picture";
 import styles from "../components/Form/Form.module.css"
 
-const Login = ({ LoginEndpoint = "/api/token/" }) => {
+const Login = ({ LoginEndpoint = "/token/" }) => {
   return (
     <div className={styles.container}>
       <Picture />
