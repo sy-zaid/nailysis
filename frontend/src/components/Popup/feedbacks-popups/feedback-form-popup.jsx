@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import Popup from "../Popup.jsx";
 import { useNavigate } from "react-router-dom";
-const API_BASE_URL = "http://localhost:8000/api/feedback"; // Update with actual API URL
+
 import styles from "./popup-feedback.module.css";
 import useCurrentUserData from "../../../useCurrentUserData.jsx";
 import { toast } from "react-toastify";

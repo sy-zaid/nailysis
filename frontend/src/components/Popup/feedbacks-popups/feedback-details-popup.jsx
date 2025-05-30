@@ -2,7 +2,7 @@ import Popup from "../Popup.jsx";
 import styles from "./popup-feedback.module.css";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-const API_BASE_URL = "http://localhost:8000/api/feedback_reponse";
+const API_BASE_URL = import.meta.env.VITE_API_URL + "/feedback_reponse";
 
 import {
   calculateAge,

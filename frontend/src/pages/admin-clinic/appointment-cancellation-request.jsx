@@ -8,7 +8,7 @@ import styles from "./appointment-cancellation-request.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import { getRole } from "../../utils/utils";
 
-const API_BASE_URL = "http://localhost:8000/api/feedback"; // Update with actual API URL
+const API_BASE_URL = import.meta.env.VITE_API_URL; + "/api/feedback"; // Update with actual API URL
 
 // My Feedback Screen
 const CancellationRequest = () => {

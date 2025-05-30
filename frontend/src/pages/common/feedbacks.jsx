@@ -17,7 +17,6 @@ import { getStatusClass, toggleActionMenu, getRole } from "../../utils/utils";
 import { deleteFeedback } from "../../api/feedbacksApi";
 import { getFeedbackResponses } from "../../api/feedbacksApi";
 
-const API_BASE_URL = "http://localhost:8000/api/feedbacks";
 
 const SendFeedback = () => {
   // ----- TOKENS AND USER INFORMATION
