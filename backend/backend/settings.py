@@ -168,7 +168,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, '../frontend/dist'),  # Adjusted path
+    # os.path.join(BASE_DIR, '../frontend/dist'),
+    os.path.join(BASE_DIR, 'staticfiles'),  # Changed to match Vite output
     os.path.join(BASE_DIR, 'static'),
 ]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
@@ -179,10 +180,10 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOW_ALL_ORIGINS = False
-CORS_ALLOWS_CREDENTIALS = True
+CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",  # Your frontend URL
     "https://nailysis.onrender.com",  # Add your Render URL
+    "http://localhost:5173",  # Your frontend URL
 
 ]
 AUTH_USER_MODEL = "users.CustomUser"
@@ -219,6 +220,6 @@ CHANNEL_LAYERS = {
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# Add this at the bottom of settings.py
-WHITENOISE_ROOT = os.path.join(BASE_DIR, '../frontend/dist')  # Path to your Vite build output
-WHITENOISE_INDEX_FILE = True  # Allow WhiteNoise to serve index.html
+# # Add this at the bottom of settings.py
+# WHITENOISE_ROOT = os.path.join(BASE_DIR, '../frontend/dist')  # Path to your Vite build output
+# WHITENOISE_INDEX_FILE = True  # Allow WhiteNoise to serve index.html
