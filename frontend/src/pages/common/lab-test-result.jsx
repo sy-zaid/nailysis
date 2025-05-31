@@ -47,7 +47,7 @@ const LabTestResult = () => {
           Array.isArray(resultData.imaging_results)
         ) {
           // Assuming the imaging_results array contains filenames that need to be prefixed with the media URL
-          const baseUrl = "http://127.0.0.1:8000/media/lab_results/";
+          const baseUrl = `${import.meta.env.VItE_API_URL}/media/lab_results/`;
           resultData.imaging_results.forEach((filename) => {
             files.push(baseUrl + filename);
           });

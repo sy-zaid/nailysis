@@ -1,124 +1,124 @@
-import { render } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
-import { vi } from 'vitest';
-import SystemAdminDashboard from './system-admin-dashboard';
+import { render } from "@testing-library/react";
+import { BrowserRouter } from "react-router-dom";
+import { vi } from "vitest";
+import SystemAdminDashboard from "./system-admin-dashboard";
 
 // Mock window.location.href
 delete window.location;
-window.location = { href: '' };
+window.location = { href: "" };
 
 // Wrapper component for router
 const RouterWrapper = ({ children }) => (
   <BrowserRouter>{children}</BrowserRouter>
 );
 
-describe('SystemAdminDashboard', () => {
+describe("SystemAdminDashboard", () => {
   beforeEach(() => {
     // Reset window.location.href before each test
-    window.location.href = '';
+    window.location.href = "";
   });
 
-  test('renders without crashing', () => {
+  test("renders without crashing", () => {
     render(
       <RouterWrapper>
         <SystemAdminDashboard />
       </RouterWrapper>
     );
-    
+
     // Component should render (even though it returns null)
     expect(true).toBe(true);
   });
 
-  test('returns null (renders nothing)', () => {
+  test("returns null (renders nothing)", () => {
     const { container } = render(
       <RouterWrapper>
         <SystemAdminDashboard />
       </RouterWrapper>
     );
-    
+
     // Component should render nothing
     expect(container.firstChild).toBeNull();
   });
 
-  test('redirects to Django admin URL on mount', () => {
+  test("redirects to Django admin URL on mount", () => {
     render(
       <RouterWrapper>
         <SystemAdminDashboard />
       </RouterWrapper>
     );
-    
+
     // Should redirect to the Django admin URL
-    expect(window.location.href).toBe('http://127.0.0.1:8000/admin');
+    expect(window.location.href).toBe(`${import.meta.env.VItE_API_URL}/admin`);
   });
 
-  test('redirects immediately without delay', () => {
+  test("redirects immediately without delay", () => {
     const startTime = Date.now();
-    
+
     render(
       <RouterWrapper>
         <SystemAdminDashboard />
       </RouterWrapper>
     );
-    
+
     const endTime = Date.now();
-    
+
     // Should redirect immediately (within reasonable time)
     expect(endTime - startTime).toBeLessThan(100);
-    expect(window.location.href).toBe('http://127.0.0.1:8000/admin');
+    expect(window.location.href).toBe(`${import.meta.env.VItE_API_URL}/admin`);
   });
 
-  test('redirect behavior works correctly', () => {
+  test("redirect behavior works correctly", () => {
     render(
       <RouterWrapper>
         <SystemAdminDashboard />
       </RouterWrapper>
     );
-    
+
     // The redirect should happen and window.location.href should be set
-    expect(window.location.href).toBe('http://127.0.0.1:8000/admin');
+    expect(window.location.href).toBe(`${import.meta.env.VItE_API_URL}/admin`);
   });
 
-  test('component does not render any visible content', () => {
+  test("component does not render any visible content", () => {
     const { container } = render(
       <RouterWrapper>
         <SystemAdminDashboard />
       </RouterWrapper>
     );
-    
+
     // Should have no text content
-    expect(container.textContent).toBe('');
-    
+    expect(container.textContent).toBe("");
+
     // Should have no child elements
     expect(container.children).toHaveLength(0);
   });
 
-  test('multiple renders redirect consistently', () => {
+  test("multiple renders redirect consistently", () => {
     // First render
     const { unmount } = render(
       <RouterWrapper>
         <SystemAdminDashboard />
       </RouterWrapper>
     );
-    
-    expect(window.location.href).toBe('http://127.0.0.1:8000/admin');
-    
+
+    expect(window.location.href).toBe(`${import.meta.env.VItE_API_URL}/admin`);
+
     // Reset and render again
     unmount();
-    window.location.href = '';
-    
+    window.location.href = "";
+
     render(
       <RouterWrapper>
         <SystemAdminDashboard />
       </RouterWrapper>
     );
-    
+
     // Should redirect again
-    expect(window.location.href).toBe('http://127.0.0.1:8000/admin');
+    expect(window.location.href).toBe(`${import.meta.env.VItE_API_URL}/admin`);
   });
 
-  test('component exports correctly', () => {
+  test("component exports correctly", () => {
     expect(SystemAdminDashboard).toBeDefined();
-    expect(typeof SystemAdminDashboard).toBe('function');
+    expect(typeof SystemAdminDashboard).toBe("function");
   });
 });
 
