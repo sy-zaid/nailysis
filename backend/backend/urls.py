@@ -19,7 +19,7 @@ from django.urls import path, include, re_path
 
 from django.views.generic import TemplateView
 from django.conf import settings
-from django.conf.urls.static import static  
+from django.conf.urls.static import static
 
 from api.views import CreateUserView, CustomerTokenObtainViewSerializer
 from rest_framework_simplejwt.views import TokenRefreshView
@@ -86,11 +86,11 @@ urlpatterns = [
 ]
 
 # Add this at the end of your existing urlpatterns:
-# urlpatterns += [
-#     # Catch-all route for frontend
-#     re_path(r'^(?!api/|admin/|static/|media/).*$', 
-#             TemplateView.as_view(template_name='index.html')),
-# ]
+urlpatterns += [
+    # Catch-all route for frontend
+    re_path(r'^(?!api/|admin/|static/|media/).*$', 
+            TemplateView.as_view(template_name='index.html')),
+]
 
 # Keep your debug static/media files configuration
 if settings.DEBUG:
