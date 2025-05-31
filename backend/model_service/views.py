@@ -74,7 +74,7 @@ class NailAnalysisViewSet(viewsets.ViewSet):
                     "http://localhost:10000/predict",  # Use internal hostname
                     files={'file': (file_obj.name, file_obj, file_obj.content_type)},
                     headers=headers,
-                    timeout=60  # Increase timeout to 60 seconds
+                    timeout=90  # Increase timeout to 90 seconds
                 )
                 response.raise_for_status()
                 result = response.json()
