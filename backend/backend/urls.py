@@ -19,7 +19,7 @@ from django.urls import path, include, re_path
 
 from django.views.generic import TemplateView
 from django.conf import settings
-from django.conf.urls.static import static
+from django.conf.urls.static import static  
 
 from api.views import CreateUserView, CustomerTokenObtainViewSerializer
 from rest_framework_simplejwt.views import TokenRefreshView
@@ -43,8 +43,6 @@ from model_service.urls import router as model_service_router
 
 # Define URL patterns
 urlpatterns = [
-    # Frontend at root
-    path('', TemplateView.as_view(template_name='index.html')),
     path("admin/", admin.site.urls),  # Django admin panel for managing users, models, etc.
 
     # User authentication and registration
@@ -93,10 +91,7 @@ urlpatterns = [
 #     re_path(r'^(?!api/|admin/|static/|media/).*$', 
 #             TemplateView.as_view(template_name='index.html')),
 # ]
-urlpatterns += [
-    # Catch-all route for frontend - should come after all API routes
-    re_path(r'^.*$', TemplateView.as_view(template_name='index.html')),
-]
+
 # Keep your debug static/media files configuration
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
