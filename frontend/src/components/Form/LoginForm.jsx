@@ -56,7 +56,7 @@ function LoginForm({ route }) {
 
     try {
       // API call to authenticate user
-      const response = await axios.post(route, { email, password });
+      const response = await api.post(route, { email, password });
       const { access, refresh } = response.data;
 
       // Decode access token to extract user role
@@ -97,7 +97,6 @@ function LoginForm({ route }) {
       toast.success("Login Successful!", {
         className: "custom-toast",
       });
-
     } catch (error) {
       console.error(error); // Display error message
       if (error.response && error.response.status === 401) {
@@ -105,7 +104,7 @@ function LoginForm({ route }) {
           className: "custom-toast",
         });
       } else {
-        toast.error ("Network Error");
+        toast.error("Network Error");
       }
     } finally {
       setLoading(false);
@@ -115,7 +114,7 @@ function LoginForm({ route }) {
   return (
     <div className={styles.form}>
       <section className={styles.main}>
-        <h2>Login To Your Account</h2>
+        <h2>Login to your account</h2>
         <form role="form" onSubmit={handleSubmit} className="form-container">
           <div className={styles.inputGroup}>
             <label htmlFor="email">Email</label>
@@ -139,7 +138,11 @@ function LoginForm({ route }) {
               placeholder="Enter Password"
             />
           </div>
-          <button type="submit" className={styles.submitButton} disabled={loading}>
+          <button
+            type="submit"
+            className={styles.submitButton}
+            disabled={loading}
+          >
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>

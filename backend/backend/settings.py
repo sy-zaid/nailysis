@@ -28,7 +28,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-=osq=fzvtoxkr2n9rel0t_4%v55cmn8%-*9nw0@@3*6!i^7w8h'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False  # In production!
+DEBUG = True  # In production!
 
 ALLOWED_HOSTS = ["*"]
 
@@ -82,9 +82,9 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',  # Add this for static files
+    "corsheaders.middleware.CorsMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -172,14 +172,14 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
+    
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CORS_ALLOW_ALL_ORIGINS = False
-CORS_ALLOWS_CREDENTIALS = True
+CORS_ALLOW_ALL_ORIGINS = False  
+CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     "https://nailysis.onrender.com",  # Add your Render URL
     "http://localhost:5173",  # Your frontend URL
@@ -189,7 +189,7 @@ AUTH_USER_MODEL = "users.CustomUser"
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
-
+ 
 JAZZMIN_SETTINGS = {
     "site_title": "Nailysis Admin",
     "site_header": "Nailysis Admin Dashboard",

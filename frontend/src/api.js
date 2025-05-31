@@ -19,7 +19,7 @@ const apiUrl = "/choreo-apis/awbo/backend/rest-api-be2/v1.0";
  * The base URL is read from the environment variable `VITE_API_URL`.
  */
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL, // The base URL for all API requests.
+    baseURL: import.meta.env.VITE_API_URL || apiUrl, // The base URL for all API requests.
 });
 
 /**
