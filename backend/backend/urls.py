@@ -96,7 +96,7 @@ urlpatterns = [
 urlpatterns += [
     # Catch-all route for frontend - should come after all API routes
     re_path(r'^.*$', TemplateView.as_view(template_name='index.html')),
-]
+]                                                           
 # Keep your debug static/media files configuration
 # if settings.DEBUG:
 #     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
@@ -107,5 +107,9 @@ if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # Catch-all should be last and only in production
+# Only add catch-all in production, AFTER all specific routes
 if not settings.DEBUG:
-    urlpatterns += [re_path(r'^.*$', TemplateView.as_view(template_name='index.html'))]
+    urlpatterns += [
+        re_path(r'^(?!admin|api|static|media).*$',  # Explicitly exclude admin
+                TemplateView.as_view(template_name='index.html'))
+    ]
