@@ -130,7 +130,7 @@ const ManageSlotsPopup = ({onClose}) => {
     try {
       console.log("SENDING THIS TO MAKE SLOTS", payload);
       await axios.post(
-        `${import.meta.env.VItE_API_URL}/api/time_slots/`,
+        `${import.meta.env.VITE_API_URL}/api/time_slots/`,
         payload,
         getHeaders()
       );

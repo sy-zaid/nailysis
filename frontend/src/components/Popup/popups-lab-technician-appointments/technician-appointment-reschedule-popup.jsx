@@ -152,7 +152,7 @@ const PopupRescheduleTechnicianAppointment = ({
       if (formData.specialization) {
         try {
           const response = await axios.get(
-            `${import.meta.env.VItE_API_URL}/api/lab_technicians/?specialization=${formData.specialization}`,
+            `${import.meta.env.VITE_API_URL}/api/lab_technicians/?specialization=${formData.specialization}`,
             { headers: { Authorization: `Bearer ${token}` } }
           );
           console.log("Response", response.data);
@@ -175,7 +175,7 @@ const PopupRescheduleTechnicianAppointment = ({
     const fetchSpecializations = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VItE_API_URL}/api/lab_technicians/`,
+          `${import.meta.env.VITE_API_URL}/api/lab_technicians/`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }

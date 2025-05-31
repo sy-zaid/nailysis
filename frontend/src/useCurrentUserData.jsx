@@ -30,7 +30,7 @@ const fetchCurrentUserData = async () => {
 
   try {
     const response = await axios.get(
-      `${import.meta.env.VItE_API_URL}/api/current_users/`,
+      `${import.meta.env.VITE_API_URL}/api/current_users/`,
       {
         headers: { Authorization: `Bearer ${token}` },
       }

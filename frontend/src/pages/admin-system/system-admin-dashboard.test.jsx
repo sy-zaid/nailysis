@@ -48,7 +48,7 @@ describe("SystemAdminDashboard", () => {
     );
 
     // Should redirect to the Django admin URL
-    expect(window.location.href).toBe(`${import.meta.env.VItE_API_URL}/admin`);
+    expect(window.location.href).toBe(`${import.meta.env.VITE_API_URL}/admin`);
   });
 
   test("redirects immediately without delay", () => {
@@ -64,7 +64,7 @@ describe("SystemAdminDashboard", () => {
 
     // Should redirect immediately (within reasonable time)
     expect(endTime - startTime).toBeLessThan(100);
-    expect(window.location.href).toBe(`${import.meta.env.VItE_API_URL}/admin`);
+    expect(window.location.href).toBe(`${import.meta.env.VITE_API_URL}/admin`);
   });
 
   test("redirect behavior works correctly", () => {
@@ -75,7 +75,7 @@ describe("SystemAdminDashboard", () => {
     );
 
     // The redirect should happen and window.location.href should be set
-    expect(window.location.href).toBe(`${import.meta.env.VItE_API_URL}/admin`);
+    expect(window.location.href).toBe(`${import.meta.env.VITE_API_URL}/admin`);
   });
 
   test("component does not render any visible content", () => {
@@ -100,7 +100,7 @@ describe("SystemAdminDashboard", () => {
       </RouterWrapper>
     );
 
-    expect(window.location.href).toBe(`${import.meta.env.VItE_API_URL}/admin`);
+    expect(window.location.href).toBe(`${import.meta.env.VITE_API_URL}/admin`);
 
     // Reset and render again
     unmount();
@@ -113,7 +113,7 @@ describe("SystemAdminDashboard", () => {
     );
 
     // Should redirect again
-    expect(window.location.href).toBe(`${import.meta.env.VItE_API_URL}/admin`);
+    expect(window.location.href).toBe(`${import.meta.env.VITE_API_URL}/admin`);
   });
 
   test("component exports correctly", () => {
