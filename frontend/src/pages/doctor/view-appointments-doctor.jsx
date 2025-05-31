@@ -85,48 +85,61 @@ const AppointmentDoctor = (props) => {
   // ----- SEARCHING, SORTING & FILTERING LOGIC FUNCTIONS
 
   // Filtering Logic
-  const filteredAppointments = appointments.filter((appointment) => {
-    const today = new Date().toISOString().split("T")[0];
+  const filteredAppointments = Array.isArray(appointments)
+    ? appointments.filter((appointment) => {
+        const today = new Date().toISOString().split("T")[0];
 
-    if (activeFilter === "Scheduled" && appointment.status !== "Scheduled")
-      return false;
-    if (
-      activeFilter === "Emergency Visit" &&
-      appointment.appointment_type !== "Emergency Visit"
-    )
-      return false;
-    if (activeFilter === "Today" && appointment.time_slot?.slot_date !== today)
-      return false;
+        if (activeFilter === "Scheduled" && appointment.status !== "Scheduled")
+          return false;
+        if (
+          activeFilter === "Emergency Visit" &&
+          appointment.appointment_type !== "Emergency Visit"
+        )
+          return false;
+        if (
+          activeFilter === "Today" &&
+          appointment.time_slot?.slot_date !== today
+        )
+          return false;
 
-    const searchValue = searchQuery.toLowerCase();
-    const matchesSearch =
-      appointment.appointment_id
-        ?.toString()
-        .toLowerCase()
-        .includes(searchValue) ||
-      appointment.doctor?.user?.first_name
-        ?.toLowerCase()
-        .includes(searchValue) ||
-      appointment.doctor?.user?.last_name
-        ?.toLowerCase()
-        .includes(searchValue) ||
-      appointment.doctor?.specialization?.toLowerCase().includes(searchValue) ||
-      appointment.time_slot?.slot_date?.toLowerCase().includes(searchValue) ||
-      appointment.time_slot?.start_time?.toLowerCase().includes(searchValue) ||
-      appointment.time_slot?.end_time?.toLowerCase().includes(searchValue) ||
-      appointment.appointment_type?.toLowerCase().includes(searchValue) ||
-      appointment.status?.toLowerCase().includes(searchValue) ||
-      (appointment.fee &&
-        `PKR ${appointment.fee}`.toLowerCase().includes(searchValue)) ||
-      (appointment.doctor?.years_of_experience &&
-        appointment.doctor?.years_of_experience
-          .toString()
-          .toLowerCase()
-          .includes(searchValue)) ||
-      appointment.notes?.toLowerCase().includes(searchValue);
+        const searchValue = searchQuery.toLowerCase();
+        const matchesSearch =
+          appointment.appointment_id
+            ?.toString()
+            .toLowerCase()
+            .includes(searchValue) ||
+          appointment.doctor?.user?.first_name
+            ?.toLowerCase()
+            .includes(searchValue) ||
+          appointment.doctor?.user?.last_name
+            ?.toLowerCase()
+            .includes(searchValue) ||
+          appointment.doctor?.specialization
+            ?.toLowerCase()
+            .includes(searchValue) ||
+          appointment.time_slot?.slot_date
+            ?.toLowerCase()
+            .includes(searchValue) ||
+          appointment.time_slot?.start_time
+            ?.toLowerCase()
+            .includes(searchValue) ||
+          appointment.time_slot?.end_time
+            ?.toLowerCase()
+            .includes(searchValue) ||
+          appointment.appointment_type?.toLowerCase().includes(searchValue) ||
+          appointment.status?.toLowerCase().includes(searchValue) ||
+          (appointment.fee &&
+            `PKR ${appointment.fee}`.toLowerCase().includes(searchValue)) ||
+          (appointment.doctor?.years_of_experience &&
+            appointment.doctor?.years_of_experience
+              .toString()
+              .toLowerCase()
+              .includes(searchValue)) ||
+          appointment.notes?.toLowerCase().includes(searchValue);
 
-    return matchesSearch;
-  });
+        return matchesSearch;
+      })
+    : [];
 
   // Sorting Logic
   const sortedAppointments = [...filteredAppointments].sort((a, b) => {
@@ -408,7 +421,5 @@ const AppointmentDoctor = (props) => {
     </div>
   );
 };
-
-
 
 export default AppointmentDoctor;
