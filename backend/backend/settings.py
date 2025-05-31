@@ -172,14 +172,14 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
+    
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CORS_ALLOW_ALL_ORIGINS = False
-CORS_ALLOWS_CREDENTIALS = True
+CORS_ALLOW_ALL_ORIGINS = False  
+CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     "https://nailysis.onrender.com",  # Add your Render URL
     "http://localhost:5173",  # Your frontend URL
@@ -189,7 +189,7 @@ AUTH_USER_MODEL = "users.CustomUser"
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
-
+ 
 JAZZMIN_SETTINGS = {
     "site_title": "Nailysis Admin",
     "site_header": "Nailysis Admin Dashboard",
