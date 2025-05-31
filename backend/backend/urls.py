@@ -109,7 +109,8 @@ if settings.DEBUG:
 # Catch-all should be last and only in production
 # Only add catch-all in production, AFTER all specific routes
 if not settings.DEBUG:
+# Add this STRICT catch-all at the end
     urlpatterns += [
-        re_path(r'^(?!admin|api|static|media).*$',  # Explicitly exclude admin
+        re_path(r'^(?!admin|api|static|media|favicon\.ico).*$', 
                 TemplateView.as_view(template_name='index.html'))
     ]

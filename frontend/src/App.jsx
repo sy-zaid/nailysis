@@ -230,7 +230,8 @@ function App() {
           <Route path="/upload-image" element={<UploadImage />} />
           <Route path="/rep" element={<LabTestReport />} />
           <Route path="/image-guide" element={<ImageGuide />} />
-          <Route path="/*" element={<NotFound />} />
+          <Route path="/not-found" element={<NotFound />} />
+          <Redirect from="*" to="/not-found" />
         </Routes>
       </div>
     </QueryClientProvider>
