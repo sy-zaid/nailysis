@@ -64,11 +64,17 @@ class NailAnalysisViewSet(viewsets.ViewSet):
                 "url": None  # Will be filled if saved to DB
             }
             
+            # Increase timeout for heavy predictions
             try:
+                headers = {
+                    'Referer': 'https://nailysis.onrender.com',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
                 response = requests.post(
-                    "https://nailysis.onrender.com/predict",
+                    "http://localhost:10000/predict",  # Use internal hostname
                     files={'file': (file_obj.name, file_obj, file_obj.content_type)},
-                    timeout=15
+                    headers=headers,
+                    timeout=60  # Increase timeout to 60 seconds
                 )
                 response.raise_for_status()
                 result = response.json()
