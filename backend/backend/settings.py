@@ -34,9 +34,9 @@ ALLOWED_HOSTS = ["*"]
 
 
 REST_FRAMEWORK = {
-    # "DEFAULT_AUTHENTICATION_CLASSES": (
-    #     "rest_framework_simplejwt.authentication.JWTAuthentication",
-    # ),
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
     ],
@@ -180,6 +180,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOW_CREDENTIALS = True
+# CORS_ALLOWS_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # Your frontend URL
     "https://nailysis.onrender.com",  # Add your Render URL
@@ -218,3 +219,6 @@ CHANNEL_LAYERS = {
 
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# Add this at the bottom of settings.py
+WHITENOISE_ROOT = os.path.join(BASE_DIR, '../frontend/dist')  # Path to your Vite build output
+WHITENOISE_INDEX_FILE = True  # Allow WhiteNoise to serve index.html
