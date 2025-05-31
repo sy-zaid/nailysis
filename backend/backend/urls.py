@@ -43,6 +43,8 @@ from model_service.urls import router as model_service_router
 
 # Define URL patterns
 urlpatterns = [
+    # Frontend at root
+    path('', TemplateView.as_view(template_name='index.html')),
     path("admin/", admin.site.urls),  # Django admin panel for managing users, models, etc.
 
     # User authentication and registration
@@ -86,12 +88,15 @@ urlpatterns = [
 ]
 
 # Add this at the end of your existing urlpatterns:
+# urlpatterns += [
+#     # Catch-all route for frontend
+#     re_path(r'^(?!api/|admin/|static/|media/).*$', 
+#             TemplateView.as_view(template_name='index.html')),
+# ]
 urlpatterns += [
-    # Catch-all route for frontend
-    re_path(r'^(?!api/|admin/|static/|media/).*$', 
-            TemplateView.as_view(template_name='index.html')),
+    # Catch-all route for frontend - should come after all API routes
+    re_path(r'^.*$', TemplateView.as_view(template_name='index.html')),
 ]
-
 # Keep your debug static/media files configuration
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
