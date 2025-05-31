@@ -13,15 +13,19 @@
 import axios from "axios";
 import { ACCESS_TOKEN } from "./constants";
 
-const apiUrl = "/choreo-apis/awbo/backend/rest-api-be2/v1.0";
-/**
- * Create an Axios instance with a predefined base URL.
- * The base URL is read from the environment variable `VITE_API_URL`.
- */
-const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || apiUrl, // The base URL for all API requests.
-});
+// const apiUrl = "/choreo-apis/awbo/backend/rest-api-be2/v1.0";
+// /**
+//  * Create an Axios instance with a predefined base URL.
+//  * The base URL is read from the environment variable `VITE_API_URL`.
+//  */
+// const api = axios.create({
+//     baseURL: import.meta.env.VITE_API_URL || apiUrl, // The base URL for all API requests.
+// });
+const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
+const api = axios.create({
+  baseURL: apiUrl, // No trailing slash
+});
 /**
  * Axios Request Interceptor
  * 
