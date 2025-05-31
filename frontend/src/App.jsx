@@ -1,6 +1,6 @@
 import "./App.css";
 import React from "react";
-import { Redirect } from 'react-router-dom';
+
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useState } from "react";
 import Login from "./pages/Login";
@@ -231,7 +231,8 @@ function App() {
           <Route path="/rep" element={<LabTestReport />} />
           <Route path="/image-guide" element={<ImageGuide />} />
           <Route path="/not-found" element={<NotFound />} />
-          <Redirect from="*" to="/not-found" />
+          <Route path="*" element={<Navigate to="/not-found" replace />} />
+
         </Routes>
       </div>
     </QueryClientProvider>
