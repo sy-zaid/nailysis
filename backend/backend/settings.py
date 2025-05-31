@@ -189,7 +189,7 @@ AUTH_USER_MODEL = "users.CustomUser"
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
-
+ 
 JAZZMIN_SETTINGS = {
     "site_title": "Nailysis Admin",
     "site_header": "Nailysis Admin Dashboard",
