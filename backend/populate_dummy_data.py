@@ -65,7 +65,7 @@ def create_dummy_patients(n):
             date_of_birth=fake.date_of_birth(minimum_age=18, maximum_age=75),
             gender=random.choice(['M', 'F']),
             address=fake.address(),
-            emergency_contact=fake.phone_number(),
+            emergency_contact="03000868120",
         )
         patients.append(patient)
     return patients
