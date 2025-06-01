@@ -126,10 +126,6 @@ DATABASES = {
         'PASSWORD': 'mrI2DkT9YWqeEPUimuUIlwbcykKsJ0nK',
         'HOST': 'dpg-d0qs9tumcj7s73eboqug-a.singapore-postgres.render.com',
         'PORT': '5432',
-        'CONN_MAX_AGE': 0,  # Important for thread safety
-        'OPTIONS': {
-            'threaded': True,
-        }
     }
 }
 
