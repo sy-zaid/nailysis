@@ -18,7 +18,7 @@ from .main import CLASS_NAMES
 from rest_framework.authentication import SessionAuthentication
 class NailAnalysisViewSet(viewsets.ViewSet):
     parser_classes = [MultiPartParser]
-    authentication_classes = [SessionAuthentication]
+    # authentication_classes = [SessionAuthentication]
     permission_classes = [permissions.AllowAny]
     serializer_class = NailDiseasePredictionSerializer
 
