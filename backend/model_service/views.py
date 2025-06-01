@@ -17,10 +17,14 @@ from collections import defaultdict
 from .main import CLASS_NAMES
 class NailAnalysisViewSet(viewsets.ViewSet):
     parser_classes = [MultiPartParser]
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
     serializer_class = NailDiseasePredictionSerializer
     
-    @method_decorator(csrf_exempt)
+    # Apply CSRF exemption at the class level for all actions
+    @method_decorator(csrf_exempt, name='dispatch')
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
+    
     @action(detail=False, methods=['post'], url_path='analyze')
     def analyze(self, request):
         # Ensure the request is marked as not needing CSRF
@@ -74,6 +78,7 @@ class NailAnalysisViewSet(viewsets.ViewSet):
             # When calling the FastAPI service, add proper headers
             headers = {
                 'Referer': 'https://nailysis.onrender.com',
+                'Origin': 'https://nailysis.onrender.com',
                 'X-Requested-With': 'XMLHttpRequest',
                 'User-Agent': 'NailysisBackend/1.0'
             }
