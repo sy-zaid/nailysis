@@ -7,16 +7,29 @@ import tensorflow as tf
 from tensorflow.keras.preprocessing.image import img_to_array
 from pathlib import Path
 
-app = FastAPI()
+middleware = [
+    Middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+        expose_headers=["*"]
+    ),
+    Middleware(TrustedHostMiddleware, allowed_hosts=["*"])
+]
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-    expose_headers=["*"]
-)
+app = FastAPI(middleware=middleware)
+
+
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=["*"],
+#     allow_credentials=True,
+#     allow_methods=["*"],
+#     allow_headers=["*"],
+#         expose_headers=["*"]
+# )
 
 BASE_DIR = Path(__file__).resolve().parent
 TFLITE_MODEL_PATH = BASE_DIR / "cnn_model_final-v1.tflite"

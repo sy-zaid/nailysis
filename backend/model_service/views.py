@@ -2,6 +2,9 @@ from rest_framework import viewsets, permissions,status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+
 import requests
 from .models import NailDiseasePrediction, NailImage, Patient
 from .serializers import NailDiseasePredictionSerializer
@@ -17,6 +20,7 @@ class NailAnalysisViewSet(viewsets.ViewSet):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = NailDiseasePredictionSerializer
     
+    @method_decorator(csrf_exempt)
     @action(detail=False, methods=['post'], url_path='analyze')
     def analyze(self, request):
         user = self.request.user
