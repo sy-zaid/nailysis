@@ -184,7 +184,7 @@ const AppointmentDoctor = () => {
             },
           }
         );
-
+        // handle response
         setAppointments(response.data);
         console.log("Response from doctor appointment", response.data);
       } catch (error) {
