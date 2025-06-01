@@ -387,3 +387,14 @@ table {
 .viewButton:hover {
     background-color: #0056b3;
 }
+
+.filtersContainer {
+    display: flex;
+    margin-top: 20px;
+    margin-bottom: -20px;
+    width: 100%;
+}
+
+.patientFilter {
+    margin-left: 30%;
+}

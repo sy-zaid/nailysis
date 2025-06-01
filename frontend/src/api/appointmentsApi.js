@@ -16,7 +16,10 @@ export const getRecommendedTests = async (email_or_id, userRole) => {
     return axios.get(url, getHeaders());
   }
 };
-
+export const getDoctorAppointments = async () => {
+  const url = `${API_URL}/api/doctor_appointments/`;
+  return axios.get(url, getHeaders());
+};
 export const bookAppointment = (appointmentData) => {
   const url = `${API_URL}/api/doctor_appointments/book_appointment/`;
   return axios.post(url, appointmentData, getHeaders());

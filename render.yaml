@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: nailysis-backend
+    env: python
+    buildCommand: ""
+    startCommand: gunicorn backend.wsgi:application
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: backend.settings
