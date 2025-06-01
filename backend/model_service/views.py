@@ -21,9 +21,12 @@ class NailAnalysisViewSet(viewsets.ViewSet):
     serializer_class = NailDiseasePredictionSerializer
     
     # Apply CSRF exemption at the class level for all actions
-    @method_decorator(csrf_exempt, name='dispatch')
-    def create(self, request, *args, **kwargs):
-        return super().create(request, *args, **kwargs)
+    # @method_decorator(csrf_exempt, name='dispatch')
+    # def create(self, request, *args, **kwargs):
+    #     return super().create(request, *args, **kwargs)
+    @method_decorator(csrf_exempt)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
     
     @action(detail=False, methods=['post'], url_path='analyze')
     def analyze(self, request):
