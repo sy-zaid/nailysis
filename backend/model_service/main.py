@@ -7,6 +7,11 @@ import tensorflow as tf
 from tensorflow.keras.preprocessing.image import img_to_array
 from pathlib import Path
 
+from fastapi import FastAPI, HTTPException, UploadFile, File
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware import Middleware
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
+
 middleware = [
     Middleware(
         CORSMiddleware,
