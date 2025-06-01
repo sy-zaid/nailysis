@@ -51,7 +51,7 @@ urlpatterns = [
     path('', include(router.urls)),  # Automatically includes all routes for the viewsets
 ]
 
-urlpatterns += [
-    # ... your other URLs ...
-    re_path(r'^predict/?$', fastapi_proxy, name='fastapi-proxy'),
-]
+# urlpatterns += [
+#     # ... your other URLs ...
+#     re_path(r'^predict/?$', fastapi_proxy, name='fastapi-proxy'),
+# ]
