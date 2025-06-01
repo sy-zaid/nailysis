@@ -15,7 +15,7 @@ from django.utils import timezone
 from django.shortcuts import get_object_or_404
 from collections import defaultdict
 from .main import CLASS_NAMES
-from rest_framework.authentication import SessionAuthentication
+
 class NailAnalysisViewSet(viewsets.ViewSet):
     parser_classes = [MultiPartParser]
     # authentication_classes = [SessionAuthentication]
