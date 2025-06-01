@@ -8,20 +8,38 @@ from django.conf import settings
 import requests
 
 
-def fastapi_proxy(request, path):
-    # Forward the request to FastAPI service
-    fastapi_url = f"{settings.FASTAPI_SERVICE_URL}/{path}"
-    if request.method == 'POST':
-        files = {'file': request.FILES['file']}
-        response = requests.post(fastapi_url, files=files)
-    else:
-        response = requests.get(fastapi_url)
+# In your urls.py
+from django.urls import path, re_path
+from django.http import HttpResponse
+import requests
+from django.conf import settings
+
+def fastapi_proxy(request):
+    """
+    Proxy requests to FastAPI service
+    """
+    fastapi_url = f"{settings.FASTAPI_SERVICE_URL}/predict"
     
-    return HttpResponse(
-        response.content,
-        status=response.status_code,
-        content_type=response.headers.get('content-type')
-    )
+    try:
+        if request.method == 'POST':
+            # Handle file upload
+            file = request.FILES.get('file')
+            if not file:
+                return HttpResponse('No file provided', status=400)
+                
+            files = {'file': (file.name, file, file.content_type)}
+            response = requests.post(fastapi_url, files=files)
+        else:
+            return HttpResponse('Method not allowed', status=405)
+            
+        return HttpResponse(
+            response.content,
+            status=response.status_code,
+            content_type=response.headers.get('content-type')
+        )
+    except Exception as e:
+        return HttpResponse(str(e), status=500)
+
 
 
 # Initialize DefaultRouter instance for appointment API endpoints

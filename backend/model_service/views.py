@@ -6,6 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 
 import requests
+
 from .models import NailDiseasePrediction, NailImage, Patient
 from .serializers import NailDiseasePredictionSerializer
 from users.serializers import PatientSerializer
@@ -15,6 +16,10 @@ from django.utils import timezone
 from django.shortcuts import get_object_or_404
 from collections import defaultdict
 from .main import CLASS_NAMES
+
+import logging
+
+logger = logging.getLogger(__name__)
 
 @method_decorator(csrf_exempt, name='dispatch') 
 class NailAnalysisViewSet(viewsets.ViewSet):
@@ -126,7 +131,12 @@ class NailAnalysisViewSet(viewsets.ViewSet):
                 # Add prediction results to this image's info
                 image_info["predictions"] = top_classes
                 image_data.append(image_info)
-
+            except Exception as e:
+                logger.error(f"Error in nail analysis: {str(e)}", exc_info=True)
+                return Response(
+                    {"error": "Internal server error during analysis"},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
             except requests.exceptions.Timeout:
                 return Response({"error": "FastAPI service timeout"}, status=504)
             except requests.exceptions.ConnectionError:

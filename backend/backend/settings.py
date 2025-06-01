@@ -249,3 +249,18 @@ class EnsureCsrfCookieMiddleware(MiddlewareMixin):
         return None
 
 MIDDLEWARE.append('backend.settings.EnsureCsrfCookieMiddleware')
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+    },
+}
