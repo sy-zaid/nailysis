@@ -184,6 +184,7 @@ CSRF_USE_SESSIONS = False
 CSRF_TRUSTED_ORIGINS = [
     "https://nailysis.onrender.com",
     "http://localhost:5173",
+    "http://localhost:10000",  # Add your FastAPI service
 ]
 
 

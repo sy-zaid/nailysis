@@ -12,29 +12,30 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware import Middleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 
-middleware = [
-    Middleware(
-        CORSMiddleware,
-        allow_origins=["*"],
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-        expose_headers=["*"]
-    ),
-    Middleware(TrustedHostMiddleware, allowed_hosts=["*"])
-]
-
-app = FastAPI(middleware=middleware)
-
-
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=["*"],
-#     allow_credentials=True,
-#     allow_methods=["*"],
-#     allow_headers=["*"],
+# middleware = [
+#     Middleware(
+#         CORSMiddleware,
+#         allow_origins=["*"],
+#         allow_credentials=True,
+#         allow_methods=["*"],
+#         allow_headers=["*"],
 #         expose_headers=["*"]
-# )
+#     ),
+#     Middleware(TrustedHostMiddleware, allowed_hosts=["*"])
+# ]
+
+# app = FastAPI(middleware=middleware)
+app = FastAPI()
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # For development, restrict in production
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+    expose_headers=["*"]
+)
 
 BASE_DIR = Path(__file__).resolve().parent
 TFLITE_MODEL_PATH = BASE_DIR / "cnn_model_final-v1.tflite"

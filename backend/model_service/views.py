@@ -23,6 +23,9 @@ class NailAnalysisViewSet(viewsets.ViewSet):
     @method_decorator(csrf_exempt)
     @action(detail=False, methods=['post'], url_path='analyze')
     def analyze(self, request):
+        # Ensure the request is marked as not needing CSRF
+        request._dont_enforce_csrf_checks = True
+        
         user = self.request.user
         # If user is not a patient, doctor or technician
         if user.role not in ["patient","doctor","lab_technician"]:
@@ -68,12 +71,15 @@ class NailAnalysisViewSet(viewsets.ViewSet):
                 "url": None  # Will be filled if saved to DB
             }
             
+            # When calling the FastAPI service, add proper headers
+            headers = {
+                'Referer': 'https://nailysis.onrender.com',
+                'X-Requested-With': 'XMLHttpRequest',
+                'User-Agent': 'NailysisBackend/1.0'
+            }
             # Increase timeout for heavy predictions
             try:
-                headers = {
-                    'Referer': 'https://nailysis.onrender.com',
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
+                
                 response = requests.post(
                     "http://localhost:10000/predict",  # Use internal hostname
                     files={'file': (file_obj.name, file_obj, file_obj.content_type)},
