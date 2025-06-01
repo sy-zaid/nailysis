@@ -91,12 +91,12 @@ class NailAnalysisViewSet(viewsets.ViewSet):
             }
             # Increase timeout for heavy predictions
             try:
-                fastapi_url = os.getenv('FASTAPI_SERVICE_URL', 'http://localhost:10000')
+                fastapi_url = os.getenv('FASTAPI_SERVICE_URL', 'http://nailysis:10000')
                 response = requests.post(
                     f"{fastapi_url}/predict",
                     files={'file': (file_obj.name, file_obj, file_obj.content_type)},
                     headers={'Referer': request.build_absolute_uri('/')},  # Pass referring URL
-                    timeout=60  # Reduced timeout for faster failure
+                    timeout=30  # Reduced timeout for faster failure
                 )
                 
                 response.raise_for_status()
