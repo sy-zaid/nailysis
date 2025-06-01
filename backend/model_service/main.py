@@ -31,7 +31,7 @@ app = FastAPI()
 # For FastAPI (main.py)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://nailysis.onrender.com", "http://localhost:5173"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["POST", "GET"],
     allow_headers=["*"],
