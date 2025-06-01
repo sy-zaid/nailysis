@@ -186,7 +186,21 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
     "http://localhost:10000",  # Add your FastAPI service
 ]
-
+CSRF_COOKIE_SECURE = True  # For HTTPS
+CSRF_COOKIE_SAMESITE = 'Lax'  # Or 'None' if needed for cross-site
+SESSION_COOKIE_SECURE = True
+CORS_EXPOSE_HEADERS = ['Content-Type', 'X-CSRFToken']
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
 
 CORS_ALLOW_ALL_ORIGINS = False  
 CORS_ALLOW_CREDENTIALS = True

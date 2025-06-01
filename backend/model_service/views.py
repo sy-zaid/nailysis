@@ -15,23 +15,18 @@ from django.utils import timezone
 from django.shortcuts import get_object_or_404
 from collections import defaultdict
 from .main import CLASS_NAMES
+from rest_framework.authentication import SessionAuthentication
 class NailAnalysisViewSet(viewsets.ViewSet):
     parser_classes = [MultiPartParser]
+    authentication_classes = [SessionAuthentication]
     permission_classes = [permissions.AllowAny]
     serializer_class = NailDiseasePredictionSerializer
-    
-    # Apply CSRF exemption at the class level for all actions
-    # @method_decorator(csrf_exempt, name='dispatch')
-    # def create(self, request, *args, **kwargs):
-    #     return super().create(request, *args, **kwargs)
-    @method_decorator(csrf_exempt)
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
+
     
     @action(detail=False, methods=['post'], url_path='analyze')
     def analyze(self, request):
         # Ensure the request is marked as not needing CSRF
-        request._dont_enforce_csrf_checks = True
+        # request._dont_enforce_csrf_checks = True
         
         user = self.request.user
         # If user is not a patient, doctor or technician
