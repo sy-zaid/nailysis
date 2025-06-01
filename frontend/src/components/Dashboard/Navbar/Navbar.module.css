@@ -11,23 +11,40 @@
   cursor: pointer;
 }
 
-.search {
+.searchBar {
   display: flex;
   align-items: center;
-  background-color: #f5f5f5;
-  padding: 8px 16px;
-  border-radius: 50px;
-  gap: 12px;
-  width: 417px;
-  margin-left: 20px;
+  flex-basis: 30%;
+  position: relative;
 }
 
+.searchBar input {
+  outline: none;
+  border: none;
+  background-color: #f5f5f5;
+  border-radius: 50px;
+  width: 100%;
+}
+
+.searchBar input::placeholder {
+  font-size: 14px;
+}
+
+.searchBar i {
+  font-size: 15px;
+  color: #777777;
+  position: absolute;
+  right: 20px;
+  cursor: pointer;
+}
+
+/* 
 .search h5 {
   font-size: 16px;
   color: #888;
   margin: 0;
   flex-grow: 1;
-}
+} */
 
 .navSide {
   display: flex;
@@ -39,15 +56,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #0067ff;
-  color: #ffffff;
+  background-color: #007bff;
+  color: white;
   border: none;
-  border-radius: 50px;
+  border-radius: 30px;
   padding: 10px 20px;
-  font-size: 16px;
   cursor: pointer;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.3s ease;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+  transition: all 0.1s;
 }
 
 .navSide button:hover {
@@ -73,4 +89,34 @@
   background-color: red;
   border-radius: 50%;
   border: 2px solid #ffffff;
+}
+
+/* NAVBAR RESPONSIVENESS */
+
+/* tablets & large phones */
+@media screen and (max-width: 768px) {
+  .container {
+    padding: 8px 12px;
+    margin-bottom: 70px;
+  }
+
+  /* hide search input to save space */
+  .searchBar {
+    display: none;
+  }
+  .navSide button {
+  }
+}
+
+/* narrow phones */
+@media screen and (max-width: 480px) {
+  .navSide {
+    gap: 12px;
+  }
+
+  /* make notification icon a bit smaller */
+  .navSide div img {
+    width: 20px;
+    height: 20px;
+  }
 }

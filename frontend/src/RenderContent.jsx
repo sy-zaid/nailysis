@@ -84,8 +84,6 @@ export const renderDoctorContent = (view) => {
       return <ViewAppointmentsDoctor name="My Appointments" />;
     case "Appointments History":
       return <ClinicAppointmentHistory name="Appointments History" />;
-    case "Manage Availability":
-      return <PlaceholderComponent name="Manage Availability" />;
     case "My Cancellation Requests":
       return <DocCancellationRequest name="My Cancellation Requests" />;
 
@@ -196,8 +194,6 @@ export const renderLabTechnicianContent = (view) => {
       return <ViewTechnicianAppointments name="View Appointments" />;
     case "Appointments History":
       return <LabAppointmentHistory name="Appointments History" />;
-    case "Manage Availability":
-      return <PlaceholderComponent name="Manage Availability" />;
     case "My Cancellation Requests":
       return <TechCancellationRequest name="My Cancellation Requests" />;
 

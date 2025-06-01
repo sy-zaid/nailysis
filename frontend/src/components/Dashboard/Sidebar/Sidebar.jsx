@@ -56,7 +56,6 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
         subItems: [
           { label: "My Appointments" },
           { label: "Appointments History" },
-          { label: "Manage Availability" },
           { label: "My Cancellation Requests" },
         ],
       },
@@ -158,7 +157,6 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
         subItems: [
           { label: "View Appointments" },
           { label: "Appointments History" },
-          { label: "Manage Availability" },
           { label: "My Cancellation Requests" },
         ],
       },
@@ -221,42 +219,45 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
             <img src={"icon-menu-black.png"} alt={"menu button"} />
           </button>
           <div className={styles.floatingButtons}>
-            <div 
-              className={styles.floatingCircle} 
+            <div
+              className={styles.floatingCircle}
               onClick={() => setView("")}
               title="Dashboard"
             >
               <img src="icon-dashboard-black.png" alt="Dashboard" />
             </div>
-            <div 
+            <div
               className={styles.floatingCircle}
               onClick={() => setView("Test Results")}
               title="Test Results"
             >
               <img src="icon-test-results-black.png" alt="Test Results" />
             </div>
-            <div 
+            <div
               className={styles.floatingCircle}
               onClick={() => setView("Diagnostic Results")}
               title="Diagnostic Results"
             >
-              <img src="icon-diagnostic-results-black.png" alt="Diagnostic Results" />
+              <img
+                src="icon-diagnostic-results-black.png"
+                alt="Diagnostic Results"
+              />
             </div>
-            <div 
+            <div
               className={styles.floatingCircle}
               onClick={() => setView("Appointments")}
               title="Appointments"
             >
               <img src="icon-appointments-black.png" alt="Appointments" />
             </div>
-            <div 
+            <div
               className={styles.floatingCircle}
               onClick={() => setView("Billing & Invoice")}
               title="Billing & Invoice"
             >
               <img src="icon-billing-black.png" alt="Billing & Invoice" />
             </div>
-            <div 
+            <div
               className={styles.floatingCircle}
               onClick={() => setView("Feedbacks")}
               title="Feedbacks"
@@ -303,7 +304,10 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
               <h3 className={styles.textMedium}>Dashboard</h3>
             </div>
           </button>
-          <button className={styles.sideButton} onClick={() => setView("Analytics")}>
+          <button
+            className={styles.sideButton}
+            onClick={() => setView("Analytics")}
+          >
             <div className={styles.buttonContent}>
               <img src="icon-analytics-black.jpg" alt="analytics icon" />
               <h3 className={styles.textMedium}>Reports & Analytics</h3>
@@ -311,19 +315,24 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
           </button>
         </div>
 
-         {/* Section 3 */}
-         <div className={`${styles.sectionThree}`}>
-          <div className={`${styles.sectionThreeSecondDiv} ${styles.secThreeCustomScrollBar}`}>
+        {/* Section 3 */}
+        <div className={`${styles.sectionThree}`}>
+          <div
+            className={`${styles.sectionThreeSecondDiv} ${styles.secThreeCustomScrollBar}`}
+          >
             {currentMenu.map((item, index) => (
               <div key={index}>
                 {/* Main Item */}
-                <button className={styles.sideButton} onClick={() => {
-                  if (item.subItems.length === 0) {
-                    setView(item.label);
-                  } else {
-                    toggleDropdown(index);
-                  }
-                }}>
+                <button
+                  className={styles.sideButton}
+                  onClick={() => {
+                    if (item.subItems.length === 0) {
+                      setView(item.label);
+                    } else {
+                      toggleDropdown(index);
+                    }
+                  }}
+                >
                   <div className={styles.buttonContent}>
                     <img src={item.icon} alt={`${item.label} icon`} />
                     <h3 className={styles.textMedium}>{item.label}</h3>
@@ -332,13 +341,23 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
 
                 {/* Dropdown items */}
                 {item.subItems.length > 0 && (
-                  <div className={`${styles.sbdropdown} ${openDropdown === index ? styles.sbdropdownopen : ""}`}>
+                  <div
+                    className={`${styles.sbdropdown} ${
+                      openDropdown === index ? styles.sbdropdownopen : ""
+                    }`}
+                  >
                     {item.subItems.map((subItem, subIndex) => (
-                      <button key={subIndex} className={styles.sbsubButton} onClick={() => {
-                        setView(`${subItem.label}`);
-                      }}>
+                      <button
+                        key={subIndex}
+                        className={styles.sbsubButton}
+                        onClick={() => {
+                          setView(`${subItem.label}`);
+                        }}
+                      >
                         <div className={styles.buttonContent}>
-                          <h3 className={styles.sbtextMedium}>{subItem.label}</h3>
+                          <h3 className={styles.sbtextMedium}>
+                            {subItem.label}
+                          </h3>
                         </div>
                       </button>
                     ))}
