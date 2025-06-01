@@ -58,6 +58,7 @@ def create_dummy_patients(n):
             last_name=fake.last_name(),
             password="pat",
             role="patient",
+            date_joined=timezone.now()
         )
         patient = Patient.objects.create(
             user=user,
@@ -78,6 +79,7 @@ def create_dummy_doctors(n):
             last_name=fake.last_name(),
             password="doc",
             role="doctor",
+            date_joined=timezone.now()
         )
         doctor = Doctor.objects.create(
             user=user,
@@ -100,6 +102,7 @@ def create_dummy_lab_technicians(n):
             last_name=fake.last_name(),
             password="tech",
             role="lab_technician",
+            date_joined=timezone.now()
         )
         tech = LabTechnician.objects.create(
             user=user,
