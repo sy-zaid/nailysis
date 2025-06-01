@@ -88,10 +88,12 @@ class NailAnalysisViewSet(viewsets.ViewSet):
             try:
                 
                 response = requests.post(
-                    "http://localhost:10000/predict",  # Use internal hostname
+                    # "http://localhost:10000/predict",  # ✅ If using Render's internal port
+                    # OR (better for production):
+                    f"{request.scheme}://{request.get_host()}/predict",  # Uses same domain
                     files={'file': (file_obj.name, file_obj, file_obj.content_type)},
-                    headers=headers,
-                    timeout=90  # Increase timeout to 90 seconds
+                    headers={'Referer': request.build_absolute_uri('/')},  # Pass referring URL
+                    timeout=90
                 )
                 response.raise_for_status()
                 result = response.json()

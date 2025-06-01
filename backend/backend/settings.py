@@ -186,6 +186,12 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # Your frontend URL
 
 ]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://nailysis.onrender.com",
+    "http://localhost:5173",
+]
+
 AUTH_USER_MODEL = "users.CustomUser"
 
 MEDIA_URL = "/media/"
