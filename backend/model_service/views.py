@@ -16,17 +16,21 @@ from django.shortcuts import get_object_or_404
 from collections import defaultdict
 from .main import CLASS_NAMES
 
+@method_decorator(csrf_exempt, name='dispatch') 
 class NailAnalysisViewSet(viewsets.ViewSet):
     parser_classes = [MultiPartParser]
-    # authentication_classes = [SessionAuthentication]
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
     serializer_class = NailDiseasePredictionSerializer
-
+    
+    # Apply CSRF exemption at the class level for all actions
+    @method_decorator(csrf_exempt, name='dispatch')
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
     
     @action(detail=False, methods=['post'], url_path='analyze')
     def analyze(self, request):
         # Ensure the request is marked as not needing CSRF
-        # request._dont_enforce_csrf_checks = True
+        request._dont_enforce_csrf_checks = True
         
         user = self.request.user
         # If user is not a patient, doctor or technician
@@ -75,10 +79,10 @@ class NailAnalysisViewSet(viewsets.ViewSet):
             
             # When calling the FastAPI service, add proper headers
             headers = {
-                'Referer': 'https://nailysis.onrender.com',
-                'Origin': 'https://nailysis.onrender.com',
-                'X-Requested-With': 'XMLHttpRequest',
-                'User-Agent': 'NailysisBackend/1.0'
+            'Referer': 'https://nailysis.onrender.com',
+            'Origin': 'https://nailysis.onrender.com',
+            'X-Requested-With': 'XMLHttpRequest',
+            'User-Agent': 'NailysisBackend/1.0'
             }
             # Increase timeout for heavy predictions
             try:

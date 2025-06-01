@@ -87,7 +87,7 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',  # Add this for static files
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    # 'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -223,3 +223,6 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # Add this at the bottom of settings.py
 WHITENOISE_ROOT = os.path.join(BASE_DIR, '../frontend/dist')  # Path to your Vite build output
 WHITENOISE_INDEX_FILE = True  # Allow WhiteNoise to serve index.html
+
+# In your Django settings or views
+FASTAPI_SERVICE_URL = os.getenv('FASTAPI_SERVICE_URL', 'http://localhost:10000')

@@ -28,17 +28,17 @@ from fastapi.middleware.trustedhost import TrustedHostMiddleware
 app = FastAPI()
 
 
+# For FastAPI (main.py)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://nailysis.onrender.com", "http://localhost:8000", "http://localhost:5173"],
+    allow_origins=["https://nailysis.onrender.com", "http://localhost:5173"],
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["POST", "GET"],
     allow_headers=["*"],
-    expose_headers=["*"]
 )
 
-BASE_DIR = Path(__file__).resolve().parent
-TFLITE_MODEL_PATH = BASE_DIR / "cnn_model_final-v1.tflite"
+BASE_DIR = Path(__file__).resolve().parent.parent 
+TFLITE_MODEL_PATH = BASE_DIR / "model_service" / "cnn_model_final-v1.tflite" 
 
 CLASS_NAMES = [
     "beaus lines", "bluish nails", "clubbing", "healthy nails", "koilonychia",
@@ -48,6 +48,7 @@ CLASS_NAMES = [
 
 # Load the TFLite model only once
 interpreter = tf.lite.Interpreter(model_path=str(TFLITE_MODEL_PATH))
+
 interpreter.allocate_tensors()
 
 # Get input and output tensor details
