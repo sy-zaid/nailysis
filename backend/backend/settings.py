@@ -231,7 +231,7 @@ WHITENOISE_ROOT = os.path.join(BASE_DIR, '../frontend/dist')  # Path to your Vit
 WHITENOISE_INDEX_FILE = True  # Allow WhiteNoise to serve index.html
 
 # In your Django settings or views
-FASTAPI_SERVICE_URL = os.getenv('FASTAPI_SERVICE_URL', 'http://localhost:10000')
+FASTAPI_SERVICE_URL = os.getenv('FASTAPI_SERVICE_URL', 'http://nailysis:10000')
 
 # Session settings for CSRF
 SESSION_COOKIE_SAMESITE = 'None'
