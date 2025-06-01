@@ -36,6 +36,13 @@ app.add_middleware(
     allow_methods=["POST", "GET"],
     allow_headers=["*"],
 )
+# Disable CSRF for FastAPI endpoints (since it's an API service)
+@app.middleware("http")
+async def disable_csrf(request, call_next):
+    response = await call_next(request)
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Credentials"] = "true"
+    return response
 
 BASE_DIR = Path(__file__).resolve().parent.parent 
 TFLITE_MODEL_PATH = BASE_DIR / "model_service" / "cnn_model_final-v1.tflite" 

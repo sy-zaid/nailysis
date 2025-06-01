@@ -29,7 +29,14 @@ const UploadImage = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState(null);
   const [analysisResults, setAnalysisResults] = useState(null);
-
+  // Ensure you're sending CSRF token correctly
+  const getCsrfToken = () => {
+    const cookieValue = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("csrftoken="))
+      ?.split("=")[1];
+    return cookieValue || "";
+  };
   // For unique toast IDs
   const toastCounterRef = useRef(0);
   const getNextToastId = () => {
@@ -198,7 +205,7 @@ const UploadImage = () => {
           headers: {
             "Content-Type": "multipart/form-data",
             Authorization: `Bearer ${localStorage.getItem("access")}`,
-            "X-CSRFToken": csrfToken, // Add CSRF token
+            "X-CSRFToken": getCsrfToken(), // Add CSRF token
           },
           withCredentials: true, // Important for cookies
           onUploadProgress: (progressEvent) => {

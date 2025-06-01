@@ -232,3 +232,20 @@ WHITENOISE_INDEX_FILE = True  # Allow WhiteNoise to serve index.html
 
 # In your Django settings or views
 FASTAPI_SERVICE_URL = os.getenv('FASTAPI_SERVICE_URL', 'http://localhost:10000')
+
+# Session settings for CSRF
+SESSION_COOKIE_SAMESITE = 'None'
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SAMESITE = 'None'
+CSRF_COOKIE_SECURE = True
+
+# Add this at the bottom of settings.py
+from django.middleware.csrf import get_token
+from django.utils.deprecation import MiddlewareMixin
+
+class EnsureCsrfCookieMiddleware(MiddlewareMixin):
+    def process_request(self, request):
+        get_token(request)
+        return None
+
+MIDDLEWARE.append('backend.settings.EnsureCsrfCookieMiddleware')
