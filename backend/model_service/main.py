@@ -7,26 +7,7 @@ import tensorflow as tf
 from tensorflow.keras.preprocessing.image import img_to_array
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException, UploadFile, File
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.middleware import Middleware
-from fastapi.middleware.trustedhost import TrustedHostMiddleware
-
-# middleware = [
-#     Middleware(
-#         CORSMiddleware,
-#         allow_origins=["*"],
-#         allow_credentials=True,
-#         allow_methods=["*"],
-#         allow_headers=["*"],
-#         expose_headers=["*"]
-#     ),
-#     Middleware(TrustedHostMiddleware, allowed_hosts=["*"])
-# ]
-
-# app = FastAPI(middleware=middleware)
 app = FastAPI()
-
 
 app.add_middleware(
     CORSMiddleware,
@@ -46,13 +27,18 @@ CLASS_NAMES = [
     "onycholysis", "onychomycosis", "psoriasis", "terrys nails"
 ]
 
-# Load the TFLite model only once
-interpreter = tf.lite.Interpreter(model_path=str(TFLITE_MODEL_PATH))
-interpreter.allocate_tensors()
+# Global variable to hold the interpreter (initialized later)
+interpreter = None
+input_details = None
+output_details = None
 
-# Get input and output tensor details
-input_details = interpreter.get_input_details()
-output_details = interpreter.get_output_details()
+def load_model():
+    global interpreter, input_details, output_details
+    if interpreter is None:
+        interpreter = tf.lite.Interpreter(model_path=str(TFLITE_MODEL_PATH))
+        interpreter.allocate_tensors()
+        input_details = interpreter.get_input_details()
+        output_details = interpreter.get_output_details()
 
 def preprocess_image(image, target_size=(256, 256)):
     image = image.resize(target_size)
@@ -63,17 +49,15 @@ def preprocess_image(image, target_size=(256, 256)):
 @app.post("/predict")
 async def predict(file: UploadFile = File(...)):
     try:
+        load_model()  # Lazy-load the model if it's not already loaded
+
         contents = await file.read()
         img = Image.open(io.BytesIO(contents)).convert('RGB')
         preprocessed_img = preprocess_image(img)
 
-        # Set input tensor
         interpreter.set_tensor(input_details[0]['index'], preprocessed_img)
-
-        # Run inference
         interpreter.invoke()
 
-        # Get output tensor
         output_data = interpreter.get_tensor(output_details[0]['index'])[0]
         predicted_index = int(np.argmax(output_data))
         predicted_class = CLASS_NAMES[predicted_index]
