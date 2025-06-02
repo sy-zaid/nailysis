@@ -61,11 +61,12 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
   });
 
   // Fetch recommended tests
+  // Update your recommended tests useEffect
   useEffect(() => {
     const fetchData = async () => {
-      var response;
       try {
-        if (curUser[0].role === "lab_admin") {
+        let response;
+        if (curUser?.[0]?.role === "lab_admin") {
           response = await getRecommendedTests(formData.email, "lab_admin");
         } else {
           response = await getRecommendedTests(
@@ -73,55 +74,91 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
             "patient"
           );
         }
-        setRecommendedTests(response.data);
-        console.log(response.data);
+
+        // Ensure we have a valid array response
+        const tests = Array.isArray(response?.data)
+          ? response.data.filter((item) => typeof item === "string")
+          : [];
+
+        setRecommendedTests(tests);
       } catch (error) {
         console.error("Error fetching recommended tests:", error);
         setRecommendedTests([]);
       }
     };
+
     fetchData();
   }, [formData.email]);
 
   // Transform recommended tests to match Select component format
   const getRecommendedTestOptions = () => {
-    // Ensure both are arrays before proceeding
-    if (!Array.isArray(recommendedTests)) recommendedTests = [];
-    if (!Array.isArray(availableLabTests)) availableLabTests = [];
+    // Ensure we have valid arrays to work with
+    const safeRecommendedTests = Array.isArray(recommendedTests)
+      ? recommendedTests
+      : [];
+    const safeAvailableLabTests = Array.isArray(availableLabTests)
+      ? availableLabTests
+      : [];
+
+    // Early return if no data
+    if (
+      safeAvailableLabTests.length === 0 ||
+      safeRecommendedTests.length === 0
+    ) {
+      return [];
+    }
 
     // Create a normalized map of available tests
-    const testMap = availableLabTests.reduce((acc, test) => {
-      const testName = test.label.split(" | ")[0].trim().toLowerCase();
-      // Store both original and simplified names
-      acc[testName] = test;
-      acc[testName.replace(/[^a-z]/g, "")] = test; // Remove all non-alphabetic characters
+    const testMap = safeAvailableLabTests.reduce((acc, test) => {
+      if (!test || !test.label) return acc;
+
+      try {
+        const testName =
+          test.label.split(" | ")[0]?.trim()?.toLowerCase() || "";
+        if (testName) {
+          acc[testName] = test;
+          acc[testName.replace(/[^a-z]/g, "")] = test;
+        }
+      } catch (e) {
+        console.warn("Error processing test:", test, e);
+      }
       return acc;
     }, {});
 
-    return recommendedTests
+    return safeRecommendedTests
+      .filter((testName) => typeof testName === "string") // Only keep string test names
       .map((testName) => {
-        const normalizedTestName = testName.toLowerCase();
-        // Try direct match first
-        if (testMap[normalizedTestName]) {
-          return testMap[normalizedTestName];
-        }
-        // Try match without special characters
-        const cleanTestName = normalizedTestName.replace(/[^a-z]/g, "");
-        if (testMap[cleanTestName]) {
-          return testMap[cleanTestName];
-        }
-        // Try partial match
-        for (const [key, test] of Object.entries(testMap)) {
-          if (key.includes(cleanTestName) || cleanTestName.includes(key)) {
-            return test;
+        try {
+          const normalizedTestName = testName.toLowerCase().trim();
+
+          // Try direct match
+          if (testMap[normalizedTestName]) {
+            return testMap[normalizedTestName];
           }
+
+          // Try match without special characters
+          const cleanTestName = normalizedTestName.replace(/[^a-z]/g, "");
+          if (testMap[cleanTestName]) {
+            return testMap[cleanTestName];
+          }
+
+          // Try partial match
+          for (const [key, test] of Object.entries(testMap)) {
+            if (key.includes(cleanTestName) || cleanTestName.includes(key)) {
+              return test;
+            }
+          }
+        } catch (e) {
+          console.warn("Error matching test:", testName, e);
+          return null;
         }
         return null;
       })
+      .filter((test) => test !== null) // Remove null values
       .filter(
         (test, index, self) =>
-          test && self.findIndex((t) => t.value === test.value) === index
-      ); // Remove duplicates
+          index === self.findIndex((t) => t.value === test.value) // Remove duplicates
+      );
   };
 
   // ----- HANDLERS
@@ -558,7 +595,11 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
                   <div>
                     <Select
                       isMulti
-                      options={Array.isArray(availableLabTests) ? availableLabTests : []}
+                      options={
+                        Array.isArray(availableLabTests)
+                          ? availableLabTests
+                          : []
+                      }
                       getOptionLabel={(e) => e.label}
                       getOptionValue={(e) => e.value} // Simplified to just use value
                       placeholder="Select required lab tests"
