@@ -5,23 +5,34 @@ import Header from "../../components/Dashboard/Header/Header";
 import Sidebar from "../../components/Dashboard/Sidebar/Sidebar";
 import styles from "../../components/Dashboard/Dashboard.module.css";
 import UpcomingTest from "../../components/Dashboard/UpcomingTest/UpcomingTest";
+import useCurrentUserData from "../../useCurrentUserData";
 
 function LabAdminDashboard() {
-    return (
-        <div>
-          <Navbar />
-          <Header curUserRole={'Lab Admin'}/>
-          <div className={styles.main}>
-            <div className={styles.cards}>
-              <Cards heading="Patients" />
-              <Cards heading="Requests" />
-              <Cards heading="Payments" />
-              <Cards heading="Reports" />
-            </div>
-            <UpcomingTest />
-          </div>
+  const { data: curUser } = useCurrentUserData();
+
+  // Fallbacks in case data isn't loaded yet
+  const user = (curUser && curUser.length > 0) ? curUser[0] : {};
+  const fullName = `${user.first_name || ""} ${user.last_name || ""}`;
+  const role = user.role || "Lab Admin";
+
+  return (
+    <div>
+      <Navbar />
+      <Header 
+        mainHeading={`Welcome, ${fullName}`}
+        subHeading={`${role.charAt(0).toUpperCase() + role.slice(1)} Dashboard`}
+      />
+      <div className={styles.main}>
+        <div className={styles.cards}>
+          <Cards heading="Patients" />
+          <Cards heading="Requests" />
+          <Cards heading="Payments" />
+          <Cards heading="Reports" />
         </div>
-      );
+        <UpcomingTest />
+      </div>
+    </div>
+  );
 }
 
 export default LabAdminDashboard;
