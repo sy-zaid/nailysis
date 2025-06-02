@@ -3,7 +3,7 @@ import styles from "../components/Form/Form.module.css"
 import RegisterForm from "../components/Form/RegisterForm";
 import Picture from "../components/Picture/Picture";
 
-const Register = ({ registrationEndpoint = "/user/register/" }) => {
+const Register = ({ registrationEndpoint = "user/register/" }) => {
   return (
     <div className={styles.container}>
       <Picture />
