@@ -168,7 +168,7 @@ function RegisterForm({ route }) {
     } catch (error) {
       console.error(error);
       if (error.response) {
-        toast.error(error.response.data.error || "User Already Exists", {
+        toast.error(error.response.data.error || error || "User Already Exists", {
           className: "custom-toast",
         });
       } else {
