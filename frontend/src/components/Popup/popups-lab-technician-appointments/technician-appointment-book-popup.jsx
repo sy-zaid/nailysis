@@ -38,13 +38,13 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
     recommendedTests: false,
     slots: false,
     specializations: false,
-    technicians: false
+    technicians: false,
   });
   const [apiErrors, setApiErrors] = useState({
     labTests: null,
     recommendedTests: null,
     specializations: null,
-    technicians: null
+    technicians: null,
   });
 
   // ----- IMPORTANT DATA
@@ -79,62 +79,57 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
   const labTestsCache = {
     data: null,
     timestamp: null,
-    isValid: () => labTestsCache.data && Date.now() - labTestsCache.timestamp < 300000 // 5 minute cache
+    isValid: () =>
+      labTestsCache.data && Date.now() - labTestsCache.timestamp < 300000, // 5 minute cache
   };
 
   // ----- API FETCHING FUNCTIONS
   const fetchLabTests = async () => {
-    setLoadingStates(prev => ({...prev, labTests: true}));
-    setApiErrors(prev => ({...prev, labTests: null}));
+    setLoadingStates((prev) => ({ ...prev, labTests: true }));
+    setApiErrors((prev) => ({ ...prev, labTests: null }));
 
     try {
       // Return cached data if valid
       if (labTestsCache.isValid()) {
         setAvailableLabTests(labTestsCache.data);
-        setAvailableTestPrices(labTestsCache.data.map(test => ({
-          id: test.value,
-          price: parseFloat(test.label.split("|")[1].trim().split(" ")[0])
-        })));
+        setAvailableTestPrices(labTestsCache.prices);
         return;
       }
 
-      const response = await axios.get(`${API_URL}/api/lab_tests`, {
-        ...getHeaders(),
-        timeout: 10000
-      });
+      const response = await getAvailableLabTests();
 
-      if (!response?.data) {
-        throw new Error("No data received from API");
-      }
-
+      // Ensure response.data is an array
       const testsData = Array.isArray(response.data) ? response.data : [];
-      const transformedData = testsData.map(test => ({
+      const transformedData = testsData.map((test) => ({
         value: test.id,
-        label: `${test.label} | ${test.price} PKR`
+        label: `${test.label} | ${test.price} PKR`,
+      }));
+
+      const prices = testsData.map((test) => ({
+        id: test.id,
+        price: test.price,
       }));
 
       // Update cache
       labTestsCache.data = transformedData;
+      labTestsCache.prices = prices;
       labTestsCache.timestamp = Date.now();
 
       setAvailableLabTests(transformedData);
-      setAvailableTestPrices(testsData.map(test => ({
-        id: test.id,
-        price: test.price
-      })));
+      setAvailableTestPrices(prices);
     } catch (error) {
       console.error("Error fetching lab tests:", error);
-      setApiErrors(prev => ({...prev, labTests: error.message}));
+      setApiErrors((prev) => ({ ...prev, labTests: error.message }));
       setAvailableLabTests([]);
       setAvailableTestPrices([]);
     } finally {
-      setLoadingStates(prev => ({...prev, labTests: false}));
+      setLoadingStates((prev) => ({ ...prev, labTests: false }));
     }
   };
 
   const fetchRecommendedTests = async () => {
-    setLoadingStates(prev => ({...prev, recommendedTests: true}));
-    setApiErrors(prev => ({...prev, recommendedTests: null}));
+    setLoadingStates((prev) => ({ ...prev, recommendedTests: true }));
+    setApiErrors((prev) => ({ ...prev, recommendedTests: null }));
 
     try {
       let response;
@@ -148,73 +143,79 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
       setRecommendedTests(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error("Error fetching recommended tests:", error);
-      setApiErrors(prev => ({...prev, recommendedTests: error.message}));
+      setApiErrors((prev) => ({ ...prev, recommendedTests: error.message }));
       setRecommendedTests([]);
     } finally {
-      setLoadingStates(prev => ({...prev, recommendedTests: false}));
+      setLoadingStates((prev) => ({ ...prev, recommendedTests: false }));
     }
   };
 
   const fetchSpecializations = async () => {
-    setLoadingStates(prev => ({...prev, specializations: true}));
-    setApiErrors(prev => ({...prev, specializations: null}));
+    setLoadingStates((prev) => ({ ...prev, specializations: true }));
+    setApiErrors((prev) => ({ ...prev, specializations: null }));
 
     try {
       const response = await getTechnicianSpecializations();
       setSpecializations(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
       console.error("Failed to fetch specializations", error);
-      setApiErrors(prev => ({...prev, specializations: error.message}));
+      setApiErrors((prev) => ({ ...prev, specializations: error.message }));
       setSpecializations([]);
     } finally {
-      setLoadingStates(prev => ({...prev, specializations: false}));
+      setLoadingStates((prev) => ({ ...prev, specializations: false }));
     }
   };
 
   const fetchLabTechnicians = async () => {
     if (!formData.specialization) return;
 
-    setLoadingStates(prev => ({...prev, technicians: true}));
-    setApiErrors(prev => ({...prev, technicians: null}));
+    setLoadingStates((prev) => ({ ...prev, technicians: true }));
+    setApiErrors((prev) => ({ ...prev, technicians: null }));
 
     try {
-      const response = await getTechnicianFromSpecialization(formData.specialization);
-      const formattedTechnicians = Array.isArray(response.data) 
-        ? response.data.map(tech => ({
+      const response = await getTechnicianFromSpecialization(
+        formData.specialization
+      );
+      const formattedTechnicians = Array.isArray(response.data)
+        ? response.data.map((tech) => ({
             id: tech.user.user_id,
-            name: `${tech.user.first_name} ${tech.user.last_name}`
+            name: `${tech.user.first_name} ${tech.user.last_name}`,
           }))
         : [];
       setLabTechnicians(formattedTechnicians);
     } catch (error) {
       console.error("Failed to fetch labTechnicians", error);
-      setApiErrors(prev => ({...prev, technicians: error.message}));
+      setApiErrors((prev) => ({ ...prev, technicians: error.message }));
       setLabTechnicians([]);
     } finally {
-      setLoadingStates(prev => ({...prev, technicians: false}));
+      setLoadingStates((prev) => ({ ...prev, technicians: false }));
     }
   };
 
   const fetchAvailableSlots = async (technicianId, appointmentDate) => {
     if (!technicianId || !appointmentDate) return;
 
-    setLoadingStates(prev => ({...prev, slots: true}));
-    
+    setLoadingStates((prev) => ({ ...prev, slots: true }));
+
     try {
-      const response = await getAvailableSlots(null, technicianId, appointmentDate);
+      const response = await getAvailableSlots(
+        null,
+        technicianId,
+        appointmentDate
+      );
       setAvailableSlots(Array.isArray(response) ? response : []);
     } catch (error) {
       console.error("Failed to fetch available slots", error);
       setAvailableSlots([]);
     } finally {
-      setLoadingStates(prev => ({...prev, slots: false}));
+      setLoadingStates((prev) => ({ ...prev, slots: false }));
     }
   };
 
   // ----- USE-EFFECTS
   useEffect(() => {
     let isMounted = true;
-    
+
     if (isMounted) {
       if (curUserRole === "patient" && curUser && curUser.length > 0) {
         setPatient([curUser[0].patient.user, curUser[0].patient]);
@@ -234,7 +235,10 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
   }, []);
 
   useEffect(() => {
-    if (formData.email || (curUser?.[0]?.user_id && curUser?.[0]?.role === "patient")) {
+    if (
+      formData.email ||
+      (curUser?.[0]?.user_id && curUser?.[0]?.role === "patient")
+    ) {
       fetchRecommendedTests();
     }
   }, [formData.email, curUser]);
@@ -254,23 +258,26 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
 
   const getRecommendedTestOptions = () => {
     try {
-      if (!Array.isArray(recommendedTests) || !Array.isArray(availableLabTests)) return [];
-      if (recommendedTests.length === 0 || availableLabTests.length === 0) return [];
+      if (!Array.isArray(recommendedTests) || !Array.isArray(availableLabTests))
+        return [];
+      if (recommendedTests.length === 0 || availableLabTests.length === 0)
+        return [];
 
       const testMap = new Map();
-      availableLabTests.forEach(test => {
+      availableLabTests.forEach((test) => {
         const testName = test.label.split(" | ")[0].trim().toLowerCase();
         testMap.set(testName, test);
       });
 
       return recommendedTests
-        .map(testName => {
+        .map((testName) => {
           const normalizedTestName = testName.toLowerCase().trim();
           return testMap.get(normalizedTestName);
         })
         .filter(Boolean)
-        .filter((test, index, self) => 
-          index === self.findIndex(t => t.value === test.value)
+        .filter(
+          (test, index, self) =>
+            index === self.findIndex((t) => t.value === test.value)
         );
     } catch (error) {
       console.error("Error in getRecommendedTestOptions:", error);
@@ -281,7 +288,7 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
   const handleTestSelection = (selectedTests) => {
     const safeSelectedTests = Array.isArray(selectedTests) ? selectedTests : [];
     const totalFee = calculateTotalFee(safeSelectedTests, availableTestPrices);
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       requestedLabTests: safeSelectedTests,
       fee: totalFee.toFixed(2),
@@ -298,16 +305,17 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
       const combinedTests = [
         ...formData.requestedLabTests,
         ...recommendedOptions.filter(
-          recTest => !formData.requestedLabTests.some(
-            existingTest => existingTest.value === recTest.value
-          )
+          (recTest) =>
+            !formData.requestedLabTests.some(
+              (existingTest) => existingTest.value === recTest.value
+            )
         ),
       ];
       handleTestSelection(combinedTests);
     } else {
-      const recommendedValues = recommendedOptions.map(test => test.value);
+      const recommendedValues = recommendedOptions.map((test) => test.value);
       const filteredTests = formData.requestedLabTests.filter(
-        test => !recommendedValues.includes(test.value)
+        (test) => !recommendedValues.includes(test.value)
       );
       handleTestSelection(filteredTests);
     }
@@ -315,7 +323,7 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
 
   const handleBookAppointment = async (e) => {
     e.preventDefault();
-    
+
     if (!formData.specialization) {
       toast.warning("Please select specialization");
       return;
@@ -332,7 +340,10 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
       toast.warning("Please select appointment slot");
       return;
     }
-    if (!formData.requestedLabTests || formData.requestedLabTests.length === 0) {
+    if (
+      !formData.requestedLabTests ||
+      formData.requestedLabTests.length === 0
+    ) {
       toast.warning("Please select required lab test");
       return;
     }
@@ -340,13 +351,17 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
     const payload = {
       lab_technician_id: formData.labTechnicianId,
       slot_id: formData.slotId,
-      requested_lab_tests: formData.requestedLabTests.map(test => test.value),
+      requested_lab_tests: formData.requestedLabTests.map((test) => test.value),
       specialization: formData.specialization,
       fee: formData.fee,
       notes: formData.notes,
-      patient_first_name: patient?.[0]?.first_name || formData.patientFirstName || "",
-      patient_last_name: patient?.[0]?.last_name || formData.patientLastName || "",
-      patient_age: patient?.[1]?.date_of_birth ? calculateAge(patient[1].date_of_birth) : "",
+      patient_first_name:
+        patient?.[0]?.first_name || formData.patientFirstName || "",
+      patient_last_name:
+        patient?.[0]?.last_name || formData.patientLastName || "",
+      patient_age: patient?.[1]?.date_of_birth
+        ? calculateAge(patient[1].date_of_birth)
+        : "",
       patient_gender: patient?.[1]?.gender || formData.gender || "",
       patient_phone: patient?.[0]?.phone || formData.phone || "",
       patient_email: patient?.[0]?.email || formData.email || "",
@@ -354,8 +369,8 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
 
     try {
       const response = await bookTechnicianAppointment(payload);
-      setAppointments(prev => [...prev, response.data]);
-      
+      setAppointments((prev) => [...prev, response.data]);
+
       if (response.status === 200) {
         toast.success("Appointment Booked Successfully!", {
           className: "custom-toast",
@@ -372,7 +387,11 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
 
   // ----- RENDER
   return (
-    <Popup trigger={popupTrigger} setTrigger={setPopupTrigger} onClose={onClose}>
+    <Popup
+      trigger={popupTrigger}
+      setTrigger={setPopupTrigger}
+      onClose={onClose}
+    >
       <div className={styles.formContainer}>
         <div className={styles.headerSection}>
           <div className={styles.titleSection}>
@@ -388,7 +407,8 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
             {/* Patient Information */}
             <div className={styles.formSection}>
               <h3>
-                <i className="fa-solid fa-circle fa-2xs"></i> Patient Information
+                <i className="fa-solid fa-circle fa-2xs"></i> Patient
+                Information
               </h3>
               <div className={styles.newFormGroup}>
                 <div>
@@ -490,7 +510,8 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
             {/* Appointment Details */}
             <div className={styles.formSection}>
               <h3>
-                <i className="fa-solid fa-circle fa-2xs"></i> Appointment Details
+                <i className="fa-solid fa-circle fa-2xs"></i> Appointment
+                Details
               </h3>
 
               <div className={styles.formGroup}>
@@ -511,7 +532,9 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
                   </select>
                   {loadingStates.specializations && <small>Loading...</small>}
                   {apiErrors.specializations && (
-                    <small className={styles.errorText}>{apiErrors.specializations}</small>
+                    <small className={styles.errorText}>
+                      {apiErrors.specializations}
+                    </small>
                   )}
                 </div>
 
@@ -521,7 +544,9 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
                     name="labTechnicianId"
                     value={formData.labTechnicianId}
                     onChange={onInputChange}
-                    disabled={loadingStates.technicians || !formData.specialization}
+                    disabled={
+                      loadingStates.technicians || !formData.specialization
+                    }
                   >
                     <option value="">Select Lab Technician</option>
                     {loadingStates.technicians ? (
@@ -537,7 +562,9 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
                     )}
                   </select>
                   {apiErrors.technicians && (
-                    <small className={styles.errorText}>{apiErrors.technicians}</small>
+                    <small className={styles.errorText}>
+                      {apiErrors.technicians}
+                    </small>
                   )}
                 </div>
 
@@ -558,7 +585,9 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
                     name="slotId"
                     value={formData.slotId}
                     onChange={onInputChange}
-                    disabled={loadingStates.slots || availableSlots.length === 0}
+                    disabled={
+                      loadingStates.slots || availableSlots.length === 0
+                    }
                   >
                     <option value="">
                       {loadingStates.slots
@@ -596,7 +625,7 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
                     ) : apiErrors.labTests ? (
                       <div className={styles.errorText}>
                         Failed to load tests: {apiErrors.labTests}
-                        <button 
+                        <button
                           onClick={fetchLabTests}
                           style={{ marginLeft: "10px" }}
                         >
@@ -696,7 +725,7 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
                 type="submit"
                 onClick={handleBookAppointment}
                 disabled={
-                  loadingStates.labTests || 
+                  loadingStates.labTests ||
                   loadingStates.specializations ||
                   loadingStates.technicians
                 }
