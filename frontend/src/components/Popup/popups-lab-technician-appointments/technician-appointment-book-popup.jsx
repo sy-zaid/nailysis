@@ -291,7 +291,7 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
     setFormData((prev) => ({
       ...prev,
       requestedLabTests: safeSelectedTests,
-      fee: totalFee.toFixed(2),
+      fee: totalFee.toFixed(2), // Only call toFixed here
     }));
   };
 
