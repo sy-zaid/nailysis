@@ -155,7 +155,7 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
 
     try {
       const response = await getTechnicianSpecializations();
-      console.log("SPECSSS",response.data)
+      console.log("SPECSSS", response.data);
       // Handle various response structures
       let specs = [];
       if (Array.isArray(response.data)) {
@@ -196,9 +196,7 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
     setApiErrors((prev) => ({ ...prev, technicians: null }));
 
     try {
-      const response = await getTechnicianFromSpecialization(
-        formData.specialization
-      );
+      const response = await getTechnicianFromSpecialization("Lab Testing");
       const formattedTechnicians = Array.isArray(response.data)
         ? response.data.map((tech) => ({
             id: tech.user.user_id,
@@ -347,10 +345,10 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
   const handleBookAppointment = async (e) => {
     e.preventDefault();
 
-    if (!formData.specialization) {
-      toast.warning("Please select specialization");
-      return;
-    }
+    // if (!formData.specialization) {
+    //   toast.warning("Please select specialization");
+    //   return;
+    // }
     if (!formData.labTechnicianId) {
       toast.warning("Please select lab technician");
       return;
@@ -539,8 +537,8 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
 
               <div className={styles.formGroup}>
                 <div>
-                  <label>Specialization</label>
-                  <select
+                  {/* <label>Specialization</label> */}
+                  {/* <select
                     name="specialization"
                     value={formData.specialization || ""}
                     onChange={onInputChange}
@@ -552,7 +550,7 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
                         {spec}
                       </option>
                     ))}
-                  </select>
+                  </select> */}
                   {loadingStates.specializations && <small>Loading...</small>}
                   {apiErrors.specializations && (
                     <small className={styles.errorText}>
