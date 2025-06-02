@@ -152,15 +152,38 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
 
   const fetchSpecializations = async () => {
     setLoadingStates((prev) => ({ ...prev, specializations: true }));
-    setApiErrors((prev) => ({ ...prev, specializations: null }));
 
     try {
       const response = await getTechnicianSpecializations();
-      setSpecializations(Array.isArray(response.data) ? response.data : []);
+
+      // Handle various response structures
+      let specs = [];
+      if (Array.isArray(response.data)) {
+        specs = response.data;
+      } else if (
+        response.data &&
+        Array.isArray(response.data.specializations)
+      ) {
+        specs = response.data.specializations;
+      } else if (response.data && Array.isArray(response.data.results)) {
+        specs = response.data.results;
+      }
+
+      // Normalize to strings if needed
+      specs = specs.map((spec) =>
+        typeof spec === "string"
+          ? spec
+          : spec.name
+          ? spec.name
+          : spec.title || JSON.stringify(spec)
+      );
+
+      setSpecializations(specs);
+      setApiErrors((prev) => ({ ...prev, specializations: null }));
     } catch (error) {
-      console.error("Failed to fetch specializations", error);
-      setApiErrors((prev) => ({ ...prev, specializations: error.message }));
+      console.error("Specialization fetch error:", error);
       setSpecializations([]);
+      setApiErrors((prev) => ({ ...prev, specializations: error.message }));
     } finally {
       setLoadingStates((prev) => ({ ...prev, specializations: false }));
     }
@@ -519,13 +542,13 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
                   <label>Specialization</label>
                   <select
                     name="specialization"
-                    value={formData.specialization}
+                    value={formData.specialization || ""}
                     onChange={onInputChange}
                     disabled={loadingStates.specializations}
                   >
                     <option value="">Select Specialization</option>
                     {specializations.map((spec, index) => (
-                      <option key={index} value={spec}>
+                      <option key={`${spec}-${index}`} value={spec}>
                         {spec}
                       </option>
                     ))}
