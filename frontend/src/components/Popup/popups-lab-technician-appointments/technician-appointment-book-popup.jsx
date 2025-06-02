@@ -155,7 +155,7 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
 
     try {
       const response = await getTechnicianSpecializations();
-
+      console.log("SPECSSS",response.data)
       // Handle various response structures
       let specs = [];
       if (Array.isArray(response.data)) {
