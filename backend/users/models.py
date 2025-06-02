@@ -125,7 +125,7 @@ class Doctor(models.Model):
     qualifications = models.TextField(blank=True,null=True)
     medical_degree = models.CharField(max_length=255)
     years_of_experience = models.PositiveIntegerField()
-    emergency_contact = models.CharField(max_length=20)
+    emergency_contact = models.CharField(max_length=30)
     
     def __str__(self):
         return f"{self.user.first_name} {self.user.last_name}"
@@ -143,7 +143,7 @@ class Patient(models.Model):
     gender = models.CharField(max_length=1,choices=GENDER_CHOICES,blank=True,null=True)
     address = models.TextField(blank=True, null=True)
     # medical_history = models.JSONField(blank=True,null=True)
-    emergency_contact = models.CharField(max_length=20,null=True)
+    emergency_contact = models.CharField(max_length=30,null=True)
     
     def __str__(self):
         return f"{self.user.first_name} {self.user.last_name}"
@@ -159,7 +159,7 @@ class LabAdmin(models.Model):
     qualifications = models.TextField(blank=True,null=True)
     years_of_experience = models.PositiveIntegerField()
     specialization = models.CharField(max_length=255)
-    emergency_contact = models.CharField(max_length=20)
+    emergency_contact = models.CharField(max_length=30)
     
 class LabTechnician(models.Model):
     user = models.OneToOneField(CustomUser,on_delete=models.CASCADE,primary_key=True, to_field="user_id",related_name="lab_technician")
@@ -168,5 +168,5 @@ class LabTechnician(models.Model):
     years_of_experience = models.PositiveIntegerField()
     lab_skills = models.TextField()
     shift_timings = models.JSONField(default=dict)  
-    emergency_contact = models.CharField(max_length=20)
+    emergency_contact = models.CharField(max_length=30)
     
