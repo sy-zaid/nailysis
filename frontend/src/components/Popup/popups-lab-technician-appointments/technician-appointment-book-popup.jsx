@@ -150,50 +150,72 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
     }
   };
 
+  // const fetchSpecializations = async () => {
+  //   setLoadingStates((prev) => ({ ...prev, specializations: true }));
+
+  //   try {
+  //     const response = await getTechnicianSpecializations();
+  //     console.log("SPECSSS", response.data);
+  //     // Handle various response structures
+  //     let specs = [];
+  //     if (Array.isArray(response.data)) {
+  //       specs = response.data;
+  //     } else if (
+  //       response.data &&
+  //       Array.isArray(response.data.specializations)
+  //     ) {
+  //       specs = response.data.specializations;
+  //     } else if (response.data && Array.isArray(response.data.results)) {
+  //       specs = response.data.results;
+  //     }
+
+  //     // Normalize to strings if needed
+  //     specs = specs.map((spec) =>
+  //       typeof spec === "string"
+  //         ? spec
+  //         : spec.name
+  //         ? spec.name
+  //         : spec.title || JSON.stringify(spec)
+  //     );
+
+  //     setSpecializations(specs);
+  //     setApiErrors((prev) => ({ ...prev, specializations: null }));
+  //   } catch (error) {
+  //     console.error("Specialization fetch error:", error);
+  //     setSpecializations([]);
+  //     setApiErrors((prev) => ({ ...prev, specializations: error.message }));
+  //   } finally {
+  //     setLoadingStates((prev) => ({ ...prev, specializations: false }));
+  //   }
+  // };
   const fetchSpecializations = async () => {
-    setLoadingStates((prev) => ({ ...prev, specializations: true }));
-
-    try {
-      const response = await getTechnicianSpecializations();
-      console.log("SPECSSS", response.data);
-      // Handle various response structures
-      let specs = [];
-      if (Array.isArray(response.data)) {
-        specs = response.data;
-      } else if (
-        response.data &&
-        Array.isArray(response.data.specializations)
-      ) {
-        specs = response.data.specializations;
-      } else if (response.data && Array.isArray(response.data.results)) {
-        specs = response.data.results;
-      }
-
-      // Normalize to strings if needed
-      specs = specs.map((spec) =>
-        typeof spec === "string"
-          ? spec
-          : spec.name
-          ? spec.name
-          : spec.title || JSON.stringify(spec)
-      );
-
-      setSpecializations(specs);
-      setApiErrors((prev) => ({ ...prev, specializations: null }));
-    } catch (error) {
-      console.error("Specialization fetch error:", error);
-      setSpecializations([]);
-      setApiErrors((prev) => ({ ...prev, specializations: error.message }));
-    } finally {
-      setLoadingStates((prev) => ({ ...prev, specializations: false }));
-    }
+    setSpecializations(["Lab Testing"]); // Hardcoded single option
   };
+  // const fetchLabTechnicians = async () => {
+  //   if (!formData.specialization) return;
 
+  //   setLoadingStates((prev) => ({ ...prev, technicians: true }));
+  //   setApiErrors((prev) => ({ ...prev, technicians: null }));
+
+  //   try {
+  //     const response = await getTechnicianFromSpecialization("Lab Testing");
+  //     const formattedTechnicians = Array.isArray(response.data)
+  //       ? response.data.map((tech) => ({
+  //           id: tech.user.user_id,
+  //           name: `${tech.user.first_name} ${tech.user.last_name}`,
+  //         }))
+  //       : [];
+  //     setLabTechnicians(formattedTechnicians);
+  //   } catch (error) {
+  //     console.error("Failed to fetch labTechnicians", error);
+  //     setApiErrors((prev) => ({ ...prev, technicians: error.message }));
+  //     setLabTechnicians([]);
+  //   } finally {
+  //     setLoadingStates((prev) => ({ ...prev, technicians: false }));
+  //   }
+  // };
   const fetchLabTechnicians = async () => {
-    if (!formData.specialization) return;
-
     setLoadingStates((prev) => ({ ...prev, technicians: true }));
-    setApiErrors((prev) => ({ ...prev, technicians: null }));
 
     try {
       const response = await getTechnicianFromSpecialization("Lab Testing");
@@ -205,14 +227,12 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
         : [];
       setLabTechnicians(formattedTechnicians);
     } catch (error) {
-      console.error("Failed to fetch labTechnicians", error);
-      setApiErrors((prev) => ({ ...prev, technicians: error.message }));
+      console.error("Failed to fetch lab technicians", error);
       setLabTechnicians([]);
     } finally {
       setLoadingStates((prev) => ({ ...prev, technicians: false }));
     }
   };
-
   const fetchAvailableSlots = async (technicianId, appointmentDate) => {
     if (!technicianId || !appointmentDate) return;
 
@@ -537,20 +557,17 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
 
               <div className={styles.formGroup}>
                 <div>
-                  {/* <label>Specialization</label> */}
-                  {/* <select
-                    name="specialization"
-                    value={formData.specialization || ""}
-                    onChange={onInputChange}
-                    disabled={loadingStates.specializations}
-                  >
-                    <option value="">Select Specialization</option>
-                    {specializations.map((spec, index) => (
-                      <option key={`${spec}-${index}`} value={spec}>
-                        {spec}
-                      </option>
-                    ))}
-                  </select> */}
+                  <div>
+                    <label>Specialization</label>
+                    <select
+                      name="specialization"
+                      value={formData.specialization || ""}
+                      onChange={onInputChange}
+                    >
+                      <option value="">Select Specialization</option>
+                      <option value="Lab Testing">Lab Testing</option>
+                    </select>
+                  </div>
                   {loadingStates.specializations && <small>Loading...</small>}
                   {apiErrors.specializations && (
                     <small className={styles.errorText}>
