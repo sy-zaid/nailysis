@@ -61,12 +61,11 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
   });
 
   // Fetch recommended tests
-  // Update your recommended tests useEffect
   useEffect(() => {
     const fetchData = async () => {
+      var response;
       try {
-        let response;
-        if (curUser?.[0]?.role === "lab_admin") {
+        if (curUser[0].role === "lab_admin") {
           response = await getRecommendedTests(formData.email, "lab_admin");
         } else {
           response = await getRecommendedTests(
@@ -74,101 +73,60 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
             "patient"
           );
         }
-
-        // Debug the raw response
-        console.log("Raw API response:", response);
-
-        // Handle cases where response.data might be null, undefined, or not an array
-        let tests = [];
-        if (Array.isArray(response?.data)) {
-          tests = response.data.filter((item) => typeof item === "string");
-        } else if (response?.data && typeof response.data === "object") {
-          // Handle case where API returns an object instead of array
-          tests = Object.values(response.data).filter(
-            (item) => typeof item === "string"
-          );
-        }
-
-        console.log("Processed recommended tests:", tests);
-        setRecommendedTests(tests);
+        // Ensure we always have an array
+        setRecommendedTests(Array.isArray(response.data) ? response.data : []);
       } catch (error) {
         console.error("Error fetching recommended tests:", error);
-        setRecommendedTests([]); // Explicitly set empty array
+        setRecommendedTests([]);
       }
     };
-
     fetchData();
   }, [formData.email]);
 
   // Transform recommended tests to match Select component format
   const getRecommendedTestOptions = () => {
-    // Ensure we have valid arrays to work with
-    const safeRecommendedTests = Array.isArray(recommendedTests)
-      ? recommendedTests
-      : [];
-    const safeAvailableLabTests = Array.isArray(availableLabTests)
-      ? availableLabTests
-      : [];
-
-    // Early return if no data
     if (
-      safeAvailableLabTests.length === 0 ||
-      safeRecommendedTests.length === 0
+      !Array.isArray(recommendedTests) ||
+      recommendedTests.length === 0 ||
+      !Array.isArray(availableLabTests) ||
+      availableLabTests.length === 0
     ) {
       return [];
     }
 
     // Create a normalized map of available tests
-    const testMap = safeAvailableLabTests.reduce((acc, test) => {
-      if (!test || !test.label) return acc;
-
-      try {
-        const testName =
-          test.label.split(" | ")[0]?.trim()?.toLowerCase() || "";
-        if (testName) {
-          acc[testName] = test;
-          acc[testName.replace(/[^a-z]/g, "")] = test;
-        }
-      } catch (e) {
-        console.warn("Error processing test:", test, e);
-      }
+    const testMap = availableLabTests.reduce((acc, test) => {
+      const testName = test.label.split(" | ")[0].trim().toLowerCase();
+      // Store both original and simplified names
+      acc[testName] = test;
+      acc[testName.replace(/[^a-z]/g, "")] = test; // Remove all non-alphabetic characters
       return acc;
     }, {});
 
-    return safeRecommendedTests
-      .filter((testName) => typeof testName === "string") // Only keep string test names
+    return recommendedTests
       .map((testName) => {
-        try {
-          const normalizedTestName = testName.toLowerCase().trim();
-
-          // Try direct match
-          if (testMap[normalizedTestName]) {
-            return testMap[normalizedTestName];
+        const normalizedTestName = testName.toLowerCase();
+        // Try direct match first
+        if (testMap[normalizedTestName]) {
+          return testMap[normalizedTestName];
+        }
+        // Try match without special characters
+        const cleanTestName = normalizedTestName.replace(/[^a-z]/g, "");
+        if (testMap[cleanTestName]) {
+          return testMap[cleanTestName];
+        }
+        // Try partial match
+        for (const [key, test] of Object.entries(testMap)) {
+          if (key.includes(cleanTestName) || cleanTestName.includes(key)) {
+            return test;
           }
-
-          // Try match without special characters
-          const cleanTestName = normalizedTestName.replace(/[^a-z]/g, "");
-          if (testMap[cleanTestName]) {
-            return testMap[cleanTestName];
-          }
-
-          // Try partial match
-          for (const [key, test] of Object.entries(testMap)) {
-            if (key.includes(cleanTestName) || cleanTestName.includes(key)) {
-              return test;
-            }
-          }
-        } catch (e) {
-          console.warn("Error matching test:", testName, e);
-          return null;
         }
         return null;
       })
-      .filter((test) => test !== null) // Remove null values
       .filter(
         (test, index, self) =>
-          index === self.findIndex((t) => t.value === test.value) // Remove duplicates
-      );
+          test && self.findIndex((t) => t.value === test.value) === index
+      ); // Remove duplicates
   };
 
   // ----- HANDLERS
@@ -324,20 +282,23 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
   useEffect(() => {
     const fetchLabTests = async () => {
       try {
-        const response = await getAvailableLabTests(); // Replace with your actual API endpoint
-        const transformedData = response.data.map((test) => ({
-          value: test.id, // This id is also sent to formData
-          label: test.label + " | " + test.price + " PKR", // Set label + price for a test
+        const response = await getAvailableLabTests();
+        // Ensure response.data is an array
+        const testsData = Array.isArray(response.data) ? response.data : [];
+        const transformedData = testsData.map((test) => ({
+          value: test.id,
+          label: test.label + " | " + test.price + " PKR",
         }));
         setAvailableLabTests(transformedData);
-        const prices = response.data.map((test) => ({
+        const prices = testsData.map((test) => ({
           id: test.id,
           price: test.price,
         }));
         setAvailableTestPrices(prices);
-        console.log("AVTP", availableTestPrices);
       } catch (error) {
         console.error("Error fetching lab tests:", error);
+        setAvailableLabTests([]);
+        setAvailableTestPrices([]);
       }
     };
 
@@ -365,10 +326,12 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
           const response = await getTechnicianFromSpecialization(
             formData.specialization
           );
-          const formattedlabTechnicians = response.data.map((tech) => ({
-            id: tech.user.user_id,
-            name: `${tech.user.first_name} ${tech.user.last_name}`,
-          }));
+          const formattedlabTechnicians = Array.isArray(response.data)
+            ? response.data.map((tech) => ({
+                id: tech.user.user_id,
+                name: `${tech.user.first_name} ${tech.user.last_name}`,
+              }))
+            : [];
           setLabTechnicians(formattedlabTechnicians);
           console.log("Formatted Docs", labTechnicians);
         } catch (error) {
@@ -603,29 +566,14 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
                     </div>
                   )}
                   <div>
-                    // Replace your Select component with this:
                     <Select
                       isMulti
-                      options={
-                        Array.isArray(availableLabTests)
-                          ? availableLabTests
-                          : []
-                      }
-                      getOptionLabel={(e) => e?.label || "Unknown"}
-                      getOptionValue={(e) => e?.value || ""}
+                      options={availableLabTests}
+                      getOptionLabel={(e) => e.label}
+                      getOptionValue={(e) => e.value} // Simplified to just use value
                       placeholder="Select required lab tests"
-                      onChange={(selected) => {
-                        // Ensure we always get an array, even if selected is null
-                        handleTestSelection(
-                          Array.isArray(selected) ? selected : []
-                        );
-                      }}
-                      value={
-                        Array.isArray(formData.requestedLabTests)
-                          ? formData.requestedLabTests
-                          : []
-                      }
-                      noOptionsMessage={() => "No test options available"}
+                      onChange={handleTestSelection}
+                      value={formData.requestedLabTests}
                       styles={{
                         control: (base) => ({
                           ...base,
