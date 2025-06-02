@@ -45,6 +45,7 @@ const BookDoctorAppointmentPopup = ({ onClose }) => {
     notes: "",
   });
 
+
   useEffect(() => {
     if (curUserRole == "patient" && curUser && curUser.length > 0) {
       setPatient([curUser[0].patient.user, curUser[0].patient]); // Set patient data if available
@@ -154,26 +155,27 @@ const BookDoctorAppointmentPopup = ({ onClose }) => {
       toast.warning("Please Select Doctor Specialization");
       return;
     }
-
+  
     if (!formData.doctorId) {
       toast.warning("Please Select Doctor");
       return;
     }
-
+  
     if (!formData.appointmentDate) {
       toast.warning("Please Select Date");
       return;
     }
-
+  
     if (!formData.slotId) {
       toast.warning("Please Select Appointment Slot");
       return;
     }
-
+  
     if (!formData.appointmentType) {
       toast.warning("Please Select A Visit Purpose");
       return;
     }
+
 
     const appointmentData = {
       doctor_id: formData.doctorId,
@@ -205,7 +207,7 @@ const BookDoctorAppointmentPopup = ({ onClose }) => {
         toast.error(error.response.data.error || "Failed to book appointment", {
           className: "custom-toast",
         });
-      }
+      } 
     }
   };
   // Fetch Available Slots On Chosen Date
@@ -250,268 +252,250 @@ const BookDoctorAppointmentPopup = ({ onClose }) => {
         </h5>
         <hr />
 
-        <form onSubmit={(e) => e.preventDefault()}>
+          <form onSubmit={(e) => e.preventDefault()}>
+
           <div className={styles.popupBottom}>
-            {/* Patient Information */}
-            <div className={styles.formSection}>
-              <h3>
-                <i
-                  className="fa-solid fa-circle fa-2xs"
-                  style={{ color: "#007bff", marginRight: "10px" }}
-                ></i>{" "}
-                Patient Information
-              </h3>
-              <div className={styles.formGroup}>
-                <div>
-                  <label>First Name</label>
-                  <input
-                    type="text"
-                    name="patientFirstName"
-                    value={formData.patientFirstName}
-                    onChange={onInputChange}
-                    placeholder={
-                      curUserRole === "patient"
-                        ? patient[0]?.first_name || ""
-                        : "Enter First"
-                    }
-                    disabled={curUserRole === "patient"}
-                  />
-                </div>
-                <div>
-                  <label>Last Name</label>
-                  <input
-                    type="text"
-                    name="patientLastName"
-                    value={formData.patientLastName}
-                    onChange={onInputChange}
-                    placeholder={
-                      curUserRole === "patient"
-                        ? patient[0]?.last_name || ""
-                        : "Enter Last"
-                    }
-                    disabled={curUserRole === "patient"}
-                  />
-                </div>
-                <div>
-                  <label>Age</label>
-                  <input
-                    type="number"
-                    name="age"
-                    value={formData.age}
-                    onChange={onInputChange}
-                    placeholder={
-                      curUserRole === "patient"
-                        ? calculateAge(patient[1]?.date_of_birth) || ""
-                        : "Enter Age"
-                    }
-                    disabled={curUserRole === "patient"}
-                    style={{ outline: "none" }}
-                  />
-                </div>
-                <div>
-                  <label>Gender</label>
-                  <input
-                    type="text"
-                    name="gender"
-                    value={formData.gender}
-                    onChange={onInputChange}
-                    placeholder={
-                      curUserRole === "patient"
-                        ? patient[1]?.gender || ""
-                        : "Enter gender"
-                    }
-                    disabled={curUserRole === "patient"}
-                  />
-                </div>
-                <div>
-                  <label>Phone Number</label>
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={onInputChange}
-                    placeholder={
-                      curUserRole === "patient"
-                        ? patient[0]?.phone || ""
-                        : "Enter phone number"
-                    }
-                    disabled={curUserRole === "patient"}
-                    style={{ height: "20px" }}
-                  />
-                </div>
-                <div>
-                  <label>Email Address</label>
-                  <input
-                    type="text"
-                    name="email"
-                    value={formData.email}
-                    onChange={onInputChange}
-                    placeholder={
-                      curUserRole === "patient"
-                        ? patient[0]?.email || ""
-                        : "Enter email address"
-                    }
-                    disabled={curUserRole === "patient"}
-                  />
-                </div>
+          {/* Patient Information */}
+          <div className={styles.formSection}>
+          <h3><i className="fa-solid fa-circle fa-2xs" style={{color: "#007bff", marginRight: "10px"}}></i> Patient Information</h3>
+            <div className={styles.formGroup}>
+              <div>
+                <label>First Name</label>
+                <input
+                  type="text"
+                  name="patientFirstName"
+                  value={formData.patientFirstName}
+                  onChange={onInputChange}
+                  placeholder={
+                    curUserRole === "patient"
+                      ? patient[0]?.first_name || ""
+                      : "Enter First"
+                  }
+                  disabled={curUserRole === "patient"}
+                />
+              </div>
+              <div>
+                <label>Last Name</label>
+                <input
+                  type="text"
+                  name="patientLastName"
+                  value={formData.patientLastName}
+                  onChange={onInputChange}
+                  placeholder={
+                    curUserRole === "patient"
+                      ? patient[0]?.last_name || ""
+                      : "Enter Last"
+                  }
+                  disabled={curUserRole === "patient"}
+                />
+              </div>
+              <div>
+                <label>Age</label>
+                <input
+                  type="number"
+                  name="age"
+                  value={formData.age}
+                  onChange={onInputChange}
+                  placeholder={
+                    curUserRole === "patient"
+                      ? calculateAge(patient[1]?.date_of_birth) || ""
+                      : "Enter Age"
+                  }
+                  disabled={curUserRole === "patient"}
+                  style={{ outline: "none" }}
+                />
+              </div>
+              <div>
+                <label>Gender</label>
+                <input
+                  type="text"
+                  name="gender"
+                  value={formData.gender}
+                  onChange={onInputChange}
+                  placeholder={
+                    curUserRole === "patient"
+                      ? patient[1]?.gender || ""
+                      : "Enter gender"
+                  }
+                  disabled={curUserRole === "patient"}
+                />
+              </div>
+              <div>
+                <label>Phone Number</label>
+                <input
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={onInputChange}
+                  placeholder={
+                    curUserRole === "patient"
+                      ? patient[0]?.phone || ""
+                      : "Enter phone number"
+                  }
+                  disabled={curUserRole === "patient"}
+                  style={{ height: "20px" }}
+                />
+              </div>
+              <div>
+                <label>Email Address</label>
+                <input
+                  type="text"
+                  name="email"
+                  value={formData.email}
+                  onChange={onInputChange}
+                  placeholder={
+                    curUserRole === "patient"
+                      ? patient[0]?.email || ""
+                      : "Enter email address"
+                  }
+                  disabled={curUserRole === "patient"}
+                />
               </div>
             </div>
+          </div>
 
-            <hr />
+          <hr />
 
-            {/* Appointment Details */}
-            <div className={styles.formSection}>
-              <h3>
-                <i
-                  className="fa-solid fa-circle fa-2xs"
-                  style={{ color: "#007bff", marginRight: "10px" }}
-                ></i>{" "}
-                Appointment Details
-              </h3>
-
-              <div className={styles.formGroup}>
-                <div>
-                  <label>Specialization</label>
-                  <select
-                    name="specialization"
-                    value={formData.specialization}
-                    onChange={onInputChange}
-                  >
-                    <option value="">Select Specialization</option>
-                    {specializations.map((spec, index) => (
-                      <option key={index} value={spec}>
-                        {spec}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label>Doctor</label>
-                  <select
-                    name="doctorId"
-                    value={formData.doctorId}
-                    onChange={onInputChange}
-                  >
-                    <option value="">Select Doctor</option>
-                    {doctors.length > 0 ? (
-                      doctors.map((doctor) => (
-                        <option key={doctor.id} value={doctor.id}>
-                          {doctor.name}
-                        </option>
-                      ))
-                    ) : (
-                      <option disabled>Loading doctors...</option>
-                    )}
-                  </select>
-                </div>
-
-                <div>
-                  <label>Date & Time</label>
-                  <input
-                    type="date"
-                    name="appointmentDate"
-                    value={formData.appointmentDate}
-                    onChange={onInputChange}
-                    min={getTodayDate()} // Prevent past date selection
-                  />
-                </div>
-
-                {/* Available Slots Selection */}
-                <div>
-                  <label>Available Slots</label>
-                  <select
-                    name="slotId"
-                    value={formData.slotId}
-                    onChange={onInputChange}
-                    disabled={availableSlots.length === 0}
-                  >
-                    <option value="">
-                      {availableSlots.length
-                        ? "Select a Slot"
-                        : "No slots available"}
-                    </option>
-                    {availableSlots.map((slot, index) => (
-                      <option key={index} value={slot.id}>
-                        {slot.start_time} - {slot.end_time}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label>Visit Purpose</label>
-                  <select
-                    name="appointmentType"
-                    value={formData.appointmentType}
-                    onChange={onInputChange}
-                  >
-                    {visitPurposes.map((purpose, index) => (
-                      <option key={index} value={purpose}>
-                        {purpose}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label>Fee</label>
-                  <p className={styles.subHeading}>RS/- {formData.fee}</p>
-                </div>
-              </div>
-            </div>
-            <div className={styles.additionalNotes}>
-              <label>Additional Notes</label>
-              <input
-                type="text"
-                name="notes"
-                value={formData.notes}
+          {/* Appointment Details */}
+          <div className={styles.formSection}>
+          <h3><i className="fa-solid fa-circle fa-2xs" style={{color: "#007bff", marginRight: "10px"}}></i> Appointment Details</h3>
+                      
+          <div className={styles.formGroup}>
+            <div>
+              <label>Specialization</label>
+              <select
+                name="specialization"
+                value={formData.specialization}
                 onChange={onInputChange}
-                placeholder={"Enter notes"}
+              >
+                <option value="">Select Specialization</option>
+                {specializations.map((spec, index) => (
+                  <option key={index} value={spec}>
+                    {spec}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label>Doctor</label>
+              <select
+                name="doctorId"
+                value={formData.doctorId}
+                onChange={onInputChange}
+              >
+                <option value="">Select Doctor</option>
+                {doctors.length > 0 ? (
+                  doctors.map((doctor) => (
+                    <option key={doctor.id} value={doctor.id}>
+                      {doctor.name}
+                    </option>
+                  ))
+                ) : (
+                  <option disabled>Loading doctors...</option>
+                )}
+              </select>
+            </div>
+
+            <div>
+              <label>Date & Time</label>
+              <input
+                type="date"
+                name="appointmentDate"
+                value={formData.appointmentDate}
+                onChange={onInputChange}
+                min={getTodayDate()} // Prevent past date selection
               />
             </div>
 
-            <hr />
+            {/* Available Slots Selection */}
+            <div>
+              <label>Available Slots</label>
+              <select
+                name="slotId"
+                value={formData.slotId}
+                onChange={onInputChange}
+                disabled={availableSlots.length === 0}
+              >
+                <option value="">
+                  {availableSlots.length ? "Select a Slot" : "No slots available"}
+                </option>
+                {availableSlots.map((slot, index) => (
+                  <option key={index} value={slot.id}>
+                    {slot.start_time} - {slot.end_time}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-            {/* Payment Details */}
-            <div className={styles.formSection}>
-              <h3>
-                <i
-                  className="fa-solid fa-circle fa-2xs"
-                  style={{ color: "#007bff", marginRight: "10px" }}
-                ></i>{" "}
-                Payment Details
-              </h3>
-              <div className={styles.formGroup}>
-                <div>
-                  <label>Discount Code</label>
-                  <select>
-                    <option>No Discount</option>
-                  </select>
-                </div>
-                <div>
-                  <label>Service Fee</label>
-                  <p className={styles.subHeading}>RS/- {formData.fee}</p>
-                </div>
-                <div>
-                  <label>Sales Tax</label>
-                  <p className={styles.subHeading}>RS/- 5.0</p>
-                </div>
+            <div>
+              <label>Visit Purpose</label>
+              <select
+                name="appointmentType"
+                value={formData.appointmentType}
+                onChange={onInputChange}
+              >
+                {visitPurposes.map((purpose, index) => (
+                  <option key={index} value={purpose}>
+                    {purpose}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label>Fee</label>
+              <p className={styles.subHeading}>RS/- {formData.fee}</p>
+            </div>
+          </div>
+
+          </div>
+          <div className={styles.additionalNotes}>
+            <label>Additional Notes</label>
+            <input
+              type="text"
+              name="notes"
+              value={formData.notes}
+              onChange={onInputChange}
+              placeholder={"Enter notes"}
+            />
+          </div>
+
+          <hr />
+
+          {/* Payment Details */}
+          <div className={styles.formSection}>
+          <h3><i className="fa-solid fa-circle fa-2xs" style={{color: "#007bff", marginRight: "10px"}}></i> Payment Details</h3>
+            <div className={styles.formGroup}>
+              <div>
+                <label>Discount Code</label>
+                <select>
+                  <option>No Discount</option>
+                </select>
+              </div>
+              <div>
+                <label>Service Fee</label>
+                <p className={styles.subHeading}>RS/- {formData.fee}</p>
+              </div>
+              <div>
+                <label>Sales Tax</label>
+                <p className={styles.subHeading}>RS/- 5.0</p>
               </div>
             </div>
+          </div>
 
-            <div className={styles.actions}>
-              <button className={styles.cancelButton} onClick={onClose}>
-                Cancel
-              </button>
-              <button
-                className={styles.addButton}
-                type="submit"
-                onClick={handleBookAppointment}
-              >
-                Book Appointment
-              </button>
-            </div>
+          <div className={styles.actions}>
+            <button className={styles.cancelButton} onClick={onClose}>
+              Cancel
+            </button>
+            <button
+              className={styles.addButton}
+              type="submit"
+              onClick={handleBookAppointment}
+            >
+              Book Appointment
+            </button>
+          </div>
           </div>
         </form>
       </div>
