@@ -43,7 +43,6 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
   const [patient, setPatient] = useState([]);
   const [includeRecommended, setIncludeRecommended] = useState(false);
 
-
   // ----- APPOINTMENT FORM STATE
   const [formData, setFormData] = useState({
     labTechnicianId: "",
@@ -67,12 +66,15 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
       var response;
       try {
         if (curUser[0].role === "lab_admin") {
-          response = await getRecommendedTests(formData.email,"lab_admin");
+          response = await getRecommendedTests(formData.email, "lab_admin");
         } else {
-          response = await getRecommendedTests(curUser?.[0]?.user_id,"patient");
+          response = await getRecommendedTests(
+            curUser?.[0]?.user_id,
+            "patient"
+          );
         }
         setRecommendedTests(response.data);
-        console.log(response.data)
+        console.log(response.data);
       } catch (error) {
         console.error("Error fetching recommended tests:", error);
         setRecommendedTests([]);
@@ -83,8 +85,9 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
 
   // Transform recommended tests to match Select component format
   const getRecommendedTestOptions = () => {
-    if (!Array.isArray(recommendedTests) || !Array.isArray(availableLabTests))
-      return [];
+    // Ensure both are arrays before proceeding
+    if (!Array.isArray(recommendedTests)) recommendedTests = [];
+    if (!Array.isArray(availableLabTests)) availableLabTests = [];
 
     // Create a normalized map of available tests
     const testMap = availableLabTests.reduce((acc, test) => {
@@ -120,8 +123,6 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
           test && self.findIndex((t) => t.value === test.value) === index
       ); // Remove duplicates
   };
-
-  
 
   // ----- HANDLERS
   const onInputChange = handleInputChange(setFormData);
@@ -181,23 +182,26 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
       toast.warning("Please select specialization");
       return;
     }
-  
+
     if (!formData.labTechnicianId) {
       toast.warning("Please select lab technician");
       return;
     }
-  
+
     if (!formData.appointmentDate) {
       toast.warning("Please select date");
       return;
     }
-  
+
     if (!formData.slotId) {
       toast.warning("Please select appointment slot");
       return;
     }
-  
-    if (!formData.requestedLabTests || formData.requestedLabTests.length === 0) {
+
+    if (
+      !formData.requestedLabTests ||
+      formData.requestedLabTests.length === 0
+    ) {
       toast.warning("Please select required lab test");
       return;
     }
@@ -228,7 +232,7 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
         toast.success("Appointment Booked Successfully!", {
           className: "custom-toast",
         });
-        onClose(); 
+        onClose();
       }
     } catch (error) {
       console.log("Sending this to book:", payload);
@@ -237,7 +241,7 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
         toast.error(error.response.data.error || "Failed to book appointment", {
           className: "custom-toast",
         });
-      } 
+      }
     }
   };
 
@@ -554,7 +558,7 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
                   <div>
                     <Select
                       isMulti
-                      options={availableLabTests}
+                      options={Array.isArray(availableLabTests) ? availableLabTests : []}
                       getOptionLabel={(e) => e.label}
                       getOptionValue={(e) => e.value} // Simplified to just use value
                       placeholder="Select required lab tests"
