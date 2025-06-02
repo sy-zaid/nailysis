@@ -471,8 +471,8 @@ const CheckinDoctorAppointmentPopup = ({ onClose, appointmentDetails }) => {
           </p>
 
           {isConsultationStarted
-            ? renderConsultationFormContent()
-            : renderPatientInfoContent()}
+            ? renderPatientInfoContent()
+            : renderConsultationFormContent()}
 
           <div className={styles.newActions}>
             <button
