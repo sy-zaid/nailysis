@@ -138,13 +138,26 @@ function LoginForm({ route }) {
               placeholder="Enter Password"
             />
           </div>
-          <button
-            type="submit"
-            className={styles.submitButton}
-            disabled={loading}
+
+          <div
+            style={{ display: "flex", justifyContent: "center", gap: "16px" }}
           >
-            {loading ? "Logging in..." : "Login"}
-          </button>
+            <button
+              type="submit"
+              className={styles.submitButton}
+              disabled={loading}
+            >
+              {loading ? "Logging in..." : "Login"}
+            </button>
+            <button
+              type="button"
+              className={styles.registerButton}
+              onClick={() => navigate("/register")}
+              disabled={loading}
+            >
+              Register
+            </button>
+          </div>
         </form>
       </section>
     </div>

@@ -15,7 +15,7 @@ function RegisterForm({ route }) {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [phone, setPhone] = useState("");
   const [role, setRole] = useState("patient");
-  
+
   // Patient-specific fields
   const [date_of_birth, setDateOfBirth] = useState("");
   const [gender, setGender] = useState("");
@@ -36,37 +36,37 @@ function RegisterForm({ route }) {
       setLoading(false);
       return;
     }
-  
+
     if (!last_name.trim()) {
       toast.warning("Last name is required.");
       setLoading(false);
       return;
     }
-  
+
     if (!email.trim()) {
       toast.warning("Email is required.");
       setLoading(false);
       return;
     }
-  
+
     if (!phone.trim()) {
       toast.warning("Phone number is required.");
       setLoading(false);
       return;
     }
-  
+
     if (!password) {
       toast.warning("Password is required.");
       setLoading(false);
       return;
     }
-  
+
     if (!confirmPassword) {
       toast.warning("Please confirm your password.");
       setLoading(false);
       return;
     }
-  
+
     if (password !== confirmPassword) {
       toast.warning("Passwords do not match!");
       setLoading(false);
@@ -123,7 +123,9 @@ function RegisterForm({ route }) {
 
     // Emergency contact validation
     if (!phoneRegex.test(emergency_contact)) {
-      return toast.warning("Enter a valid emergency contact number. 03001234567");
+      return toast.warning(
+        "Enter a valid emergency contact number. 03001234567"
+      );
     }
 
     if (password.length < 8) {
@@ -131,17 +133,17 @@ function RegisterForm({ route }) {
     }
 
     // Debugging: Log form data
-    console.log({ 
-      first_name, 
-      last_name, 
-      email, 
-      password, 
-      phone, 
+    console.log({
+      first_name,
+      last_name,
+      email,
+      password,
+      phone,
       role,
       date_of_birth,
       gender,
       address,
-      emergency_contact
+      emergency_contact,
     });
 
     try {
@@ -156,7 +158,7 @@ function RegisterForm({ route }) {
         date_of_birth,
         gender,
         address,
-        emergency_contact
+        emergency_contact,
       });
       console.log(response.data);
       toast.success("Registration Successful!", {
@@ -170,7 +172,7 @@ function RegisterForm({ route }) {
           className: "custom-toast",
         });
       } else {
-        toast.error("Network Error")
+        toast.error("Network Error");
       }
     } finally {
       setLoading(false);
@@ -181,11 +183,7 @@ function RegisterForm({ route }) {
     <div className={styles.form}>
       <section className={`${styles.main} ${styles.scrollablediv}`}>
         <h2>Create Your Account</h2>
-        <form
-          className="form-container"
-          role="form"
-          onSubmit={handleSubmit}
-        >
+        <form className="form-container" role="form" onSubmit={handleSubmit}>
           <div className={styles.inputRow}>
             <div className={`${styles.inputGroup} ${styles.halfWidth}`}>
               <label htmlFor="first_name">First Name</label>
@@ -252,7 +250,7 @@ function RegisterForm({ route }) {
             <div className={styles.radioGroup}>
               <label htmlFor="male">
                 <input
-                id="male"
+                  id="male"
                   type="radio"
                   name="gender"
                   value="M"
@@ -264,7 +262,7 @@ function RegisterForm({ route }) {
               </label>
               <label htmlFor="female">
                 <input
-                id="female"
+                  id="female"
                   type="radio"
                   name="gender"
                   value="F"
@@ -276,7 +274,7 @@ function RegisterForm({ route }) {
               </label>
               <label htmlFor="other">
                 <input
-                id="other"
+                  id="other"
                   type="radio"
                   name="gender"
                   value="O"
@@ -288,7 +286,7 @@ function RegisterForm({ route }) {
               </label>
               <label htmlFor="preferNotToSay">
                 <input
-                id="preferNotToSay"
+                  id="preferNotToSay"
                   type="radio"
                   name="gender"
                   value="P"
@@ -359,12 +357,24 @@ function RegisterForm({ route }) {
               required
             />
           </div>
-          <button type="submit" className={styles.submitButton}>
-            Submit
-          </button>
+          <div
+            style={{ display: "flex", justifyContent: "center", gap: "16px" }}
+          >
+            <button type="submit" className={styles.submitButton}>
+              Submit
+            </button>
+            <button
+              type="button"
+              className={styles.registerButton}
+              onClick={() => navigate("/login")}
+              disabled={loading}
+            >
+              Login
+            </button>
+          </div>
         </form>
-        <p>or</p>
-        <SocialLogin />
+        {/* <p>or</p>
+        <SocialLogin /> */}
       </section>
     </div>
   );

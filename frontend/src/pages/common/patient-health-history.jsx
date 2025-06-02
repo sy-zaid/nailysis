@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
-import styles from "./patient-health-history.module.css";
+// import styles from "./patient-health-history.module.css";
+import styles from "../common/all-pages-styles.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import Header from "../../components/Dashboard/Header/Header.jsx";
 import {
@@ -122,26 +123,18 @@ const PatientHealthHistory = () => {
     setSelectedPatient(selected?.value || null);
   };
 
+
   return (
     <div className={styles.pageContainer}>
       <Navbar />
       {/* Page Header */}
       <div className={styles.pageTop}>
         <Header
-          mainHeading={"Patient's Health History"}
-          subHeading={"Here you can view and manage the health history and consultations of the patient"}
+          mainHeading={"Patient Medical Episodes"}
+          subHeading={"View and manage patient medical history in episodic format"}
         />
-      </div>
-      
-      <div className={styles.header}>
-        <div>
-          <h1>Patient Medical Episodes</h1>
-          <p>View and manage patient medical history in episodic format</p>
-        </div>
-        <button className={styles.addButton}>+ Add New Episode</button>
-      </div>
 
-      <div className={styles.filtersContainer}>
+        <div className={styles.filtersContainer}>
         <div className={styles.patientFilter}>
           <label>Patient:</label>
           <div style={{ width: "300px" }}>
@@ -170,62 +163,34 @@ const PatientHealthHistory = () => {
             />
           </div>
         </div>
-
-        <div className={styles.statusFilters}>
-          <button
-            className={`${styles.statusFilter} ${
-              filter === "all" ? styles.active : ""
-            }`}
-            onClick={() => setFilter("all")}
-          >
-            All Episodes
-          </button>
-          <button
-            className={`${styles.statusFilter} ${
-              filter === "ongoing" ? styles.active : ""
-            }`}
-            onClick={() => setFilter("ongoing")}
-          >
-            Ongoing
-          </button>
-          <button
-            className={`${styles.statusFilter} ${
-              filter === "resolved" ? styles.active : ""
-            }`}
-            onClick={() => setFilter("resolved")}
-          >
-            Resolved
-          </button>
         </div>
       </div>
 
-      <div className={styles.mainContent}>
+      
+      
+      <div className={styles.mainContent}> 
+
         <div className={styles.appointmentsContainer}>
           <div className={styles.filters}>
             <button
               className={`${styles.filterButton} ${activeButton === 0 ? styles.active : ""}`}
               onClick={() => setActiveButton(0)}
             >
-              All
+              All Episodes
             </button>
             <button
               className={`${styles.filterButton} ${activeButton === 3 ? styles.active : ""}`}
               onClick={() => setActiveButton(3)}
             >
-              Your Patients
+              Ongoing
             </button>
             <button
               className={`${styles.filterButton} ${activeButton === 1 ? styles.active : ""}`}
               onClick={() => setActiveButton(1)}
             >
-              Abnormal Results
+              Resolved
             </button>
-            <button
-              className={`${styles.filterButton} ${activeButton === 2 ? styles.active : ""}`}
-              onClick={() => setActiveButton(2)}
-            >
-              Emergency
-            </button>
+  
             <p>50 completed, 4 pending</p>
 
             <button className={styles.addButton}>
@@ -241,62 +206,38 @@ const PatientHealthHistory = () => {
 
               {/* Sort Dropdown */}
               <select className={styles.sortBy}>
-                {/* Default option sorts by last_updated (latest first) */}
-                <option value="last_updated">Sort By: Last Updated</option>
-                <option value="patient_name">Patient Name (A-Z)</option>
-                <option value="consulted_by">Doctor Name (A-Z)</option>
-                <option value="category">Category</option>
-                {/* Extra option to view the oldest records first */}
-                <option value="oldest">Oldest Record</option>
-              </select>
-
-              <label>
-                <input
-                  type="checkbox"
-                  onChange={toggleSelectAll}
-                  checked={
-                    selectedRows.length === filteredEpisodes.length &&
-                    filteredEpisodes.length > 0
-                  }
-                />
-                <span className={styles.checkmark}></span>
-              </label>
-              <span>
-                Bulk Action:{" "}
-                {selectedRows.length > 0
-                  ? `(${selectedRows.length} selected)`
-                  : ""}
-              </span>
-              {selectedRows.length > 0 && (
-                <>
-                  <button className={styles.bulkButton}>Resolve Selected</button>
-                  <button className={styles.bulkButton}>Delete Selected</button>
-                </>
-              )}
-            </div>
-            <div className={styles.searchSort}>
-              <div className={styles.sortBy}>
-                <select>
                   <option>Sort By: Start Date (Newest)</option>
                   <option>Start Date (Oldest)</option>
                   <option>Episode Type</option>
                   <option>Patient Name</option>
-                </select>
-              </div>
-              <div className={styles.search}>
-                <input type="text" placeholder="Search episodes..." />
-              </div>
+              </select>
+
+              <input type="text" placeholder="Search episodes..." />
+              
             </div>
 
             <hr />
             <br />
 
-            <div className={styles.episodesContainer}>
+            <div className={styles.tableWrapper}>
               {filteredEpisodes.length > 0 ? (
                 <table className={styles.episodesTable}>
                   <thead>
                     <tr>
-                      <th></th>
+                      <th>
+                        <label>
+                          <input
+                            type="checkbox"
+                            onChange={toggleSelectAll}
+                            checked={
+                              selectedRows.length === filteredEpisodes.length &&
+                              filteredEpisodes.length > 0
+                            }
+                          />
+                          <span className={styles.checkmark}></span>
+                        </label> 
+                      </th>
+                      <th>#</th>
                       <th>Episode</th>
                       <th>Patient</th>
                       <th>Details</th>
@@ -399,8 +340,10 @@ const PatientHealthHistory = () => {
               )}
             </div>
           </div>
+
         </div>
       </div>
+
     </div>
   );
 };

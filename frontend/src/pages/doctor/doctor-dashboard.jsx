@@ -157,10 +157,18 @@ function DoctorDashboard() {
     return analytics;
   };
 
+  // Fallbacks in case data isn't loaded yet
+  const user = (curUser && curUser.length > 0) ? curUser[0] : {};
+  const fullName = `${user.first_name || ""} ${user.last_name || ""}`;
+  const role = user.role || "Doctor";
+
   return (
     <div>
       <Navbar />
-      <Header curUserRole={"Doctor"} />
+      <Header 
+        mainHeading={`Welcome, ${fullName}`}
+        subHeading={`${role.charAt(0).toUpperCase() + role.slice(1)} Dashboard`}
+      />
       <div className={styles.main}>
         <div className={styles.cards}>
           {appointmentAnalytics.total_appointments &&
