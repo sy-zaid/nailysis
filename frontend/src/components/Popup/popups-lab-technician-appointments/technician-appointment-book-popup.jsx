@@ -75,15 +75,25 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
           );
         }
 
-        // Ensure we have a valid array response
-        const tests = Array.isArray(response?.data)
-          ? response.data.filter((item) => typeof item === "string")
-          : [];
+        // Debug the raw response
+        console.log("Raw API response:", response);
 
+        // Handle cases where response.data might be null, undefined, or not an array
+        let tests = [];
+        if (Array.isArray(response?.data)) {
+          tests = response.data.filter((item) => typeof item === "string");
+        } else if (response?.data && typeof response.data === "object") {
+          // Handle case where API returns an object instead of array
+          tests = Object.values(response.data).filter(
+            (item) => typeof item === "string"
+          );
+        }
+
+        console.log("Processed recommended tests:", tests);
         setRecommendedTests(tests);
       } catch (error) {
         console.error("Error fetching recommended tests:", error);
-        setRecommendedTests([]);
+        setRecommendedTests([]); // Explicitly set empty array
       }
     };
 
@@ -593,6 +603,7 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
                     </div>
                   )}
                   <div>
+                    // Replace your Select component with this:
                     <Select
                       isMulti
                       options={
@@ -600,11 +611,21 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
                           ? availableLabTests
                           : []
                       }
-                      getOptionLabel={(e) => e.label}
-                      getOptionValue={(e) => e.value} // Simplified to just use value
+                      getOptionLabel={(e) => e?.label || "Unknown"}
+                      getOptionValue={(e) => e?.value || ""}
                       placeholder="Select required lab tests"
-                      onChange={handleTestSelection}
-                      value={formData.requestedLabTests}
+                      onChange={(selected) => {
+                        // Ensure we always get an array, even if selected is null
+                        handleTestSelection(
+                          Array.isArray(selected) ? selected : []
+                        );
+                      }}
+                      value={
+                        Array.isArray(formData.requestedLabTests)
+                          ? formData.requestedLabTests
+                          : []
+                      }
+                      noOptionsMessage={() => "No test options available"}
                       styles={{
                         control: (base) => ({
                           ...base,
