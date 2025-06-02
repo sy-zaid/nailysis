@@ -31,6 +31,7 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
   // ----- POPUPS & NAVIGATION
   const [popupTrigger, setPopupTrigger] = useState(true);
   const navigate = useNavigate();
+  const [isLoadingTests, setIsLoadingTests] = useState(true);
 
   // ----- IMPORTANT DATA
   const [appointments, setAppointments] = useState([]);
@@ -63,6 +64,7 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
   // Fetch recommended tests
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoadingTests(true);
       var response;
       try {
         if (curUser[0].role === "lab_admin") {
@@ -73,11 +75,14 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
             "patient"
           );
         }
-        // Ensure we always have an array
-        setRecommendedTests(Array.isArray(response.data) ? response.data : []);
+        // Add proper array check and fallback
+        const data = response?.data || [];
+        setRecommendedTests(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error("Error fetching recommended tests:", error);
-        setRecommendedTests([]);
+        setRecommendedTests([]); // Ensure it's always an array
+      } finally {
+        setIsLoadingTests(false);
       }
     };
     fetchData();
@@ -85,12 +90,11 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
 
   // Transform recommended tests to match Select component format
   const getRecommendedTestOptions = () => {
-    if (
-      !Array.isArray(recommendedTests) ||
-      recommendedTests.length === 0 ||
-      !Array.isArray(availableLabTests) ||
-      availableLabTests.length === 0
-    ) {
+    // Add proper array checks
+    if (!Array.isArray(recommendedTests)) return [];
+    if (!Array.isArray(availableLabTests)) return [];
+
+    if (recommendedTests.length === 0 || availableLabTests.length === 0) {
       return [];
     }
 
@@ -255,6 +259,7 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
 
   // ----- MAIN LOGIC FUNCTIONS
   const fetchAvailableSlots = async (technicianId, appointmentDate) => {
+    setIsLoadingTests(true);
     try {
       console.log("Fetching slots for:", technicianId, appointmentDate);
       const response = await getAvailableSlots(
@@ -266,6 +271,8 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
       setAvailableSlots(response);
     } catch (error) {
       console.error("Failed to fetch available slots", error);
+    } finally {
+      setIsLoadingTests(false);
     }
   };
 
@@ -534,6 +541,7 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
                 {/* Available Slots Selection */}
                 <div>
                   <label>Available Slots</label>
+
                   <select
                     name="slotId"
                     value={formData.slotId}
@@ -569,52 +577,56 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
                     </div>
                   )}
                   <div>
-                    <Select
-                      isMulti
-                      options={
-                        Array.isArray(availableLabTests)
-                          ? availableLabTests
-                          : []
-                      }
-                      getOptionLabel={(e) => e?.label || ""}
-                      getOptionValue={(e) => e?.value || ""}
-                      placeholder="Select required lab tests"
-                      onChange={handleTestSelection}
-                      value={
-                        Array.isArray(formData.requestedLabTests)
-                          ? formData.requestedLabTests
-                          : []
-                      }
-                      styles={{
-                        control: (base) => ({
-                          ...base,
-                          border: "none",
-                          borderBottom: "2px solid #1E68F8",
-                          borderRadius: "none",
-                          padding: "0",
-                          outline: "none",
-                          width: "80%",
-                          fontSize: "14px",
-                        }),
-                        option: (base, state) => ({
-                          ...base,
-                          color: state.isSelected ? "white" : "black",
-                          cursor: "pointer",
-                          outline: "none",
-                          fontSize: "14px",
-                        }),
-                        menu: (base) => ({
-                          ...base,
-                          width: "80%",
-                          fontSize: "14px",
-                        }),
-                        dropdownIndicator: (base) => ({
-                          ...base,
-                          transform: "scale(0.9)",
-                        }),
-                        indicatorSeparator: () => ({ display: "none" }),
-                      }}
-                    />
+                    {isLoadingTests ? (
+                      <div>Loading tests...</div>
+                    ) : (
+                      <Select
+                        isMulti
+                        options={
+                          Array.isArray(availableLabTests)
+                            ? availableLabTests
+                            : []
+                        }
+                        getOptionLabel={(e) => e?.label || ""}
+                        getOptionValue={(e) => e?.value || ""}
+                        placeholder="Select required lab tests"
+                        onChange={handleTestSelection}
+                        value={
+                          Array.isArray(formData.requestedLabTests)
+                            ? formData.requestedLabTests
+                            : []
+                        }
+                        styles={{
+                          control: (base) => ({
+                            ...base,
+                            border: "none",
+                            borderBottom: "2px solid #1E68F8",
+                            borderRadius: "none",
+                            padding: "0",
+                            outline: "none",
+                            width: "80%",
+                            fontSize: "14px",
+                          }),
+                          option: (base, state) => ({
+                            ...base,
+                            color: state.isSelected ? "white" : "black",
+                            cursor: "pointer",
+                            outline: "none",
+                            fontSize: "14px",
+                          }),
+                          menu: (base) => ({
+                            ...base,
+                            width: "80%",
+                            fontSize: "14px",
+                          }),
+                          dropdownIndicator: (base) => ({
+                            ...base,
+                            transform: "scale(0.9)",
+                          }),
+                          indicatorSeparator: () => ({ display: "none" }),
+                        }}
+                      />
+                    )}
                   </div>
                 </div>
 
