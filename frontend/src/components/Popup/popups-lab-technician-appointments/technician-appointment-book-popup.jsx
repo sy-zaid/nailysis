@@ -133,6 +133,9 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
   const onInputChange = handleInputChange(setFormData);
 
   const handleTestSelection = (selectedTests) => {
+    if (!Array.isArray(selectedTests)) {
+      selectedTests = [];
+    }
     const totalFee = calculateTotalFee(selectedTests, availableTestPrices);
     setFormData((prevData) => ({
       ...prevData,
@@ -568,12 +571,20 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
                   <div>
                     <Select
                       isMulti
-                      options={availableLabTests}
-                      getOptionLabel={(e) => e.label}
-                      getOptionValue={(e) => e.value} // Simplified to just use value
+                      options={
+                        Array.isArray(availableLabTests)
+                          ? availableLabTests
+                          : []
+                      }
+                      getOptionLabel={(e) => e?.label || ""}
+                      getOptionValue={(e) => e?.value || ""}
                       placeholder="Select required lab tests"
                       onChange={handleTestSelection}
-                      value={formData.requestedLabTests}
+                      value={
+                        Array.isArray(formData.requestedLabTests)
+                          ? formData.requestedLabTests
+                          : []
+                      }
                       styles={{
                         control: (base) => ({
                           ...base,
