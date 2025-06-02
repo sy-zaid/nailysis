@@ -40,7 +40,10 @@ export const getDoctorSpecializations = async () => {
 
 export const getTechnicianSpecializations = async () => {
   const url = `${API_URL}/api/lab_technicians`;
-  return axios.get(url, getHeaders());
+  return axios.get(url, {
+    responseType: "json",
+    ...getHeaders(),
+  });
 };
 
 export const getDoctorFromSpecialization = (specialization) => {
