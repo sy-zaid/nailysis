@@ -151,7 +151,7 @@ function LoginForm({ route }) {
             </button>
             <button
               type="button"
-              className={styles.registerButton}
+              className={styles.submitButton}
               onClick={() => navigate("/register")}
               disabled={loading}
             >
