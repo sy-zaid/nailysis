@@ -1,9 +1,7 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import styles from "../common/all-pages-styles.module.css";
 import Navbar from "../../components/Dashboard/Navbar/Navbar";
-import AppointmentDetailsPopup from "../../components/Popup/popups-doctor-appointments/doctor-appointment-details-popup";
 import { useNavigate } from "react-router-dom";
-import api from "../../api";
 import CancellationRequestForm from "./cancellation-request-form"; // Import CancellationRequestForm
 import CheckinDoctorAppointmentPopup from "../../components/Popup/popups-doctor-appointments/doctor-appointment-checkin-popup";
 import PopupManageSlotsDoctor from "../../components/Popup/popups-doctor-appointments/manage-slots-doctor-popup";
@@ -15,9 +13,8 @@ import {
   getStatusClass,
   toggleActionMenu,
 } from "../../utils/utils";
+import { getDoctorAppointments } from "../../api/appointmentsApi";
 
-// Add at the top of the file:
-// First define the component
 const AppointmentDoctor = (props) => {
   // ----- TOKENS AND USER INFORMATION
   const token = localStorage.getItem("access");
@@ -178,14 +175,7 @@ const AppointmentDoctor = (props) => {
 
     const fetchAppointments = async () => {
       try {
-        const response = await api.get(
-          `${props.apiUrl}/api/doctor_appointments/`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await getDoctorAppointments();
 
         setAppointments(response.data);
         console.log("Response from doctor appointment", response.data);
@@ -408,7 +398,5 @@ const AppointmentDoctor = (props) => {
     </div>
   );
 };
-
-
 
 export default AppointmentDoctor;

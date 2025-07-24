@@ -8,6 +8,7 @@ import PopupTechnicianAppointmentBook from "../../components/Popup/popups-lab-te
 import AppointmentDetailsPopup from "../../components/Popup/popups-doctor-appointments/doctor-appointment-details-popup";
 import { useNavigate } from "react-router-dom";
 import api from "../../api";
+import { handleClosePopup, handleOpenPopup } from "../../utils/utils";
 
 const AppointmentPatients = () => {
   // ----- POPUPS & NAVIGATION
@@ -16,9 +17,9 @@ const AppointmentPatients = () => {
   const token = localStorage.getItem("access");
   const [activeButton, setActiveButton] = useState(0);
 
-  const [showDoctorPopup, setShowDoctorPopup] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
   const [showLabPopup, setShowLabPopup] = useState(false);
-
+  const [popupContent, setPopupContent] = useState();
   const [popupVisible, setPopupVisible] = useState(false);
   const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
   const popupRef = useRef(null);
@@ -35,22 +36,6 @@ const AppointmentPatients = () => {
   const [selectedAppointments, setSelectedAppointments] = useState({});
 
   // ----- HANDLERS
-  const handleOpenDoctorPopup = () => {
-    setShowDoctorPopup(true);
-  };
-
-  const handleCloseDoctorPopup = () => {
-    setShowDoctorPopup(false);
-  };
-
-  const handleOpenLabPopup = () => {
-    setShowLabPopup(true);
-  };
-
-  const handleCloseLabPopup = () => {
-    setShowLabPopup(false);
-  };
-
   const handleFilterClick = (index) => {
     setActiveButton(index);
   };
@@ -83,6 +68,16 @@ const AppointmentPatients = () => {
     });
   };
 
+  const handleActionClick = (action) => {
+    if (action === "Book Doctor Appointment") {
+      setPopupContent(
+        <PopupDoctorAppointmentBook
+          onClose={() => handleClosePopup(setShowPopup, setPopupContent)}
+        />
+      );
+      setShowPopup(true);
+    }
+  };
   // ----- MAIN LOGIC FUNCTIONS
 
   // Filtering Logic
@@ -187,7 +182,7 @@ const AppointmentPatients = () => {
     };
 
     fetchAppointments();
-  }, [token, navigate]);
+  }, [token, navigate, showPopup]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -203,12 +198,7 @@ const AppointmentPatients = () => {
 
   return (
     <div className={styles.pageContainer}>
-      {showDoctorPopup && (
-        <PopupDoctorAppointmentBook onClose={handleCloseDoctorPopup} />
-      )}
-      {showLabPopup && (
-        <PopupTechnicianAppointmentBook onClose={handleCloseLabPopup} />
-      )}
+      {showPopup && popupContent}
 
       <AppointmentDetailsPopup></AppointmentDetailsPopup>
 
@@ -247,7 +237,7 @@ const AppointmentPatients = () => {
             <div className={styles.appointmentButtons}>
               <button
                 className={styles.addButton}
-                onClick={handleOpenDoctorPopup}
+                onClick={() => handleActionClick("Book Doctor Appointment")}
               >
                 <i className="bx bx-plus-circle"></i> Book Doctor Appointment
               </button>

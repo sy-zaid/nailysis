@@ -28,7 +28,6 @@ const CheckinDoctorAppointmentPopup = ({ onClose, appointmentDetails }) => {
   const [intervalId, setIntervalId] = useState(null); // Stores the timer's interval ID to control it
   const [popupTrigger, setPopupTrigger] = useState(true);
   const [status, setStatus] = useState("Pending");
-  const { data: curUser } = useCurrentUserData();
   console.log("DETAA", appointmentDetails);
   // Function to format time in HH:MM:SS format
   const formatTime = (time) => {
@@ -67,7 +66,10 @@ const CheckinDoctorAppointmentPopup = ({ onClose, appointmentDetails }) => {
           formData.append(key, value);
         }
       });
-
+      // Run validation checks
+      if (!validateEHRForm()) {
+        return; // Do not proceed if any field is invalid
+      }
       await saveCompleteDoctorAppointment(
         appointmentDetails.appointment_id,
         formData
@@ -94,10 +96,6 @@ const CheckinDoctorAppointmentPopup = ({ onClose, appointmentDetails }) => {
 
   // Function to start the timer when consultation begins
   const startTimer = () => {
-    // Run validation checks
-    if (!validateEHRForm()) {
-      return; // Do not proceed if any field is invalid
-    }
     setIsConsultationStarted(true);
     const id = setInterval(() => {
       setTimer((prev) => prev + 1);
@@ -433,8 +431,8 @@ const CheckinDoctorAppointmentPopup = ({ onClose, appointmentDetails }) => {
           <div className={styles.header}>
             <h2>
               {isConsultationStarted
-                ? "2. Patient Information"
-                : "1. Complete Patient Check-In"}
+                ? "1. Patient Information"
+                : "2. Complete Patient Check-In"}
             </h2>
           </div>
 
