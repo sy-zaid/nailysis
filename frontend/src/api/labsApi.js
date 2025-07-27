@@ -111,3 +111,17 @@ export const getAvailableLabTests = async () => {
   const url = `${API_URL}/api/test_types/`;
   return axios.get(url, getHeaders());
 };
+
+
+/**
+ * Downloads the lab test report as pdf after converting it into binary Blob.
+ * @param {number} reportId - The ID of the test result.
+ * @returns {Promise} Axios POST request promise.
+ */
+export const downloadAsPdf = async (reportId) => {
+  const url = `${API_URL}/api/test_results/${reportId}/generate_report_pdf/`;
+  return axios.get(url, {
+    ...getHeaders(),
+    responseType: "blob", // important to get binary data
+  });
+};

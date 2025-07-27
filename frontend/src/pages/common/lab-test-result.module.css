@@ -7,7 +7,11 @@
   display: flex;
   flex-direction: column;
 }
-
+.top{
+  width: 100%;
+  /* background-color: red; */
+  padding: 0% 0% 6% 0;
+}
 .header {
   display: flex;
   justify-content: space-between;
@@ -193,13 +197,12 @@
 }
 
 .button {
-  padding: 12px 20px;
-  margin-right: 12px;
+  padding: 10px 20px;
   background-color: #0067ff;
   color: #ffffff;
   border: none;
   border-radius: 20px;
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
   transition: background-color 0.2s;
@@ -344,4 +347,30 @@
     margin-right: 0;
     margin-bottom: 10px;
   }
+}
+
+.buttonsContainer {
+  width: 100%;
+  margin: 6% 0%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  height: auto;
+  /* background-color: red; */
+}
+
+.patientInfoGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* two equal columns */
+  gap: 1rem 2rem; /* row gap, column gap */
+  padding: 1rem 0;
+}
+
+.patientInfoItem {
+  display: flex;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  line-height: 1.5;
 }

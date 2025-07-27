@@ -33,8 +33,19 @@ class LabTestOrderSerializer(serializers.ModelSerializer):
         return None
 
 class LabTestResultSerializer(serializers.ModelSerializer):
-    
+    patient = serializers.SerializerMethodField()
+        
     class Meta:
         model = LabTestResult
         fields =  "__all__"
+        extra_fields = ["patient"]
+        
+    def get_patient(self, obj):
+        # obj -> LabTestResult
+        try:
+            appointment = obj.test_order.lab_technician_appointment
+            if appointment and appointment.patient:
+                return PatientSerializer(appointment.patient).data
+        except:
+            return None
         

@@ -1,26 +1,22 @@
-import React from "react"; 
+import React from "react";
 import styles from "./Navbar.module.css";
 import { useNavigate } from "react-router-dom";
 
-
-const Navbar = () => {
-
+const Navbar = ({ setView, userRole }) => {
   const navigate = useNavigate();
 
-
   const handleScanNailsClick = () => {
-    navigate("/upload-image"); 
+    navigate("/upload-image");
   };
 
   return (
     <nav className={styles.container}>
-
       <span className={styles.searchBar}>
         <input type="search" placeholder="Search" />
         <i class="fa-solid fa-magnifying-glass"></i>
       </span>
       <div className={styles.navSide}>
-        <button onClick={handleScanNailsClick}>
+        <button onClick={() => setView("Nails Scan")}>
           {/* <img src="nail.png" alt="nail icon" /> */}
           <h5>Scan Nails</h5>
         </button>

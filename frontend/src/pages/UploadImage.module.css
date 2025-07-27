@@ -111,3 +111,10 @@
 .blur {
   filter: blur(5px);
 }
+
+.uploadButton{
+  margin-top: 10px;
+}
+.dragText{
+  margin-bottom: 20px;
+}

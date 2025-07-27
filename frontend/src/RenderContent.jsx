@@ -32,6 +32,9 @@ import LabTestReport from "./pages/common/lab-test-result-new";
 // FEEDBACKS
 import Feedbacks from "./pages/common/feedbacks";
 
+// NAIL SCAN
+import UploadImage from "./pages/UploadImage";
+
 // Render function for System Admin
 export const renderSystemAdminContent = (view) => {
   switch (view) {
@@ -105,6 +108,10 @@ export const renderDoctorContent = (view) => {
     case "View Payment History":
       return <PlaceholderComponent name="View Payment History" />;
 
+    // Nails Scan
+    case "Nails Scan":
+      return <UploadImage name="Nails Scan" />;
+
     // Default
     default:
       return <DoctorDashboard />;
@@ -144,6 +151,10 @@ export const renderPatientContent = (view) => {
       return <PatientInvoiceManagement name="Generate Invoice" />;
     case "View Billing History":
       return <PatientPaymentHistory name="View Billing History" />;
+
+    // Nails Scan
+    case "Nails Scan":
+      return <UploadImage name="Nails Scan" />;
 
     // Default fallback
     default:
@@ -220,6 +231,10 @@ export const renderLabTechnicianContent = (view) => {
       return <PlaceholderComponent name="Generate Invoice" />;
     case "View Payment History":
       return <PlaceholderComponent name="View Payment History" />;
+
+    // Nails Scan
+    case "Nails Scan":
+      return <UploadImage name="Nails Scan" />;
 
     // Default
     default:

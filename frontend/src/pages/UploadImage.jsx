@@ -192,7 +192,9 @@ const UploadImage = () => {
             Authorization: `Bearer ${localStorage.getItem("access")}`,
           },
           onUploadProgress: (progressEvent) => {
-            const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            const progress = Math.round(
+              (progressEvent.loaded * 100) / progressEvent.total
+            );
             setUploadProgress((prev) => ({ ...prev, overall: progress }));
           },
         }
@@ -225,31 +227,43 @@ const UploadImage = () => {
       {showPopup && popupContent}
       <div className={styles.pageContainer}>
         <div className={styles.pageTop}>
-          <Navbar />
-          <h1>Upload your nail images to get a health checkup</h1>
-          <p>Upload 3-5 clear images of your nails from different angles for best results.</p>
+          {/* <Navbar /> */}
         </div>
         <div className={styles.mainContent}>
-          <Sidebar />
+          {/* <Sidebar /> */}
           <div className={styles.uploadSection}>
+            <h1>Upload your nail images to get a health checkup</h1>
+            <br />
+            <p>
+              Upload 3-5 clear images of your nails from different angles for
+              best results.
+            </p>
+            <br />
+            <br />
             <h4>HOW DOES IT WORK?</h4>
             <div className={styles.lst}>
               <ul>
                 <li>
-                  <strong>Capture Clear Images:</strong> Take 3-5 photos of each nail from different angles in good lighting.
+                  <strong>Capture Clear Images:</strong> Take 3-5 photos of each
+                  nail from different angles in good lighting.
                 </li>
                 <li>
-                  <strong>Upload Images:</strong> Drag and drop or click to select images.
+                  <strong>Upload Images:</strong> Drag and drop or click to
+                  select images.
                 </li>
                 <li>
-                  <strong>AI Analysis:</strong> Our system will analyze your nail health indicators.
+                  <strong>AI Analysis:</strong> Our system will analyze your
+                  nail health indicators.
                 </li>
                 <li>
-                  <strong>View Results:</strong> Get comprehensive results with actionable insights.
+                  <strong>View Results:</strong> Get comprehensive results with
+                  actionable insights.
                 </li>
               </ul>
             </div>
-            <div className={`${styles.box} ${isDragging ? styles.dragging : ""}`}>
+            <div
+              className={`${styles.box} ${isDragging ? styles.dragging : ""}`}
+            >
               <div
                 className={styles.uploadContainer}
                 onDragOver={handleDragOver}
@@ -257,9 +271,10 @@ const UploadImage = () => {
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
               >
-                <span className={styles.uploadIcon}>&#x2915;</span>
                 <h4>Upload Nail Images (3-5 recommended)</h4>
-                <p className={styles.supportedFormats}>Supports JPG, PNG (Max 5MB each)</p>
+                <p className={styles.supportedFormats}>
+                  Supports JPG, PNG (Max 5MB each)
+                </p>
                 <div className={styles.uploadArea}>
                   <input
                     type="file"
@@ -269,7 +284,9 @@ const UploadImage = () => {
                     onChange={handleFileChange}
                     className={styles.fileInput}
                   />
-                  <label htmlFor="file-upload" className={styles.uploadButton}>Select Images</label>
+                  <label htmlFor="file-upload" className={styles.uploadButton}>
+                    Select Images
+                  </label>
                   <p className={styles.dragText}>or drag and drop files here</p>
                 </div>
                 {previews.length > 0 && (
@@ -279,14 +296,26 @@ const UploadImage = () => {
                       {previews.map((preview) => (
                         <div key={preview.id} className={styles.previewItem}>
                           <div className={styles.previewImageContainer}>
-                            <img src={preview.url} alt="Preview" className={styles.previewImage} />
-                            <button type="button" className={styles.removeButton} onClick={() => removeFile(preview.id)}>
+                            <img
+                              src={preview.url}
+                              alt="Preview"
+                              className={styles.previewImage}
+                            />
+                            <button
+                              type="button"
+                              className={styles.removeButton}
+                              onClick={() => removeFile(preview.id)}
+                            >
                               &times;
                             </button>
                           </div>
                           <div className={styles.fileInfo}>
-                            <span className={styles.fileName}>{preview.name}</span>
-                            <span className={styles.fileSize}>{formatFileSize(preview.size)}</span>
+                            <span className={styles.fileName}>
+                              {preview.name}
+                            </span>
+                            <span className={styles.fileSize}>
+                              {formatFileSize(preview.size)}
+                            </span>
                           </div>
                           {uploadProgress[preview.id] === 100 && (
                             <div className={styles.uploadSuccess}>&#10004;</div>
@@ -296,7 +325,9 @@ const UploadImage = () => {
                     </div>
                   </div>
                 )}
-                {uploadError && <div className={styles.errorMessage}>{uploadError}</div>}
+                {uploadError && (
+                  <div className={styles.errorMessage}>{uploadError}</div>
+                )}
                 {isUploading && (
                   <div className={styles.progressBarContainer}>
                     <div
@@ -306,7 +337,11 @@ const UploadImage = () => {
                     <span>{uploadProgress.overall || 0}%</span>
                   </div>
                 )}
-                <button onClick={handleUpload} className={styles.diagnosisButton} disabled={isUploading}>
+                <button
+                  onClick={handleUpload}
+                  className={styles.diagnosisButton}
+                  disabled={isUploading}
+                >
                   {isUploading ? "Uploading..." : "Start Diagnosis"}
                 </button>
               </div>
@@ -316,7 +351,9 @@ const UploadImage = () => {
       </div>
       {isModalOpen && (
         <div className={styles.modalWrapper}>
-          <ImageGuide onClose={handleClosePopup(setShowPopup, setPopupContent)} />
+          <ImageGuide
+            onClose={handleClosePopup(setShowPopup, setPopupContent)}
+          />
         </div>
       )}
     </>

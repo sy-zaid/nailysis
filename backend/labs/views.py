@@ -328,14 +328,19 @@ class LabTestResultModelViewSet(viewsets.ModelViewSet):
     def view_lab_report_html(self, request, pk=None):
         """Retrieves the blood test report in HTML format."""
         lab_test_result = get_object_or_404(LabTestResult, pk=pk)
-        return render(request, 'labs/blood-test-report.html', {'lab_test_result': lab_test_result})
+        return render(request, 'blood-test-report.html', {'lab_test_result': lab_test_result})
 
-    @action(detail=True, methods=["get"], url_path="generate_blood_report")
+    @action(detail=True, methods=["get"], url_path="generate_report_pdf")
     def generate_lab_report_pdf(self, request, pk=None):
-        """Generates a downloadable PDF report for the specified lab test result."""
         lab_test_result = get_object_or_404(LabTestResult, pk=pk)
-        html_content = render_to_string('labs/blood-test-report.html', {'lab_test_result': lab_test_result})
-        pdf_file = HTML(string=html_content).write_pdf()
+        serialized = LabTestResultSerializer(lab_test_result).data
+        
+        html = render_to_string('blood-test-report.html', {
+            'lab_test_result': serialized,
+            'request': request  # optional but helps for absolute paths
+        })
+
+        pdf_file = HTML(string=html, base_url=request.build_absolute_uri('/')).write_pdf()
 
         response = HttpResponse(pdf_file, content_type="application/pdf")
         response["Content-Disposition"] = f'attachment; filename="Lab_Report_{pk}.pdf"'

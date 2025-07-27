@@ -1,6 +1,7 @@
 //lab-test-result.jsx
 import React, { useState, useEffect } from "react";
 import {
+  downloadAsPdf,
   getTestResultsByTestId,
   markResultFinalized,
   saveAdminComment,
@@ -23,45 +24,46 @@ const LabTestResult = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [resultFiles, setResultFiles] = useState([]);
   const [allResultFiles, setAllResultFiles] = useState([]);
+  const fetchLabTestResult = async () => {
+    try {
+      const response = await getTestResultsByTestId(reportId);
+      const resultData = response.data[0];
+      console.log(response.data);
+      setLabTestResult(resultData);
+
+      // Combine all result files from both fields
+      const files = [];
+
+      // Add the main result_file if it exists
+      if (resultData?.result_file) {
+        files.push(resultData.result_file);
+      }
+
+      // Add additional images from imaging_results array if it exists
+
+      //outputs not loaded image
+      if (
+        resultData?.imaging_results &&
+        Array.isArray(resultData.imaging_results)
+      ) {
+        // Assuming the imaging_results array contains filenames that need to be prefixed with the media URL
+        const baseUrl = "http://127.0.0.1:8000/media/lab_results/";
+        resultData.imaging_results.forEach((filename) => {
+          files.push(baseUrl + filename);
+        });
+      }
+
+      setAllResultFiles(files);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchLabTestResult = async () => {
-      try {
-        const response = await getTestResultsByTestId(reportId);
-        const resultData = response.data[0];
-        setLabTestResult(resultData);
-
-        // Combine all result files from both fields
-        const files = [];
-
-        // Add the main result_file if it exists
-        if (resultData?.result_file) {
-          files.push(resultData.result_file);
-        }
-
-        // Add additional images from imaging_results array if it exists
-
-        //outputs not loaded image
-        if (
-          resultData?.imaging_results &&
-          Array.isArray(resultData.imaging_results)
-        ) {
-          // Assuming the imaging_results array contains filenames that need to be prefixed with the media URL
-          const baseUrl = "http://127.0.0.1:8000/media/lab_results/";
-          resultData.imaging_results.forEach((filename) => {
-            files.push(baseUrl + filename);
-          });
-        }
-
-        setAllResultFiles(files);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchLabTestResult();
-  }, [reportId]);
+  }, [reportId, comment]);
 
   const handleCommentSubmit = async (event) => {
     event.preventDefault();
@@ -106,6 +108,8 @@ const LabTestResult = () => {
           className: "custom-toast",
         });
       }
+      // REFRESH the latest result after marking finalized
+      fetchLabTestResult();
     } catch (error) {
       if (error.response) {
         const errorMsg =
@@ -119,6 +123,40 @@ const LabTestResult = () => {
         });
       }
       console.error("Finalization error:", error);
+    }
+  };
+
+  const handleDownload = async (event) => {
+    event.preventDefault();
+
+    if (!reportId) {
+      toast.error("Missing report ID", { className: "custom-toast" });
+      return;
+    }
+
+    try {
+      const response = await downloadAsPdf(reportId);
+
+      // Create a URL for the blob
+      const blob = new Blob([response.data], { type: "application/pdf" });
+      const url = window.URL.createObjectURL(blob);
+
+      // Create an anchor and trigger download
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `Lab_Report_${reportId}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      toast.success("Downloading report...", { className: "custom-toast" });
+    } catch (error) {
+      const errorMsg =
+        error.response?.data?.error ||
+        error.response?.data?.message ||
+        "Failed to download report";
+      toast.error(errorMsg, { className: "custom-toast" });
+      console.error("Download error:", error);
     }
   };
 
@@ -147,7 +185,7 @@ const LabTestResult = () => {
 
   return (
     <div className={styles.container}>
-      <div className="top">
+      <div className={styles.top}>
         <h1>Diagnosis Report</h1>
         <p>View diagnosis results and submit comments</p>
       </div>
@@ -157,6 +195,7 @@ const LabTestResult = () => {
         <img src={logo} alt="Nailysis Logo" className={styles.logo} />
       </header>
       <div className={styles.content}>
+        <h2 className={styles.sectionTitle}>Test Details</h2>
         <p>
           <strong>Test Order ID:</strong> {labTestResult?.id || "N/A"}
         </p>
@@ -167,6 +206,38 @@ const LabTestResult = () => {
         <p>
           <strong>Status:</strong> {labTestResult?.result_status || "Unknown"}
         </p>
+        {labTestResult?.patient && (
+          <div className={styles.section}>
+            <h2 className={styles.sectionTitle}>Patient Information</h2>
+            <div className={styles.patientInfoGrid}>
+              <div className={styles.patientInfoItem}>
+                <strong>Patient ID:</strong>{" "}
+                {labTestResult.patient.user.user_id}
+              </div>
+              <div className={styles.patientInfoItem}>
+                <strong>Name:</strong> {labTestResult.patient.user.first_name}{" "}
+                {labTestResult.patient.user.last_name}
+              </div>
+              <div className={styles.patientInfoItem}>
+                <strong>Email:</strong> {labTestResult.patient.user.email}
+              </div>
+              <div className={styles.patientInfoItem}>
+                <strong>Date of Birth:</strong>{" "}
+                {labTestResult.patient.date_of_birth}
+              </div>
+              <div className={styles.patientInfoItem}>
+                <strong>Gender:</strong> {labTestResult.patient.gender}
+              </div>
+              <div className={styles.patientInfoItem}>
+                <strong>Address:</strong> {labTestResult.patient.address}
+              </div>
+              <div className={styles.patientInfoItem}>
+                <strong>Emergency Contact:</strong>{" "}
+                {labTestResult.patient.emergency_contact}
+              </div>
+            </div>
+          </div>
+        )}
 
         {labTestResult?.numeric_results &&
           Object.keys(labTestResult.numeric_results).length > 0 && (
@@ -280,26 +351,45 @@ const LabTestResult = () => {
             </Modal>
           </div>
         )}
-
-        <form onSubmit={handleCommentSubmit} className={styles.form}>
-          <label htmlFor="admin_comment" className={styles.label}>
-            Lab Admin Comments:
-          </label>
-          <textarea
-            id="admin_comment"
-            name="admin_comment"
-            rows="3"
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-            className={styles.textarea}
-          />
-          <button type="submit" className={styles.button}>
-            Save Comment
+        {(labTestResult?.result_status === "Finalized" && (
+          <form onSubmit={handleCommentSubmit} className={styles.form}>
+            <label htmlFor="admin_comment" className={styles.label}>
+              Lab Admin Comments:
+            </label>
+            <p>{labTestResult?.admin_comments || "No Comments"}</p>
+          </form>
+        )) || (
+          <form onSubmit={handleCommentSubmit} className={styles.form}>
+            <label htmlFor="admin_comment" className={styles.label}>
+              Lab Admin Comments:
+            </label>
+            <textarea
+              id="admin_comment"
+              name="admin_comment"
+              rows="3"
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              className={styles.textarea}
+            />
+            <button type="submit" className={styles.button}>
+              Save Comment
+            </button>
+          </form>
+        )}
+        <div className={styles.buttonsContainer}>
+          {labTestResult?.result_status === "Finalized" || (
+            <button onClick={handleMarkFinalized} className={styles.button}>
+              Mark as Finalized
+            </button>
+          )}
+          <button
+            onClick={handleDownload}
+            type="Download"
+            className={styles.button}
+          >
+            Download As PDF
           </button>
-          <button onClick={handleMarkFinalized} className={styles.button}>
-            Mark as Finalized
-          </button>
-        </form>
+        </div>
       </div>
     </div>
   );

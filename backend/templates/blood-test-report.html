@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Lab Test Report - Nailysis</title>
+    <style>
+      @page {
+        size: A4;
+        margin: 20mm;
+        @top-center {
+          content: element(header);
+        }
+      }
+      
+      body {
+        font-family: 'Helvetica Neue', Arial, sans-serif;
+        line-height: 1.5;
+        color: #333;
+        font-size: 12px;
+        padding-top: 0px;
+      }
+      
+      header {
+        /* position: fixed; */
+        top: 0;
+        left: 0;
+        right: 0;
+        /* background-color: red; */
+        text-align: center;
+        margin-bottom: 40px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #e0e0e0;
+      }
+      
+      header img {
+        height: 50px;
+        margin-bottom: 5px;
+      }
+      
+      h1 {
+        color: #1a5276;
+        font-size: 18px;
+        margin: 5px 0;
+        font-weight: 600;
+      }
+      
+      h2 {
+        color: #2874a6;
+        font-size: 14px;
+        font-weight: 600;
+        margin: 15px 0 10px 0;
+        padding-bottom: 5px;
+        border-bottom: 1px solid #e0e0e0;
+      }
+      
+      .report-meta {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
+        padding: 10px;
+        background-color: #f8f9fa;
+        border-radius: 4px;
+      }
+      
+      .report-meta div {
+        flex: 1;
+      }
+      
+      .label {
+        font-weight: 600;
+        color: #2c3e50;
+      }
+      
+      .patient-info {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-gap: 10px 30px;
+        margin: 15px 0;
+      }
+      
+      .patient-info-row {
+        display: flex;
+        justify-content: space-between;
+      }
+      
+      .patient-info-item {
+        flex: 1;
+        margin-bottom: 8px;
+      }
+      
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 15px 0;
+        font-size: 11px;
+        page-break-inside: avoid;
+      }
+      
+      th {
+        background-color: #3498db;
+        /* color: white; */
+        font-weight: 600;
+        text-align: left;
+        padding: 8px 10px;
+      }
+      
+      td {
+        padding: 8px 10px;
+        border-bottom: 1px solid #e0e0e0;
+        text-align: left;
+      }
+      
+      tr:nth-child(even) {
+        background-color: #f8f9fa;
+      }
+      
+      .image-container {
+        margin: 15px 0;
+        page-break-inside: avoid;
+      }
+      
+      .image-container img {
+        max-width: 100%;
+        max-height: 300px;
+        border: 1px solid #ddd;
+        display: block;
+        margin: 0 auto;
+      }
+      
+      .image-caption {
+        text-align: center;
+        font-size: 10px;
+        color: #666;
+        margin-top: 5px;
+      }
+      
+      .comment-box {
+        background-color: #f8f9fa;
+        border-left: 4px solid #3498db;
+        padding: 12px;
+        margin: 15px 0;
+        font-size: 11px;
+        border-radius: 0 4px 4px 0;
+      }
+      
+      .footer {
+        margin-top: 30px;
+        padding-top: 10px;
+        border-top: 1px solid #e0e0e0;
+        font-size: 10px;
+        color: #666;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      {% load static %}
+      <img src="{% static 'dist/nailysis-logo-small.png' %}" alt="Logo" style="height: 80px;" />
+
+      <h1>Lab Test Report</h1>
+    </header>
+
+    <div class="report-meta">
+      <div>
+        <span class="label">Test Order ID:</span> {{ lab_test_result.id }}
+      </div>
+      <div>
+        <span class="label">Reviewed By:</span> {{ lab_test_result.reviewed_by|default:"Not reviewed yet" }}
+      </div>
+      <div>
+        <span class="label">Status:</span> {{ lab_test_result.result_status|default:"Unknown" }}
+      </div>
+    </div>
+
+    {% if lab_test_result.patient %}
+    <section>
+      <h2>Patient Information</h2>
+      <div class="patient-info">
+        <div class="patient-info-item">
+          <span class="label">Patient ID:</span> {{ lab_test_result.patient.user.user_id }}
+        </div>
+        <div class="patient-info-item">
+          <span class="label">Name:</span> {{ lab_test_result.patient.user.first_name }} {{ lab_test_result.patient.user.last_name }}
+        </div>
+        <div class="patient-info-item">
+          <span class="label">Date of Birth:</span> {{ lab_test_result.patient.date_of_birth }}
+        </div>
+        <div class="patient-info-item">
+          <span class="label">Gender:</span> {{ lab_test_result.patient.gender }}
+        </div>
+        <div class="patient-info-item">
+          <span class="label">Email:</span> {{ lab_test_result.patient.user.email }}
+        </div>
+        <div class="patient-info-item">
+          <span class="label">Phone:</span> {{ lab_test_result.patient.phone_number|default:"-" }}
+        </div>
+        <div class="patient-info-item" style="grid-column: span 2">
+          <span class="label">Address:</span> {{ lab_test_result.patient.address }}
+        </div>
+        <div class="patient-info-item" style="grid-column: span 2">
+          <span class="label">Emergency Contact:</span> {{ lab_test_result.patient.emergency_contact }}
+        </div>
+      </div>
+    </section>
+    {% endif %} 
+    
+    {% if lab_test_result.numeric_results %}
+    <section>
+      <h2>Test Results</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Test Name</th>
+            <th>Result</th>
+            <th>Unit</th>
+            <th>Reference Range</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for test, details in lab_test_result.numeric_results.items %}
+          <tr>
+            <td>{{ test }}</td>
+            <td><strong>{{ details.value|default:"-" }}</strong></td>
+            <td>{{ details.unit|default:"-" }}</td>
+            <td>{{ details.range|default:"-" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+    {% endif %} 
+    
+    {% if lab_test_result.result_file or lab_test_result.imaging_results %}
+    <section>
+      <h2>Result Images</h2>
+      {% if lab_test_result.result_file %}
+      <div class="image-container">
+        <img src="{{ lab_test_result.result_file.url }}" alt="Result Image" />
+        <p class="image-caption">{{ lab_test_result.result_file.name }}</p>
+      </div>
+      {% endif %} 
+      
+      {% for image in lab_test_result.imaging_results %}
+      <div class="image-container">
+        <img src="/media/lab_results/{{ image }}" alt="Imaging Result" />
+        <p class="image-caption">{{ image }}</p>
+      </div>
+      {% endfor %}
+    </section>
+    {% endif %} 
+    
+    {% if lab_test_result.admin_comment %}
+    <section>
+      <h2>Lab Notes</h2>
+      <div class="comment-box">{{ lab_test_result.admin_comment }}</div>
+    </section>
+    {% endif %}
+    
+    <div class="footer">
+      <p>Report generated on {% now "F j, Y, g:i a" %} (Pakistan Standard Time) | Confidential Patient Information</p>
+    </div>
+  </body>
+</html>

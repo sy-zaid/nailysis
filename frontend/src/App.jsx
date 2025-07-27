@@ -34,6 +34,7 @@ import DoctorProfile from "./pages/admin-clinic/doctor-profile-clinic-admin";
 import BillingHistory from "./pages/admin-clinic/billing-history.jsx";
 import AboutUs from "./pages/common/about-us.jsx";
 import ContactUs from "./pages/common/contact.jsx";
+import Navbar from "./components/Dashboard/Navbar/Navbar.jsx";
 
 function Logout() {
   localStorage.clear();
@@ -61,6 +62,7 @@ function App() {
         <ToastContainer position="top-right" autoClose={3000} />
         <Routes>
           {/* System Admin */}
+
           <Route
             path="/system-admin-dashboard"
             element={
@@ -130,6 +132,7 @@ function App() {
             path="/doctor-dashboard"
             element={
               <ProtectedRoute requiredRole="doctor">
+                <Navbar setView={setView} />
                 <Sidebar
                   userRole="doctor"
                   setView={setView}
