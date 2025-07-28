@@ -267,7 +267,7 @@ const AppointmentClinicAdmin = ( onClose ) => {
 
 
       <div className={styles.pageTop}>
-        <Navbar />
+        
         <Header
           mainHeading={"Appointments"}
           subHeading={

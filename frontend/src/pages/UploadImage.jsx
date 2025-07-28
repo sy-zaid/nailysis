@@ -227,7 +227,7 @@ const UploadImage = () => {
       {showPopup && popupContent}
       <div className={styles.pageContainer}>
         <div className={styles.pageTop}>
-          {/* <Navbar /> */}
+          {/*  */}
         </div>
         <div className={styles.mainContent}>
           {/* <Sidebar /> */}

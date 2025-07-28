@@ -8,7 +8,7 @@ const ImageGuide = ({ onClose }) => {
         {/* <button className={styles.closeButton} onClick={onClose}>
           ✖
         </button> */}
-        <h3>Guide for Accurate Nail Image Diagnosis</h3>
+        <h1>Guide for Accurate Nail Image Diagnosis</h1>
         <p>
           Use the following images as a guide to ensure proper image capture for
           an accurate diagnosis...

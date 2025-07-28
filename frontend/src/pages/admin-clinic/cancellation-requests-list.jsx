@@ -104,7 +104,7 @@ const CancellationRequestsList = () => {
 
   return (
     <div className={styles.pageContainer}>
-      <Navbar />
+      
 
       {/* Page Header */}
       <div className={styles.pageTop}>

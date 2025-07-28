@@ -208,7 +208,7 @@ const AppointmentDoctor = (props) => {
       {showPopup && popupContent}{" "}
       {/* Render the correct popup based on the action */}
       <div className={styles.pageTop}>
-        <Navbar />
+        
         <Header
           mainHeading={"Appointments"}
           subHeading={

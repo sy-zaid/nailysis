@@ -75,7 +75,7 @@ const PaymentHistory = (props) => {
     <div className={styles.pageContainer}>
 
       <div className={styles.pageTop}>
-        <Navbar />
+        
         <Header 
             mainHeading={'Billing History'}
             subHeading={'Here you can view all the billing details'}

@@ -111,7 +111,7 @@ const AppointmentLabAdmin = () => {
       <AppointmentDetailsPopup></AppointmentDetailsPopup>
 
       <div className={styles.pageTop}>
-        <Navbar />
+        
         <h1>Lab Appointments</h1>
         <p>Here you can view and manage all the booked lab appointments</p>
       </div>

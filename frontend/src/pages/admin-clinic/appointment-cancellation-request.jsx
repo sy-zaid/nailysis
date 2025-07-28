@@ -135,7 +135,7 @@ const CancellationRequest = () => {
   return (
     <div className={styles.pageContainer}>
       {showPopup && popupContent}
-      <Navbar />
+      
 
       {/* Page Header */}
       <div className={styles.pageTop}>

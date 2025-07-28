@@ -159,7 +159,7 @@ function DoctorDashboard() {
 
   return (
     <div>
-      <Navbar />
+      
       <Header curUserRole={"Doctor"} />
       <div className={styles.main}>
         <div className={styles.cards}>

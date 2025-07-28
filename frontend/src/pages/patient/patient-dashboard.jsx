@@ -8,7 +8,7 @@ import UpcomingTest from "../../components/Dashboard/UpcomingTest/UpcomingTest";
 function PatientDashboard() {
     return (
         <div>
-          <Navbar />
+          
           <Header 
             mainHeading={'Welcome, John Doe'}
             subHeading={'Here is Your Patient'}

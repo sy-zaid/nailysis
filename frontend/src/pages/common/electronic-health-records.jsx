@@ -291,7 +291,7 @@ const ElectronicHealthRecord = () => {
 
   return (
     <div className={styles.pageContainer}>
-      <Navbar />
+      
 
       {showPopup && popupContent}
 

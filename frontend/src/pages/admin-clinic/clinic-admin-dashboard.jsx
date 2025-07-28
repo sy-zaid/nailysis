@@ -9,7 +9,7 @@ import CancellationRequestsList from "./cancellation-requests-list";
 function ClinicAdminDashboard() {
   return (
     <div>
-    <Navbar />
+    
     
     <div className={styles.header}>
       <div className={styles.headerContent}>

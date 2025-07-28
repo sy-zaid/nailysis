@@ -46,7 +46,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin: 30px 10px 20px 10px;
+    margin: 20px 10px;
 }
 
 .filters > :last-child {
@@ -55,8 +55,9 @@
 
 .filters p {
   color: #737070;
+  font-size: .9rem;
   font-weight: 400;
-  margin-left: 10px;
+  margin-left: 32px;
 }
 
 .filterTabs {
@@ -267,20 +268,23 @@ table {
     justify-content: center;
     align-items: center;
     gap: 15px;
-    margin-top: -50px;
+    /* margin-top: -50px; */
 }
 
 .appointmentButtons button {
     width: 100%;
 }
 
+
 .addButton {
     display: block;
-    padding: 8px 30px;
+    padding: 10px 20px;
     background-color:#007bff ;
     color: white;
     border: none;
-    border-radius: 30px; 
+    font-size: .975rem;
+    font-weight: 600;
+    border-radius: 100px; 
     cursor: pointer;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
     transition: all 0.1s;
@@ -289,9 +293,15 @@ table {
 .addButton:hover {
     background-color: #0056b3;
 }
-  
+.actions{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    background-color: red;
+}
 .cancelButton {
-    background-color: #dc3545;
+    background-color: #a96e74;
     padding: 8px 30px;
     color: white;
     border: none;

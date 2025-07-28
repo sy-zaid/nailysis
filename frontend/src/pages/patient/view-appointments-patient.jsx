@@ -203,7 +203,7 @@ const AppointmentPatients = () => {
       <AppointmentDetailsPopup></AppointmentDetailsPopup>
 
       <div className={styles.pageTop}>
-        <Navbar />
+        
         <Header
           mainHeading={"Appointments"}
           subHeading={
@@ -211,7 +211,7 @@ const AppointmentPatients = () => {
           }
         />
       </div>
-      <br />
+      
       <div className={styles.mainContent}>
         <div className={styles.appointmentsContainer}>
           <div className={styles.filters}>

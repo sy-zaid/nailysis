@@ -9,7 +9,7 @@ import UpcomingTest from "../../components/Dashboard/UpcomingTest/UpcomingTest";
 function LabTechDashboard() {
     return (
         <div>
-          <Navbar />
+          
           <Header 
             mainHeading={'Welcome, John Doe'}
             subHeading={'Here is Your Lab Technician '}

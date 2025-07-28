@@ -114,7 +114,7 @@ const ViewAppointments = (props) => {
 
 
       <div className={styles.pageTop}>
-        <Navbar />
+        
         <Header 
             mainHeading={'Appointments'}
             subHeading={'Here you can view all the booked appointments'}

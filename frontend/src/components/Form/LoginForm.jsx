@@ -94,10 +94,6 @@ function LoginForm({ route }) {
           navigate("/login"); // Redirect to login on unknown role
           break;
       }
-      toast.success("Login Successful!", {
-        className: "custom-toast",
-      });
-
     } catch (error) {
       console.error(error); // Display error message
       if (error.response && error.response.status === 401) {
@@ -105,7 +101,7 @@ function LoginForm({ route }) {
           className: "custom-toast",
         });
       } else {
-        toast.error ("Network Error");
+        toast.error("Network Error");
       }
     } finally {
       setLoading(false);
@@ -139,7 +135,11 @@ function LoginForm({ route }) {
               placeholder="Enter Password"
             />
           </div>
-          <button type="submit" className={styles.submitButton} disabled={loading}>
+          <button
+            type="submit"
+            className={styles.submitButton}
+            disabled={loading}
+          >
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>

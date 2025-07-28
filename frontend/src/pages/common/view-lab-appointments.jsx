@@ -279,7 +279,7 @@ const AppointmentTechnician = () => {
       {/* Render the correct popup based on the action */}
       {showPopup && popupContent}{" "}
       <div className={styles.pageTop}>
-        <Navbar />
+        
         <Header
           mainHeading={"Appointments"}
           subHeading={

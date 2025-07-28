@@ -9,7 +9,7 @@ import UpcomingTest from "../../components/Dashboard/UpcomingTest/UpcomingTest";
 function LabAdminDashboard() {
     return (
         <div>
-          <Navbar />
+          
           <Header curUserRole={'Lab Admin'}/>
           <div className={styles.main}>
             <div className={styles.cards}>

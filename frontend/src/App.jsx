@@ -67,6 +67,7 @@ function App() {
             path="/system-admin-dashboard"
             element={
               <ProtectedRoute requiredRole="system_admin">
+                <Navbar setView={setView} />
                 <Sidebar
                   userRole="system_admin"
                   setView={setView}
@@ -88,6 +89,7 @@ function App() {
             path="/clinic-admin"
             element={
               <ProtectedRoute requiredRole="clinic_admin">
+                <Navbar setView={setView} />
                 <Sidebar
                   userRole="clinic_admin"
                   setView={setView}
@@ -110,6 +112,7 @@ function App() {
             path="/clinic-admin/patient-profile"
             element={
               <ProtectedRoute requiredRole="clinic_admin">
+                <Navbar setView={setView} />
                 <Sidebar
                   userRole="clinic_admin"
                   setView={setView}
@@ -156,6 +159,7 @@ function App() {
             path="/patient-dashboard"
             element={
               <ProtectedRoute requiredRole="patient">
+                <Navbar setView={setView} />
                 <Sidebar
                   userRole="patient"
                   setView={setView}
@@ -178,6 +182,7 @@ function App() {
             path="/lab-admin-dashboard"
             element={
               <ProtectedRoute requiredRole="lab_admin">
+                <Navbar setView={setView} />
                 <Sidebar
                   userRole="lab_admin"
                   setView={setView}
@@ -199,6 +204,7 @@ function App() {
             path="/lab-technician-dashboard"
             element={
               <ProtectedRoute requiredRole="lab_technician">
+                <Navbar setView={setView} />
                 <Sidebar
                   userRole="lab_technician"
                   setView={setView}

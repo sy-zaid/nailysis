@@ -33,7 +33,7 @@ const BillingHistory = () => {
 
   return (
     <div className={styles.pageContainer}>
-      <Navbar />
+      
       <div className={styles.header}>
         <div>
           <h1>Billing History & Audit Trail</h1>

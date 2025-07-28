@@ -90,7 +90,7 @@ const DiagnosticResults = (props) => {
     <div className={`${styles.pageContainer} ${mediaStyles.pageContainer}`}>
 
       <div className={`${styles.pageTop} ${mediaStyles.pageTop}`}>
-        <Navbar />
+        
         <Header 
             mainHeading={'Review Diagnostic Results'}
             subHeading={'Here you can view and manage all the diagnostic results from prescribed tests'}

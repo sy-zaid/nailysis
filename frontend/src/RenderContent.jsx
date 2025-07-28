@@ -10,7 +10,6 @@ import ViewAppointmentsClinicAdmin from "./pages/admin-clinic/view-appointments-
 import ViewAppointmentsPatient from "./pages/patient/view-appointments-patient";
 import ViewAppointmentsDoctor from "./pages/doctor/view-appointments-doctor";
 import PatientPaymentHistory from "./pages/patient/patient-payment-history";
-import PatientDiagnosticResults from "./pages/patient/patient-diagnostic-results";
 import PatientInvoiceManagement from "./pages/patient/patient-invoice-management";
 import DoctorDashboard from "./pages/doctor/doctor-dashboard";
 import PatientDashboard from "./pages/patient/patient-dashboard";
@@ -27,7 +26,7 @@ import TechCancellationRequest from "./pages/admin-lab/cancellation-requests-lis
 import LabAppointmentHistory from "./pages/common/lab-appointment-history";
 import ClinicAppointmentHistory from "./pages/common/clinic-appointment-history";
 import NailysisReport from "./pages/common/report";
-import LabTestReport from "./pages/common/lab-test-result-new";
+
 
 // FEEDBACKS
 import Feedbacks from "./pages/common/feedbacks";

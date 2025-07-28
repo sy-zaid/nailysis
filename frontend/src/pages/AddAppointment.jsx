@@ -8,40 +8,57 @@ const AddAppointment = () => {
   return (
     <div className={styles.pageContainer}>
       <div className={styles.pageTop}>
-        <Navbar />
+        <Sidebar />
         <h1>Add New Appointment</h1>
         <p>Add a new patient and schedule his/her appointment</p>
-        <Sidebar/>
       </div>
 
       <div className={styles.mainContent}>
-    
-
         <div className={styles.content}>
           <div className={styles.formContainer}>
             <div className={styles.header}>
-            <h3>Patient Information</h3>
-              <button className={styles.qrButton}>Load Profile by QR Code</button>
-              
+              <h3>Patient Information</h3>
+              <button className={styles.qrButton}>
+                Load Profile by QR Code
+              </button>
             </div>
             <div className={styles.formSection}>
-             
               <div className={styles.formGroup}>
                 <div>
                   <label htmlFor="name">Name</label>
-                  <input id="name" className={styles.inputBox} type="text" placeholder="John Doe" />
+                  <input
+                    id="name"
+                    className={styles.inputBox}
+                    type="text"
+                    placeholder="John Doe"
+                  />
                 </div>
                 <div>
                   <label htmlFor="age">Age</label>
-                  <input id="age" className={styles.inputBox} type="number" placeholder="21" />
+                  <input
+                    id="age"
+                    className={styles.inputBox}
+                    type="number"
+                    placeholder="21"
+                  />
                 </div>
                 <div>
                   <label htmlFor="gender">Gender</label>
-                  <input id="gender" className={styles.inputBox} type="text" placeholder="Male" />
+                  <input
+                    id="gender"
+                    className={styles.inputBox}
+                    type="text"
+                    placeholder="Male"
+                  />
                 </div>
                 <div>
                   <label htmlFor="phone">Phone Number</label>
-                  <input id="phone" className={styles.inputBox} type="tel" placeholder="+92 12345678" />
+                  <input
+                    id="phone"
+                    className={styles.inputBox}
+                    type="tel"
+                    placeholder="+92 12345678"
+                  />
                 </div>
               </div>
             </div>
@@ -99,7 +116,9 @@ const AddAppointment = () => {
                 </div>
               </div>
               <div>
-                <label htmlFor="comments" className={styles.commentLabel}>Comments</label>
+                <label htmlFor="comments" className={styles.commentLabel}>
+                  Comments
+                </label>
                 <textarea
                   id="comments"
                   placeholder="Payment of PKR 5000 received for Invoice ID 'INV-98765'"
@@ -109,7 +128,9 @@ const AddAppointment = () => {
 
             <div className={styles.actions}>
               <button className={styles.cancelButton}>Cancel</button>
-              <button className={styles.confirmButton}>Confirm Appointment</button>
+              <button className={styles.confirmButton}>
+                Confirm Appointment
+              </button>
             </div>
           </div>
         </div>

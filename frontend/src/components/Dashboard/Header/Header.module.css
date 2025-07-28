@@ -2,11 +2,11 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding-top: 40px;
+  padding-top: 3vh;
 }
 
 .header h1 {
-  font-size: 40px;
+  font-size: 4rem;
   font-weight: bold;
 }
 

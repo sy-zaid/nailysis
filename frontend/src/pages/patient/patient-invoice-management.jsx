@@ -111,7 +111,7 @@ const InvoiceManagement = (props) => {
       />
 
       <div className={`${styles.pageTop} ${mediaStyles.pageTop}`}>
-        <Navbar />
+        
         <Header 
             mainHeading={'Invoice Management'}
             subHeading={'Here you can view & manage all the invoices of the patients'}

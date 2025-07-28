@@ -1,10 +1,10 @@
-import React from "react";
+import { getRole } from "../../../utils/utils";
 import styles from "./Navbar.module.css";
 import { useNavigate } from "react-router-dom";
 
-const Navbar = ({ setView, userRole }) => {
+const Navbar = ({ setView }) => {
   const navigate = useNavigate();
-
+  const userRole = getRole();
   const handleScanNailsClick = () => {
     navigate("/upload-image");
   };
@@ -12,7 +12,7 @@ const Navbar = ({ setView, userRole }) => {
   return (
     <nav className={styles.container}>
       <span className={styles.searchBar}>
-        <input type="search" placeholder="Search" />
+        <input type="search" placeholder="Search..." />
         <i class="fa-solid fa-magnifying-glass"></i>
       </span>
       <div className={styles.navSide}>
@@ -23,6 +23,7 @@ const Navbar = ({ setView, userRole }) => {
         <div>
           <img src="icon-bell-black.png" alt="notification button" />
         </div>
+        <p className={styles.loggedInRole}>Logged In As: {userRole.charAt(0).toUpperCase() + userRole.slice(1)}</p>
       </div>
     </nav>
   );

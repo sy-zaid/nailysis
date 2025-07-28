@@ -258,7 +258,7 @@ const TestOrders = () => {
       {showPopup && popupContent}
 
       <div className={styles.pageTop}>
-        <Navbar />
+        
         <Header
           mainHeading={"Test Requests"}
           subHeading={"Here are all the test requests from patients"}

@@ -22,8 +22,8 @@ body {
 
 .mainContent {
   flex-grow: 1;
-  background-color: #ffffff;
-  padding: 20px;
+  /* background-color: #f31515; */
+  padding: 0px 10px 0 0;
   transition: margin-left 0.3s ease;
 }
 
@@ -32,7 +32,8 @@ body {
 }
 
 .sidebar-closed {
-  margin-left: 10%; /* No sidebar */
+  margin-left: 8vw; 
+  /* No sidebar */
 }
 
 /* TOASTS STYLING */

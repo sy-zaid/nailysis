@@ -8,7 +8,7 @@ import Sidebar from "../../components/Dashboard/Sidebar/Sidebar";
 const LabTestResultNew = () => {
   return (
     <div className={styles.pageContainer}>
-      <Navbar />
+      
 
       <div className={styles.contentWrapper}>
         <Sidebar />

@@ -131,7 +131,7 @@ const Appointment = () => {
   return (
     <div className={styles.pageContainer}>
       <div className={styles.pageTop}>
-        <Navbar />
+        
         <h1>Your Patients</h1>
         <p>Here you can view and manage your patients</p>
       </div>
