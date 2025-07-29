@@ -4,6 +4,7 @@
   align-items: center;
   gap: 12px;
   width: 100%;
+  margin: 0 !important;
 }
 
 .floatingButtons {
@@ -121,7 +122,8 @@
 
 .sideButton img {
   width: 1.5rem;
-  height: 1.5rem;
+  height: auto;
+  /* height: 1.5rem; */
 }
 
 /* Responsive Design */
@@ -218,7 +220,7 @@
 }
 
 .sectionThreeSecondDiv {
-  margin: 20px 0px;
+  margin: 1.5rem 0px;
   padding: 0;
   height: 100%;
   width: 100%;
@@ -248,17 +250,31 @@
 .sbdropdownopen {
   max-height: 300px; /* Adjust based on content */
   opacity: 1;
+  margin: 8px 0px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  
+  /* background-color: red; */
   transform: translateY(0);
 }
 
 /* Dropdown items */
 .sbsubButton {
   background: none;
+  /* flex: 0 0 auto; */
+  display: flex;
   color: #373737d5;
   border: none;
-  padding: 0px 14px;
+  width: auto;
+
+  max-width: 82%;
+  align-items: center;
+  justify-content: center;
+  height: 2.1rem;
+  padding: 2px 14px !important;
   cursor: pointer;
-  margin: 4% 0;
+  /* margin-bottom: 4% 0; */
   border-radius: 32px;
   transition: all ease 0.5s;
 }
@@ -311,13 +327,14 @@
   position: fixed;
   bottom: 0%;
   border-top: 1px solid #cfcfcf;
+  margin-top: 10px;
   /* left: 0%; */
   max-width: 380px;
   width: 20%;
-  transform: translate(0%,-34%);
+  transform: translate(0%, -20%);
   /* background-color: red; */
   /* height: 12%; */
-  padding: 1% 0% 0% 0%;
+  padding: 10px 0% 0% 0%;
   display: flex;
   justify-content: left;
   align-items: end;
@@ -333,7 +350,7 @@
   flex-direction: row;
   gap: 16px;
   /* padding-left: 0; */
-  padding:6px 0px;
+  padding: 6px 0px;
   align-items: center;
   border: 1px solid #cfcfcf;
   border-radius: 40px;
@@ -356,7 +373,6 @@
   margin-left: 5px;
 }
 
-
 .profileInfo {
   font-size: 0.95rem;
   color: #4e4e4e;
@@ -367,7 +383,8 @@
   gap: 0px;
 }
 
-.profileInfo, .profSection img {
+.profileInfo,
+.profSection img {
   transition: transform 0.5s ease-in-out;
 }
 
@@ -445,7 +462,7 @@
   .sidePanel {
     /* push it all the way left, not just −22% */
     left: -100% !important;
-    width: 200px;           /* your mobile width */
+    width: 200px; /* your mobile width */
     transition: left 0.3s ease;
   }
 

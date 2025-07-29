@@ -358,7 +358,7 @@ const PopupRescheduleTechnicianAppointment = ({
                     <option value="">
                       {availableSlots.length
                         ? "Select a Slot"
-                        : "No slots available"}
+                        : "Select Date First"}
                     </option>
                     {availableSlots.map((slot, index) => (
                       <option key={index} value={slot.id}>

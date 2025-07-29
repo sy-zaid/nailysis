@@ -13,7 +13,7 @@ const Navbar = ({ setView }) => {
     <nav className={styles.container}>
       <span className={styles.searchBar}>
         <input type="search" placeholder="Search..." />
-        <i class="fa-solid fa-magnifying-glass"></i>
+        <i className="fa-solid fa-magnifying-glass"></i>
       </span>
       <div className={styles.navSide}>
         <button onClick={() => setView("Nails Scan")}>

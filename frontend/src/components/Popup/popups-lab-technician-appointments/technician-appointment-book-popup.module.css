@@ -1,49 +1,140 @@
-/* Popup classes */
 .formContainer {
-  background-color: #fff;
+  background-color: white;
+  border-radius: 8px;
   padding: 20px;
-  border-radius: 10px;
+  width: 1100px;
+  max-width: 1100px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
-  width: 100%;
-  height: 80vh;
-  overflow: auto;
+  position: relative;
+  height: 95vh;
+  max-height: 95vh;
+  overflow-y: hidden;
+  top: -2%;
+  margin-top: -2%;
 }
 
-.header {
+.headerSection {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 15px;
 }
 
+.titleSection {
+  margin-left: 20px;
+}
+
 .titleSection h2 {
-  font-size: 24px;
+  font-size: 28px;
   font-weight: 600;
   margin: 0 0 5px 0;
-  color: #000;
+  color: #333;
 }
 
 .titleSection p {
   margin: 0;
-  font-size: 14px;
+  font-size: 16px;
   color: #666;
 }
 
-.closeButton {
-  background: none;
-  border: none;
-  font-size: 24px;
-  font-weight: bold;
-  cursor: pointer;
-  color: #333;
-  padding: 0;
-  margin: 0;
-  line-height: 1;
+.popupBottom {
+  max-height: 72vh;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+  padding-right: 40px;
+  margin-left: 20px;
 }
 
-.closeButton span {
-  font-size: 40px;
-  font-weight: 200;
+.formSection {
+  display: block;
+  margin: 30px 0 30px 0;
+}
+
+.formSection h3 i {
+  color: #007bff;
+  margin-right: 10px;
+}
+
+.formGroup {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  width: 100%;
+  margin-left: 26px;
+  row-gap: 20px;
+}
+
+.newFormGroup {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  width: 100%;
+  /* gap: 10px; */
+  margin-left: 26px;
+  row-gap: 10px;
+}
+
+.documentFormGroup div {
+  margin-left: 26px;
+}
+
+.subHeading {
+  margin: 10px 10px 20px auto;
+  display: inline-block;
+  width: 70%;
+  font-weight: 500;
+}
+
+.newSubHeading {
+  margin: 20px 20px 10px 0;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding-bottom: 10px;
+}
+
+.key,
+.statusValue,
+locationValue {
+  color: #4e4e4e;
+  font-size: 16px;
+  margin-right: 10px;
+}
+
+.secKey {
+  margin-left: 15%;
+}
+
+.locationValue {
+  color: #000;
+  font-weight: 500;
+  font-size: 16px;
+}
+
+.resolved {
+  color: green;
+}
+
+.inProgress {
+  color: #007bff;
+}
+
+.pending {
+  color: orange;
+}
+
+.verificationConfirmation {
+  display: flex;
+  align-items: center;
+  position: relative;
+  margin-top: 10px;
+}
+
+.verificationConfirmation input[type="checkbox"] {
+  position: absolute;
+}
+
+.verificationConfirmation span {
+  margin-left: 30px;
 }
 
 hr {
@@ -53,203 +144,107 @@ hr {
   margin: 15px 0;
 }
 
-/* Patient Selection Dropdown */
-.patientSelectSection {
-  margin: 25px 0;
-}
-
-.patientSelectSection label {
-  display: block;
-  font-size: 14px;
-  color: #666;
-  margin-bottom: 8px;
-  margin-left: 36%;
-}
-
-.Select {
-  border: none;
+select,
+textarea {
   outline: none;
-  cursor: pointer;
+  padding-left: 20px;
 }
 
-/* select {
-  border: none;
-  outline: none;
-  cursor: pointer;
-  width: 80% !important;
-  padding-left: 0 !important;
-} */
-
-
-
-.dropdown {
-  max-width: 300px;
-  margin: 0 auto;
-}
-
-/* Section Headers with Bullets */
-.sectionHeader {
-  display: flex;
-  align-items: center;
-  margin-bottom: -10px;
-}
-
-.subhead {
-  font-size: 18px;
-  color: #4E4E4E;
-  font-weight: 300;
-  margin-bottom: 10px;
-}
-
-.subHeading {
-  margin: 10px 10px 20px auto;
-}
-
-.icons {
-  font-size: 18px;
-  margin-right: 10px;
-}
-
-.key {
-  color: #4E4E4E;
-  font-size: 16px;
-  margin-right: 10px;
-}
-
-.statusValue {
-  color: #FFB031;
-}
-
-.locationValue {
-  color: #000;
-  font-weight: 600;
-  margin-right: 35px;
-}
-
-.continueButton {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 15px;
-  padding: 8px 40px;
-  font-size: 15px;
-  font-weight: 500;
-  cursor: pointer;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
-  transition: background-color 0.2s;
+textarea {
   margin-top: 10px;
-}
-
-.continueButton:hover {
-  background-color: #0056b3;
-}
-
-/* Form fields that appear after clicking continue */
-.ehrFormSection {
-  margin-top: 20px;
-}
-
-.formSection {
-  margin: 25px 0;
-}
-
-.formGroup {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-  margin-left: 26px;
-}
-
-.formGroup label {
-  display: block;
-  font-size: 14px;
-  color: #555;
-  margin-bottom: 6px;
-}
-
-.formGroup textarea {
+  height: 20px;
   width: 100%;
   padding: 10px;
   border: 1px solid #ddd;
-  border-radius: 4px;
-  min-height: 80px;
+  border-radius: 0;
+  min-height: 30px;
   font-family: inherit;
-  font-size: 14px;
-}
-
-.subhead {
   font-size: 16px;
-  color: #4E4E4E;
-  font-weight: 300;
+  margin-left: 26px;
+  scrollbar-width: none;
 }
 
-.subHeading {
-  margin: 20px 10px 20px auto;
+.inputField {
+  padding: 20px 10px 10px 10px !important;
+  width: 80% !important;
+  /* background-color: red; */
+}
+
+textarea::placeholder {
   font-size: 14px;
 }
+
+.feedbackLabel {
+  margin: 40px 0 10px -66%;
+}
+
+/* Buttons */
 
 /* Action buttons for the form */
 .actions {
   display: flex;
+  flex-direction: row;
   justify-content: center;
+  /* background-color: #000; */
+  align-items: center;
   gap: 20px;
-  margin: 25px 0 20px 0;
+  margin: 10px 0;
 }
 
-
-.confirmButton {
-  background-color: #0066ff;
+.addButton {
+  /* display: block; */
+  padding: 8px 30px;
+  background-color: #007bff;
   color: white;
   border: none;
-  border-radius: 4px;
-  padding: 8px 16px;
-  font-size: 14px;
-  font-weight: 500;
+  border-radius: 15px;
   cursor: pointer;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+  transition: all 0.1s;
+  margin: 0 !important;
 }
 
-.cancelButton:hover {
-  background-color: #bd2c3a;;
-}
-
-.confirmButton:hover {
-  background-color: #0052cc;
-}
-
-
-
-.popupBottom {
-  max-height: 75vh;
-  overflow-y: auto;
-  scroll-behavior: smooth;
-  overflow-x: hidden;
-  padding-right: 20px;
-  padding-bottom: 20px;
-}
-
-
-.ehrRecordsColumn {
-  margin-top: 20px;
+.addButton:hover {
+  background-color: #0056b3;
 }
 
 .cancelButton {
   background-color: #dc3545;
+  padding: 8px 30px !important;
   color: white;
   border: none;
-  padding: 6px 20px !important;
-  border-radius: 6px;
+  border-radius: 15px;
   cursor: pointer;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+  transition: all 0.1s;
 }
 
-.confirmButton {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 6px;
-  cursor: pointer;
+.cancelButton:hover {
+  background-color: #b12937;
 }
 
-.addButton:hover {
-background-color: #0056b3;
+.additionalNotes {
+  margin-top: 18px;
+}
+
+.phoneField {
+  margin-top: 12px;
+}
+
+/* ---------- Status Styles ---------- */
+
+.consulted {
+  color: green;
+}
+
+.cancelled {
+  color: red;
+}
+
+.scheduled {
+  color: orange;
+}
+
+.inProgress {
+  color: #007bff;
 }

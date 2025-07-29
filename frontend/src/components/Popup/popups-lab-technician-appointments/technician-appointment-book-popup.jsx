@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Select from "react-select";
-import styles from "../all-popups-styles.module.css";
+import styles from "./technician-appointment-book-popup.module.css";
 import Popup from "../Popup.jsx";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -12,6 +12,7 @@ import {
   handleInputChange,
   handleSelectChange,
   getTodayDate,
+  getRole,
 } from "../../../utils/utils.js";
 import {
   bookTechnicianAppointment,
@@ -25,7 +26,7 @@ import { getAvailableLabTests } from "../../../api/labsApi.js";
 const PopupBookTechnicianAppointment = ({ onClose }) => {
   // ----- TOKENS AND USER INFORMATION
   const token = localStorage.getItem("access");
-  const curUserRole = localStorage.getItem("role");
+  const curUserRole = getRole();
   const { data: curUser, isLoading, isError, error } = usePatientData();
 
   // ----- POPUPS & NAVIGATION
@@ -42,7 +43,6 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
   const [availableTestPrices, setAvailableTestPrices] = useState([]);
   const [patient, setPatient] = useState([]);
   const [includeRecommended, setIncludeRecommended] = useState(false);
-
 
   // ----- APPOINTMENT FORM STATE
   const [formData, setFormData] = useState({
@@ -67,12 +67,15 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
       var response;
       try {
         if (curUser[0].role === "lab_admin") {
-          response = await getRecommendedTests(formData.email,"lab_admin");
+          response = await getRecommendedTests(formData.email, "lab_admin");
         } else {
-          response = await getRecommendedTests(curUser?.[0]?.user_id,"patient");
+          response = await getRecommendedTests(
+            curUser?.[0]?.user_id,
+            "patient"
+          );
         }
         setRecommendedTests(response.data);
-        console.log(response.data)
+        console.log(response.data);
       } catch (error) {
         console.error("Error fetching recommended tests:", error);
         setRecommendedTests([]);
@@ -120,8 +123,6 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
           test && self.findIndex((t) => t.value === test.value) === index
       ); // Remove duplicates
   };
-
-  
 
   // ----- HANDLERS
   const onInputChange = handleInputChange(setFormData);
@@ -181,23 +182,26 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
       toast.warning("Please select specialization");
       return;
     }
-  
+
     if (!formData.labTechnicianId) {
       toast.warning("Please select lab technician");
       return;
     }
-  
+
     if (!formData.appointmentDate) {
       toast.warning("Please select date");
       return;
     }
-  
+
     if (!formData.slotId) {
       toast.warning("Please select appointment slot");
       return;
     }
-  
-    if (!formData.requestedLabTests || formData.requestedLabTests.length === 0) {
+
+    if (
+      !formData.requestedLabTests ||
+      formData.requestedLabTests.length === 0
+    ) {
       toast.warning("Please select required lab test");
       return;
     }
@@ -228,7 +232,7 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
         toast.success("Appointment Booked Successfully!", {
           className: "custom-toast",
         });
-        onClose(); 
+        onClose();
       }
     } catch (error) {
       console.log("Sending this to book:", payload);
@@ -237,7 +241,7 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
         toast.error(error.response.data.error || "Failed to book appointment", {
           className: "custom-toast",
         });
-      } 
+      }
     }
   };
 
@@ -366,6 +370,7 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
                 <div>
                   <label>First Name</label>
                   <input
+                    className={styles.inputField}
                     type="text"
                     name="patientFirstName"
                     value={formData.patientFirstName}
@@ -381,6 +386,7 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
                 <div>
                   <label>Last Name</label>
                   <input
+                    className={styles.inputField}
                     type="text"
                     name="patientLastName"
                     value={formData.patientLastName}
@@ -396,6 +402,7 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
                 <div>
                   <label>Age</label>
                   <input
+                    className={styles.inputField}
                     type="text"
                     name="age"
                     value={formData.age}
@@ -411,6 +418,7 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
                 <div>
                   <label>Gender</label>
                   <input
+                    className={styles.inputField}
                     type="text"
                     name="gender"
                     value={formData.gender}
@@ -426,22 +434,23 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
                 <div className={styles.phoneField}>
                   <label>Phone Number</label>
                   <input
+                    className={styles.inputField}
                     type="tel"
                     name="phone"
                     value={formData.phone}
                     onChange={onInputChange}
                     placeholder={
                       curUserRole === "patient"
-                        ? patient[0]?.phone || ""
+                        ? patient[0]?.phone || "N/A"
                         : "Enter phone number"
                     }
                     disabled={curUserRole === "patient"}
-                    style={{ height: "20px" }}
                   />
                 </div>
-                <div>
+                <div className={styles.phoneField}>
                   <label>Email Address</label>
                   <input
+                    className={styles.inputField}
                     type="text"
                     name="email"
                     value={formData.email}
@@ -506,6 +515,7 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
                 <div>
                   <label>Date & Time</label>
                   <input
+                    className={styles.inputField}
                     type="date"
                     name="appointmentDate"
                     value={formData.appointmentDate}
@@ -526,31 +536,34 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
                     <option value="">
                       {availableSlots.length
                         ? "Select a Slot"
-                        : "No slots available"}
+                        : "Select Date First"}
                     </option>
                     {availableSlots.map((slot, index) => (
                       <option key={index} value={slot.id}>
-                        {slot.slot_id} - {slot.start_time} to {slot.end_time}
+                        {slot.start_time} to {slot.end_time}
                       </option>
                     ))}
                   </select>
                 </div>
 
                 <div>
-                  <div className={styles.infoLabel}>Required Lab Tests</div>
-                  {recommendedTests.length > 0 && (
-                    <div style={{ marginBottom: "10px" }}>
-                      <label>
-                        <input
-                          type="checkbox"
-                          checked={includeRecommended}
-                          onChange={handleRecommendedCheckbox}
-                          style={{ marginRight: "8px" }}
-                        />
-                        Add recommended tests by doctor
-                      </label>
-                    </div>
-                  )}
+                  <label>Calculated Fee (PKR)</label>
+                  <input
+                    type="text"
+                    value={formData.fee}
+                    readOnly
+                    className={styles.inputField}
+                  />
+                </div>
+
+                <div>
+                  <div
+                    className={styles.infoLabel}
+                    style={{ marginBottom: "20px" }}
+                  >
+                    <label>Required Lab Tests</label>
+                  </div>
+
                   <div>
                     <Select
                       isMulti
@@ -590,17 +603,28 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
                         indicatorSeparator: () => ({ display: "none" }),
                       }}
                     />
+                    {recommendedTests.length > 0 && (
+                      <div style={{ marginBottom: "10px", marginTop: "40px" }}>
+                        <label
+                          style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            alignItems: "center", // vertically center checkbox + text
+                            justifyContent: "left", // horizontally center the whole label content
+                          }}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={includeRecommended}
+                            onChange={handleRecommendedCheckbox}
+                            style={{ marginRight: "8px" }}
+                            
+                          />
+                          Add recommended tests by doctor
+                        </label>
+                      </div>
+                    )}
                   </div>
-                </div>
-
-                <div>
-                  <label>Calculated Fee (PKR)</label>
-                  <input
-                    type="text"
-                    value={formData.fee}
-                    readOnly
-                    className={styles.feeInput}
-                  />
                 </div>
               </div>
             </div>

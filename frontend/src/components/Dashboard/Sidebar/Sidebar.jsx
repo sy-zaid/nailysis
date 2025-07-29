@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import styles from "./Sidebar.module.css";
 import useCurrentUserData from "../../../useCurrentUserData";
 import PopupEditProfile from "../../Popup/patient-edit-profile-popup";
+import { handleLogout } from "../../../utils/utils";
+import { useNavigate } from "react-router-dom";
 
 const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
   // const [isOpen, setIsOpen] = useState(false);
@@ -10,6 +12,8 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
 
   const [popupContent, setPopupContent] = useState();
   const [showPopup, setShowPopup] = useState(false);
+
+  const navigate = useNavigate();
 
   const toggleDropdown = (index) => {
     setOpenDropdown(openDropdown === index ? null : index); // Toggle dropdown visibility
@@ -394,7 +398,10 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
                     Edit Profile
                   </a>
                 </span>
-                <span className={styles.logoutLink}>
+                <span
+                  className={styles.logoutLink}
+                  onClick={() => handleLogout(navigate)}
+                >
                   <i class="fa-solid fa-arrow-right-from-bracket"></i>
                   <a>Logout</a>
                 </span>

@@ -164,12 +164,7 @@ textarea {
   scrollbar-width: none;
 }
 
-input[type="text"],
-input[type="email"],
-input[type="tel"],
-input[type="date"] {
-  outline: none;
-}
+
 
 .inputField {
   padding-left: 0;

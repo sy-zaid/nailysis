@@ -49,7 +49,9 @@
 
 .inputGroup {
   margin-bottom: 25px;
+  /* background-color: #0056b3; */
   text-align: left;
+  width: 100%;
 }
 
 .halfWidth {
@@ -83,12 +85,13 @@
 }
 
 .inputGroup input {
-  width: 100%;
-  padding: 12px;
+  min-width: 100%;
+  padding: 12px 16px !important;
   font-size: 1rem;
   border: 1px solid #ccc;
   border-radius: 6px;
   outline: none;
+  /* background-color: red; */
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -98,13 +101,14 @@
 }
 
 .submitButton {
-  width: 45%;
+  width: auto;
   height: auto;
+  min-height: 36px;
   padding: 8px 30px;
   background-color: #007bff;
   color: white;
   border: none;
-  border-radius: 15px;
+  border-radius: 100px !important;
   cursor: pointer;
   font-size: 16px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);

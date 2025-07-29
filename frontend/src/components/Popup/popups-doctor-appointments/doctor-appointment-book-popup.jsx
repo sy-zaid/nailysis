@@ -241,13 +241,12 @@ const BookDoctorAppointmentPopup = ({ onClose }) => {
       onClose={onClose}
     >
       <div className={styles.formContainer}>
-        <div className={styles.header}>
-          <h2>Schedule Your Appointment</h2>
+        <div className={styles.headerSection}>
+          <div className={styles.titleSection}>
+            <h2>Schedule Your Appointment</h2>
+            <p>Choose your customized appointment timings and other details</p>
+          </div>
         </div>
-
-        <h5 className={styles.subhead}>
-          Choose your customized appointment timings and other details
-        </h5>
         <hr />
 
         <form onSubmit={(e) => e.preventDefault()}>
@@ -265,6 +264,7 @@ const BookDoctorAppointmentPopup = ({ onClose }) => {
                 <div>
                   <label>First Name</label>
                   <input
+                    className={styles.inputField}
                     type="text"
                     name="patientFirstName"
                     value={formData.patientFirstName}
@@ -280,6 +280,7 @@ const BookDoctorAppointmentPopup = ({ onClose }) => {
                 <div>
                   <label>Last Name</label>
                   <input
+                    className={styles.inputField}
                     type="text"
                     name="patientLastName"
                     value={formData.patientLastName}
@@ -295,6 +296,7 @@ const BookDoctorAppointmentPopup = ({ onClose }) => {
                 <div>
                   <label>Age</label>
                   <input
+                    className={styles.inputField}
                     type="number"
                     name="age"
                     value={formData.age}
@@ -311,6 +313,7 @@ const BookDoctorAppointmentPopup = ({ onClose }) => {
                 <div>
                   <label>Gender</label>
                   <input
+                    className={styles.inputField}
                     type="text"
                     name="gender"
                     value={formData.gender}
@@ -326,22 +329,23 @@ const BookDoctorAppointmentPopup = ({ onClose }) => {
                 <div>
                   <label>Phone Number</label>
                   <input
+                    className={styles.inputField}
                     type="tel"
                     name="phone"
                     value={formData.phone}
                     onChange={onInputChange}
                     placeholder={
                       curUserRole === "patient"
-                        ? patient[0]?.phone || ""
+                        ? patient[0]?.phone || "N/A"
                         : "Enter phone number"
                     }
                     disabled={curUserRole === "patient"}
-                    style={{ height: "20px" }}
                   />
                 </div>
                 <div>
                   <label>Email Address</label>
                   <input
+                    className={styles.inputField}
                     type="text"
                     name="email"
                     value={formData.email}
@@ -409,6 +413,7 @@ const BookDoctorAppointmentPopup = ({ onClose }) => {
                 <div>
                   <label>Date & Time</label>
                   <input
+                    className={styles.inputField}
                     type="date"
                     name="appointmentDate"
                     value={formData.appointmentDate}
@@ -429,7 +434,7 @@ const BookDoctorAppointmentPopup = ({ onClose }) => {
                     <option value="">
                       {availableSlots.length
                         ? "Select a Slot"
-                        : "No slots available"}
+                        : "Select Date First"}
                     </option>
                     {availableSlots.map((slot, index) => (
                       <option key={index} value={slot.id}>
@@ -459,16 +464,16 @@ const BookDoctorAppointmentPopup = ({ onClose }) => {
                   <p className={styles.subHeading}>RS/- {formData.fee}</p>
                 </div>
               </div>
-            </div>
-            <div className={styles.additionalNotes}>
-              <label>Additional Notes</label>
-              <input
-                type="text"
-                name="notes"
-                value={formData.notes}
-                onChange={onInputChange}
-                placeholder={"Enter notes"}
-              />
+              <div className={styles.additionalNotes}>
+                <label>Additional Notes</label>
+                <input
+                  type="text"
+                  name="notes"
+                  value={formData.notes}
+                  onChange={onInputChange}
+                  placeholder={"Enter Any Additional Notes"}
+                />
+              </div>
             </div>
 
             <hr />

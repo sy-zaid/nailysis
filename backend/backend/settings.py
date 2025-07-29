@@ -44,7 +44,7 @@ REST_FRAMEWORK = {
         'model_service.throttles.RoleBasedRateThrottle',
     ],
     'DEFAULT_THROTTLE_RATES': {
-        'user': '100/day',
+        'user': '10000/day',
     }
 }
 

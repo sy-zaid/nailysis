@@ -286,6 +286,9 @@ locationValue {
 
 .formSection {
   margin-bottom: 10px;
+  width: 100%;
+  padding: 0px 20px;
+  /* background-color: red; */
 }
 
 .commentsFormSection div {
@@ -322,6 +325,9 @@ locationValue {
   grid-template-columns: repeat(4, 1fr);
   width: 100%;
   /* gap: 10px; */
+  margin-left: 26px;
+  margin-left: 26px;
+  row-gap: 10px;
 }
 
 .testParamFormGroup {
@@ -365,13 +371,13 @@ locationValue {
   padding-right: 25px;
 }
 
-.actions {
+/* .actions {
   display: flex;
   justify-content: center;
   gap: 20px;
   margin-top: 25px;
   margin-bottom: 25px;
-}
+} */
 
 .newActions {
   display: flex;
@@ -380,16 +386,49 @@ locationValue {
   margin: 50px 0 30px 0;
 }
 
-.cancelButton {
-  background-color: #dc3545;
+/* Buttons */
+
+/* Action buttons for the form */
+.actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  /* background-color: #000; */
+  align-items: center;
+  gap: 20px;
+  margin: 30px 0 !important;
+}
+
+.addButton {
+  /* display: block; */
   padding: 8px 30px;
+  background-color: #007bff;
   color: white;
   border: none;
   border-radius: 15px;
   cursor: pointer;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
   transition: all 0.1s;
-  height: 100%;
+  margin: 0 !important;
+}
+
+.addButton:hover {
+  background-color: #0056b3;
+}
+
+.cancelButton {
+  background-color: #dc3545;
+  padding: 8px 30px !important;
+  color: white;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+  transition: all 0.1s;
+}
+
+.cancelButton:hover {
+  background-color: #b12937;
 }
 
 .confirmButton {
@@ -466,4 +505,23 @@ locationValue {
   flex-grow: 1;
   border-bottom: 1px dotted black;
   margin: 0 40px;
+}
+
+.inputField {
+  padding: 20px 10px 10px 10px !important;
+  width: 80% !important;
+  /* background-color: red; */
+}
+
+.additionalNotes{
+  /* background-color: red; */
+  width: 55%;
+  /* padding-left: 10px; */
+  margin: 30px 0px 0px 24px;
+
+}
+
+.additionalNotes > input{
+  padding-left: 20px !important;
+  /* background-color: red; */
 }
