@@ -4,6 +4,7 @@ import Navbar from "../../components/Dashboard/Navbar/Navbar";
 import Header from "../../components/Dashboard/Header/Header";
 import Sidebar from "../../components/Dashboard/Sidebar/Sidebar";
 import styles from "../../components/Dashboard/Dashboard.module.css";
+import styles2 from "../../../src/pages/common/all-pages-styles.module.css";
 import UpcomingTest from "../../components/Dashboard/UpcomingTest/UpcomingTest";
 import useCurrentUserData from "../../useCurrentUserData.jsx";
 import { getDoctorAppointments } from "../../api/appointmentsApi.js";
@@ -159,8 +160,14 @@ function DoctorDashboard() {
 
   return (
     <div>
-      
-      <Header curUserRole={"Doctor"} />
+      <div className={styles2.pageTop}>
+        <Header
+          mainHeading={"Welcome, Dr. " + (curUser?.[0]?.first_name || "User")}
+          subHeading={
+            "Manage your patients, review diagnostics, and streamline your clinical workflow with ease."
+          }
+        />
+      </div>
       <div className={styles.main}>
         <div className={styles.cards}>
           {appointmentAnalytics.total_appointments &&

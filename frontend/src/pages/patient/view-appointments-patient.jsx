@@ -9,6 +9,7 @@ import AppointmentDetailsPopup from "../../components/Popup/popups-doctor-appoin
 import { useNavigate } from "react-router-dom";
 import api from "../../api";
 import { handleClosePopup, handleOpenPopup } from "../../utils/utils";
+import { getDoctorAppointments } from "../../api/appointmentsApi";
 
 const AppointmentPatients = () => {
   // ----- POPUPS & NAVIGATION
@@ -166,14 +167,7 @@ const AppointmentPatients = () => {
 
     const fetchAppointments = async () => {
       try {
-        const response = await api.get(
-          `${import.meta.env.VITE_API_URL}/api/doctor_appointments/`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await getDoctorAppointments();
         setAppointments(response.data);
         console.log("Response from doctor appointment", response.data);
       } catch (error) {
@@ -203,7 +197,6 @@ const AppointmentPatients = () => {
       <AppointmentDetailsPopup></AppointmentDetailsPopup>
 
       <div className={styles.pageTop}>
-        
         <Header
           mainHeading={"Appointments"}
           subHeading={
@@ -211,7 +204,7 @@ const AppointmentPatients = () => {
           }
         />
       </div>
-      
+
       <div className={styles.mainContent}>
         <div className={styles.appointmentsContainer}>
           <div className={styles.filters}>

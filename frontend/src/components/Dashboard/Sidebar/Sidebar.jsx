@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 
 const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
   // const [isOpen, setIsOpen] = useState(false);
-  const [openDropdown, setOpenDropdown] = useState(null); // Track which dropdown is open
+  const [openDropdown, setOpenDropdown] = useState(1); // Track which dropdown is open
   const { data: curUser } = useCurrentUserData(); // Fetch patient data
 
   const [popupContent, setPopupContent] = useState();

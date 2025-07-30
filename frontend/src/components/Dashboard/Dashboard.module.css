@@ -1,14 +1,22 @@
 .cards {
   display: flex;
-  gap: 22px;
-  margin-left: 38px;
+  width: 100%;
+  /* background-color: rgb(241, 138, 138); */
+  gap: 2%;
+  margin: 32px 0px;
+  padding: 0px 2%;
+}
+.cards > div {
+  margin: 0;
 }
 
 .main {
   display: flex;
   /* gap: 85px; */
+  /* margin-left: 38px; */
+  /* background-color: #333; */
+  padding: 0px !important;
 }
-
 
 .headerContent {
   display: flex;
@@ -26,4 +34,30 @@
   background-color: transparent;
   cursor: pointer;
   width: 130px;
+}
+
+.analytics {
+  /* background-color: red; */
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+  height: auto;
+  gap: 1%;
+  margin: 20px 10px;
+}
+
+.leftColumn {
+  /* background-color: #333; */
+  padding: 0px 0px;
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+}
+
+.rightColumn {
+  /* background-color: #2e838a; */
+  padding: 4rem 1.2%;
+  width: 30%;
+  min-width: 20vw;
 }
