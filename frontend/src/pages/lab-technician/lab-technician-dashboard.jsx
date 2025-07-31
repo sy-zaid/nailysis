@@ -125,16 +125,14 @@ function LabTechnicianDashboard() {
     return <p>Error fetching user data</p>;
   }
   return (
-    <div>
-      <div className={styles2.pageTop}>
+    <div className={styles.analytics}>
+      <div className={styles.leftColumn}>
         <Header
           mainHeading={"Welcome, " + (curUser?.[0]?.first_name || "Technician")}
           subHeading={
             "Track your lab appointments and patient interactions in one place."
           }
         />
-      </div>
-      <div className={styles.main}>
         <div className={styles.cards}>
           <Cards
             heading="Total Appointments"
@@ -161,8 +159,15 @@ function LabTechnicianDashboard() {
             text={analytics.cancelled_appointments[1].text}
           />
         </div>
+      </div>
 
-        <UpcomingTest labAppointments={analytics.upcoming_appointments} />
+      <div className={styles.rightColumn}>
+        <UpcomingTest
+          heading="My Schedule"
+          labAppointments={appointments}
+          userRole={"lab_technician"} // "patient", "doctor", "lab_technician", etc.
+        />
+        {/* TEST REPORTS */}
       </div>
     </div>
   );

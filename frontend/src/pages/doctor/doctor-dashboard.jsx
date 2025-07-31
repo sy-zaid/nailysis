@@ -159,16 +159,14 @@ function DoctorDashboard() {
   };
 
   return (
-    <div>
-      <div className={styles2.pageTop}>
+    <div className={styles.analytics}>
+      <div className={styles.leftColumn}>
         <Header
           mainHeading={"Welcome, Dr. " + (curUser?.[0]?.first_name || "User")}
           subHeading={
             "Manage your patients, review diagnostics, and streamline your clinical workflow with ease."
           }
         />
-      </div>
-      <div className={styles.main}>
         <div className={styles.cards}>
           {appointmentAnalytics.total_appointments &&
             appointmentAnalytics.total_appointments.length > 1 && (
@@ -208,7 +206,14 @@ function DoctorDashboard() {
               </>
             )}
         </div>
-        <UpcomingTest />
+      </div>
+      <div className={styles.rightColumn}>
+        <UpcomingTest
+          heading="My Schedule"
+          clinicAppointments={apiRes}
+          userRole={"doctor"} // "patient", "doctor", "lab_technician", etc.
+        />
+        {/* TEST REPORTS */}
       </div>
     </div>
   );

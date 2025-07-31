@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import styles from "./UpcomingTest.module.css";
 
 const UpcomingAppointments = ({ 
@@ -8,9 +8,73 @@ const UpcomingAppointments = ({
   userRole = "patient" 
 }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [filteredAppointments, setFilteredAppointments] = useState([]);
-  const [nextAppointment, setNextAppointment] = useState(null);
+  
+  // Get the initial date based on upcoming appointments (for patients only)
+  useEffect(() => {
+    if (userRole === "patient") {
+      const allAppointments = [...clinicAppointments, ...labAppointments];
+      const now = new Date();
+      
+      // Find all upcoming appointments
+      const upcomingAppointments = allAppointments
+        .filter(appt => appt.status === "Scheduled")
+        .filter(appt => appt.checkin_datetime && new Date(appt.checkin_datetime) > now)
+        .sort((a, b) => {
+          const dateA = new Date(a.checkin_datetime);
+          const dateB = new Date(b.checkin_datetime);
+          return dateA - dateB;
+        });
+      
+      // If there are upcoming appointments, set the current date to the first one's date
+      if (upcomingAppointments.length > 0) {
+        const firstUpcomingDate = new Date(upcomingAppointments[0].checkin_datetime);
+        setCurrentDate(new Date(firstUpcomingDate.setHours(0, 0, 0, 0)));
+      }
+    }
+  }, [clinicAppointments, labAppointments, userRole]);
 
+  // Memoize the processed appointments to avoid unnecessary recalculations
+  const { filteredAppointments, nextAppointment } = useMemo(() => {
+    let appointments = [];
+    
+    if (userRole === "patient") {
+      appointments = [...clinicAppointments, ...labAppointments];
+    } else if (["doctor", "clinic_admin"].includes(userRole)) {
+      appointments = [...clinicAppointments];
+    } else if (["lab_technician", "lab_admin"].includes(userRole)) {
+      appointments = [...labAppointments];
+    }
+
+    const filtered = appointments
+      .filter(appt => appt.status !== "Cancelled")
+      .filter(appt => {
+        const apptDate = appt.checkin_datetime ? new Date(appt.checkin_datetime).toDateString() : null;
+        const currentDateStr = currentDate.toDateString();
+        return apptDate === currentDateStr;
+      })
+      .sort((a, b) => {
+        const dateA = a.checkin_datetime ? new Date(a.checkin_datetime) : 0;
+        const dateB = b.checkin_datetime ? new Date(b.checkin_datetime) : 0;
+        return dateA - dateB;
+      });
+
+    const now = new Date();
+    const upcoming = appointments
+      .filter(appt => appt.status === "Scheduled")
+      .filter(appt => appt.checkin_datetime && new Date(appt.checkin_datetime) > now)
+      .sort((a, b) => {
+        const dateA = new Date(a.checkin_datetime);
+        const dateB = new Date(b.checkin_datetime);
+        return dateA - dateB;
+      })[0];
+
+    return {
+      filteredAppointments: filtered.slice(0, 3),
+      nextAppointment: upcoming
+    };
+  }, [currentDate, clinicAppointments, labAppointments, userRole]);
+
+  // Rest of the component remains the same...
   const formatDate = (date) => {
     return date.toLocaleDateString("en-GB", {
       day: "2-digit",
@@ -30,6 +94,7 @@ const UpcomingAppointments = ({
   };
 
   const formatWeekdayDate = (dateString) => {
+    if (!dateString) return "No upcoming";
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
       weekday: "short",
@@ -54,7 +119,6 @@ const UpcomingAppointments = ({
     setCurrentDate(nextDate);
   };
 
-  // Get professional name (doctor or lab technician)
   const getProfessionalName = (appointment) => {
     if (appointment.doctor) {
       return `Dr. ${appointment.doctor.user.first_name} ${appointment.doctor.user.last_name}`;
@@ -62,39 +126,6 @@ const UpcomingAppointments = ({
       return `${appointment.lab_technician.user.first_name} ${appointment.lab_technician.user.last_name}`;
     }
     return "";
-  };
-
-  const processAppointments = () => {
-    let appointments = [];
-    
-    if (userRole === "patient") {
-      appointments = [...clinicAppointments, ...labAppointments];
-    } else if (["doctor", "clinic_admin"].includes(userRole)) {
-      appointments = [...clinicAppointments];
-    } else if (["lab_technician", "lab_admin"].includes(userRole)) {
-      appointments = [...labAppointments];
-    }
-
-    const filtered = appointments
-      .filter(appt => appt.status !== "Cancelled")
-      .filter(appt => {
-        const apptDate = new Date(appt.checkin_datetime).toDateString();
-        const currentDateStr = currentDate.toDateString();
-        return apptDate === currentDateStr;
-      })
-      .sort((a, b) => {
-        return new Date(a.checkin_datetime) - new Date(b.checkin_datetime);
-      });
-
-    setFilteredAppointments(filtered.slice(0, 3));
-    
-    const now = new Date();
-    const upcoming = appointments
-      .filter(appt => appt.status === "Scheduled")
-      .filter(appt => new Date(appt.checkin_datetime) > now)
-      .sort((a, b) => new Date(a.checkin_datetime) - new Date(b.checkin_datetime))[0];
-
-    setNextAppointment(upcoming);
   };
 
   const getAppointmentDescription = (appointment) => {
@@ -109,6 +140,7 @@ const UpcomingAppointments = ({
 
   const getPatientName = (appointment) => {
     const patient = appointment.patient;
+    if (!patient || !patient.user) return "Unknown Patient";
     const gender = patient.gender === "M" ? "Mr." : patient.gender === "F" ? "Miss." : "";
     return `${gender} ${patient.user.first_name} ${patient.user.last_name}`;
   };
@@ -117,6 +149,7 @@ const UpcomingAppointments = ({
     if (appointment.time_slot) {
       return formatTime(appointment.time_slot.start_time);
     }
+    if (!appointment.checkin_datetime) return "";
     const datetime = new Date(appointment.checkin_datetime);
     return datetime.toLocaleTimeString("en-US", {
       hour: "2-digit",
@@ -124,10 +157,6 @@ const UpcomingAppointments = ({
       hour12: true,
     }).toLowerCase();
   };
-
-  useEffect(() => {
-    processAppointments();
-  }, [currentDate, clinicAppointments, labAppointments, userRole]);
 
   return (
     <>
@@ -145,9 +174,7 @@ const UpcomingAppointments = ({
               <div className={styles.topText}>
                 <p>Next Checkup</p>
                 <h5>
-                  {nextAppointment ? 
-                    formatWeekdayDate(nextAppointment.checkin_datetime) : 
-                    "No upcoming"}
+                  {formatWeekdayDate(nextAppointment?.checkin_datetime)}
                 </h5>
               </div>
             </div>
@@ -177,7 +204,6 @@ const UpcomingAppointments = ({
                         {getAppointmentTime(appointment)} |{" "}
                         {getAppointmentDescription(appointment)}
                       </p>
-                      {/* Corrected condition for showing professional details */}
                       {(userRole === "patient" || userRole === "clinic_admin" || userRole === "lab_admin") && (
                         <p className={styles.professional}>
                           With: {getProfessionalName(appointment)}

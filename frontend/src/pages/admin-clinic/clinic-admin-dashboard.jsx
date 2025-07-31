@@ -15,7 +15,7 @@ function ClinicAdminDashboard() {
     unique_patients: [0, { percentage: 0, text: "" }],
     total_payments: [0, { percentage: 0, text: "" }],
     cancelled_appointments: [0, { percentage: 0, text: "" }],
-    upcoming_appointments: []
+    upcoming_appointments: [],
   });
 
   useEffect(() => {
@@ -64,7 +64,7 @@ function ClinicAdminDashboard() {
           text: "Clinic appointments that were cancelled.",
         },
       ],
-      upcoming_appointments: []
+      upcoming_appointments: [],
     };
 
     const patientIds = new Set();
@@ -83,14 +83,14 @@ function ClinicAdminDashboard() {
       // Calculate payments from completed appointments
       if (appt.status === "Completed") {
         let payment = 0;
-        
+
         // Get payment from appointment fee
         if (appt.fee && !isNaN(parseFloat(appt.fee))) {
           payment = parseFloat(appt.fee);
         }
 
         console.log(`Appointment ${appt.appointment_id} payment:`, payment); // Debug log
-        
+
         if (payment > 0) {
           revenueGeneratingAppointments += 1;
           totalPayments += payment;
@@ -103,11 +103,11 @@ function ClinicAdminDashboard() {
       }
 
       // Check if upcoming
-      const slotDate = appt.time_slot?.slot_date 
-        ? new Date(appt.time_slot.slot_date) 
-        : appt.checkin_datetime 
-          ? new Date(appt.checkin_datetime) 
-          : null;
+      const slotDate = appt.time_slot?.slot_date
+        ? new Date(appt.time_slot.slot_date)
+        : appt.checkin_datetime
+        ? new Date(appt.checkin_datetime)
+        : null;
       if (slotDate && slotDate > new Date() && appt.status === "Scheduled") {
         analytics.upcoming_appointments.push(appt);
       }
@@ -126,7 +126,7 @@ function ClinicAdminDashboard() {
       analytics.unique_patients[1].percentage = Math.round(
         (analytics.unique_patients[0] / total) * 100
       );
-      
+
       // Payment percentage shows what portion of appointments generated revenue
       analytics.total_payments[1].percentage = Math.round(
         (revenueGeneratingAppointments / total) * 100
@@ -145,16 +145,14 @@ function ClinicAdminDashboard() {
   }
 
   return (
-    <div>
-      <div className={styles2.pageTop}>
+    <div className={styles.analytics}>
+      <div className={styles.leftColumn}>
         <Header
           mainHeading={"Welcome, " + (curUser?.[0]?.first_name || "Admin")}
           subHeading={
             "Manage clinic operations and track financial performance."
           }
         />
-      </div>
-      <div className={styles.main}>
         <div className={styles.cards}>
           <Cards
             heading="Total Appointments"
@@ -181,10 +179,14 @@ function ClinicAdminDashboard() {
             text={analytics.cancelled_appointments[1].text}
           />
         </div>
-
+      </div>
+      <div className={styles.rightColumn}>
         <UpcomingTest
-          clinicAppointments={analytics.upcoming_appointments}
+          heading="My Schedule"
+          clinicAppointments={appointments}
+          userRole={"clinic_admin"} // "patient", "doctor", "lab_technician", etc.
         />
+        {/* TEST REPORTS */}
       </div>
     </div>
   );

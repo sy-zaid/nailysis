@@ -143,16 +143,14 @@ function LabAdminDashboard() {
   }
 
   return (
-    <div>
-      <div className={styles2.pageTop}>
+    <div className={styles.analytics}>
+      <div className={styles.leftColumn}>
         <Header
           mainHeading={"Welcome, " + (curUser?.[0]?.first_name || "Admin")}
           subHeading={
             "Manage lab operations and track financial performance."
           }
         />
-      </div>
-      <div className={styles.main}>
         <div className={styles.cards}>
           <Cards
             heading="Total Appointments"
@@ -180,9 +178,16 @@ function LabAdminDashboard() {
           />
         </div>
 
+        
+      </div>
+      <div className={styles.rightColumn}>
         <UpcomingTest
-          labAppointments={analytics.upcoming_appointments}
+          heading="My Schedule"
+          
+          labAppointments={appointments}
+          userRole={"lab_admin"} // "patient", "doctor", "lab_technician", etc.
         />
+        {/* TEST REPORTS */}
       </div>
     </div>
   );
