@@ -4,7 +4,7 @@ import Navbar from "./Navbar/Navbar";
 import Header from "./Header/Header";
 import Sidebar from "./Sidebar/Sidebar";
 import styles from "./Dashboard.module.css";
-import UpcomingTest from "./UpcomingTest/UpcomingTest";
+import UpcomingAppointments from "./UpcomingAppointments/UpcomingAppointments";
 
 const Dashboard = () => {
   return (

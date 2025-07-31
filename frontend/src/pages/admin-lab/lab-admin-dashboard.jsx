@@ -3,9 +3,12 @@ import Cards from "../../components/Dashboard/Cards/Cards";
 import Header from "../../components/Dashboard/Header/Header";
 import styles from "../../components/Dashboard/Dashboard.module.css";
 import styles2 from "../../../src/pages/common/all-pages-styles.module.css";
-import UpcomingTest from "../../components/Dashboard/UpcomingTest/UpcomingTest";
+import UpcomingAppointments from "../../components/Dashboard/UpcomingAppointments/UpcomingAppointments.jsx";
+import { AppointmentsTimelineChart } from "../../components/Dashboard/Charts/appointments-timeline-chart.jsx";
 import useCurrentUserData from "../../useCurrentUserData.jsx";
 import { getLabTechnicianAppointments } from "../../api/appointmentsApi.js";
+import { getTestOrders } from "../../api/labsApi.js";
+import TestResults from "../../components/Dashboard/TestResults/test-results.jsx";
 
 function LabAdminDashboard() {
   const { data: curUser, isLoading, isError, error } = useCurrentUserData();
@@ -15,8 +18,9 @@ function LabAdminDashboard() {
     unique_patients: [0, { percentage: 0, text: "" }],
     total_payments: [0, { percentage: 0, text: "" }],
     cancelled_appointments: [0, { percentage: 0, text: "" }],
-    upcoming_appointments: []
+    upcoming_appointments: [],
   });
+  const [testOrders, setTestOrders] = useState([]);
 
   useEffect(() => {
     const fetchAppointments = async () => {
@@ -25,6 +29,8 @@ function LabAdminDashboard() {
         setAppointments(response.data);
         const analytics = getLabAdminAnalytics(response.data);
         setAnalytics(analytics);
+        const test_orders = getTestOrders();
+        setTestOrders(test_orders.data);
       } catch (error) {
         console.log("Error fetching appointments", error);
       }
@@ -63,7 +69,7 @@ function LabAdminDashboard() {
           text: "Lab appointments that were cancelled.",
         },
       ],
-      upcoming_appointments: []
+      upcoming_appointments: [],
     };
 
     const patientIds = new Set();
@@ -84,12 +90,15 @@ function LabAdminDashboard() {
         let payment = parseFloat(appt.fee) || 0;
         if (payment === 0 && appt.test_orders) {
           payment = appt.test_orders.reduce((sum, order) => {
-            return sum + (order.test_types?.reduce((tSum, test) => {
-              return tSum + parseFloat(test.price || 0);
-            }, 0) || 0);
+            return (
+              sum +
+              (order.test_types?.reduce((tSum, test) => {
+                return tSum + parseFloat(test.price || 0);
+              }, 0) || 0)
+            );
           }, 0);
         }
-        
+
         if (payment > 0) {
           revenueGeneratingAppointments += 1;
         }
@@ -102,11 +111,11 @@ function LabAdminDashboard() {
       }
 
       // Check if upcoming
-      const slotDate = appt.time_slot?.slot_date 
-        ? new Date(appt.time_slot.slot_date) 
-        : appt.checkin_datetime 
-          ? new Date(appt.checkin_datetime) 
-          : null;
+      const slotDate = appt.time_slot?.slot_date
+        ? new Date(appt.time_slot.slot_date)
+        : appt.checkin_datetime
+        ? new Date(appt.checkin_datetime)
+        : null;
       if (slotDate && slotDate > new Date() && appt.status === "Scheduled") {
         analytics.upcoming_appointments.push(appt);
       }
@@ -124,7 +133,7 @@ function LabAdminDashboard() {
       analytics.unique_patients[1].percentage = Math.round(
         (analytics.unique_patients[0] / total) * 100
       );
-      
+
       // Payment percentage shows what portion of appointments generated revenue
       analytics.total_payments[1].percentage = Math.round(
         (revenueGeneratingAppointments / total) * 100
@@ -147,9 +156,7 @@ function LabAdminDashboard() {
       <div className={styles.leftColumn}>
         <Header
           mainHeading={"Welcome, " + (curUser?.[0]?.first_name || "Admin")}
-          subHeading={
-            "Manage lab operations and track financial performance."
-          }
+          subHeading={"Manage lab operations and track financial performance."}
         />
         <div className={styles.cards}>
           <Cards
@@ -177,17 +184,15 @@ function LabAdminDashboard() {
             text={analytics.cancelled_appointments[1].text}
           />
         </div>
-
-        
+        <AppointmentsTimelineChart labAppointments={appointments} />
       </div>
       <div className={styles.rightColumn}>
-        <UpcomingTest
+        <UpcomingAppointments
           heading="My Schedule"
-          
           labAppointments={appointments}
           userRole={"lab_admin"} // "patient", "doctor", "lab_technician", etc.
         />
-        {/* TEST REPORTS */}
+        <TestResults testOrders={testOrders} />
       </div>
     </div>
   );

@@ -1,39 +1,39 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
-import UpcomingTest from './UpcomingTest';
+import UpcomingAppointments from './UpcomingAppointments';
 
-describe('UpcomingTest Component', () => {
+describe('UpcomingAppointments Component', () => {
   it('renders without crashing', () => {
-    render(<UpcomingTest />);
+    render(<UpcomingAppointments />);
   });
 
   it('displays the heading "Upcoming Tests"', () => {
-    render(<UpcomingTest />);
+    render(<UpcomingAppointments />);
     expect(screen.getByText('Upcoming Tests')).toBeInTheDocument();
   });
 
   it('displays "Next Checkup" text', () => {
-    render(<UpcomingTest />);
+    render(<UpcomingAppointments />);
     expect(screen.getByText('Next Checkup')).toBeInTheDocument();
   });
 
   it('displays the checkup date', () => {
-    render(<UpcomingTest />);
+    render(<UpcomingAppointments />);
     expect(screen.getByText('Fri, 24 Mar')).toBeInTheDocument();
   });
 
   it('displays the date navigation text', () => {
-    render(<UpcomingTest />);
+    render(<UpcomingAppointments />);
     expect(screen.getByText('20-March-24')).toBeInTheDocument();
   });
 
   it('renders the "Consult Now" button', () => {
-    render(<UpcomingTest />);
+    render(<UpcomingAppointments />);
     expect(screen.getByText('Consult Now')).toBeInTheDocument();
   });
 
   it('renders all required images with proper alt text', () => {
-    render(<UpcomingTest />);
+    render(<UpcomingAppointments />);
     
     expect(screen.getByAltText('calendar icon')).toBeInTheDocument();
     expect(screen.getByAltText('arrow left')).toBeInTheDocument();
@@ -43,7 +43,7 @@ describe('UpcomingTest Component', () => {
   });
 
   it('renders the button as a button element', () => {
-    render(<UpcomingTest />);
+    render(<UpcomingAppointments />);
     const button = screen.getByRole('button', { name: /consult now/i });
     expect(button).toBeInTheDocument();
   });

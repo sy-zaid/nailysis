@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import styles from "./UpcomingTest.module.css";
+import styles from "./UpcomingAppointments.module.css";
 
 const UpcomingAppointments = ({ 
   heading = "My Schedule", 

@@ -5,15 +5,21 @@ import Header from "../../components/Dashboard/Header/Header";
 import Sidebar from "../../components/Dashboard/Sidebar/Sidebar";
 import styles from "../../components/Dashboard/Dashboard.module.css";
 import styles2 from "../../../src/pages/common/all-pages-styles.module.css";
-import UpcomingTest from "../../components/Dashboard/UpcomingTest/UpcomingTest";
+import UpcomingAppointments from "../../components/Dashboard/UpcomingAppointments/UpcomingAppointments.jsx";
 import useCurrentUserData from "../../useCurrentUserData.jsx";
 import { getDoctorAppointments } from "../../api/appointmentsApi.js";
 import api from "../../api.js";
+import { AppointmentsTimelineChart } from "../../components/Dashboard/Charts/appointments-timeline-chart.jsx";
+import TestResults from "../../components/Dashboard/TestResults/test-results.jsx";
+
+import { getTestOrders } from "../../api/labsApi.js";
+
 function DoctorDashboard() {
   const { data: curUser } = useCurrentUserData(); // Fetch current User data
   console.log("CURRUSER", curUser);
   const [apiRes, setApiRes] = useState();
   const [appointmentAnalytics, setAppointmentAnalytics] = useState({});
+  const [testOrders, setTestOrders] = useState([]);
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
@@ -24,6 +30,9 @@ function DoctorDashboard() {
         const analytics = getDoctorAppointmentAnalytics(appts);
         setAppointmentAnalytics(analytics);
         console.log("ANALYTICS:", appts);
+
+        const test_orders = getTestOrders();
+        setTestOrders(test_orders);
       } catch (error) {
         console.log("error fetching appointments", error);
       }
@@ -206,14 +215,16 @@ function DoctorDashboard() {
               </>
             )}
         </div>
+        <AppointmentsTimelineChart clinicAppointments={apiRes} />
       </div>
       <div className={styles.rightColumn}>
-        <UpcomingTest
+        <UpcomingAppointments
           heading="My Schedule"
           clinicAppointments={apiRes}
           userRole={"doctor"} // "patient", "doctor", "lab_technician", etc.
         />
-        {/* TEST REPORTS */}
+
+        <TestResults testOrders={testOrders} />
       </div>
     </div>
   );

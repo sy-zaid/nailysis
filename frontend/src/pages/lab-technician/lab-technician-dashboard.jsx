@@ -3,13 +3,17 @@ import Cards from "../../components/Dashboard/Cards/Cards";
 import Header from "../../components/Dashboard/Header/Header";
 import styles from "../../components/Dashboard/Dashboard.module.css";
 import styles2 from "../../../src/pages/common/all-pages-styles.module.css";
-import UpcomingTest from "../../components/Dashboard/UpcomingTest/UpcomingTest";
+import UpcomingAppointments from "../../components/Dashboard/UpcomingAppointments/UpcomingAppointments.jsx";
+import { AppointmentsTimelineChart } from "../../components/Dashboard/Charts/appointments-timeline-chart.jsx";
 import useCurrentUserData from "../../useCurrentUserData.jsx";
 import { getLabTechnicianAppointments } from "../../api/appointmentsApi.js";
+import TestResults from "../../components/Dashboard/TestResults/test-results.jsx";
+import { getTestOrders, getTestResults } from "../../api/labsApi.js";
 
 function LabTechnicianDashboard() {
   const { data: curUser, isLoading, isError, error } = useCurrentUserData();
   const [appointments, setAppointments] = useState([]);
+  const [testResults, setTestResults] = useState([]);
   const [analytics, setAnalytics] = useState({
     total_appointments: [0, { percentage: 0, text: "" }],
     unique_patients: [0, { percentage: 0, text: "" }],
@@ -25,6 +29,9 @@ function LabTechnicianDashboard() {
         setAppointments(response.data);
         const analytics = getLabTechnicianAnalytics(response.data);
         setAnalytics(analytics);
+        const test_results = await getTestOrders();
+        setTestResults(test_results.data);
+        console.log("TEST RESULTS FROM TECH DB", test_results.data);
       } catch (error) {
         console.log("Error fetching appointments", error);
       }
@@ -159,15 +166,16 @@ function LabTechnicianDashboard() {
             text={analytics.cancelled_appointments[1].text}
           />
         </div>
+        <AppointmentsTimelineChart labAppointments={appointments} />
       </div>
 
       <div className={styles.rightColumn}>
-        <UpcomingTest
+        <UpcomingAppointments
           heading="My Schedule"
           labAppointments={appointments}
           userRole={"lab_technician"} // "patient", "doctor", "lab_technician", etc.
         />
-        {/* TEST REPORTS */}
+        <TestResults testOrders={testResults} />
       </div>
     </div>
   );

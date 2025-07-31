@@ -19,8 +19,8 @@ vi.mock('./Sidebar/Sidebar', () => ({
   default: () => <div data-testid="sidebar">Sidebar</div>
 }));
 
-vi.mock('./UpcomingTest/UpcomingTest', () => ({
-  default: () => <div data-testid="upcoming-test">UpcomingTest</div>
+vi.mock('./UpcomingAppointments/UpcomingAppointments', () => ({
+  default: () => <div data-testid="upcoming-test">UpcomingAppointments</div>
 }));
 
 describe('Dashboard Component', () => {
@@ -66,7 +66,7 @@ describe('Dashboard Component', () => {
     });
   });
 
-  it('renders the UpcomingTest component', () => {
+  it('renders the UpcomingAppointments component', () => {
     expect(screen.getByTestId('upcoming-test')).toBeInTheDocument();
   });
 });
@@ -78,5 +78,5 @@ describe('Dashboard Component', () => {
 // 4. Dropdown select element is present with all three time period options
 // 5. Sidebar component is rendered and present
 // 6. All four Cards components are rendered with correct headings (Patients, Requests, Payments, Reports)
-// 7. UpcomingTest component is rendered and present
+// 7. UpcomingAppointments component is rendered and present
 // 8. Default dropdown value is set to "oneMonth"

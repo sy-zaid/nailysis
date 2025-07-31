@@ -3,9 +3,12 @@ import Cards from "../../components/Dashboard/Cards/Cards";
 import Header from "../../components/Dashboard/Header/Header";
 import styles from "../../components/Dashboard/Dashboard.module.css";
 import styles2 from "../../../src/pages/common/all-pages-styles.module.css";
-import UpcomingTest from "../../components/Dashboard/UpcomingTest/UpcomingTest";
+import UpcomingAppointments from "../../components/Dashboard/UpcomingAppointments/UpcomingAppointments.jsx";
+import { AppointmentsTimelineChart } from "../../components/Dashboard/Charts/appointments-timeline-chart.jsx";
 import useCurrentUserData from "../../useCurrentUserData.jsx";
 import { getDoctorAppointments } from "../../api/appointmentsApi.js";
+import { getTestOrders } from "../../api/labsApi.js";
+import TestResults from "../../components/Dashboard/TestResults/test-results.jsx";
 
 function ClinicAdminDashboard() {
   const { data: curUser, isLoading, isError, error } = useCurrentUserData();
@@ -17,7 +20,7 @@ function ClinicAdminDashboard() {
     cancelled_appointments: [0, { percentage: 0, text: "" }],
     upcoming_appointments: [],
   });
-
+  const [testOrders, setTestOrders] = useState([]);
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
@@ -26,6 +29,8 @@ function ClinicAdminDashboard() {
         const analytics = getClinicAdminAnalytics(response.data);
         console.log("Analytics data:", analytics); // Debug log
         setAnalytics(analytics);
+        const test_orders = getTestOrders();
+        setTestOrders(test_orders.data);
       } catch (error) {
         console.log("Error fetching appointments", error);
       }
@@ -179,14 +184,15 @@ function ClinicAdminDashboard() {
             text={analytics.cancelled_appointments[1].text}
           />
         </div>
+        <AppointmentsTimelineChart clinicAppointments={appointments} />
       </div>
       <div className={styles.rightColumn}>
-        <UpcomingTest
+        <UpcomingAppointments
           heading="My Schedule"
           clinicAppointments={appointments}
           userRole={"clinic_admin"} // "patient", "doctor", "lab_technician", etc.
         />
-        {/* TEST REPORTS */}
+        <TestResults testOrders={testOrders} />
       </div>
     </div>
   );

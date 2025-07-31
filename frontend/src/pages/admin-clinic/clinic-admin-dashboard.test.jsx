@@ -23,8 +23,8 @@ vi.mock('../../components/Dashboard/Sidebar/Sidebar', () => ({
   default: () => <div data-testid="sidebar-component">Sidebar</div>
 }));
 
-vi.mock('../../components/Dashboard/UpcomingTest/UpcomingTest', () => ({
-  default: () => <div data-testid="upcoming-test-component">UpcomingTest</div>
+vi.mock('../../components/Dashboard/UpcomingAppointments/UpcomingAppointments', () => ({
+  default: () => <div data-testid="upcoming-test-component">UpcomingAppointments</div>
 }));
 
 vi.mock('./cancellation-requests-list', () => ({
@@ -91,6 +91,6 @@ Test Coverage Summary:
 ✅ Header displays correct user role and gender prefix
 ✅ All four Cards components render with proper headings (Patients, Requests, Payments, Reports)
 ✅ Dropdown menu renders with all time period options
-✅ All child components are present (Navbar, Header, UpcomingTest, CancellationRequestsList)
+✅ All child components are present (Navbar, Header, UpcomingAppointments, CancellationRequestsList)
 ✅ Correct number of Cards components (4 total)
 */
