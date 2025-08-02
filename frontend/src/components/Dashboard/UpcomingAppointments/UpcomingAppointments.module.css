@@ -57,6 +57,8 @@
   align-items: center;
   justify-content: center;
   border-radius: 8px;
+  position: absolute;
+  left: 20px;
 }
 
 .calendar img {
@@ -65,6 +67,10 @@
 }
 
 .topText {
+  display: flex;
+  flex-direction: column;
+  align-items: center;      /* center horizontally */
+  justify-content: center;  /* center vertically if height grows */
   text-align: center;
 }
 
@@ -100,10 +106,11 @@
 }
 
 .button {
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 8px;
+  justify-content: center; /* Center text */
+  width: 100%;
   background-color: #0067ff;
   color: #fff;
   border: none;
@@ -116,8 +123,10 @@
 }
 
 .button img {
-  width: 16px;
-  height: 16px;
+  position: absolute;
+  right: 20px; /* same as button padding */
+  width: 12px;
+  height: 12px;
 }
 
 .boxHeading > div:nth-child(3) {
@@ -138,10 +147,9 @@
 .sec1 {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  gap: 32px;
-
+  align-items: center;        /* vertically center both calendar and text */
+  justify-content: flex-start;
+  gap: 16px;                  /* adjust as needed */
 }
 
 .appointments {
@@ -184,13 +192,12 @@
 
 .dateNav {
   background-color: #efefef;
-  border-radius: 20px;
+  border-radius: 100px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 6px 16px;
+  padding: 4px 6px 2px 6px;
   width: 100%;
-  max-width: 260px;
   margin: 12px auto;
 }
 
@@ -209,7 +216,6 @@
 }
 
 .navBtn img {
-  width: 16px;
-  height: 16px;
+  width: 32px;
+  height: auto;
 }
-

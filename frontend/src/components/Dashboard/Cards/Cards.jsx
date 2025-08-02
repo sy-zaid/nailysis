@@ -26,21 +26,8 @@ const Cards = ({ heading, count, percentage, text }) => {
     return () => clearInterval(timer);
   }, [count]);
 
-  const cardStyle = {
-    backgroundColor: isPrimaryCard ? "#0067ff" : "#ffffff",
-    color: isPrimaryCard ? "#ffffff" : "#000000",
-  };
-
-  const percentStyle = {
-    backgroundColor: isPrimaryCard ? "#ffffff" : "#0067ff",
-  };
-
-  const percentColor = {
-    color: isPrimaryCard ? "#000000" : "#ffffff",
-  };
-
   return (
-    <div className={styles.contain} style={cardStyle}>
+    <div className={styles.contain}>
       <div className={styles.head}>
         <div className={styles.imgDiv}>
           <img src="icon-stocks-black.png" alt="icon" />
@@ -50,8 +37,8 @@ const Cards = ({ heading, count, percentage, text }) => {
 
       <div className={styles.main}>
         <h1 className={styles.count}>{displayedCount}</h1>
-        <div className={styles.percent} style={percentStyle}>
-          <h3 style={percentColor}>+{percentage}%</h3>
+        <div className={styles.percent}>
+          <h3>+{percentage}%</h3>
         </div>
       </div>
 

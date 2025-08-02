@@ -31,8 +31,9 @@ function DoctorDashboard() {
         setAppointmentAnalytics(analytics);
         console.log("ANALYTICS:", appts);
 
-        const test_orders = getTestOrders();
-        setTestOrders(test_orders);
+        const test_orders = await getTestOrders();
+        setTestOrders(test_orders.data);
+        console.log
       } catch (error) {
         console.log("error fetching appointments", error);
       }

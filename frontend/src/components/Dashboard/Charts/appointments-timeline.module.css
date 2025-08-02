@@ -1,14 +1,19 @@
 .mainDiv {
-  width: 100%;
-  height: 300px;
-  background: white;
-  border-radius: 10px;
-  padding: 15px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  
+  border-radius: 12px;
+  background: linear-gradient(white, white) padding-box,
+    /* inner */ linear-gradient(to bottom, #dadada, #d0eaf9) border-box; /* outer border */
+  border: 1px solid transparent;
+  height: auto;
+  max-height: 400px;
+  box-shadow: 1px 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 0px 20px 30px 20px;
+  margin-bottom: 20px;
 }
 
 .chartTitle {
-  color: #333;
+  color: #ffffff;
+  background-color: transparent;
   font-size: 16px;
   margin-bottom: 15px;
   font-weight: 600;
@@ -41,4 +46,26 @@
   height: 8px;
   border-radius: 50%;
   margin-right: 8px;
+}
+
+.heading {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 22px 10px;
+}
+
+.heading h4 {
+  font-size: 18px;
+  margin: 0;
+  color: #707172;
+  font-size: 1.175vw;
+  font-weight: 600;
+}
+
+.blue {
+  width: 8px;
+  height: 8px;
+  background-color: #0067ff;
+  border-radius: 50%;
 }

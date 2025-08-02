@@ -1,33 +1,38 @@
 import React, { useState, useEffect, useMemo } from "react";
 import styles from "./UpcomingAppointments.module.css";
 
-const UpcomingAppointments = ({ 
-  heading = "My Schedule", 
-  clinicAppointments = [], 
+const UpcomingAppointments = ({
+  heading = "My Schedule",
+  clinicAppointments = [],
   labAppointments = [],
-  userRole = "patient" 
+  userRole = "patient",
 }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
-  
+
   // Get the initial date based on upcoming appointments (for patients only)
   useEffect(() => {
     if (userRole === "patient") {
       const allAppointments = [...clinicAppointments, ...labAppointments];
       const now = new Date();
-      
+
       // Find all upcoming appointments
       const upcomingAppointments = allAppointments
-        .filter(appt => appt.status === "Scheduled")
-        .filter(appt => appt.checkin_datetime && new Date(appt.checkin_datetime) > now)
+        .filter((appt) => appt.status === "Scheduled")
+        .filter(
+          (appt) =>
+            appt.checkin_datetime && new Date(appt.checkin_datetime) > now
+        )
         .sort((a, b) => {
           const dateA = new Date(a.checkin_datetime);
           const dateB = new Date(b.checkin_datetime);
           return dateA - dateB;
         });
-      
+
       // If there are upcoming appointments, set the current date to the first one's date
       if (upcomingAppointments.length > 0) {
-        const firstUpcomingDate = new Date(upcomingAppointments[0].checkin_datetime);
+        const firstUpcomingDate = new Date(
+          upcomingAppointments[0].checkin_datetime
+        );
         setCurrentDate(new Date(firstUpcomingDate.setHours(0, 0, 0, 0)));
       }
     }
@@ -36,7 +41,7 @@ const UpcomingAppointments = ({
   // Memoize the processed appointments to avoid unnecessary recalculations
   const { filteredAppointments, nextAppointment } = useMemo(() => {
     let appointments = [];
-    
+
     if (userRole === "patient") {
       appointments = [...clinicAppointments, ...labAppointments];
     } else if (["doctor", "clinic_admin"].includes(userRole)) {
@@ -46,9 +51,11 @@ const UpcomingAppointments = ({
     }
 
     const filtered = appointments
-      .filter(appt => appt.status !== "Cancelled")
-      .filter(appt => {
-        const apptDate = appt.checkin_datetime ? new Date(appt.checkin_datetime).toDateString() : null;
+      .filter((appt) => appt.status !== "Cancelled")
+      .filter((appt) => {
+        const apptDate = appt.checkin_datetime
+          ? new Date(appt.checkin_datetime).toDateString()
+          : null;
         const currentDateStr = currentDate.toDateString();
         return apptDate === currentDateStr;
       })
@@ -60,8 +67,10 @@ const UpcomingAppointments = ({
 
     const now = new Date();
     const upcoming = appointments
-      .filter(appt => appt.status === "Scheduled")
-      .filter(appt => appt.checkin_datetime && new Date(appt.checkin_datetime) > now)
+      .filter((appt) => appt.status === "Scheduled")
+      .filter(
+        (appt) => appt.checkin_datetime && new Date(appt.checkin_datetime) > now
+      )
       .sort((a, b) => {
         const dateA = new Date(a.checkin_datetime);
         const dateB = new Date(b.checkin_datetime);
@@ -70,7 +79,7 @@ const UpcomingAppointments = ({
 
     return {
       filteredAppointments: filtered.slice(0, 3),
-      nextAppointment: upcoming
+      nextAppointment: upcoming,
     };
   }, [currentDate, clinicAppointments, labAppointments, userRole]);
 
@@ -86,11 +95,13 @@ const UpcomingAppointments = ({
   const formatTime = (timeString) => {
     if (!timeString) return "";
     const time = new Date(`2000-01-01T${timeString}`);
-    return time.toLocaleTimeString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-    }).toLowerCase();
+    return time
+      .toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      })
+      .toLowerCase();
   };
 
   const formatWeekdayDate = (dateString) => {
@@ -132,7 +143,10 @@ const UpcomingAppointments = ({
     if (appointment.doctor) {
       return appointment.appointment_type || "Doctor Appointment";
     } else if (appointment.lab_technician) {
-      const testNames = appointment.test_orders?.[0]?.test_types?.map(t => t.name).join(", ") || "Lab Tests";
+      const testNames =
+        appointment.test_orders?.[0]?.test_types
+          ?.map((t) => t.name)
+          .join(", ") || "Lab Tests";
       return testNames;
     }
     return "Appointment";
@@ -141,7 +155,8 @@ const UpcomingAppointments = ({
   const getPatientName = (appointment) => {
     const patient = appointment.patient;
     if (!patient || !patient.user) return "Unknown Patient";
-    const gender = patient.gender === "M" ? "Mr." : patient.gender === "F" ? "Miss." : "";
+    const gender =
+      patient.gender === "M" ? "Mr." : patient.gender === "F" ? "Miss." : "";
     return `${gender} ${patient.user.first_name} ${patient.user.last_name}`;
   };
 
@@ -151,11 +166,13 @@ const UpcomingAppointments = ({
     }
     if (!appointment.checkin_datetime) return "";
     const datetime = new Date(appointment.checkin_datetime);
-    return datetime.toLocaleTimeString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-    }).toLowerCase();
+    return datetime
+      .toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      })
+      .toLowerCase();
   };
 
   return (
@@ -173,9 +190,7 @@ const UpcomingAppointments = ({
               </div>
               <div className={styles.topText}>
                 <p>Next Checkup</p>
-                <h5>
-                  {formatWeekdayDate(nextAppointment?.checkin_datetime)}
-                </h5>
+                <h5>{formatWeekdayDate(nextAppointment?.checkin_datetime)}</h5>
               </div>
             </div>
 
@@ -204,7 +219,9 @@ const UpcomingAppointments = ({
                         {getAppointmentTime(appointment)} |{" "}
                         {getAppointmentDescription(appointment)}
                       </p>
-                      {(userRole === "patient" || userRole === "clinic_admin" || userRole === "lab_admin") && (
+                      {(userRole === "patient" ||
+                        userRole === "clinic_admin" ||
+                        userRole === "lab_admin") && (
                         <p className={styles.professional}>
                           With: {getProfessionalName(appointment)}
                         </p>
@@ -214,14 +231,23 @@ const UpcomingAppointments = ({
                 ))
               ) : (
                 <div className={styles.card}>
-                  <p>No appointments scheduled for this date</p>
+                  <p>
+                    {new Date(currentDate).toDateString() ===
+                    new Date().toDateString()
+                      ? "No appointments scheduled for today. "
+                      : "No appointments scheduled for this date. "}
+                    Next Upcoming Appointment On{" "}
+                    {formatWeekdayDate(nextAppointment?.checkin_datetime)}
+                  </p>
                 </div>
               )}
             </div>
 
             {filteredAppointments.length > 0 && (
               <button className={styles.button}>
-                {userRole === "patient" ? "View Details" : "Manage Appointments"}
+                {userRole === "patient"
+                  ? "View Details"
+                  : "Manage Appointments"}
                 <img src="up.png" alt="arrow" />
               </button>
             )}

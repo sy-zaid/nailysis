@@ -29,7 +29,7 @@ function LabAdminDashboard() {
         setAppointments(response.data);
         const analytics = getLabAdminAnalytics(response.data);
         setAnalytics(analytics);
-        const test_orders = getTestOrders();
+        const test_orders = await getTestOrders();
         setTestOrders(test_orders.data);
       } catch (error) {
         console.log("Error fetching appointments", error);

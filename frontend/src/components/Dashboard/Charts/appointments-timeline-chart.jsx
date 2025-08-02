@@ -104,73 +104,79 @@ export const AppointmentsTimelineChart = ({
   };
 
   return (
-    <div className={styles.mainDiv}>
-      <h3 className={styles.chartTitle}>{chartTitle}</h3>
-      <ResponsiveContainer width="100%" height="90%">
-        <LineChart
-          data={chartData}
-          margin={{
-            top: 5,
-            right: 30,
-            left: 20,
-            bottom: 5,
-          }}
-        >
-          <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-          <XAxis
-            dataKey="date"
-            tick={{ fill: "#666" }}
-            tickMargin={10}
-            tickLine={false}
-          />
-          <YAxis
-            tick={{ fill: "#666" }}
-            tickMargin={10}
-            tickLine={false}
-            allowDecimals={false}
-          />
-          <Tooltip content={<CustomTooltip />} />
-          <Legend
-            wrapperStyle={{ paddingTop: "20px" }}
-            formatter={(value) => (
-              <span style={{ color: "#666", fontSize: "12px" }}>{value}</span>
-            )}
-          />
-          <Line
-            type="monotone"
-            dataKey="Scheduled"
-            stroke="#8884d8"
-            strokeWidth={2}
-            dot={{ r: 4 }}
-            activeDot={{ r: 6 }}
-          />
-          <Line
-            type="monotone"
-            dataKey="Completed"
-            stroke="#82ca9d"
-            strokeWidth={2}
-            dot={{ r: 4 }}
-            activeDot={{ r: 6 }}
-          />
-          <Line
-            type="monotone"
-            dataKey="Cancelled"
-            stroke="#ff8042"
-            strokeWidth={2}
-            dot={{ r: 4 }}
-            activeDot={{ r: 6 }}
-          />
-          <Line
-            type="monotone"
-            dataKey="Total"
-            stroke="#0088fe"
-            strokeWidth={2}
-            strokeDasharray="5 5"
-            dot={{ r: 4 }}
-            activeDot={{ r: 6 }}
-          />
-        </LineChart>
-      </ResponsiveContainer>
-    </div>
+    <>
+      <div className={styles.heading}>
+        <div className={styles.blue}></div>
+        <h4>{chartTitle}</h4>
+      </div>
+      <div className={styles.mainDiv}>
+        <h3 className={styles.chartTitle}>{chartTitle}</h3>
+        <ResponsiveContainer width="100%" height="90%">
+          <LineChart
+            data={chartData}
+            margin={{
+              top: 5,
+              right: 30,
+              left: 20,
+              bottom: 5,
+            }}
+          >
+            <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
+            <XAxis
+              dataKey="date"
+              tick={{ fill: "#666" }}
+              tickMargin={10}
+              tickLine={false}
+            />
+            <YAxis
+              tick={{ fill: "#666" }}
+              tickMargin={10}
+              tickLine={false}
+              allowDecimals={false}
+            />
+            <Tooltip content={<CustomTooltip />} />
+            <Legend
+              wrapperStyle={{ paddingTop: "20px" }}
+              formatter={(value) => (
+                <span style={{ color: "#666", fontSize: "12px" }}>{value}</span>
+              )}
+            />
+            <Line
+              type="monotone"
+              dataKey="Scheduled"
+              stroke="#8884d8"
+              strokeWidth={2}
+              dot={{ r: 4 }}
+              activeDot={{ r: 6 }}
+            />
+            <Line
+              type="monotone"
+              dataKey="Completed"
+              stroke="#82ca9d"
+              strokeWidth={2}
+              dot={{ r: 4 }}
+              activeDot={{ r: 6 }}
+            />
+            <Line
+              type="monotone"
+              dataKey="Cancelled"
+              stroke="#ff8042"
+              strokeWidth={2}
+              dot={{ r: 4 }}
+              activeDot={{ r: 6 }}
+            />
+            <Line
+              type="monotone"
+              dataKey="Total"
+              stroke="#0088fe"
+              strokeWidth={2}
+              strokeDasharray="5 5"
+              dot={{ r: 4 }}
+              activeDot={{ r: 6 }}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+    </>
   );
 };

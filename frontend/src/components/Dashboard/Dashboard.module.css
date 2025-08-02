@@ -4,7 +4,7 @@
   /* background-color: rgb(241, 138, 138); */
   gap: 2%;
   margin: 32px 0px;
-  padding: 0px 2%;
+  /* padding: 0px 2%; */
 }
 .cards > div {
   margin: 0;
@@ -43,7 +43,7 @@
   justify-content: space-between;
   width: 100%;
   height: auto;
-  gap: 1%;
+  gap: 2%;
   margin: 20px 10px;
 }
 

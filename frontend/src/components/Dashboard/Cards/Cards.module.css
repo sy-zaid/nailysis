@@ -2,44 +2,65 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #0067ff;
+  background-color: #ffffff;
   border-radius: 25px;
   width: 100%;
   min-width: 150px;
   height: 190px;
-  padding: 16px;
+  padding: 16px 18px;
   color: inherit;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   margin-top: 32px;
   border: 1px solid #cfcfcf;
+  transition: all ease 0.5s;
+}
+
+.contain:hover {
+  background-color: #0067ff;
+}
+.title,
+.count {
+  transition: color all ease .5s;
+}
+.contain:hover .title,
+.contain:hover .count,
+.contain:hover .foot {
+  color: white;
+}
+
+.contain:hover .percent,
+.contain:hover .percent > h3 {
+  background-color: white;
+  color: #1c1c1c;
+  transition: color all ease .5s;
 }
 
 .head {
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  gap: 15px;
+  gap: 14px;
   margin-bottom: 10px;
   width: 100%;
 }
 
 .imgDiv {
-  width: 58px;
-  height: 58px;
+  min-width: 50px;
+  height: 50px;
   border-radius: 30%;
-  background-color: #ffffff;
+  background-color: #f4f3f3;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .imgDiv img {
-  width: 30px;
-  height: 30px;
+  width: 24px;
+  height: 24px;
 }
 
 .title {
-  font-size: 18px;
+  font-size: 1.1rem;
   margin: 0;
 }
 
@@ -57,7 +78,7 @@
 }
 
 .percent {
-  background-color: #ffffff;
+  background-color: #0067ff;
   padding: 4px 8px;
   border-radius: 5px;
   display: flex;
@@ -68,7 +89,8 @@
 .percent h3 {
   font-size: 14px;
   margin: 0;
-  color: black;
+  color: rgb(255, 255, 255);
+  transition: color all ease .5s;
 }
 
 .foot {

@@ -31,7 +31,7 @@ function PatientDashboard() {
       try {
         const clinicResponse = await getDoctorAppointments();
         const labResponse = await getLabTechnicianAppointments();
-        const test_orders = getTestOrders();
+        const test_orders = await getTestOrders();
         setTestOrders(test_orders.data);
         setClinicAppointments(clinicResponse.data);
         setLabAppointments(labResponse.data);
@@ -242,7 +242,7 @@ function PatientDashboard() {
             text={analytics.total_payments[1].text}
           />
           <Cards
-            heading="Cancelled Appointments"
+            heading="Cancelled"
             count={analytics.cancelled_appointments[0]}
             percentage={analytics.cancelled_appointments[1].percentage}
             text={analytics.cancelled_appointments[1].text}

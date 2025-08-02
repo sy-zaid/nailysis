@@ -1,7 +1,11 @@
 .container {
   background: #fff;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  background: linear-gradient(white, white) padding-box,
+    /* inner */ linear-gradient(to bottom, #dadada, #d0eaf9) border-box; /* outer border */
+  border: 1px solid transparent;
+
+  box-shadow: 1px 4px 8px rgba(0, 0, 0, 0.1);
   padding: 20px;
   margin-bottom: 20px;
 }
@@ -9,32 +13,38 @@
 .heading {
   display: flex;
   align-items: center;
-  margin-bottom: 20px;
+  gap: 14px;
+  margin: 22px 10px;
 }
 
 .heading h4 {
   font-size: 18px;
+  margin: 0;
+  color: #707172;
+  font-size: 1.175vw;
   font-weight: 600;
-  margin-left: 10px;
 }
 
 .blue {
-  width: 4px;
-  height: 20px;
-  background: #3a86ff;
-  border-radius: 2px;
+  width: 8px;
+  height: 8px;
+  background-color: #0067ff;
+  border-radius: 50%;
 }
 
 .profilesContainer {
   display: flex;
-  gap: 15px;
+  gap: 12px;
+  /* background-color: red; */
   flex-wrap: wrap;
 }
 
 .profileCard {
   display: flex;
-  align-items: center;
-  padding: 15px;
+  flex-direction: row;
+  justify-content: start;
+  align-items: start;
+  padding: 15px 12px 15px 15px;
   background: #f8f9fa;
   border-radius: 8px;
   cursor: pointer;
@@ -50,8 +60,8 @@
 }
 
 .avatar {
-  width: 50px;
-  height: 50px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   margin-right: 15px;
   object-fit: cover;
@@ -211,4 +221,12 @@
 
 .testItem span:last-child {
   color: #6c757d;
+}
+
+/* In your CSS module */
+.truncated {
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Change this to 3 for 3 lines */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }

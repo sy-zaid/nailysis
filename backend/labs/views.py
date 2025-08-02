@@ -54,7 +54,7 @@ class LabTestOrderModelViewSet(viewsets.ModelViewSet):
             except Patient.DoesNotExist:
                 return LabTestOrder.objects.none()
             
-        if user.role not in ["lab_technician", "lab_admin"]:
+        if user.role not in ["lab_technician", "lab_admin","clinic_admin","doctor"]:
             return Response({"error": "Access denied. You do not have permission to view test orders."}, status=403)
         
         test_order_id = self.request.query_params.get("id")
