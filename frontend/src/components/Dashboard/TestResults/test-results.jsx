@@ -6,7 +6,7 @@ const TestResults = ({ testOrders = [], currentPatientId = null }) => {
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
   const userRole = getRole();
-
+  console.log("TEST RESULTS", testOrders);
   // Filter test orders based on user role
   const filteredTestOrders = useMemo(() => {
     if (!Array.isArray(testOrders)) return [];
@@ -144,7 +144,11 @@ const TestResults = ({ testOrders = [], currentPatientId = null }) => {
               >
                 {userRole !== "patient" && (
                   <img
-                    src="profiles.png"
+                    src={
+                      `${import.meta.env.VITE_API_URL}` +
+                      order.lab_technician_appointment?.patient?.user
+                        ?.profile_picture
+                    }
                     alt="profile"
                     className={styles.avatar}
                   />

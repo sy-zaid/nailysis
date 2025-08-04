@@ -96,8 +96,10 @@
 .foot {
   text-align: left;
   margin-top: 10px;
-  padding-bottom: 20px;
+  padding: 0px 0px 0px 8px;
   width: 100%;
+  /* background-color: red; */
+  height: auto;
 }
 
 .foot p {

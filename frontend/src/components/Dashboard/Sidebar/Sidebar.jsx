@@ -31,7 +31,7 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
         ],
       },
       {
-        icon: "icon-test-results-black.jpg",
+        icon: "icon-ehr-black.svg",
         label: "Electronic Health Records",
         subItems: [
           { label: "All Patients Records" },
@@ -65,7 +65,7 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
         ],
       },
       {
-        icon: "icon-test-results-black.jpg",
+        icon: "icon-ehr-black.svg",
         label: "Electronic Health Records",
         subItems: [
           { label: "All Patients Records" },
@@ -96,7 +96,7 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
         ],
       },
       {
-        icon: "icon-test-results-black.jpg",
+        icon: "icon-ehr-black.svg",
         label: "Electronic Health Records",
         subItems: [{ label: "My Records" }, { label: "My Medical History" }],
       },
@@ -132,7 +132,7 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
         subItems: [],
       },
       {
-        icon: "icon-test-results-black.jpg",
+        icon: "icon-ehr-black.svg",
         label: "Electronic Health Records",
         subItems: [
           { label: "All Patients Records" },
@@ -173,7 +173,7 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
       },
 
       {
-        icon: "icon-test-results-black.jpg",
+        icon: "icon-ehr-black.svg",
         label: "Electronic Health Records",
         subItems: [
           { label: "All Patients Records" },
@@ -221,54 +221,111 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
       {/* Toggle Button (hide when sidebar is open) */}
       {!isOpen && (
         <>
-          <button className={`${styles.toggleButton}`} onClick={toggleSidebar}>
-            <img src={"icon-menu-black.png"} alt={"menu button"} />
+          <button className={styles.toggleButton} onClick={toggleSidebar}>
+            <img src="icon-menu-black.png" alt="menu button" />
           </button>
+
           <div className={styles.floatingButtons}>
             <div
               className={styles.floatingCircle}
               onClick={() => setView("")}
               title="Dashboard"
             >
-              <img src="icon-dashboard-black.png" alt="Dashboard" />
+              <img
+                src="icon-dashboard-black.svg"
+                alt="Dashboard"
+                className={styles.iconDefault}
+              />
+              <img
+                src="icon-dashboard-white.svg"
+                alt="Dashboard"
+                className={styles.iconHover}
+              />
             </div>
+
             <div
               className={styles.floatingCircle}
-              onClick={() => setView("Test Results")}
-              title="Test Results"
+              onClick={() => setView("My Records")}
+              title="Electronic Health Records"
             >
-              <img src="icon-test-results-black.png" alt="Test Results" />
+              <img
+                src="icon-ehr-black.svg"
+                alt="Electronic Health Records"
+                className={styles.iconDefault}
+              />
+              <img
+                src="icon-ehr-white.svg"
+                alt="Electronic Health Records"
+                className={styles.iconHover}
+              />
             </div>
+
             <div
               className={styles.floatingCircle}
               onClick={() => setView("Diagnostic Results")}
               title="Diagnostic Results"
             >
               <img
-                src="icon-diagnostic-results-black.png"
+                src="icon-test-requests-black.svg"
                 alt="Diagnostic Results"
+                className={styles.iconDefault}
+              />
+              <img
+                src="icon-test-requests-white.svg"
+                alt="Diagnostic Results"
+                className={styles.iconHover}
               />
             </div>
+
             <div
               className={styles.floatingCircle}
               onClick={() => setView("Appointments")}
               title="Appointments"
             >
-              <img src="icon-appointments-black.png" alt="Appointments" />
+              <img
+                src="icon-appointments-black.svg"
+                alt="Appointments"
+                className={styles.iconDefault}
+              />
+              <img
+                src="icon-appointments-white.svg"
+                alt="Appointments"
+                className={styles.iconHover}
+              />
             </div>
+
             <div
               className={styles.floatingCircle}
               onClick={() => setView("Billing & Invoice")}
               title="Billing & Invoice"
             >
-              <img src="icon-billing-black.png" alt="Billing & Invoice" />
+              <img
+                src="icon-billing-black.svg"
+                alt="Billing & Invoice"
+                className={styles.iconDefault}
+              />
+              <img
+                src="icon-billing-white.svg"
+                alt="Billing & Invoice"
+                className={styles.iconHover}
+              />
             </div>
+
             <div
               className={styles.floatingCircle}
               onClick={() => setView("Feedbacks")}
               title="Feedbacks"
             >
-              <img src="icon-feedback-black.png" alt="Feedbacks" />
+              <img
+                src="icon-feedbacks-black.svg"
+                alt="Feedbacks"
+                className={styles.iconDefault}
+              />
+              <img
+                src="icon-feedbacks-white.svg"
+                alt="Feedbacks"
+                className={styles.iconHover}
+              />
             </div>
           </div>
         </>

@@ -33,7 +33,7 @@ function DoctorDashboard() {
 
         const test_orders = await getTestOrders();
         setTestOrders(test_orders.data);
-        console.log
+        console.log;
       } catch (error) {
         console.log("error fetching appointments", error);
       }
@@ -80,7 +80,7 @@ function DoctorDashboard() {
         0,
         {
           percentage: 0,
-          text: "Total number of unique patients who had appointments with this doctor.",
+          text: "Total number of unique patients who had appointments with you.",
         },
       ],
       appointment_type_distribution: {},
@@ -182,7 +182,7 @@ function DoctorDashboard() {
             appointmentAnalytics.total_appointments.length > 1 && (
               <>
                 <Cards
-                  heading="Total Appointments"
+                  heading="Appointments"
                   count={appointmentAnalytics.total_appointments[0]}
                   percentage={
                     appointmentAnalytics.total_appointments[1].percentage
@@ -198,7 +198,7 @@ function DoctorDashboard() {
                   text={appointmentAnalytics.total_patients?.[1]?.text}
                 />
                 <Cards
-                  heading="Completed Appointments"
+                  heading="Completed"
                   count={appointmentAnalytics.completed_appointments[0]}
                   percentage={
                     appointmentAnalytics.completed_appointments[1].percentage
@@ -206,7 +206,7 @@ function DoctorDashboard() {
                   text={appointmentAnalytics.completed_appointments[1].text}
                 />
                 <Cards
-                  heading="Cancelled Appointments"
+                  heading="Cancelled"
                   count={appointmentAnalytics.cancelled_appointments[0]}
                   percentage={
                     appointmentAnalytics.cancelled_appointments[1].percentage

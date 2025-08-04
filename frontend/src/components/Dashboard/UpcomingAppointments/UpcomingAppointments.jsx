@@ -160,6 +160,10 @@ const UpcomingAppointments = ({
     return `${gender} ${patient.user.first_name} ${patient.user.last_name}`;
   };
 
+  // const getProfilePicture = () =>{
+  //   const = appointment
+  // }
+
   const getAppointmentTime = (appointment) => {
     if (appointment.time_slot) {
       return formatTime(appointment.time_slot.start_time);
@@ -209,18 +213,21 @@ const UpcomingAppointments = ({
                 filteredAppointments.map((appointment, index) => (
                   <div key={index} className={styles.card}>
                     <img
-                      src="profiles.png"
+                      src={appointment.patient.user.profile_picture}
                       alt="profile"
                       className={styles.avatar}
                     />
                     <div>
-                      <h6>{getPatientName(appointment)}</h6>
+                      <h6>
+                        {userRole === "patient"
+                          ? "With: " + getProfessionalName(appointment)
+                          : getPatientName(appointment)}
+                      </h6>
                       <p>
                         {getAppointmentTime(appointment)} |{" "}
                         {getAppointmentDescription(appointment)}
                       </p>
-                      {(userRole === "patient" ||
-                        userRole === "clinic_admin" ||
+                      {(userRole === "clinic_admin" ||
                         userRole === "lab_admin") && (
                         <p className={styles.professional}>
                           With: {getProfessionalName(appointment)}

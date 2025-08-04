@@ -138,11 +138,7 @@
   color: #666;
 }
 
-.boxHeading > div:nth-child(3) img {
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
-}
+
 
 .sec1 {
   display: flex;
@@ -164,6 +160,8 @@
   background-color: #f5f5f5;
   border-radius: 12px;
   display: flex;
+  justify-content: start;
+  
   width: 100%;
   align-items: center;
   padding: 10px 12px;
@@ -171,8 +169,8 @@
 }
 
 .avatar {
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   object-fit: cover;
 }

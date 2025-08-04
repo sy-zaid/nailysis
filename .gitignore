@@ -9,3 +9,4 @@ backend/cnn_model_final-v1.keras
 *.h5
 *.keras
 nail_scans/
+tmp/

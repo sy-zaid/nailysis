@@ -85,6 +85,10 @@ urlpatterns = [
     *model_service_urls,   # Additional model_service-related URLs
 ]
 
+# Keep your debug static/media files configuration
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
 # Add this at the end of your existing urlpatterns:
 urlpatterns += [
     # Catch-all route for frontend
@@ -92,6 +96,3 @@ urlpatterns += [
             TemplateView.as_view(template_name='index.html')),
 ]
 
-# Keep your debug static/media files configuration
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

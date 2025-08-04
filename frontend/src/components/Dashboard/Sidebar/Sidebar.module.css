@@ -32,6 +32,7 @@
 }
 
 .floatingCircle {
+  position: relative;
   border-radius: 100px;
   /* background-color: red; */
   background-color: #ffffff;
@@ -44,6 +45,41 @@
   border: 3.5px solid #cfcfcf;
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
   transition: all ease 0.25s;
+}
+/* .floatingCircle {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+} */
+
+.iconDefault,
+.iconHover {
+  position: absolute;
+  /* top: 0;
+  left: 0; */
+  /* width: 100%;
+  height: 100%; */
+  object-fit: contain;
+  transition: opacity 0.3s ease;
+}
+
+.iconDefault {
+  opacity: 1;
+  z-index: 1;
+}
+
+.iconHover {
+  opacity: 0;
+  z-index: 2;
+}
+
+.floatingCircle:hover .iconDefault {
+  opacity: 0;
+}
+
+.floatingCircle:hover .iconHover {
+  opacity: 1;
 }
 
 .floatingCircle > img {
@@ -254,7 +290,7 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  
+
   /* background-color: red; */
   transform: translateY(0);
 }
