@@ -303,7 +303,7 @@
   color: #373737d5;
   border: none;
   width: auto;
-
+  /* background-color: red; */
   max-width: 82%;
   align-items: center;
   justify-content: center;
@@ -319,6 +319,8 @@
   background-color: #0067ff;
   color: white !important;
 }
+
+
 
 /* Apply to a specific div */
 .secThreeCustomScrollBar {

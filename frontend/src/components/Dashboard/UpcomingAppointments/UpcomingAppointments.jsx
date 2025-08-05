@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import styles from "./UpcomingAppointments.module.css";
 
 const UpcomingAppointments = ({
-  heading = "My Schedule",
+  heading = "Upcoming Appointments",
   clinicAppointments = [],
   labAppointments = [],
   userRole = "patient",
@@ -160,10 +160,6 @@ const UpcomingAppointments = ({
     return `${gender} ${patient.user.first_name} ${patient.user.last_name}`;
   };
 
-  // const getProfilePicture = () =>{
-  //   const = appointment
-  // }
-
   const getAppointmentTime = (appointment) => {
     if (appointment.time_slot) {
       return formatTime(appointment.time_slot.start_time);
@@ -213,7 +209,12 @@ const UpcomingAppointments = ({
                 filteredAppointments.map((appointment, index) => (
                   <div key={index} className={styles.card}>
                     <img
-                      src={appointment.patient.user.profile_picture}
+                      src={
+                        userRole === "patient"
+                          ? appointment.lab_technician?.user.profile_picture ||
+                            appointment.doctor?.user.profile_picture
+                          : appointment.patient.user.profile_picture
+                      }
                       alt="profile"
                       className={styles.avatar}
                     />

@@ -226,6 +226,7 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
           </button>
 
           <div className={styles.floatingButtons}>
+            {/* Dashboard - always goes to main view */}
             <div
               className={styles.floatingCircle}
               onClick={() => setView("")}
@@ -243,9 +244,22 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
               />
             </div>
 
+            {/* Electronic Health Records */}
             <div
               className={styles.floatingCircle}
-              onClick={() => setView("My Records")}
+              onClick={() => {
+                const ehrItem = menuItems[userRole]?.find((item) =>
+                  item.label.includes("Electronic Health Records")
+                );
+                if (ehrItem) {
+                  // If has sub-items, use first sub-item, otherwise use main label
+                  const view =
+                    ehrItem.subItems.length > 0
+                      ? ehrItem.subItems[0].label
+                      : ehrItem.label;
+                  setView(view);
+                }
+              }}
               title="Electronic Health Records"
             >
               <img
@@ -260,10 +274,33 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
               />
             </div>
 
+            {/* Test Results/Requests */}
             <div
               className={styles.floatingCircle}
-              onClick={() => setView("Diagnostic Results")}
-              title="Diagnostic Results"
+              onClick={() => {
+                const testItem = menuItems[userRole]?.find(
+                  (item) =>
+                    item.label.includes("Test Results") ||
+                    item.label.includes("Test Requests")
+                );
+                if (testItem && userRole !== "doctor") {
+                  // If has sub-items, use first sub-item, otherwise use main label
+                  const view =
+                    testItem.subItems.length > 0
+                      ? testItem.subItems[0].label
+                      : testItem.label;
+                  setView(view);
+                }else{
+                  setView("All Patients Records")
+                }
+              }}
+              title={
+                menuItems[userRole]?.find((item) =>
+                  item.label.includes("Test Results")
+                )
+                  ? "Test Results"
+                  : "Test Requests"
+              }
             >
               <img
                 src="icon-test-requests-black.svg"
@@ -277,9 +314,22 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
               />
             </div>
 
+            {/* Appointments */}
             <div
               className={styles.floatingCircle}
-              onClick={() => setView("Appointments")}
+              onClick={() => {
+                const appointmentsItem = menuItems[userRole]?.find((item) =>
+                  item.label.includes("Appointments")
+                );
+                if (appointmentsItem) {
+                  // If has sub-items, use first sub-item, otherwise use main label
+                  const view =
+                    appointmentsItem.subItems.length > 0
+                      ? appointmentsItem.subItems[0].label
+                      : appointmentsItem.label;
+                  setView(view);
+                }
+              }}
               title="Appointments"
             >
               <img
@@ -294,9 +344,22 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
               />
             </div>
 
+            {/* Billing & Invoice */}
             <div
               className={styles.floatingCircle}
-              onClick={() => setView("Billing & Invoice")}
+              onClick={() => {
+                const billingItem = menuItems[userRole]?.find((item) =>
+                  item.label.includes("Billing & Invoice")
+                );
+                if (billingItem) {
+                  // If has sub-items, use first sub-item, otherwise use main label
+                  const view =
+                    billingItem.subItems.length > 0
+                      ? billingItem.subItems[0].label
+                      : billingItem.label;
+                  setView(view);
+                }
+              }}
               title="Billing & Invoice"
             >
               <img
@@ -311,9 +374,22 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
               />
             </div>
 
+            {/* Feedbacks */}
             <div
               className={styles.floatingCircle}
-              onClick={() => setView("Feedbacks")}
+              onClick={() => {
+                const feedbacksItem = menuItems[userRole]?.find((item) =>
+                  item.label.includes("Feedbacks")
+                );
+                if (feedbacksItem) {
+                  // If has sub-items, use first sub-item, otherwise use main label
+                  const view =
+                    feedbacksItem.subItems.length > 0
+                      ? feedbacksItem.subItems[0].label
+                      : feedbacksItem.label;
+                  setView(view);
+                }
+              }}
               title="Feedbacks"
             >
               <img

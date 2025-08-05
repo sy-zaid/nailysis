@@ -76,7 +76,7 @@ const ManageSlotsPopup = ({ onClose }) => {
 
     console.log("Generated Slots:", slots);
     setCalculatedSlots(slots);
-    toast.success("Slots generated successfully!");
+    // toast.success("Slots generated successfully!");
   };
 
   const handleSubmit = async (event) => {

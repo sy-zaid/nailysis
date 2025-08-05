@@ -103,7 +103,9 @@ const TestOrders = () => {
     } else if (action === "All Reports List") {
       setPopupContent(
         <PopupAllReportsList
-          patient_id={testOrderDetails?.lab_technician_appointment?.patient?.user?.user_id}
+          patient_id={
+            testOrderDetails?.lab_technician_appointment?.patient?.user?.user_id
+          }
           onClose={handleClosePopup}
         />
       );
@@ -258,7 +260,6 @@ const TestOrders = () => {
       {showPopup && popupContent}
 
       <div className={styles.pageTop}>
-        
         <Header
           mainHeading={"Test Requests"}
           subHeading={"Here are all the test requests from patients"}
@@ -431,17 +432,32 @@ const TestOrders = () => {
                             }}
                           >
                             <ul>
-                                {curUser[0].role === "lab_technician" &&
-                                  row.lab_technician_appointment.status === "Completed" && (
-                                    <li onClick={() => handleActionClick("Process Test Order", row)}>
-                                      <i className="fa-solid fa-repeat"></i> Process Test Order
-                                    </li>
-                                )}
-                                {(curUser[0].role === "lab_technician" || curUser[0].role === "lab_admin") && (
-                                  <li onClick={() => handleActionClick("Edit Details", row)}>
-                                    <i className="fa-solid fa-pen"></i> Edit Details
+                              {curUser[0].role === "lab_technician" &&
+                                row.lab_technician_appointment.status ===
+                                  "Completed" && (
+                                  <li
+                                    onClick={() =>
+                                      handleActionClick(
+                                        "Process Test Order",
+                                        row
+                                      )
+                                    }
+                                  >
+                                    <i className="fa-solid fa-repeat"></i>{" "}
+                                    Process Test Order
                                   </li>
                                 )}
+                              {(curUser[0].role === "lab_technician" ||
+                                curUser[0].role === "lab_admin") && (
+                                <li
+                                  onClick={() =>
+                                    handleActionClick("Edit Details", row)
+                                  }
+                                >
+                                  <i className="fa-solid fa-pen"></i> Edit
+                                  Details
+                                </li>
+                              )}
                               {curUser[0].role === "lab_admin" && (
                                 <>
                                   <li

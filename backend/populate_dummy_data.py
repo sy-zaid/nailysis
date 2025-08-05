@@ -53,7 +53,7 @@ def create_dummy_patients(n):
     patients = []
     for i in range(n):
         user = CustomUser.objects.create_user(
-            email=f"patient{i}@example.com",
+            email=f"patient{i}@gmail.com",
             first_name=fake.first_name(),
             last_name=fake.last_name(),
             password="pat",
@@ -73,7 +73,7 @@ def create_dummy_doctors(n):
     doctors = []
     for i in range(n):
         user = CustomUser.objects.create_user(
-            email=f"doctor{i}@example.com",
+            email=f"doctor{i}@gmail.com",
             first_name=fake.first_name(),
             last_name=fake.last_name(),
             password="doc",
@@ -95,7 +95,7 @@ def create_dummy_lab_technicians(n):
     techs = []
     for i in range(n):
         user = CustomUser.objects.create_user(
-            email=f"labtech{i}@example.com",
+            email=f"labtech{i}@gmail.com",
             first_name=fake.first_name(),
             last_name=fake.last_name(),
             password="tech",
@@ -269,7 +269,7 @@ def generate_dummy_feedback(patients, n=8):
 
 def create_dummy_clinic_admin():
     user, _ = CustomUser.objects.get_or_create(
-        email="clinic_admin@example.com",
+        email="clinic_admin@gmail.com",
         defaults={
             "first_name": fake.first_name(),
             "last_name": fake.last_name(),
@@ -283,7 +283,7 @@ def create_dummy_clinic_admin():
 
 def create_dummy_lab_admin():
     user, _ = CustomUser.objects.get_or_create(
-        email="lab_admin@example.com",
+        email="lab_admin@gmail.com",
         defaults={
             "first_name": fake.first_name(),
             "last_name": fake.last_name(),

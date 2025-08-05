@@ -602,6 +602,25 @@ export const convertDjangoDateTime = (djangoDate) => {
   return `${dateObj.toLocaleDateString()} | ${dateObj.toLocaleTimeString()}`;
 };
 
+export const formatDateRange = (checkin_datetime, checkout_datetime) => {
+  const checkin = new Date(checkin_datetime);
+  const checkout = new Date(checkout_datetime);
+
+  const pad = (num) => String(num).padStart(2, "0");
+
+  const formatTime = (date) =>
+    `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(
+      date.getSeconds()
+    )}`;
+
+  const datePart = `${checkin.getFullYear()}-${pad(
+    checkin.getMonth() + 1
+  )}-${pad(checkin.getDate())}`;
+  const timeRange = `${formatTime(checkin)} - ${formatTime(checkout)}`;
+
+  return `${datePart} | ${timeRange}`;
+};
+
 export const formatBloodTestEntries = ({
   testEntries,
   bloodTestParameters,

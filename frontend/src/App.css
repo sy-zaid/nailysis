@@ -12,6 +12,10 @@
 body {
   font-family: "DM Sans", sans-serif; /* Uses DM Sans as the primary font */
 }
+*:focus {
+  outline: none;
+  box-shadow: none;
+}
 
 .app {
   display: flex;
@@ -32,7 +36,7 @@ body {
 }
 
 .sidebar-closed {
-  margin-left: 8vw; 
+  margin-left: 8vw;
   /* No sidebar */
 }
 

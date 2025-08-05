@@ -36,7 +36,7 @@ import useCurrentUserData from "../../useCurrentUserData";
  * - Provides action buttons for doctors to manage records.
  * - Displays EHR details in a formatted table.
  *
- * @component 
+ * @component
  */
 const ElectronicHealthRecord = () => {
   // Default sort config: sorted by "last_updated" in descending order (latest first)
@@ -291,8 +291,6 @@ const ElectronicHealthRecord = () => {
 
   return (
     <div className={styles.pageContainer}>
-      
-
       {showPopup && popupContent}
 
       {/* Page Header */}
@@ -423,8 +421,8 @@ const ElectronicHealthRecord = () => {
                     </th>
                     <th>#</th>
                     <th>Record ID</th>
-                    <th>Patient ID</th>
-                    <th>Patient Name</th>
+                    {curUserRole !== "patient" && <th>Patient ID</th>}
+                    {curUserRole !== "patient" && <th>Patient Name</th>}
                     <th>Consulted By</th>
                     <th>Category</th>
                     <th>Medical Conditions</th>
@@ -451,11 +449,15 @@ const ElectronicHealthRecord = () => {
                       </td>
                       <td>{index + 1}</td>
                       <td>{record.id || "No ID"}</td>
-                      <td>{record.patient_id || "No ID"}</td>
-                      <td>{record.patient_name}</td>
+                      {curUserRole !== "patient" && (
+                        <td>{record.patient_id || "No ID"}</td>
+                      )}
+                      {curUserRole !== "patient" && (
+                        <td>{record.patient_name}</td>
+                      )}
                       <td>{record.consulted_by}</td>
                       <td>{record.category}</td>
-                      <td>{record.medical_conditions}</td>
+                      <td>{record?.medical_conditions || "N/A" }</td>
                       <td>{record.medications}</td>
                       <td>{record.family_history}</td>
                       <td>{record.immunization}</td>

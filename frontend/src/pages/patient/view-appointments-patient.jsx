@@ -8,7 +8,12 @@ import PopupTechnicianAppointmentBook from "../../components/Popup/popups-lab-te
 import AppointmentDetailsPopup from "../../components/Popup/popups-doctor-appointments/doctor-appointment-details-popup";
 import { useNavigate } from "react-router-dom";
 import api from "../../api";
-import { handleClosePopup, handleOpenPopup } from "../../utils/utils";
+import {
+  formatDateRange,
+  getStatusClass,
+  handleClosePopup,
+  handleOpenPopup,
+} from "../../utils/utils";
 import { getDoctorAppointments } from "../../api/appointmentsApi";
 
 const AppointmentPatients = () => {
@@ -322,11 +327,18 @@ const AppointmentPatients = () => {
                         {row.doctor?.specialization || "No specialization"}
                       </td>
                       <td>
-                        {row.time_slot?.slot_date} | {row.time_slot?.start_time}{" "}
-                        - {row.time_slot?.end_time}
+                        {row.time_slot?.slot_date ||
+                          formatDateRange(
+                            row.checkin_datetime,
+                            row.checkout_datetime
+                          )}{" "}
+                        | {row.time_slot?.start_time || ""} -{" "}
+                        {row.time_slot?.end_time || ""}
                       </td>
                       <td>{row.appointment_type || "N/A"}</td>
-                      <td>{row.status}</td>
+                      <td className={getStatusClass(row.status, styles)}>
+                        {row.status}
+                      </td>
                       <td>{row.fee ? `PKR ${row.fee}` : "Not available"}</td>
                       <td>{row.doctor?.years_of_experience || "N/A"} years</td>
                       <td>{row.notes || "No additional notes"}</td>

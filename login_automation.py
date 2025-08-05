@@ -11,7 +11,10 @@ users = [
     {"email": "labtech0@example.com", "password": "tech"},
     {"email": "lab_admin@example.com", "password": "lab"},
     {"email": "doctor0@example.com", "password": "doc"},
-    {"email": "patient0@example.com", "password": "pat"}
+    {"email": "patient0@example.com", "password": "pat"},
+    # {"email": "patient1@example.com", "password": "pat"},
+    # {"email": "patient2@example.com", "password": "pat"},
+    # {"email": "patient3@example.com", "password": "pat"},
 ]
 
 # Set the Nailysis frontend login page URL

@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from "react";
 import styles from "./test-results.module.css";
 import { getRole } from "../../../utils/utils";
+import PopupAllReportsList from "../../Popup/popups-labs/all-reports-list-popup";
 
 const TestResults = ({ testOrders = [], currentPatientId = null }) => {
   const [selectedPatient, setSelectedPatient] = useState(null);
@@ -122,7 +123,8 @@ const TestResults = ({ testOrders = [], currentPatientId = null }) => {
     setShowPopup(false);
     setSelectedPatient(null);
   };
-
+  // console.log(patientOrder);
+  // console.log("selectedPatient" + selectedPatient.id);
   return (
     <>
       <div className={styles.heading}>
@@ -182,52 +184,15 @@ const TestResults = ({ testOrders = [], currentPatientId = null }) => {
             </p>
           )}
         </div>
-
-        {showPopup && selectedPatient && (
-          <div className={styles.popupOverlay}>
-            <div className={styles.popup}>
-              <div className={styles.popupHeader}>
-                <h3>{getPatientName(selectedPatient)}'s Test Reports</h3>
-                <button onClick={closePopup} className={styles.closeButton}>
-                  &times;
-                </button>
-              </div>
-
-              <div className={styles.reportsList}>
-                {patientReports.length > 0 ? (
-                  patientReports.map((report, index) => (
-                    <div key={index} className={styles.reportItem}>
-                      <div className={styles.reportHeader}>
-                        <h4>{formatDate(report.updated_at)}</h4>
-                        <span
-                          className={`${styles.status} ${
-                            styles[
-                              report.test_status.toLowerCase().replace(" ", "-")
-                            ]
-                          }`}
-                        >
-                          {report.test_status}
-                        </span>
-                      </div>
-                      <p>{getTestTypes(report)}</p>
-                      <div className={styles.reportDetails}>
-                        {report.test_types?.map((test, i) => (
-                          <div key={i} className={styles.testItem}>
-                            <span>{test.label}</span>
-                            <span>{test.category}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <p>No reports available for this patient</p>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
       </div>
+      {showPopup && selectedPatient && (
+        <PopupAllReportsList
+          patient_id={
+            selectedPatient.lab_technician_appointment?.patient?.user?.user_id
+          }
+          onClose={closePopup}
+        />
+      )}
     </>
   );
 };

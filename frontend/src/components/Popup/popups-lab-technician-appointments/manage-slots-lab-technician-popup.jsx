@@ -2,11 +2,11 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Popup from "../Popup.jsx";
 import useCurrentUserData from "../../../useCurrentUserData.jsx";
-import { getHeaders, getTodayDate, } from "../../../utils/utils.js";
+import { getHeaders, getTodayDate } from "../../../utils/utils.js";
 import styles from "../popups-doctor-appointments/manage-slots-popup.module.css";
 import { toast } from "react-toastify";
 
-const ManageSlotsPopup = ({onClose}) => {
+const ManageSlotsPopup = ({ onClose }) => {
   const [popupTrigger, setPopupTrigger] = useState(true);
   const { data: curUser } = useCurrentUserData();
   const [user, setUser] = useState();
@@ -52,7 +52,7 @@ const ManageSlotsPopup = ({onClose}) => {
     }
 
     const start = new Date();
-    start.setHours(...startTime.split(":").map(Number), 0); // Set hours & minutes
+    start.setHours(...startTime.split(":").map(Number), 0);
     const end = new Date();
     end.setHours(...endTime.split(":").map(Number), 0);
 
@@ -76,7 +76,7 @@ const ManageSlotsPopup = ({onClose}) => {
 
     console.log("Generated Slots:", slots);
     setCalculatedSlots(slots);
-    toast.success("Slots generated successfully!");
+    // toast.success("Slots generated successfully!");
   };
 
   const handleSubmit = async (event) => {
@@ -98,14 +98,10 @@ const ManageSlotsPopup = ({onClose}) => {
       return;
     }
 
-    // Extract year and month from input
     const [year, selectedMonth] = month.split("-").map(Number);
-
-    // First and last day calculations (without .toISOString())
     const firstDay = new Date(year, selectedMonth - 1, 1);
     const lastDay = new Date(year, selectedMonth, 0);
 
-    // Format as YYYY-MM-DD manually
     const formatDate = (date) =>
       `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
         2,
@@ -114,10 +110,6 @@ const ManageSlotsPopup = ({onClose}) => {
 
     const startDate = formatDate(firstDay);
     const endDate = formatDate(lastDay);
-
-    console.log("Selected Month:", month);
-    console.log("Computed Start Date:", startDate);
-    console.log("Computed End Date:", endDate);
 
     const payload = {
       lab_tech_id: user?.user_id,
@@ -128,22 +120,22 @@ const ManageSlotsPopup = ({onClose}) => {
     };
 
     try {
-      console.log("SENDING THIS TO MAKE SLOTS", payload);
       await axios.post(
         "http://127.0.0.1:8000/api/time_slots/",
         payload,
         getHeaders()
       );
-      toast.success("Availability set successfully!", {className: "custom-toast",});
+      toast.success("Availability set successfully!", {
+        className: "custom-toast",
+      });
       onClose();
-      alert("Availability set successfully!");
     } catch (error) {
       console.error("Error setting availability:", error);
       if (error.response) {
         toast.error(error.response.data.error || "Failed to book appointment", {
           className: "custom-toast",
         });
-      } 
+      }
     }
   };
 
@@ -154,8 +146,8 @@ const ManageSlotsPopup = ({onClose}) => {
     const month = String(now.getMonth() + 1).padStart(2, "0");
     return `${year}-${month}`;
   };
-  
-  const minMonth = getMonthValue(0); 
+
+  const minMonth = getMonthValue(0);
   const maxMonth = getMonthValue(2);
 
   return (
@@ -163,92 +155,103 @@ const ManageSlotsPopup = ({onClose}) => {
       <div className={styles.modalContent}>
         <h2>Manage Availability</h2>
         <form onSubmit={handleSubmit} className={styles.form}>
-          <label>Select Month:</label>
-          <input
-            type="month"
-            value={month}
-            onChange={(e) => setMonth(e.target.value)}
-            required
-            className={styles.formInput}
-            min={minMonth}
-            max={maxMonth}
-          />
-
-          <label>Select Consulting Days:</label>
-          <div>
-            {daysOfWeek.map((day) => (
-              <button
-                type="button"
-                key={day}
-                onClick={() => toggleDaySelection(day)}
-                className={`${styles.dayButton} ${
-                  weekdays.includes(day) ? styles.dayActive : ""
-                }`}
-                style={{
-                  margin: "5px",
-                  padding: "5px 10px",
-                  backgroundColor: weekdays.includes(day) ? "green" : "gray",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "5px",
-                  cursor: "pointer",
-                }}
-                
-              >
-                {day}
-              </button>
-            ))}
+          <div className={styles.formGroup}>
+            <label>Select Month:</label>
+            <input
+              type="month"
+              value={month}
+              onChange={(e) => setMonth(e.target.value)}
+              required
+              className={styles.formInput}
+              min={minMonth}
+              max={maxMonth}
+            />
           </div>
 
-          <label>Start Time:</label>
-          <input
-            type="time"
-            value={startTime}
-            onChange={(e) => setStartTime(e.target.value)}
-            className={styles.formInput}
-            required
-          />
+          <div className={styles.formGroup}>
+            <label>Select Consulting Days:</label>
+            <div className={styles.daysContainer}>
+              {daysOfWeek.map((day) => (
+                <button
+                  type="button"
+                  key={day}
+                  onClick={() => toggleDaySelection(day)}
+                  className={`${styles.dayButton} ${
+                    weekdays.includes(day) ? styles.dayActive : ""
+                  }`}
+                >
+                  {day}
+                </button>
+              ))}
+            </div>
+          </div>
 
-          <label>End Time:</label>
-          <input
-            type="time"
-            value={endTime}
-            onChange={(e) => setEndTime(e.target.value)}
-            className={styles.formInput}
-            required
-          />
+          <div className={styles.timeControls}>
+            <div className={styles.formGroup}>
+              <label>Start Time:</label>
+              <input
+                type="time"
+                value={startTime}
+                onChange={(e) => setStartTime(e.target.value)}
+                required
+                className={styles.formInput}
+              />
+            </div>
 
-          <label>Slot Duration (Minutes):</label>
-          <input
-            type="number"
-            value={slotDuration}
-            onChange={(e) => setSlotDuration(e.target.value)}
-            className={styles.formInput}
-            min="5"
-            required
-          />
+            <div className={styles.formGroup}>
+              <label>End Time:</label>
+              <input
+                type="time"
+                value={endTime}
+                onChange={(e) => setEndTime(e.target.value)}
+                required
+                className={styles.formInput}
+              />
+            </div>
+
+            <div className={styles.formGroup}>
+              <label>Slot Duration (Minutes):</label>
+              <input
+                type="number"
+                value={slotDuration}
+                onChange={(e) => setSlotDuration(e.target.value)}
+                min="5"
+                required
+                className={styles.formInput}
+              />
+            </div>
+          </div>
 
           <div className={styles.generateButtonWrap}>
-            <button type="button" onClick={generateSlots}>
+            <button
+              type="button"
+              onClick={generateSlots}
+              className={styles.generateButton}
+            >
               Generate Slots
             </button>
           </div>
-          
 
           {calculatedSlots.length > 0 && (
-            <div>
+            <div className={styles.slotsContainer}>
               <h3>Generated Slots:</h3>
-              <ul>
+              <ul className={styles.slotsList}>
                 {calculatedSlots.map((slot, index) => (
-                  <li key={index}>
-                    {slot.date} - {slot.start_time} to {slot.end_time}
+                  <li key={index} className={styles.slotItem}>
+                    {slot.start_time} to {slot.end_time}
                   </li>
                 ))}
               </ul>
             </div>
           )}
 
-          <button type="submit">Save Availability</button>
+          {calculatedSlots.length > 0 && (
+            <div className={styles.buttonWrap}>
+              <button type="submit" className={styles.submitButton}>
+                Save Availability
+              </button>
+            </div>
+          )}
         </form>
       </div>
     </Popup>
