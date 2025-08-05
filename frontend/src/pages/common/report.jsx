@@ -416,11 +416,19 @@ const NailysisReport = ({
               <div className={styles.actionButtons}>
                 <div className={styles.leftButtons}>
                   <button className={styles.downloadButton}>
-                    <img src="./download.png" alt="" />
+                    <img
+                      className={styles.downloadIcon}
+                      src="./download.png"
+                      alt=""
+                    />
                     Download PDF
                   </button>
                   <button className={styles.shareButton}>
-                    <img src="./share.png" alt="share" />
+                    <img
+                      className={styles.downloadIcon}
+                      src="./share.png"
+                      alt="share"
+                    />
                     Share Report
                   </button>
                 </div>

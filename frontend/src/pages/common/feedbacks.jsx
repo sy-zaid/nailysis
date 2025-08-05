@@ -4,12 +4,10 @@ import PopupFeedbackForm from "../../components/Popup/feedbacks-popups/feedback-
 import PopupFeedbackResponse from "../../components/Popup/feedbacks-popups/feedback-response-popup.jsx";
 import PopupFeedbackDetails from "../../components/Popup/feedbacks-popups/feedback-details-popup.jsx";
 import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { handleOpenPopup, handleClosePopup } from "../../utils/utils";
 import Header from "../../components/Dashboard/Header/Header.jsx";
 import styles from "./feedbacks.module.css";
-import Navbar from "../../components/Dashboard/Navbar/Navbar";
+
 import { toast } from "react-toastify";
 
 // UTILS.JS FUNCTIONS

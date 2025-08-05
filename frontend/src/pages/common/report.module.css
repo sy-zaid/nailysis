@@ -515,15 +515,16 @@
 .downloadButton,
 .shareButton,
 .appointmentButton {
-  background: #1976d2;
+  background: #0d6efd;
   color: #fff;
   border: none;
   border-radius: 24px;
-  padding: 12px 28px;
-  font-size: 1rem;
+  padding: 10px 24px;
+  font-size: .95rem;
   font-weight: 500;
   display: flex;
   align-items: center;
+  justify-content: center;
   box-shadow: 0 2px 8px rgba(25, 118, 210, 0.08);
   cursor: pointer;
   transition: background 0.2s;
@@ -532,14 +533,14 @@
 .downloadButton:hover,
 .shareButton:hover,
 .appointmentButton:hover {
-  background: #1565c0;
+  background: #035bc0;
 }
 
 .downloadIcon,
 .shareIcon {
   display: inline-block;
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   margin-right: 10px;
   background-size: contain;
   background-repeat: no-repeat;
