@@ -34,7 +34,7 @@ function ProtectedRoute({ children, requiredRole }) {
     try {
       const decoded = jwtDecode(token);
       const curUserRole = decoded.role || null; // Safely handle if role is missing
-      console.log("User role:", curUserRole);
+      // console.log("User role:", curUserRole);
 
       // Check if the required role matches the user's role
       return requiredRole === curUserRole;
@@ -47,7 +47,7 @@ function ProtectedRoute({ children, requiredRole }) {
   const auth = async () => {
     const token = localStorage.getItem(ACCESS_TOKEN);
     if (!token) {
-      console.log("No token found")
+      // console.log("No token found")
       setIsAuthorized(false);
       return;
     }

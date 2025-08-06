@@ -75,7 +75,7 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
           );
         }
         setRecommendedTests(response.data);
-        console.log(response.data);
+        // console.log(response.data);
       } catch (error) {
         console.error("Error fetching recommended tests:", error);
         setRecommendedTests([]);
@@ -136,9 +136,9 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
     }));
   };
   useEffect(() => {
-    console.log("Recommended tests from API:", recommendedTests);
-    console.log("Available lab tests:", availableLabTests);
-    console.log("Mapped recommended options:", getRecommendedTestOptions());
+    // console.log("Recommended tests from API:", recommendedTests);
+    // console.log("Available lab tests:", availableLabTests);
+    // console.log("Mapped recommended options:", getRecommendedTestOptions());
   }, [recommendedTests, availableLabTests]);
   // Handle checkbox change
   const handleRecommendedCheckbox = (e) => {
@@ -146,7 +146,7 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
     setIncludeRecommended(isChecked);
 
     const recommendedOptions = getRecommendedTestOptions();
-    console.log("Matched recommended tests:", recommendedOptions);
+    // console.log("Matched recommended tests:", recommendedOptions);
 
     if (isChecked) {
       // Merge existing tests with recommended ones, removing duplicates
@@ -226,7 +226,7 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
       const response = await bookTechnicianAppointment(payload);
       // alert("Appointment Booked Successfully");
       setAppointments([...appointments, response.data]);
-      console.log("Sending this to book:", payload);
+      // console.log("Sending this to book:", payload);
       navigate("");
       if (response.status === 200) {
         toast.success("Appointment Booked Successfully!", {
@@ -235,7 +235,7 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
         onClose();
       }
     } catch (error) {
-      console.log("Sending this to book:", payload);
+      // console.log("Sending this to book:", payload);
       console.error(error);
       if (error.response) {
         toast.error(error.response.data.error || "Failed to book appointment", {
@@ -248,13 +248,13 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
   // ----- MAIN LOGIC FUNCTIONS
   const fetchAvailableSlots = async (technicianId, appointmentDate) => {
     try {
-      console.log("Fetching slots for:", technicianId, appointmentDate);
+      // console.log("Fetching slots for:", technicianId, appointmentDate);
       const response = await getAvailableSlots(
         null,
         technicianId,
         appointmentDate
       );
-      console.log("Fetched slots:", response);
+      // console.log("Fetched slots:", response);
       setAvailableSlots(response);
     } catch (error) {
       console.error("Failed to fetch available slots", error);
@@ -269,7 +269,7 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
     } else if (curUserRole == "lab_admin") {
       setPatient([]);
     } else {
-      console.log("No patient data available");
+      // console.log("No patient data available");
     }
   }, [curUser]); // Triggered whenever `curUser` changes
 
@@ -288,7 +288,7 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
           price: test.price,
         }));
         setAvailableTestPrices(prices);
-        console.log("AVTP", availableTestPrices);
+        // console.log("AVTP", availableTestPrices);
       } catch (error) {
         console.error("Error fetching lab tests:", error);
       }
@@ -323,7 +323,7 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
             name: `${tech.user.first_name} ${tech.user.last_name}`,
           }));
           setLabTechnicians(formattedlabTechnicians);
-          console.log("Formatted Docs", labTechnicians);
+          // console.log("Formatted Docs", labTechnicians);
         } catch (error) {
           console.error("Failed to fetch labTechnicians", error);
         }
@@ -335,8 +335,8 @@ const PopupBookTechnicianAppointment = ({ onClose }) => {
 
   // Fetch available slots on chosen date
   useEffect(() => {
-    console.log("Updated Technician ID:", formData.labTechnicianId);
-    console.log("Updated Appointment Date:", formData.appointmentDate);
+    // console.log("Updated Technician ID:", formData.labTechnicianId);
+    // console.log("Updated Appointment Date:", formData.appointmentDate);
     if (formData.labTechnicianId && formData.appointmentDate) {
       fetchAvailableSlots(formData.labTechnicianId, formData.appointmentDate);
     }

@@ -74,7 +74,7 @@ const ManageSlotsPopup = ({ onClose }) => {
       currentTime = nextTime;
     }
 
-    console.log("Generated Slots:", slots);
+    // console.log("Generated Slots:", slots);
     setCalculatedSlots(slots);
     // toast.success("Slots generated successfully!");
   };
@@ -115,9 +115,9 @@ const ManageSlotsPopup = ({ onClose }) => {
     const startDate = formatDate(firstDay);
     const endDate = formatDate(lastDay);
 
-    console.log("Selected Month:", month);
-    console.log("Computed Start Date:", startDate);
-    console.log("Computed End Date:", endDate);
+    // console.log("Selected Month:", month);
+    // console.log("Computed Start Date:", startDate);
+    // console.log("Computed End Date:", endDate);
 
     const payload = {
       doctor_id: user?.user_id,
@@ -128,7 +128,7 @@ const ManageSlotsPopup = ({ onClose }) => {
     };
 
     try {
-      console.log("SENDING THIS TO MAKE SLOTS", payload);
+      // console.log("SENDING THIS TO MAKE SLOTS", payload);
       await axios.post(
         "http://127.0.0.1:8000/api/time_slots/",
         payload,

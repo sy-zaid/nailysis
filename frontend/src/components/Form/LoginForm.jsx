@@ -63,7 +63,7 @@ function LoginForm({ route }) {
       const decodedToken = jwtDecode(access);
       const curUserRole = decodedToken.role || decodedToken.user_role || null;
 
-      console.log(curUserRole); // Debugging output
+      // console.log(curUserRole); // Debugging output
 
       // Store authentication tokens and role in localStorage
       localStorage.setItem(ACCESS_TOKEN, access);

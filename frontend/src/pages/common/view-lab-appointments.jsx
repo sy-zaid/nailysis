@@ -146,7 +146,7 @@ const AppointmentTechnician = () => {
 
   // Handles the action when an item is clicked in the action menu
   const handleActionClick = (action, appointmentId) => {
-    console.log(`Action: ${action} on Appointment ID: ${appointmentId}`);
+    // console.log(`Action: ${action} on Appointment ID: ${appointmentId}`);
     setMenuOpen(null); // Close the menu after action
 
     if (action === "Button Cancellation Request") {
@@ -160,15 +160,15 @@ const AppointmentTechnician = () => {
     } else if (action === "Action Cancel Appointment") {
       const handleCancellation = async (appointmentId, action) => {
         try {
-          console.log(
-            "SUBMITTING APPOINTMENT ID FOR CANCELLING",
-            appointmentId
-          );
+          // console.log(
+          //   "SUBMITTING APPOINTMENT ID FOR CANCELLING",
+          //   appointmentId
+          // );
           const response = await cancelTechnicianAppointment(appointmentId);
           alert(response.data.message);
           setAppointments();
         } catch (err) {
-          console.log("Failed cancellation request.");
+          // console.log("Failed cancellation request.");
         }
       };
       handleCancellation(appointmentId, action);
@@ -212,9 +212,9 @@ const AppointmentTechnician = () => {
       try {
         const response = await getLabTechnicianAppointments();
         setAppointments(response.data);
-        console.log("Response from technician appointment", response.data);
+        // console.log("Response from technician appointment", response.data);
       } catch (error) {
-        console.log(error);
+        // console.log(error);
       }
     };
 

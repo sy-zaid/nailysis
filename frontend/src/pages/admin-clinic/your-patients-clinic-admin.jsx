@@ -21,7 +21,7 @@ const Appointment = () => {
     if (action === "View Profile") {
       navigate("/clinic-admin/patient-profile");
     } else {
-      console.log(`${action} clicked for appointment ID: ${id}`);
+      // console.log(`${action} clicked for appointment ID: ${id}`);
     }
     setDropdownId(null);
   };

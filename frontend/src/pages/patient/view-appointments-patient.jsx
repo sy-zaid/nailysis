@@ -165,7 +165,7 @@ const AppointmentPatients = () => {
   // ----- USE-EFFECTS
   useEffect(() => {
     if (!token) {
-      console.log("No token found, Redirecting to login");
+      // console.log("No token found, Redirecting to login");
       navigate("/login");
       return;
     }
@@ -174,9 +174,9 @@ const AppointmentPatients = () => {
       try {
         const response = await getDoctorAppointments();
         setAppointments(response.data);
-        console.log("Response from doctor appointment", response.data);
+        // console.log("Response from doctor appointment", response.data);
       } catch (error) {
-        console.log(error);
+        // console.log(error);
       }
     };
 
@@ -327,13 +327,18 @@ const AppointmentPatients = () => {
                         {row.doctor?.specialization || "No specialization"}
                       </td>
                       <td>
-                        {row.time_slot?.slot_date ||
+                        {row.time_slot?.slot_date ? (
+                          <>
+                            {row.time_slot?.slot_date} |{" "}
+                            {row.time_slot?.start_time || ""} -{" "}
+                            {row.time_slot?.end_time || ""}
+                          </>
+                        ) : (
                           formatDateRange(
                             row.checkin_datetime,
                             row.checkout_datetime
-                          )}{" "}
-                        | {row.time_slot?.start_time || ""} -{" "}
-                        {row.time_slot?.end_time || ""}
+                          )
+                        )}
                       </td>
                       <td>{row.appointment_type || "N/A"}</td>
                       <td className={getStatusClass(row.status, styles)}>

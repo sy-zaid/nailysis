@@ -16,7 +16,7 @@ import { getTestOrders } from "../../api/labsApi.js";
 
 function DoctorDashboard() {
   const { data: curUser } = useCurrentUserData(); // Fetch current User data
-  console.log("CURRUSER", curUser);
+  // console.log("CURRUSER", curUser);
   const [apiRes, setApiRes] = useState();
   const [appointmentAnalytics, setAppointmentAnalytics] = useState({});
   const [testOrders, setTestOrders] = useState([]);
@@ -29,13 +29,13 @@ function DoctorDashboard() {
 
         const analytics = getDoctorAppointmentAnalytics(appts);
         setAppointmentAnalytics(analytics);
-        console.log("ANALYTICS:", appts);
+        // console.log("ANALYTICS:", appts);
 
         const test_orders = await getTestOrders();
         setTestOrders(test_orders.data);
-        console.log;
+        // console.log;
       } catch (error) {
-        console.log("error fetching appointments", error);
+        // console.log("error fetching appointments", error);
       }
     };
 

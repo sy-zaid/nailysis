@@ -41,10 +41,10 @@ function PatientDashboard() {
           labResponse.data,
           timePeriod
         );
-        console.log("Calculated payments:", analytics.total_payments[0]); // Debug log
+        // console.log("Calculated payments:", analytics.total_payments[0]); // Debug log
         setAnalytics(analytics);
       } catch (error) {
-        console.log("Error fetching appointments", error);
+        // console.log("Error fetching appointments", error);
       }
     };
 
@@ -124,9 +124,9 @@ function PatientDashboard() {
         analytics.completed_clinic[0] += 1;
         const fee = parseFloat(appt.fee) || 0;
         analytics.total_payments[0] += fee;
-        console.log(
-          `Adding clinic fee: ${fee}, Total now: ${analytics.total_payments[0]}`
-        );
+        // console.log(
+        //   `Adding clinic fee: ${fee}, Total now: ${analytics.total_payments[0]}`
+        // );
       } else if (appt.status === "Cancelled") {
         analytics.cancelled_appointments[0] += 1;
       }
@@ -161,9 +161,9 @@ function PatientDashboard() {
         }
 
         analytics.total_payments[0] += payment;
-        console.log(
-          `Adding lab payment: ${payment}, Total now: ${analytics.total_payments[0]}`
-        );
+        // console.log(
+        //   `Adding lab payment: ${payment}, Total now: ${analytics.total_payments[0]}`
+        // );
       } else if (appt.status === "Cancelled") {
         analytics.cancelled_appointments[0] += 1;
       }

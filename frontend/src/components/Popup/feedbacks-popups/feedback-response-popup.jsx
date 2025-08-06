@@ -21,7 +21,7 @@ import {
 } from "../../../api/feedbacksApi.js";
 
 const FeedbackResponse = ({ onClose, recordDetails }) => {
-  console.log("Record Details", recordDetails)
+  // console.log("Record Details", recordDetails)
   const [popupTrigger, setPopupTrigger] = useState(true);
   const navigate = useNavigate();
   const token = getAccessToken();

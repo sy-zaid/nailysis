@@ -35,7 +35,7 @@ const fetchCurrentUserData = async () => {
         headers: { Authorization: `Bearer ${token}` },
       }
     );
-    console.log("CURUSERDATA:", response.data);
+    // console.log("CURUSERDATA:", response.data);
     return Array.isArray(response.data) ? response.data : []; // Ensure an array is returned
   } catch (error) {
     if (error.response?.status === 401) {

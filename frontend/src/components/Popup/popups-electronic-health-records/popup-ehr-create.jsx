@@ -81,7 +81,7 @@ const PopupEHRCreate = ({ onClose }) => {
       try {
         const response = await getEHR(selected.value);
         // Formatting the response data to display on table
-        console.log("EHR_CREATE_DATA", response);
+        // console.log("EHR_CREATE_DATA", response);
         const formattedData = formatEhrRecords(response.data, "ehr_create");
 
         setRecords(formattedData);
@@ -124,7 +124,7 @@ const PopupEHRCreate = ({ onClose }) => {
     try {
       // Prepare request payload
       const payload = preparePayload(ehrData);
-      console.log("SENDING THIS TO CREATE", payload);
+      // console.log("SENDING THIS TO CREATE", payload);
       // Send API request
       const response = await createEHR(payload);
 

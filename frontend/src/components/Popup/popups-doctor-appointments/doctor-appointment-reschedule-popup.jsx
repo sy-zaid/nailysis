@@ -44,7 +44,7 @@ const RescheduleAppointmentPopup = ({ onClose, appointmentDetails }) => {
     if (curUser && curUser.length > 0) {
       setPatient([curUser[0].user, curUser[0]]); // Set patient data if available
     } else {
-      console.log("No patient data available");
+      // console.log("No patient data available");
     }
   }, [curUser]);
 

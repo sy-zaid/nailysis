@@ -24,7 +24,7 @@ const PopupRescheduleTechnicianAppointment = ({
 }) => {
   // TOKENS & USER INFORMATION
   const token = localStorage.getItem("access");
-  console.log("APDET", appointmentDetails);
+  // console.log("APDET", appointmentDetails);
   // POPUPS & NAVIGATION
   const [popupTrigger, setPopupTrigger] = useState(true);
 
@@ -95,7 +95,7 @@ const PopupRescheduleTechnicianAppointment = ({
     };
 
     try {
-      console.log("Sending this to update", payload);
+      // console.log("Sending this to update", payload);
       // Store the API response in a variable
       const response = await rescheduleTechnicianAppointment(
         appointmentDetails.appointment_id,
@@ -131,13 +131,13 @@ const PopupRescheduleTechnicianAppointment = ({
   // ----- MAIN LOGIC FUNCTIONS (API Calls, Data Processing)
   const fetchAvailableSlots = async (technicianId, appointmentDate) => {
     try {
-      console.log("Fetching slots for:", technicianId, appointmentDate);
+      // console.log("Fetching slots for:", technicianId, appointmentDate);
       const response = await getAvailableSlots(
         null,
         technicianId,
         appointmentDate
       );
-      console.log("Fetched slots:", response);
+      // console.log("Fetched slots:", response);
       setAvailableSlots(response);
     } catch (error) {
       console.error("Failed to fetch available slots", error);
@@ -155,7 +155,7 @@ const PopupRescheduleTechnicianAppointment = ({
             `http://127.0.0.1:8000/api/lab_technicians/?specialization=${formData.specialization}`,
             { headers: { Authorization: `Bearer ${token}` } }
           );
-          console.log("Response", response.data);
+          // console.log("Response", response.data);
           setLabTechnicians(
             response.data.map((tech) => ({
               id: tech.user.user_id,

@@ -28,7 +28,7 @@ const CheckinDoctorAppointmentPopup = ({ onClose, appointmentDetails }) => {
   const [intervalId, setIntervalId] = useState(null); // Stores the timer's interval ID to control it
   const [popupTrigger, setPopupTrigger] = useState(true);
   const [status, setStatus] = useState("Pending");
-  console.log("DETAA", appointmentDetails);
+  // console.log("DETAA", appointmentDetails);
   // Function to format time in HH:MM:SS format
   const formatTime = (time) => {
     const hours = String(Math.floor(time / 3600)).padStart(2, "0");
@@ -80,7 +80,7 @@ const CheckinDoctorAppointmentPopup = ({ onClose, appointmentDetails }) => {
       stopTimer();
       onClose();
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       if (error.response) {
         toast.error(
           error.response.data.error || "Failed to complete appointment",

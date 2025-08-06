@@ -48,7 +48,7 @@ const NailysisReport = ({
   const fetchNailysisReport = async (reportId) => {
     try {
       const response = await getNailysisResultsFromId(reportId);
-      console.log("FECTHING REPORT...", response.data);
+      // console.log("FECTHING REPORT...", response.data);
       setPredictionResult(response.data);
     } catch (error) {
       console.error("Error fetching report:", error);
@@ -75,7 +75,7 @@ const NailysisReport = ({
       fetchNailysisReport(reportId);
     }
   }, []);
-  console.log("Prediction Result", predictionResult);
+  // console.log("Prediction Result", predictionResult);
   const imageData = predictionResult.images || [];
   const patient_details = predictionResult.patient_details;
   const combined = predictionResult.combined_result;

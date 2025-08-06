@@ -32,7 +32,7 @@ function LabAdminDashboard() {
         const test_orders = await getTestOrders();
         setTestOrders(test_orders.data);
       } catch (error) {
-        console.log("Error fetching appointments", error);
+        // console.log("Error fetching appointments", error);
       }
     };
 

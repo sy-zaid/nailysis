@@ -26,14 +26,14 @@ const AppointmentLabAdmin = () => {
         }
       );
       setAppointments(response.data);
-      console.log("Response from lab appointments", response.data);
+      // console.log("Response from lab appointments", response.data);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   };
   useEffect(() => {
     if (!token) {
-      console.log("No token found, Redirecting to login");
+      // console.log("No token found, Redirecting to login");
       navigate("/login");
       return;
     }
@@ -55,13 +55,13 @@ const AppointmentLabAdmin = () => {
   };
 
   const handleActionClick = (action, appointmentId) => {
-    console.log(`Action: ${action} on Appointment ID: ${appointmentId}`);
+    // console.log(`Action: ${action} on Appointment ID: ${appointmentId}`);
     setMenuOpen(null);
 
     if (action === "Cancel") {
       const handleCancellation = async (appointmentId, action) => {
         try {
-          console.log(
+          // console.log(
             "SUBMITTING APPOINTMENT ID FOR CANCELLING",
             appointmentId
           );
@@ -79,7 +79,7 @@ const AppointmentLabAdmin = () => {
           alert(response.data.message);
           fetchAppointments();
         } catch (err) {
-          console.log("Failed cancellation request.");
+          // console.log("Failed cancellation request.");
         }
       };
       handleCancellation(appointmentId, action);

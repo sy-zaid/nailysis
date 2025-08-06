@@ -57,7 +57,7 @@ const TestOrders = () => {
   // ----- IMPORTANT DATA
   const [testOrders, setTestOrders] = useState([]);
   const [filteredTestOrders, setFilteredTestOrders] = useState([]); // Data after filtering, searching, sorting
-  console.log("TEST REQUESTS RESPONSE", testOrders);
+  // console.log("TEST REQUESTS RESPONSE", testOrders);
 
   // ----- SEARCH & SORT STATE
   const [searchQuery, setSearchQuery] = useState("");
@@ -70,7 +70,7 @@ const TestOrders = () => {
       const response = await getTestOrders();
       setTestOrders(response.data);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   };
 
@@ -78,7 +78,7 @@ const TestOrders = () => {
 
   // Action menu click handler (keeps your original logic)
   const handleActionClick = (action, testOrderDetails) => {
-    console.log(`Performing ${action} on ID:${testOrderDetails}`);
+    // console.log(`Performing ${action} on ID:${testOrderDetails}`);
     if (action === "Process Test Order") {
       setPopupContent(
         <PopupSelectTestOrder

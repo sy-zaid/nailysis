@@ -16,7 +16,7 @@ const PopupEHRDelete = ({ onClose, recordDetails }) => {
       );
       onClose(); // Close after delete
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   };
 

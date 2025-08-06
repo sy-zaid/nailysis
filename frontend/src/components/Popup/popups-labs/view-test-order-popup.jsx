@@ -33,7 +33,7 @@ const PopupViewTestOrder = ({ onClose, testOrderDetails }) => {
   const [popupContent, setPopupContent] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
   const [completedTests, setCompletedTests] = useState([]);
-  console.log("TEST ORDER DETAILSSSS", testOrderDetails);
+  // console.log("TEST ORDER DETAILSSSS", testOrderDetails);
 
   // ----- IMPORTANT DATA
 
@@ -64,7 +64,7 @@ const PopupViewTestOrder = ({ onClose, testOrderDetails }) => {
         });
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       if (error.response) {
         const status = error.response;
         toast.error(status.data.error || "Failed to finalize test order", {
@@ -88,9 +88,9 @@ const PopupViewTestOrder = ({ onClose, testOrderDetails }) => {
     const fetchTestResults = async () => {
       try {
         const response = await getTestResults(testOrderDetails.id);
-        console.log("Fetched Test Results:", response.data);
+        // console.log("Fetched Test Results:", response.data);
         const tests = response.data;
-        console.log("Fetched Test Results:", tests);
+        // console.log("Fetched Test Results:", tests);
         setCompletedTests(tests);
       } catch (error) {
         console.error("Error fetching test results:", error);
@@ -274,7 +274,7 @@ const PopupViewTestOrder = ({ onClose, testOrderDetails }) => {
                 const testResult = completedTests.find(
                   (t) => t.test_type === test.id
                 );
-                console.log(testResult, "TEST RESULTSSSSSS");
+                // console.log(testResult, "TEST RESULTSSSSSS");
                 return (
                   <div key={test.id} className={styles.testType}>
                     <span style={{ marginLeft: "25px" }}>

@@ -130,20 +130,7 @@ function RegisterForm({ route }) {
       return toast.warning("Password must be at least 8 characters long.");
     }
 
-    // Debugging: Log form data
-    console.log({ 
-      first_name, 
-      last_name, 
-      email, 
-      password, 
-      phone, 
-      role,
-      date_of_birth,
-      gender,
-      address,
-      emergency_contact
-    });
-
+    
     try {
       const response = await api.post(route, {
         first_name,
@@ -158,7 +145,7 @@ function RegisterForm({ route }) {
         address,
         emergency_contact
       });
-      console.log(response.data);
+      // console.log(response.data);
       toast.success("Registration Successful!", {
         className: "custom-toast",
       });

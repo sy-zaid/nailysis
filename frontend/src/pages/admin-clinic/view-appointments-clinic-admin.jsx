@@ -12,35 +12,36 @@ import Header from "../../components/Dashboard/Header/Header";
 import { toast } from "react-toastify";
 
 // UTILS.JS FUNCTIONS
-import { 
-  getStatusClass, 
+import {
+  formatDateRange,
+  getStatusClass,
   toggleActionMenu,
 } from "../../utils/utils";
 
-const AppointmentClinicAdmin = ( onClose ) => {
+const AppointmentClinicAdmin = (onClose) => {
   // ----- TOKENS AND USER INFORMATION
   const token = localStorage.getItem("access");
 
-
   // ----- POPUPS AND NAVIGATION
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   const [appointments, setAppointments] = useState([]);
   const [popupContent, setPopupContent] = useState();
   const [showPopup, setShowPopup] = useState(false);
-  const [activeButton, setActiveButton] = useState(0); 
+  const [activeButton, setActiveButton] = useState(0);
   const [menuOpen, setMenuOpen] = useState(null);
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
 
-  
   // ----- SEARCHING, SORTING & FILTERING STATES
   const [activeFilter, setActiveFilter] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   // Set default sort to appointment date (latest first)
-  const [sortConfig, setSortConfig] = useState({ key: "date", direction: "desc" });
+  const [sortConfig, setSortConfig] = useState({
+    key: "date",
+    direction: "desc",
+  });
   const [selectAll, setSelectAll] = useState(false);
   const [selectedAppointments, setSelectedAppointments] = useState({});
 
-  
   // ----- HANDLERS
   const handleFilterClick = (index) => {
     setActiveButton(index); // Set the active button when clicked
@@ -84,7 +85,6 @@ const AppointmentClinicAdmin = ( onClose ) => {
 
   // Handle the action when an item is clicked in the menu
   const handleActionClick = (action, appointmentId) => {
-    
     console.log(`Action: ${action} on Appointment ID: ${appointmentId}`);
     setMenuOpen(null); // Close the menu after action
 
@@ -108,9 +108,12 @@ const AppointmentClinicAdmin = ( onClose ) => {
             }
           );
           // alert(response.data.message);
-          toast.success(response.data.message || "Appointment cancelled successfully", {
-            className: "custom-toast",
-          });
+          toast.success(
+            response.data.message || "Appointment cancelled successfully",
+            {
+              className: "custom-toast",
+            }
+          );
 
           // Fetch updated appointments after cancellation
           fetchAppointments();
@@ -127,11 +130,10 @@ const AppointmentClinicAdmin = ( onClose ) => {
               className: "custom-toast",
             });
           }
-
         }
       };
       handleCancellation(appointmentId, action);
-    }else if (action === "Reschedule") {
+    } else if (action === "Reschedule") {
       setPopupContent(
         <RescheduleAppointmentPopup
           appointmentDetails={appointmentId}
@@ -154,7 +156,6 @@ const AppointmentClinicAdmin = ( onClose ) => {
 
     // Add logic for other actions like 'Edit' and 'Reschedule' if needed
   };
-
 
   // ----- MAIN LOGIC FUNCTIONS
   const fetchAppointments = async () => {
@@ -191,9 +192,16 @@ const AppointmentClinicAdmin = ( onClose ) => {
     // Searching Logic
     const searchValue = searchQuery.toLowerCase();
     const matchesSearch =
-      appointment.appointment_id?.toString().toLowerCase().includes(searchValue) ||
-      appointment.doctor?.user?.first_name?.toLowerCase().includes(searchValue) ||
-      appointment.doctor?.user?.last_name?.toLowerCase().includes(searchValue) ||
+      appointment.appointment_id
+        ?.toString()
+        .toLowerCase()
+        .includes(searchValue) ||
+      appointment.doctor?.user?.first_name
+        ?.toLowerCase()
+        .includes(searchValue) ||
+      appointment.doctor?.user?.last_name
+        ?.toLowerCase()
+        .includes(searchValue) ||
       appointment.doctor?.specialization?.toLowerCase().includes(searchValue) ||
       appointment.time_slot?.slot_date?.toLowerCase().includes(searchValue) ||
       appointment.time_slot?.start_time?.toLowerCase().includes(searchValue) ||
@@ -203,7 +211,10 @@ const AppointmentClinicAdmin = ( onClose ) => {
       (appointment.fee &&
         `PKR ${appointment.fee}`.toLowerCase().includes(searchValue)) ||
       (appointment.doctor?.years_of_experience &&
-        appointment.doctor?.years_of_experience.toString().toLowerCase().includes(searchValue)) ||
+        appointment.doctor?.years_of_experience
+          .toString()
+          .toLowerCase()
+          .includes(searchValue)) ||
       appointment.notes?.toLowerCase().includes(searchValue);
 
     return matchesSearch;
@@ -212,22 +223,21 @@ const AppointmentClinicAdmin = ( onClose ) => {
   // Sorting Logic
   const sortedAppointments = [...filteredAppointments].sort((a, b) => {
     if (!sortConfig.key) return 0;
-  
+
     const aValue =
       sortConfig.key === "fee"
         ? a.fee || 0
         : new Date(a.time_slot?.slot_date).getTime();
-  
+
     const bValue =
       sortConfig.key === "fee"
         ? b.fee || 0
         : new Date(b.time_slot?.slot_date).getTime();
-  
+
     if (aValue < bValue) return sortConfig.direction === "asc" ? -1 : 1;
     if (aValue > bValue) return sortConfig.direction === "asc" ? 1 : -1;
     return 0;
   });
-
 
   // ----- USE EFFECTS
   useEffect(() => {
@@ -240,7 +250,6 @@ const AppointmentClinicAdmin = ( onClose ) => {
     fetchAppointments();
   }, [token, navigate]);
 
-  
   // Close the action menu when clicking outside of it
   const menuRef = useRef(null);
 
@@ -250,14 +259,12 @@ const AppointmentClinicAdmin = ( onClose ) => {
         setMenuOpen(null);
       }
     };
-  
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [menuOpen]);
-  
-
 
   return (
     <div className={styles.pageContainer}>
@@ -265,9 +272,7 @@ const AppointmentClinicAdmin = ( onClose ) => {
       {/* {showPopup && <PopupAppointmentBook onClose={handleClosePopup} />} */}
       {/* {showPopup && <RescheduleAppointmentPopup onClose={handleClosePopup} />} */}
 
-
       <div className={styles.pageTop}>
-        
         <Header
           mainHeading={"Appointments"}
           subHeading={
@@ -281,7 +286,9 @@ const AppointmentClinicAdmin = ( onClose ) => {
             {["All", "Scheduled", "Emergency Visit", "Today"].map((filter) => (
               <button
                 key={filter}
-                className={`${styles.filterButton} ${activeFilter === filter ? styles.active : ""}`}
+                className={`${styles.filterButton} ${
+                  activeFilter === filter ? styles.active : ""
+                }`}
                 onClick={() => setActiveFilter(filter)}
               >
                 {filter}
@@ -289,9 +296,12 @@ const AppointmentClinicAdmin = ( onClose ) => {
             ))}
             <p>
               Total Records: {filteredAppointments.length} | Scheduled:{" "}
-              {filteredAppointments.filter((app) => app.status === "Scheduled").length}
+              {
+                filteredAppointments.filter((app) => app.status === "Scheduled")
+                  .length
+              }
             </p>
-            
+
             <button
               className={styles.addButton}
               onClick={() => handleActionClick("book_new_appointment")}
@@ -314,8 +324,12 @@ const AppointmentClinicAdmin = ( onClose ) => {
                   setSortConfig({ key, direction });
                 }}
               >
-                <option value="date-desc">Appointment Date (Latest First)</option>
-                <option value="date-asc">Appointment Date (Oldest First)</option>
+                <option value="date-desc">
+                  Appointment Date (Latest First)
+                </option>
+                <option value="date-asc">
+                  Appointment Date (Oldest First)
+                </option>
                 <option value="fee-asc">Fee (Low to High)</option>
                 <option value="fee-desc">Fee (High to Low)</option>
               </select>
@@ -332,9 +346,7 @@ const AppointmentClinicAdmin = ( onClose ) => {
             <br />
 
             <div className={styles.tableWrapper}>
-              <table
-                className={styles.table}
-              >
+              <table className={styles.table}>
                 <thead>
                   <tr>
                     <th>#</th> {/* Serial Number */}
@@ -346,15 +358,12 @@ const AppointmentClinicAdmin = ( onClose ) => {
                     <th>Date & Time</th>
                     <th>Status</th>
                     <th>Fee</th>
-                    
                     <th>Additional Notes</th>
                   </tr>
                 </thead>
                 <tbody>
                   {sortedAppointments.map((row, index) => (
-                    <tr
-                      key={row.appointment_id}
-                    >
+                    <tr key={row.appointment_id}>
                       <td>{index + 1}</td> {/* Serial Number */}
                       <td>{row.appointment_id}</td> {/* Appointment ID */}
                       <td>
@@ -374,22 +383,42 @@ const AppointmentClinicAdmin = ( onClose ) => {
                       <td>{row.appointment_type || "N/A"}</td>{" "}
                       {/* Appointment Type */}
                       <td>
-                        {row.time_slot?.slot_date} | {row.time_slot?.start_time} - {row.time_slot?.end_time}
+                        {row.time_slot?.slot_date ? (
+                          <>
+                            {row.time_slot?.slot_date} |{" "}
+                            {row.time_slot?.start_time} -{" "}
+                            {row.time_slot?.end_time}
+                          </>
+                        ) : (
+                          formatDateRange(
+                            row.checkin_datetime,
+                            row.checkout_datetime
+                          )
+                        )}
                       </td>{" "}
                       {/* Date & Time */}
                       <td className={getStatusClass(row.status, styles)}>
                         {row.status}
                       </td>{" "}
                       {/* Status */}
-                      <td>{row.fee ? `PKR ${row.fee}` : "Not available"}</td>{" "}
+                      <td>
+                        {row.fee ? `PKR ${row.fee}` : "Not available"}
+                      </td>{" "}
                       {/* Fee */}
                       <td>{row.booking_date || "Not available"}</td>{" "}
-                    
                       {/* Additional Notes */}
                       <td>
                         <button
-                        onClick={(event) => toggleActionMenu(row.appointment_id, menuOpen, setMenuOpen, setMenuPosition, event)}
-                        className={styles.moreActionsBtn}
+                          onClick={(event) =>
+                            toggleActionMenu(
+                              row.appointment_id,
+                              menuOpen,
+                              setMenuOpen,
+                              setMenuPosition,
+                              event
+                            )
+                          }
+                          className={styles.moreActionsBtn}
                         >
                           <img
                             src="/icon-three-dots.png"
@@ -398,9 +427,10 @@ const AppointmentClinicAdmin = ( onClose ) => {
                           />
                         </button>
 
-                        {menuOpen === row.appointment_id &&  (
+                        {menuOpen === row.appointment_id && (
                           <div
-                            ref={menuRef} id={`menu-${row.id}`}
+                            ref={menuRef}
+                            id={`menu-${row.id}`}
                             className={styles.menu}
                             style={{
                               top: `${menuPosition.top}px`,
@@ -411,22 +441,28 @@ const AppointmentClinicAdmin = ( onClose ) => {
                             <ul>
                               <li
                                 onClick={() => {
-                                  handleActionClick("Cancel", row.appointment_id);
+                                  handleActionClick(
+                                    "Cancel",
+                                    row.appointment_id
+                                  );
                                 }}
                               >
-                                <i className="fa-solid fa-rectangle-xmark"></i>Cancel Appointment
+                                <i className="fa-solid fa-rectangle-xmark"></i>
+                                Cancel Appointment
                               </li>
                               <li
                                 onClick={() =>
                                   handleActionClick("Reschedule", row)
                                 }
                               >
-                                <i className="fa-solid fa-pen"></i>Edit / Reschedule Appointment
+                                <i className="fa-solid fa-pen"></i>Edit /
+                                Reschedule Appointment
                               </li>
                               <li
                                 onClick={() => handleActionClick("Delete", row)}
                               >
-                                <i className="fa-solid fa-trash"></i>Delete Appointment
+                                <i className="fa-solid fa-trash"></i>Delete
+                                Appointment
                               </li>
                             </ul>
                           </div>

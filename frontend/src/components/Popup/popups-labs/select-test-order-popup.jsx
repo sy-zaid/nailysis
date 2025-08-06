@@ -109,7 +109,7 @@ const PopupSelectTestOrder = ({ onClose, testOrderDetails }) => {
     return test ? test.result_status || "" : "Empty Results"; // Default to "Pending" if not found
   };
 
-  console.log("GOT THIS TO PROCESS", testOrderDetails);
+  // console.log("GOT THIS TO PROCESS", testOrderDetails);
 
   /**
    * Sets and displays the inner popup based on test category.
@@ -136,12 +136,12 @@ const PopupSelectTestOrder = ({ onClose, testOrderDetails }) => {
     const fetchTestResults = async () => {
       try {
         const response = await getTestResults(testOrderDetails.id);
-        console.log("Fetched Test Results:", response.data);
+        // console.log("Fetched Test Results:", response.data);
         const tests = response.data.map((test) => ({
           id: test.test_type,
           result_status: test.result_status,
         }));
-        console.log("Fetched Test Results:", tests);
+        // console.log("Fetched Test Results:", tests);
         setCompletedTests(tests);
       } catch (error) {
         console.error("Error fetching test results:", error);

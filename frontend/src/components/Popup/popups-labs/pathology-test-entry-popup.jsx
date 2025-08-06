@@ -209,7 +209,7 @@ const PathologyTestEntryPopup = ({
       result_file: resultFile,
     };
     try {
-      console.log("SENDING THIS TO PATH TEST", payload);
+      // console.log("SENDING THIS TO PATH TEST", payload);
       const response = await saveTestResultsWithImage(payload);
 
       if (response.status === 201) {
@@ -253,10 +253,10 @@ const PathologyTestEntryPopup = ({
    */
   useEffect(() => {
     if (!testEntries || !Array.isArray(testEntries)) return; // Prevent errors
-    console.log(
-      "TEST ENTRIES FORMATTING:",
-      formatPathologyTestEntries({ testEntries, pathologyParameters })
-    );
+    // console.log(
+    //   "TEST ENTRIES FORMATTING:",
+    //   formatPathologyTestEntries({ testEntries, pathologyParameters })
+    // );
   }, [testEntries, pathologyParameters]);
 
   return (

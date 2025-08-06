@@ -10,7 +10,7 @@ const PopupDeleteTestOrder = ({ onClose, testOrderDetails }) => {
   const navigate = useNavigate();
   const token = localStorage.getItem("access");
 
-  console.log("ORDER DELETE DETAILS", testOrderDetails);
+  // console.log("ORDER DELETE DETAILS", testOrderDetails);
 
   const handleDeleteTestOrder = async () => {
     try {

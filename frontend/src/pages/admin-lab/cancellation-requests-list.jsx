@@ -27,7 +27,7 @@ const CancellationRequestsList = () => {
             },
           }
         );
-        console.log(response.data);
+        // console.log(response.data);
         setRequests(response.data);
       } catch (err) {
         setError("Failed to fetch cancellation requests.");

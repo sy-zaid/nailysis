@@ -65,7 +65,7 @@ const CancellationRequestForm = ({ appointmentId, onClose }) => {
       });
       onClose(); // Close the popup
     } catch (err) {
-      console.log(err);
+      // console.log(err);
       if (err.response) {
         toast.error(err.response.data.error || "Failed to Submit Cancellation Request. Please Try Again.", {
           className: "custom-toast",

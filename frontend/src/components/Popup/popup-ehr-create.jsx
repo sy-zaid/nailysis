@@ -73,7 +73,7 @@ const PopupEHRCreate = ({ onClose, appointmentDetails }) => {
           details: patient,
         }));
         setPatients(formattedPatients);
-        console.log("Formatted Patients:", formattedPatients);
+        // console.log("Formatted Patients:", formattedPatients);
       } catch (error) {
         console.error("Error fetching patients:", error);
       }
@@ -199,7 +199,7 @@ const PopupEHRCreate = ({ onClose, appointmentDetails }) => {
   //       patient_id: selectedPatient.value, // Ensure patient_id is set
   //     }));
   //     setIsPatientConfirmed(true);
-  //     console.log("ALL PATIENT RECORDS", records);
+  //     // console.log("ALL PATIENT RECORDS", records);
   //   } catch (error) {
   //     console.error("Error fetching EHR data:", error);
   //   }

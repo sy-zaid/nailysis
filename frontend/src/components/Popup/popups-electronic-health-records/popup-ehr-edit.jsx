@@ -35,7 +35,7 @@ const PopupEHREdit = ({ onClose, recordDetails }) => {
     family_history: "",
   });
   const token = localStorage.getItem("access");
-  console.log("recordDetails", recordDetails);
+  // console.log("recordDetails", recordDetails);
   /**
    * Effect hook to update ehrData when recordDetails change.
    */

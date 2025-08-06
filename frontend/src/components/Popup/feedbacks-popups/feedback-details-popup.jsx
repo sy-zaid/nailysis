@@ -13,7 +13,7 @@ import {
 import { getStatusClass } from "../../../utils/utils.js";
 
 const FeedbackDetails = ({ onClose, recordDetails }) => {
-  console.log("Record Details", recordDetails)
+  // console.log("Record Details", recordDetails)
   const [popupTrigger, setPopupTrigger] = useState(true);
   const [status, setStatus] = useState("Resolved");
   const token = getAccessToken();
@@ -45,7 +45,7 @@ const FeedbackDetails = ({ onClose, recordDetails }) => {
   // Using the first feedback entry for display (for now)
 
   const handleResponse = () => {
-    console.log("Response Submitted:", { response, status });
+    // console.log("Response Submitted:", { response, status });
   };
 
 

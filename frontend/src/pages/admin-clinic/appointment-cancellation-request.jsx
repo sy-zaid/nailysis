@@ -116,7 +116,7 @@ const CancellationRequest = () => {
   };
 
   const handleActionClick = (action, recordDetails) => {
-    console.log(`Performing ${action} on`, recordDetails);
+    // console.log(`Performing ${action} on`, recordDetails);
     setPopupVisible(false); // Close popup after clicking any action
 
     if (action === "Submit Feedback") {

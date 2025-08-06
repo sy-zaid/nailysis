@@ -53,7 +53,7 @@ const AppointmentDoctor = (props) => {
 
   // Handle the action when an item is clicked in the menu
   const handleActionClick = (action, appointmentId) => {
-    console.log(`Action: ${action} on Appointment ID: ${appointmentId}`);
+    // console.log(`Action: ${action} on Appointment ID: ${appointmentId}`);
     setMenuOpen(null); // Close the menu after action
 
     if (action === "Cancel") {
@@ -168,7 +168,7 @@ const AppointmentDoctor = (props) => {
   // ----- USE EFFECTS
   useEffect(() => {
     if (!token) {
-      console.log("No token found, Redirecting to login");
+      // console.log("No token found, Redirecting to login");
       navigate("/login");
       return;
     }
@@ -178,9 +178,9 @@ const AppointmentDoctor = (props) => {
         const response = await getDoctorAppointments();
 
         setAppointments(response.data);
-        console.log("Response from doctor appointment", response.data);
+        // console.log("Response from doctor appointment", response.data);
       } catch (error) {
-        console.log(error);
+        // console.log(error);
       }
     };
 

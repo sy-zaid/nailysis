@@ -146,7 +146,7 @@ const ClinicAppointmentHistory = () => {
 
   // Handles the action when an item is clicked in the action menu
   const handleActionClick = (action, appointmentId) => {
-    console.log(`Action: ${action} on Appointment ID: ${appointmentId}`);
+    // console.log(`Action: ${action} on Appointment ID: ${appointmentId}`);
     setMenuOpen(null); // Close the menu after action
 
     if (action === "Action View Appointment Details") {
@@ -204,9 +204,9 @@ const ClinicAppointmentHistory = () => {
         const response = await getLabTechnicianAppointments();
         setAppointments(response.data);
         setFilteredAppointments(response.data);
-        console.log("Response from technician appointment", response.data);
+        // console.log("Response from technician appointment", response.data);
       } catch (error) {
-        console.log(error);
+        // console.log(error);
       }
     };
     if (!showPopup) {

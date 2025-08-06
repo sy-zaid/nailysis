@@ -31,9 +31,9 @@ function LabTechnicianDashboard() {
         setAnalytics(analytics);
         const test_results = await getTestOrders();
         setTestResults(test_results.data);
-        console.log("TEST RESULTS FROM TECH DB", test_results.data);
+        // console.log("TEST RESULTS FROM TECH DB", test_results.data);
       } catch (error) {
-        console.log("Error fetching appointments", error);
+        // console.log("Error fetching appointments", error);
       }
     };
 

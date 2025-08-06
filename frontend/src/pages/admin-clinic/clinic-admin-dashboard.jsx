@@ -27,12 +27,12 @@ function ClinicAdminDashboard() {
         const response = await getDoctorAppointments();
         setAppointments(response.data);
         const analytics = getClinicAdminAnalytics(response.data);
-        console.log("Analytics data:", analytics); // Debug log
+        // console.log("Analytics data:", analytics); // Debug log
         setAnalytics(analytics);
         const test_orders = await getTestOrders();
         setTestOrders(test_orders.data);
       } catch (error) {
-        console.log("Error fetching appointments", error);
+        // console.log("Error fetching appointments", error);
       }
     };
 
@@ -94,7 +94,7 @@ function ClinicAdminDashboard() {
           payment = parseFloat(appt.fee);
         }
 
-        console.log(`Appointment ${appt.appointment_id} payment:`, payment); // Debug log
+        // console.log(`Appointment ${appt.appointment_id} payment:`, payment); // Debug log
 
         if (payment > 0) {
           revenueGeneratingAppointments += 1;

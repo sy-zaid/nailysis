@@ -28,7 +28,7 @@ const LabTestResult = () => {
     try {
       const response = await getTestResultsByTestId(reportId);
       const resultData = response.data[0];
-      console.log(response.data);
+      // console.log(response.data);
       setLabTestResult(resultData);
 
       // Combine all result files from both fields

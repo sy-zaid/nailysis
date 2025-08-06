@@ -428,7 +428,6 @@ export const formatEhrRecords = (response, type) => {
         : [response]
       : response;
 
-  console.log("CONVERTING THIS:", ehrArray);
 
   return ehrArray.map((record) => ({
     id: record.id,

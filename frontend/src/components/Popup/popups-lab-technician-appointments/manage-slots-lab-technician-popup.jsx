@@ -74,7 +74,7 @@ const ManageSlotsPopup = ({ onClose }) => {
       currentTime = nextTime;
     }
 
-    console.log("Generated Slots:", slots);
+    // console.log("Generated Slots:", slots);
     setCalculatedSlots(slots);
     // toast.success("Slots generated successfully!");
   };

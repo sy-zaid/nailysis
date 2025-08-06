@@ -20,7 +20,7 @@ const API_BASE_URL = "http://localhost:8000/api/feedbacks";
 const SendFeedback = () => {
   // ----- TOKENS AND USER INFORMATION
   const curUserRole = getRole();
-  console.log("Current user role:", curUserRole);
+  // console.log("Current user role:", curUserRole);
 
 
   // ----- POPUPS AND NAVIGATION
@@ -109,7 +109,7 @@ const SendFeedback = () => {
   };
 
   const handleActionClick = (action, recordDetails) => {
-    console.log(`Performing ${action} on`, recordDetails);
+    // console.log(`Performing ${action} on`, recordDetails);
     setPopupVisible(false); // Close popup after clicking any action
 
     if (action === "Submit Clinic Feedback") {
@@ -234,7 +234,7 @@ const SendFeedback = () => {
         });
 
         setFeedbackList(feedbacksWithResponses); //  Update state with mapped data
-        console.log("Mapped Feedbacks:", feedbacksWithResponses);
+        // console.log("Mapped Feedbacks:", feedbacksWithResponses);
       } catch (error) {
         console.error("Error fetching feedback data:", error);
       }
@@ -247,7 +247,7 @@ const SendFeedback = () => {
     const fetchFeedbackResponses = async () => {
       try {
         const response = await getFeedbackResponses();
-        console.log("Responses:", response.data);
+        // console.log("Responses:", response.data);
       } catch (error) {
         console.error("Error fetching feedback responses:", error);
       }

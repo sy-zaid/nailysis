@@ -249,7 +249,7 @@ const ElectronicHealthRecord = () => {
    * @param {object} recordDetails - The full details of the selected record.
    */
   const handleActionClick = (action, recordDetails) => {
-    console.log(`Performing ${action} on`, recordDetails);
+    // console.log(`Performing ${action} on`, recordDetails);
     setMenuOpen(null); // Close action menu
 
     if (action === "Edit") {
@@ -269,7 +269,7 @@ const ElectronicHealthRecord = () => {
       );
       setShowPopup(true);
     } else if (action === "AddToMH") {
-      console.log("Sending this to add medical history", recordDetails);
+      // console.log("Sending this to add medical history", recordDetails);
       addEHRToMedicalHistory(recordDetails);
 
       toast.success("Updated Medical History with Selected Record");
@@ -287,7 +287,7 @@ const ElectronicHealthRecord = () => {
     }
   };
 
-  console.log("Sorted Records:", sortedRecords);
+  // console.log("Sorted Records:", sortedRecords);
 
   return (
     <div className={styles.pageContainer}>

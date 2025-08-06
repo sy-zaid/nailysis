@@ -34,7 +34,7 @@ const SubmitFeedback = ({ onClose, isClinicFeedback }) => {
     description: "",
   });
 
-  console.log("isClinicFeedback:", isClinicFeedback); //  Check if this is true/false
+  // console.log("isClinicFeedback:", isClinicFeedback); //  Check if this is true/false
 
   const onInputChange = handleInputChange(setFormData);
   const handleSubmit = async (e) => {
@@ -106,7 +106,7 @@ const SubmitFeedback = ({ onClose, isClinicFeedback }) => {
     const fetchCategories = async () => {
       try {
         const response = await getFeedbackCategories();
-        console.log("Categories", response.data)
+        // console.log("Categories", response.data)
         setCategories(response.data.categories);
       } catch (error) {
         console.error("Failed to fetch categories", error);

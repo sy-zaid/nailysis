@@ -37,7 +37,7 @@ const TechnicianAppointmentCheckinPopup = ({ onClose, appointmentDetails }) => {
         });
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       if (error.response) {
         toast.error(
           error.response.data.error || "Failed to complete appointment",

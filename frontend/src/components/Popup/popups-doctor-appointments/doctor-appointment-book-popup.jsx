@@ -52,7 +52,7 @@ const BookDoctorAppointmentPopup = ({ onClose }) => {
     } else if (curUserRole == "clinic_admin") {
       setPatient([]);
     } else {
-      console.log("No patient data available");
+      // console.log("No patient data available");
     }
   }, [curUser]); // Triggered whenever `curUser` changes
 
@@ -216,20 +216,20 @@ const BookDoctorAppointmentPopup = ({ onClose }) => {
   }, [formData.doctorId, formData.appointmentDate]);
   const fetchAvailableSlots = async () => {
     try {
-      console.log(
-        "SENDING THIS TO FETCH DOCID AND DATE",
-        formData.doctorId,
-        formData.appointmentDate
-      );
+      // console.log(
+      //   "SENDING THIS TO FETCH DOCID AND DATE",
+      //   formData.doctorId,
+      //   formData.appointmentDate
+      // );
       const response = await getAvailableSlots(
         formData.doctorId,
         null,
         formData.appointmentDate
       );
-      console.log("FETCHING SLOTS", response);
+      // console.log("FETCHING SLOTS", response);
       setAvailableSlots(response);
     } catch (error) {
-      console.log("Failed to fetch available slots", error);
+      // console.log("Failed to fetch available slots", error);
       throw error;
     }
   };

@@ -37,7 +37,7 @@ const PopupAllReportsList = ({ patient_id, onClose }) => {
 
     fetchLabTests();
   }, []);
-  console.log("AVT",availableLabTests)
+  // console.log("AVT",availableLabTests)
 
   // Fetch patient tests and details on component mount
   useEffect(() => {

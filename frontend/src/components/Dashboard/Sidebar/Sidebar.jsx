@@ -207,7 +207,7 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
   };
 
   const handleActionClick = (action) => {
-    console.log(`Action: ${action}`);
+    // console.log(`Action: ${action}`);
 
     if (action === "Edit Profile") {
       setPopupContent(<PopupEditProfile onClose={handleClosePopup} />);
@@ -526,7 +526,7 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
               {/* Links (hidden by default, shown on hover) */}
               <div className={styles.hiddenLinks}>
                 <span className={styles.editProfileLink}>
-                  <i class="fa-solid fa-pen"></i>
+                  <i className="fa-solid fa-pen"></i>
                   <a onClick={() => handleActionClick("Edit Profile")}>
                     Edit Profile
                   </a>
@@ -535,7 +535,7 @@ const Sidebar = ({ userRole, setView, isOpen, toggleSidebar }) => {
                   className={styles.logoutLink}
                   onClick={() => handleLogout(navigate)}
                 >
-                  <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                  <i className="fa-solid fa-arrow-right-from-bracket"></i>
                   <a>Logout</a>
                 </span>
               </div>

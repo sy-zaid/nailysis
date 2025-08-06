@@ -23,14 +23,14 @@ const BloodTestEntryPopup = ({
   testOrderDetails,
   editable,
 }) => {
-  console.log("GOT THIS TEST TO WORK", testDetails, testOrderDetails);
-  console.log(editable);
+  // console.log("GOT THIS TEST TO WORK", testDetails, testOrderDetails);
+  // console.log(editable);
   // ----- POPUPS & NAVIGATION
   const [popupTrigger, setPopupTrigger] = useState(true);
 
   // ----- IMPORTANT DATA
   const { data: curUser, isLoading, isError, error } = useCurrentUserData();
-  console.log(curUser[0]);
+  // console.log(curUser[0]);
   const [isChecked, setIsChecked] = useState(false);
 
   const [testEntries, setTestEntries] = useState([
@@ -92,7 +92,7 @@ const BloodTestEntryPopup = ({
     };
     console.clear();
     try {
-      console.log("SENDING THIS TO SAVE RESULTS", payload);
+      // console.log("SENDING THIS TO SAVE RESULTS", payload);
       const response = await saveTestResults(payload);
       
       if (response.status === 201) {
@@ -107,7 +107,7 @@ const BloodTestEntryPopup = ({
         onClose();
       }
     } catch (error) {
-      console.log(error)
+      // console.log(error)
       if (error.response) {
         toast.error(error.response.data.error || "Something went wrong.", {
           className: "custom-toast",
@@ -143,10 +143,10 @@ const BloodTestEntryPopup = ({
    */
   useEffect(() => {
     if (!testEntries || !Array.isArray(testEntries)) return; // Prevent errors
-    console.log(
-      "TEST ENTRIES FORMATTING:",
-      formatBloodTestEntries({ testEntries, bloodTestParameters })
-    );
+    // console.log(
+    //   "TEST ENTRIES FORMATTING:",
+    //   formatBloodTestEntries({ testEntries, bloodTestParameters })
+    // );
   }, [testEntries, bloodTestParameters]);
 
   return (
