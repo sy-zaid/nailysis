@@ -6,6 +6,10 @@
 
 Nailysis is an AI-powered clinical web application designed to revolutionize healthcare diagnosis and management in clinics and hospitals. It leverages cutting-edge machine learning for **nail image analysis** to help detect underlying health conditions. Built with a modern tech stack (Django + React), Nailysis streamlines clinic operations with integrated modules for EHR management, appointments, billing, lab tests, and real-time updates—catering to clinics in **Pakistan** (primarily Karachi) but built with scalability in mind.
 
+## Model Training and Dataset
+
+The Nailysis team collected a dataset of 2,000+ nail images locally by visiting multiple clinics and hospitals, obtaining proper consent from participants—particularly under the supervision of Dr. Sarah Zafar. Additional images were gathered from volunteers to ensure diversity in nail conditions. To further improve the model’s ability to detect a wider range of diseases, especially those common in local populations, we supplemented the dataset with publicly available nail images from the internet. This combined dataset enabled robust training and enhanced the model’s diagnostic performance.
+
 ---
 
 ## 📑 Table of Contents
