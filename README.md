@@ -161,10 +161,12 @@ See the [LICENSE](LICENSE) file for more information.
 
 This project was developed as part of a university FYP by the **Nailysis Team**:
 
-- **Zaid Syed Muhammad** — Team Lead; handled core backend, APIs, frontend integration, WebSockets, authentication, and AI model integration.
-- **Tehmish & Abdullah** — Frontend (UI Implementation from Figma)  
-- **Talha** — Feedbacks module backend, Class Diagram Design  
-- **Ayma** — Use Case-Level Class Diagrams  
+- **Zaid Syed Muhammad** — Team Lead; handled core backend, APIs, frontend integration, WebSockets, JWT authentication, system design & diagrams, AI model training & integration.
+- **Tehmish** — Frontend (UI implementation from Figma), JWT authentication  
+- **Abdullah** — Frontend (UI implementation from Figma), UI testing
+- **Talha** — Feedback module backend, system design (UML diagrams), lab appointments, and testing  
+- **Ayma** — Use case-level class diagrams, UI/UX for landing pages, dataset classification, documentation, and deployment diagram  
+
 
 For technical inquiries, contact:  
 📧 **syedmzaid.99@gmail.com**
