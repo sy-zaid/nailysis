@@ -59,6 +59,16 @@ while True:
         value = int(user_input)
         if value == 1:
             break
+    elif user_input == "patients":
+        users = [
+            {"email": "patient1@example.com", "password": "pat"},
+            {"email": "patient2@example.com", "password": "pat"},
+            {"email": "patient3@example.com", "password": "pat"},
+        ]
+        offset = len(drivers)  # Already opened drivers
+        new_drivers = [login_user(user["email"], user["password"], i + offset) for i, user in enumerate(users)]
+        drivers.extend(new_drivers)  # Append to keep all drivers
+
     else:
         print("Invalid input. Please type 0 or 1.")
 

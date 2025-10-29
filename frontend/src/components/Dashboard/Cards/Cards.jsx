@@ -11,7 +11,7 @@ const Cards = ({ heading, count, percentage, text }) => {
     if (start === end) return;
 
     let incrementTime = 20;
-    let step = Math.ceil(end / 50); // Speed of counting
+    let step = Math.ceil(end / 75); // Speed of counting
 
     const timer = setInterval(() => {
       start += step;
